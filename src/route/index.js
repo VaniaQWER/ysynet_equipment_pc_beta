@@ -19,6 +19,18 @@ const routes = [
       { path: '/system/group', name: '组', component: asyncComponent(() => import("../container/system/group"))},
       { path: '/system/basic', name: '基础数据', component: asyncComponent(() => import("../container/system/basic"))},
     ]
+  },
+  {
+    path: '/ledger',
+    name: '资产台账',
+    component: asyncComponent(() => import("../container/ledger")),
+    children: [
+      { path: '/ledger/archivesMgt', name: '档案管理', component: asyncComponent(() => import("../container/ledger/archivesMgt")), children: [
+        { path: '/ledger/archivesMgt/ledgerReg', name: '资产登记', component: asyncComponent(() => import("../container/ledger/archivesMgt/ledgerReg"))},
+        { path: '/ledger/archivesMgt/ledgerArchives/list', name: '资产档案', component: asyncComponent(() => import("../container/ledger/archivesMgt/ledgerArchives/list"))},
+        { path: '/ledger/archivesMgt/ledgerArchives/detail', name: '详情', component: asyncComponent(() => import("../container/ledger/archivesMgt/ledgerArchives/detail"))},
+      ] }
+    ]
   }
 ]
 const createApp = (Component, layout, props) => <Component {...props} wrapper={layout}/>
