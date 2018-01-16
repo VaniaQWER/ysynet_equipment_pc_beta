@@ -18,7 +18,7 @@ const createMenu = (menuList, num) => {
             key={menuList[i].key} 
             title={<span><Icon type={menuList[i].icon} /><span>{menuList[i].text}</span></span>}
           >
-            { createMenu(menuList[i].children, 123) }
+            { createMenu(menuList[i].children) }
           </SubMenu>
         )
       } else {
@@ -52,19 +52,23 @@ class BasicLayout extends Component {
   changeActiveKeys = () => {
     const { history } = this.props;
     const { pathname } = history.location;
+    const { openKeys } = this.state;
+    console.log(openKeys)
     const keys = pathname.split('/');
-    const selectedKeys = keys.length > 3 ? keys.slice(0, 4).join('/') : pathname;
-    const openKeys = [];
-    // selectedKeys.split('/').map((item, index) => (
-    //   item ? openKeys.push(item)
-    // )) 
-    this.setState({selectedKeys, openKeys: []});
+    let selectedKeys = '', newOpenKeys = [];
+    if (keys.length > 3) {
+      selectedKeys = keys.slice(0, 4).join('/');
+      newOpenKeys = [ keys.slice(0, 2).join('/'), keys.slice(0, 3).join('/') ]; 
+    } else { 
+      selectedKeys = pathname;
+      newOpenKeys = openKeys.length ? openKeys : [ keys.slice(0, 2).join('/') ];  
+    };
+    this.setState({selectedKeys, openKeys: newOpenKeys});
   }
   componentWillMount = () => {
     this.changeActiveKeys();
   }
   onOpenChange = openKeys => {
-    console.log(openKeys)
     this.setState({ openKeys: openKeys })
   }
   componentWillReceiveProps = (nextProps) => {
@@ -88,6 +92,8 @@ class BasicLayout extends Component {
             theme="dark" 
             mode="inline"
             selectedKeys={[selectedKeys]}
+            onOpenChange={this.onOpenChange}
+            openKeys={openKeys}
             onSelect={item => {
               history.push({pathname: `${item.key}`})
             }}
