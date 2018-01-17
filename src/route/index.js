@@ -13,8 +13,8 @@ const routes = [
     component: asyncComponent(() => import("../container/system")),
     children: [
       { path: '/system/user', name: '用户', component: asyncComponent(() => import("../container/system/user")), children: [
-        { path: '/system/user/detail', name: '用户详情', component: asyncComponent(() => import("../container/system/user/detail"))},
-        { path: '/system/user/add', name: '新增用户', component: asyncComponent(() => import("../container/system/user/detail/add"))},
+        { path: '/system/user/customer', name: '客户', component: asyncComponent(() => import("../container/system/user/detail"))},
+        { path: '/system/user/operate', name: '运营', component: asyncComponent(() => import("../container/system/user/detail/add"))},
       ] },
       { path: '/system/group', name: '组', component: asyncComponent(() => import("../container/system/group"))},
       { path: '/system/basic', name: '基础数据', component: asyncComponent(() => import("../container/system/basic"))},

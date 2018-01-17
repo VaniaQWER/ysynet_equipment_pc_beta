@@ -7,44 +7,31 @@ const { Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 
 // 使用递归创建菜单
-const createMenu = (menuList, num) => {
-  let menuArray = [];
-  if (Array.isArray(menuList)) {
-    for (let i=0; i<menuList.length; i++) {
-      if (menuList[i].children) {
-        //console.log(menuList[i].children)
-        menuArray.push(
-          <SubMenu
-            key={menuList[i].key} 
-            title={<span><Icon type={menuList[i].icon} /><span>{menuList[i].text}</span></span>}
-          >
-            { createMenu(menuList[i].children) }
-          </SubMenu>
-        )
-      } else {
-        // console.log(menuList[i])
-        menuArray.push(
-          <Menu.Item key={menuList[i].key}>
-            <Icon type={menuList[i].icon} />
-            <span> { menuList[i].text } </span>
-          </Menu.Item>
-        )
-      }
-    }
-  } else {
-    menuArray.push(
-      <Menu.Item key={menuList.key}>
-        <Icon type={menuList.icon} />
-        <span> { menuList.text } </span>
+const createMenu = menuList => (
+  Array.isArray(menuList) ? menuList.map((menu, index) => (
+    menu.children ? (
+      <SubMenu
+        key={menu.key} 
+        title={<span><Icon type={menu.icon} /><span>{menu.text}</span></span>}
+      >
+        { createMenu(menu.children) }
+      </SubMenu>
+    ) : (
+      <Menu.Item key={menu.key}>
+        <Icon type={menu.icon} />
+        <span> { menu.text } </span>
       </Menu.Item>
     )
-  }
-  return menuArray;
-}
+  )) : (
+    <Menu.Item key={menuList.key}>
+      <Icon type={menuList.icon} />
+      <span> { menuList.text } </span>
+    </Menu.Item>
+  )
+)
 
 class BasicLayout extends Component {
   state = {
-    collapsed: false,
     selectedKeys: [],
     openKeys: [],
     recordKeys: []//修复官方hover bug
@@ -53,7 +40,6 @@ class BasicLayout extends Component {
     const { history } = this.props;
     const { pathname } = history.location;
     const { openKeys } = this.state;
-    console.log(openKeys)
     const keys = pathname.split('/');
     let selectedKeys = '', newOpenKeys = [];
     if (keys.length > 3) {
@@ -69,18 +55,38 @@ class BasicLayout extends Component {
     this.changeActiveKeys();
   }
   onOpenChange = openKeys => {
-    this.setState({ openKeys: openKeys })
+    let changeKey = openKeys.length ? openKeys[openKeys.length - 1] : [];
+    if (changeKey.length) {
+      let changeKeyArr = changeKey.split('/');
+      if (changeKeyArr.length > 2) {
+        if (openKeys.length === 1) {
+          changeKey = [];
+        } else {
+          changeKey = [changeKeyArr.slice(0, 2).join('/'), changeKeyArr.slice(0, 3).join('/') ];
+        }
+      } else {
+        changeKey = [ changeKeyArr.slice(0, 2).join('/') ]
+      }
+    } else {
+      changeKey = [];
+    }
+    this.setState({
+      openKeys: changeKey
+    })
   }
   componentWillReceiveProps = (nextProps) => {
-    this.changeActiveKeys()
+    this.changeActiveKeys();
+    if (nextProps.collapsed) {
+      this.setState({ openKeys: [] })
+    }
   }
   render() {
-    const { history, menuList } = this.props;
+    const { history, menuList, collapsed } = this.props;
     const { selectedKeys, openKeys } = this.state;
     return (
       <Sider
         width={'256'}      
-        collapsed={this.state.collapsed}
+        collapsed={collapsed}
       >
         <div className='logoWrapper'>
           <img src={require('../../assets/logo.png')} alt='logo' className='logo'/>
