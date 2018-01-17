@@ -37,8 +37,8 @@ class BasicLayout extends Component {
     recordKeys: []//修复官方hover bug
   };
   changeActiveKeys = () => {
-    const { history } = this.props;
-    const { pathname } = history.location;
+    const href = window.location.href;
+    const pathname = href.split('#')[1];
     const { openKeys } = this.state;
     const keys = pathname.split('/');
     let selectedKeys = '', newOpenKeys = [];
@@ -114,6 +114,6 @@ class BasicLayout extends Component {
     )
   }
 }
-export default withRouter(connect(null, dispatch => ({
+export default withRouter(connect(state => state, dispatch => ({
   setBread: bread => dispatch(menuService.setBreadMapper(bread))
 }))(BasicLayout));
