@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch } from 'react-router-dom';
+import Switch from '../../../utils/Switch';
 import Route from '../../../utils/Route';
 /**
  * @file 订单详情

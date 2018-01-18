@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import { Provider } from 'react-redux'
 import {
@@ -9,6 +8,7 @@ import {
 import store from './store';
 import createHistory from 'history/createHashHistory'
 import registerServiceWorker from './registerServiceWorker';
+console.log(require('ysynet_reset/men_reset.css'))
 ReactDOM.render(  
   <Provider store={store}>
     <ConnectedRouter history={createHistory()}>

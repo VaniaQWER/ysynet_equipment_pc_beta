@@ -1,10 +1,12 @@
 import React,  { Component } from 'react';
 import Route from '../../utils/Route';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Layout, Icon, Badge, Breadcrumb } from 'antd';
-import { connect } from 'react-redux'
-import { user as userService } from '../../service';
-import { menu as menuService } from '../../service';
+import { connect } from 'react-redux';
+import { user as userService, menu as menuService  } from '../../service';
+import Switch from '../../utils/Switch';
+//import HeaderSearch from '../../component/headerSearch';
+
 const { Header, Content, Footer } = Layout;
 
 const createBread = (routes, pathname) => {
@@ -91,21 +93,19 @@ class Home extends Component {
           <Breadcrumb className={'ysynet-breadcrumb'}>
           {
             bread.map((b, i) => (
-              <Breadcrumb.Item key={i}>
-              {
-                (i !== 0 && i !== bread.length) ? <Link to={b.path}>{ b.text }</Link> : b.text 
-              }
-              </Breadcrumb.Item>
+              <Breadcrumb.Item key={i}>{ b.text } </Breadcrumb.Item>
             ))
           }
             
           </Breadcrumb>
           <Content style={{ padding: 8 }}>
+            <Switch>
             {
               routes.map((route, index) => (
                 <Route key={index} route={route}/>
               ))
             }
+            </Switch>
           </Content>  
           <Footer style={{ textAlign: 'center' }}>
             医商云设备平台 ©2017 Created by 普华信联前端部
@@ -115,7 +115,7 @@ class Home extends Component {
     )
   }
 }
-export default connect(state => state, dispatch => ({
+export default withRouter(connect(state => state, dispatch => ({
   getUser: () => dispatch(userService.fetchUserInfo()),
   getMenu: () => dispatch(menuService.fetchMenu())
-}))(Home);
+}))(Home));
