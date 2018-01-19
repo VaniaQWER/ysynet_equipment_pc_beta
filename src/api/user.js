@@ -1,5 +1,7 @@
 const user = {
-  fetchUser: '/getUser'
+  fetchUser: '/getUser',
+  getLedgerArchivesList: '/getLedgerArchivesList',
+  getLedgerArchivesParts: '/getLedgerArchivesParts',
 }
 
 export default user;

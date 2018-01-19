@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Input,Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
+import user from '../../../../api/user';
 
 const { Content } = Layout;
 const Search = Input.Search;
@@ -15,14 +16,15 @@ class LedgerArchivesList extends Component {
       }
     }
   render() {
+    alert(1)
     const columns = [
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 250,
+        width: 80,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/archives/detail`, state: { record }}}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/detail`, state: { ...record } }}><Icon type="form" />详情</Link>
           </span>  
       },
       {
@@ -80,19 +82,20 @@ class LedgerArchivesList extends Component {
     ];
     return (
         <Content>
-            <Search
-              placeholder="请输入资产编号/资产名称"
-              onSearch={value => console.log(value)}
-              style={{ width: 300 }}
-              enterButton="搜索"
-            />
-            <RemoteTable
+          <Search
+            placeholder="请输入资产编号/资产名称"
+            onSearch={value => console.log(value)}
+            style={{ width: 300 }}
+            enterButton="搜索"
+          />
+          <RemoteTable
             ref='remote'
-            //url={api.ARCHIVES}
-            scroll={{x: '1800px'}}
+            url={user.getLedgerArchivesList}
+            scroll={{x: '1800px', y: 315}}
             columns={columns}
             rowKey={'assetsRecord'}
             style={{marginTop: 10}}
+            size="small"
           /> 
         </Content>
     )

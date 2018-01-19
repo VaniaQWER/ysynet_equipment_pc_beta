@@ -32,15 +32,18 @@ class RemoteTable extends Component {
         pagesize: this.props.pageSize || 10,
         ...params,
       })  
-      request({
-        url,
+      request(url,{
         body,
+        headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
         success: data => {
           if(!data.status){
             message.error(data.msg);
           }
           let pagination = this.state.pagination;
           pagination.total = data.result.records;
+          pagination.showTotal=(total, range) => `${range[0]}-${range[1]} 共 ${total} 条`;
           pagination.pageSize = this.props.pageSize || 10;
           if(!params.page) {
             pagination.current = 1;

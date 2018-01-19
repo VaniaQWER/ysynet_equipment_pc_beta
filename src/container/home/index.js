@@ -107,7 +107,7 @@ class Home extends Component {
             }
             </Switch>
           </Content>  
-          <Footer style={{ textAlign: 'center' }}>
+          <Footer style={{ textAlign: 'center',padding:'5px 0' }}>
             医商云设备平台 ©2017 Created by 普华信联前端部
           </Footer>
         </Layout>
