@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import Switch from '../../../utils/Switch';
-import Route from '../../../utils/Route';
+import { Route, Switch } from 'react-router-dom';
 /**
  * @file 订单详情
  */
@@ -10,7 +9,11 @@ class SystemUserDetail extends Component {
     const { routes } = this.props;
     return (
       <Switch>
-        { routes.map((route, index) => <Route key={index} route={route}/>) }
+        {
+          routes.map((route, index) => (
+            <Route key={index} path={route.path} component={() => (<route.component routes={route.children}/>)}/>
+          ))
+        }
       </Switch>  
     )
   }

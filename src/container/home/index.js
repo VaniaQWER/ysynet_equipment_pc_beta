@@ -1,11 +1,9 @@
 import React,  { Component } from 'react';
-import Route from '../../utils/Route';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Route, Switch } from 'react-router-dom';
 import { Layout, Icon, Badge, Breadcrumb } from 'antd';
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
-import Switch from '../../utils/Switch';
-//import HeaderSearch from '../../component/headerSearch';
+import HeaderSearch from '../../component/headerSearch';
 
 const { Header, Content, Footer } = Layout;
 
@@ -85,6 +83,16 @@ class Home extends Component {
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} 
             />
             <div className='ysynet-header-right'>
+              <HeaderSearch
+                placeholder="站内搜索"
+                dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
+                onSearch={(value) => {
+                  console.log('input', value); // eslint-disable-line
+                }}
+                onPressEnter={(value) => {
+                  console.log('enter', value); // eslint-disable-line
+                }}
+              />
               <Badge count={5}>
                 <Icon type='bell'/>
               </Badge>
@@ -102,7 +110,11 @@ class Home extends Component {
             <Switch>
             {
               routes.map((route, index) => (
-                <Route key={index} route={route}/>
+                <Route 
+                  key={index} 
+                  path={route.path} 
+                  component={() => (<route.component routes={route.children}/>)}
+                />
               ))
             }
             </Switch>
