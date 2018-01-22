@@ -1,9 +1,9 @@
 /**
- * 档案管理
+ * 资产运维
  */
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-class archivesMgt extends Component {
+class Operation extends Component {
   render() {
     const { routes } = this.props;
     return (
@@ -17,4 +17,4 @@ class archivesMgt extends Component {
     )
   }
 }
-export default archivesMgt;
+export default Operation;

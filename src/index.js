@@ -8,11 +8,8 @@ import {
 import store from './store';
 import createHistory from 'history/createHashHistory'
 import registerServiceWorker from './registerServiceWorker';
-<<<<<<< Updated upstream
-
-=======
 import 'ysynet_reset/men_reset.css';
->>>>>>> Stashed changes
+
 ReactDOM.render(  
   <Provider store={store}>
     <ConnectedRouter history={createHistory()}>

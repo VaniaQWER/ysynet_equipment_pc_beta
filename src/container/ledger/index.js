@@ -1,3 +1,6 @@
+/**
+ * 资产台账
+ */
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 class Ledger extends Component {

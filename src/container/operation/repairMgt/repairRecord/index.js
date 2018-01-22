@@ -1,9 +1,10 @@
 /**
- * 档案管理
+ * 维修记录
  */
+
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-class archivesMgt extends Component {
+class RepairRecord extends Component {
   render() {
     const { routes } = this.props;
     return (
@@ -17,4 +18,4 @@ class archivesMgt extends Component {
     )
   }
 }
-export default archivesMgt;
+export default RepairRecord;

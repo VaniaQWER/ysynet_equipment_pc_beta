@@ -1,14 +1,17 @@
+/**
+ * 维修记录列表
+ */ 
 import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout } from 'antd';
-import TableGrid from '../../../component/tableGrid';
+import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
-import user from '../../../api/user';
+import user from '../../../../api/user';
 
 const { Content } = Layout;
 const Search = Input.Search;
 const { RemoteTable } = TableGrid;
 
-class SystemUser extends Component {
+class RepairRecordList extends Component {
   render() {
     const columns = [
       {
@@ -21,38 +24,53 @@ class SystemUser extends Component {
           </span>  
       },
       {
-        title: '账号',
+        title: '维修单号',
         dataIndex: 'repariNo',
         width: 200
       },
       {
-        title: '用户名',
+        title: '单据状态',
         dataIndex: 'repairFstate',
         width: 80
       },
       {
-        title: '所属组',
+        title: '资产名称',
         dataIndex: 'equipmetStandarName',
         width: 100
       },
       {
-        title: '状态',
+        title: '使用科室',
         dataIndex: 'useDeptCode',
         width: 100,
       },
       {
-        title: '类型',
+        title: '管理员',
         dataIndex: 'adminUserName',
         width: 100,
       },
       {
-        title: '所属机构',
+        title: '报修人',
         dataIndex: 'repairdName',
         width: 100
+      },
+      {
+        title: '报修时间',
+        dataIndex: 'repairdTime',
+        width: 120
+      },
+      {
+        title: '维修员',
+        dataIndex: 'repairingName',
+        width: 100
+      },
+      {
+        title: '维修时间',
+        dataIndex: 'repairimgTime',
+        width: 120
       }
     ];
     return (
-      <Content>
+        <Content>
           <Row>
             <Col span={12}>
               <Search
@@ -76,4 +94,4 @@ class SystemUser extends Component {
     )
   }
 }
-export default SystemUser;
+export default RepairRecordList;

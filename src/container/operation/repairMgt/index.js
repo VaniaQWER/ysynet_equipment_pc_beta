@@ -1,6 +1,6 @@
 /**
- * 档案管理
- */
+ * 维修管理
+ */ 
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 class archivesMgt extends Component {

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Input,Icon, Layout } from 'antd';
+import { Row,Col,Input,Icon, Layout,Upload,Button } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
 import user from '../../../../api/user';
+import styles from './style.css';
 
 const { Content } = Layout;
 const Search = Input.Search;
@@ -13,10 +14,10 @@ class LedgerArchivesList extends Component {
       super(props);
       this.state = {
         visible: false,
+        loading: false,
       }
     }
   render() {
-    alert(1)
     const columns = [
       {
         title: '操作',
@@ -40,54 +41,91 @@ class LedgerArchivesList extends Component {
       {
         title: '型号',
         dataIndex: 'spec',
-        width: 200
+        width: 100
       },
       {
         title: '状态',
         dataIndex: 'useFstate',
-        width: 150,
-        //render: text => ArchivesStatus[text]
+        width: 100,
       },
       {
         title: '设备分类',
         dataIndex: 'productType',
-        width: 150,
-        //render: text => ProductType[text]
+        width: 100,
       },
       {
         title: '使用科室',
         dataIndex: 'useDeptCode',
-        width: 150
+        width: 100
       },
       {
         title: '购置金额',
         dataIndex: 'buyPrice',
-        width: 150
-      },
-      {
-        title: '生产商',
-        dataIndex: 'product',
-        width: 150
+        width: 80
       },
       {
         title: '管理科室',
         dataIndex: 'bDept',
-        width: 150
+        width: 100
       },
       {
         title: '负责人',
         dataIndex: 'custodian',
         width: 150
-      }
+      },
+      {
+        title: '生产商',
+        dataIndex: 'product',
+        width: 200
+      },
     ];
     return (
         <Content>
-          <Search
-            placeholder="请输入资产编号/资产名称"
-            onSearch={value => console.log(value)}
-            style={{ width: 300 }}
-            enterButton="搜索"
-          />
+          <Row>
+            <Col span={12}>
+              <Search
+                placeholder="请输入资产编号/资产名称"
+                onSearch={value => console.log(value)}
+                style={{ width: 300 }}
+                enterButton="搜索"
+              />
+            </Col>
+            <Col span={12} className={styles['text-align-right']}>
+              <Upload
+                // data={{"certGuid":this.state.query.certGuid}}
+                //action={productUrl.IMPORTMODEL}
+                showUploadList={false}
+                withCredentials={true}
+                beforeUpload={()=>this.setState({loading: true})}
+                onError={(error)=>{
+                    this.setState({loading: false})
+                    console.log(error)
+                }}
+                onSuccess={(result)=>{
+                    this.setState({loading: false})
+                    // if(result.status){
+                    //     this.refs.table.fetch();
+                    //     this.setState({
+                    //         messageError:""
+                    //     })
+                    //     message.success("导入成功")
+                    // }
+                    // else{
+                    //     this.setState({
+                    //         messageError:result.msg
+                    //     })
+                    // }
+                }}
+                >
+                <Button style={{ marginRight: 8 }}>
+                  <Icon type='export'/> 导入
+                </Button>
+              </Upload>
+              <a  style={{ marginLeft: 8 }} target="_self">
+                <Icon type='cloud-download'/> 下载模板
+              </a>
+            </Col>
+          </Row>
           <RemoteTable
             ref='remote'
             url={user.getLedgerArchivesList}
