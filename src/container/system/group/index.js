@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Row, Col } from 'antd';
 import InputWrapper from '../../../component/inputWrapper';
 class SystemGroup extends Component {
   componentDidMount() {
@@ -6,9 +7,9 @@ class SystemGroup extends Component {
   }
   render() {
     return (
-      <div>
-        <InputWrapper/>
-      </div>
+      <Row>
+        <Col span={12}><InputWrapper onEndEdit={val => alert(val)}/></Col>
+      </Row>
     )
   }
 }
