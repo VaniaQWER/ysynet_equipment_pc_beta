@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Input, Icon, AutoComplete } from 'antd';
 import classNames from 'classnames';
 import styles from './index.css';
-console.log(styles);
 export default class HeaderSearch extends PureComponent {
   static defaultProps = {
     defaultActiveFirstOption: false,

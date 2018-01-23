@@ -1,12 +1,12 @@
-import React,  { Component } from 'react';
-import { withRouter, Route, Switch } from 'react-router-dom';
-import { Layout, Icon, Badge, Breadcrumb } from 'antd';
+import React from 'react';
+import { Layout, Icon, Breadcrumb, Menu } from 'antd';
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
-import HeaderSearch from '../../component/headerSearch';
-
+import { withRouter } from 'react-router-dom';
+import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
+import BasicLayout from '../common/basicLayout';
 const { Header, Content, Footer } = Layout;
-
+const SubMenu = Menu.SubMenu;
 const createBread = (routes, pathname) => {
   const routesArray = pathname.split('/');
   const pathArray = []
@@ -37,8 +37,30 @@ const createBread = (routes, pathname) => {
   }
   return bread;
 }
-
-class Home extends Component {  
+// 使用递归创建菜单
+const createMenu = menuList => (
+  Array.isArray(menuList) ? menuList.map((menu, index) => (
+    menu.children ? (
+      <SubMenu
+        key={menu.key} 
+        title={<span><Icon type={menu.icon} /><span>{menu.text}</span></span>}
+      >
+        { createMenu(menu.children) }
+      </SubMenu>
+    ) : (
+      <Menu.Item key={menu.key}>
+        <Icon type={menu.icon} />
+        <span> { menu.text } </span>
+      </Menu.Item>
+    )
+  )) : (
+    <Menu.Item key={menuList.key}>
+      <Icon type={menuList.icon} />
+      <span> { menuList.text } </span>
+    </Menu.Item>
+  )
+)
+class Home extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -55,7 +77,6 @@ class Home extends Component {
       bread
     })
   }
-  
   componentWillReceiveProps(nextProps) {
     const { routes, routerReducer } = nextProps;
     const bread = createBread(routes, routerReducer.location.pathname);
@@ -64,12 +85,11 @@ class Home extends Component {
     })
   }
   render () {
-    const Wrapper = this.props.wrapper;
     const { routes, menu } = this.props;
     const { bread } = this.state;
     return (
       <Layout style={{minHeight: '100vh'}}>
-        <Wrapper menuList={menu.menuList} collapsed={this.state.collapsed}/>
+        <BasicLayout menuList={menu.menuList} collapsed={this.state.collapsed}/>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }} className='ysynet-header'>
             <Icon 
@@ -82,48 +102,26 @@ class Home extends Component {
               className='ysyenert-header-icon ysynet-collapsed'
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} 
             />
-            <div className='ysynet-header-right'>
-              <HeaderSearch
-                placeholder="站内搜索"
-                dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
-                onSearch={(value) => {
-                  console.log('input', value); // eslint-disable-line
-                }}
-                onPressEnter={(value) => {
-                  console.log('enter', value); // eslint-disable-line
-                }}
-              />
-              <Badge count={5}>
-                <Icon type='bell'/>
-              </Badge>
-            </div>  
           </Header>
           <Breadcrumb className={'ysynet-breadcrumb'}>
-          {
-            bread.map((b, i) => (
-              <Breadcrumb.Item key={i}>{ b.text } </Breadcrumb.Item>
-            ))
-          }
-            
-          </Breadcrumb>
-          <Content style={{ padding: 8 }}>
-            <Switch>
             {
-              routes.map((route, index) => (
-                <Route 
-                  key={index} 
-                  path={route.path} 
-                  component={() => (<route.component routes={route.children}/>)}
-                />
+              bread.map((b, i) => (
+                <Breadcrumb.Item key={i}>{ b.text } </Breadcrumb.Item>
               ))
             }
-            </Switch>
+          </Breadcrumb>
+          <Content style={{ padding: 8 }}>
+            {
+              routes.map((route, i) => (
+                <RouteWithSubRoutes key={i} {...route}/>
+              ))
+            }
           </Content>  
-          <Footer style={{ textAlign: 'center',padding:'5px 0' }}>
+          <Footer style={{ textAlign: 'center', padding:'5px 0' }}>
             医商云设备平台 ©2017 Created by 普华信联前端部
           </Footer>
-        </Layout>
-      </Layout>  
+        </Layout>  
+      </Layout>
     )
   }
 }

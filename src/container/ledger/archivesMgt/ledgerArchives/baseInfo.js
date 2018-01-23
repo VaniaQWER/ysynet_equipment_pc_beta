@@ -21,7 +21,7 @@ class BaseInfo extends Component {
             资产图片
           </Panel>
           <Panel header="资产信息" key="2">
-              <AssetInfo AssetInfoData={baseInfo}/>
+            <AssetInfo AssetInfoData={baseInfo}/>
           </Panel>
           <Panel header="资产配件" key="3">
             <AssetParts />

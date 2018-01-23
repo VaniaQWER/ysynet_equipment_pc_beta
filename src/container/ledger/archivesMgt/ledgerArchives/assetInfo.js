@@ -3,6 +3,7 @@
  */
 import React, { Component } from 'react';
 import { Row, Col } from 'antd';
+import InputWrapper from '../../../../component/inputWrapper'
 import styles from './style.css';
 
 class AssetInfo extends Component {
@@ -11,7 +12,7 @@ class AssetInfo extends Component {
     return (
       <Row type="flex" style={{marginTop: 16}}  className={styles['table-row']}>
         <Col span={4} className={styles['table-span']}>资产名称</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.equipmetStandarName } </Col>
+        <Col span={8} className={styles['table-span']}><InputWrapper/>{ AssetInfoData.equipmetStandarName } </Col>
         <Col span={4} className={styles['table-span']}>资产编号</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.assetsRecord }</Col>
         <Col span={4} className={styles['table-span']}>通用名称</Col>

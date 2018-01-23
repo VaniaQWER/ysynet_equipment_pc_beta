@@ -9,7 +9,6 @@ import store from './store';
 import createHistory from 'history/createHashHistory'
 import registerServiceWorker from './registerServiceWorker';
 import 'ysynet_reset/men_reset.css';
-
 ReactDOM.render(  
   <Provider store={store}>
     <ConnectedRouter history={createHistory()}>
