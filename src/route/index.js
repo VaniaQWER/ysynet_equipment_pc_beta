@@ -6,12 +6,13 @@ import RouteWithSubRoutes from './routeWithSubRoutes';
 import Home from '../container/home';
 import system from './system';
 import ledger from './ledger';
+import operation from './operation';
 
 const routes = [
   { path: '/login', component: () => <div>Login</div> },
   { path: '/register', component: () =>  <div>register</div> },
   { path: '/', component: Home, routes: [
-    system, ledger
+    system, ledger, operation
   ]}
 ]
 

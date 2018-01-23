@@ -10,6 +10,7 @@ const Panel = Collapse.Panel;
 class BaseInfo extends Component {
   render () {
     const { BaseInfoInfoData } = this.props;
+  
     return (
       <Collapse defaultActiveKey={['1','2','3','4','5']}>
       <Panel header="资产信息" key="1">
@@ -108,6 +109,8 @@ class BaseInfo extends Component {
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairingName }</Col>
           <Col span={4} className={styles['table-span']}>联系电话</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairingName }</Col>
+          <Col span={4} className={styles['table-span']}></Col>
+          <Col span={8} className={styles['table-span']}></Col>
         </Row>
       </Panel>
     </Collapse>
@@ -115,4 +118,5 @@ class BaseInfo extends Component {
   }
 }
 
-export default BaseInfo;
+ export default BaseInfo;
+

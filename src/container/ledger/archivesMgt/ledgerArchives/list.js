@@ -129,7 +129,7 @@ class LedgerArchivesList extends Component {
           <RemoteTable
             ref='remote'
             url={user.getLedgerArchivesList}
-            scroll={{x: '1800px', y: 315}}
+            scroll={{x: '1800px', y : document.body.clientHeight - 311}}
             columns={columns}
             rowKey={'assetsRecord'}
             style={{marginTop: 10}}

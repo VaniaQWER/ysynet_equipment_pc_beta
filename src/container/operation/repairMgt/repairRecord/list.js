@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
-import { Link } from 'react-router-dom'
+import { Link} from 'react-router-dom';
 import user from '../../../../api/user';
 
 const { Content } = Layout;
@@ -12,6 +12,9 @@ const Search = Input.Search;
 const { RemoteTable } = TableGrid;
 
 class RepairRecordList extends Component {
+
+
+
   render() {
     const columns = [
       {
@@ -20,7 +23,8 @@ class RepairRecordList extends Component {
         width: 60,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/operation/repairMgt/repairRecord/detail`, state: { ...record } }}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/operation/repairMgt/repairRecord/detail`, state: { ...record }}}><Icon type="form" />详情</Link>
+
           </span>  
       },
       {
@@ -84,7 +88,7 @@ class RepairRecordList extends Component {
           <RemoteTable
             ref='remote'
             url={user.getRepairRecordList}
-            scroll={{x: '1800px', y: 315}}
+            scroll={{x: '1800px', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

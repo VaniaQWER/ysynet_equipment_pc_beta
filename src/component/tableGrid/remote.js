@@ -43,6 +43,8 @@ class RemoteTable extends Component {
           }
           let pagination = this.state.pagination;
           pagination.total = data.result.records;
+          pagination.showSizeChanger = true;
+          pagination.showQuickJumper = true;
           pagination.showTotal=(total, range) => `${range[0]}-${range[1]} 共 ${total} 条`;
           pagination.pageSize = this.props.pageSize || 10;
           if(!params.page) {

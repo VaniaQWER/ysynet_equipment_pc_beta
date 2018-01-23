@@ -50,7 +50,7 @@ class AssetParts extends Component {
          <RemoteTable
             ref='remote'
             url={user.getLedgerArchivesParts}
-            scroll={{x: '120%', y: 315}}
+            scroll={{x: '120%',y:400}}
             columns={columns}
             rowKey={'assetsRecord'}
             style={{marginTop: 10}}

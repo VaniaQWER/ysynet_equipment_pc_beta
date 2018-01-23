@@ -40,7 +40,7 @@ class AccessoryInfo extends Component {
          <RemoteTable
             ref='remote'
             url={user.getFileList}
-            scroll={{x: '100%', y: 315}}
+            scroll={{x: '100%', y : document.body.clientHeight - 341}}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

@@ -22,32 +22,32 @@ class SystemUser extends Component {
       },
       {
         title: '账号',
-        dataIndex: 'repariNo',
+        dataIndex: 'userName',
         width: 200
       },
       {
         title: '用户名',
-        dataIndex: 'repairFstate',
+        dataIndex: 'userNo',
         width: 80
       },
       {
         title: '所属组',
-        dataIndex: 'equipmetStandarName',
+        dataIndex: 'groups',
         width: 100
       },
       {
         title: '状态',
-        dataIndex: 'useDeptCode',
+        dataIndex: 'fstate',
         width: 100,
       },
       {
         title: '类型',
-        dataIndex: 'adminUserName',
+        dataIndex: 'type',
         width: 100,
       },
       {
         title: '所属机构',
-        dataIndex: 'repairdName',
+        dataIndex: 'orgName',
         width: 100
       }
     ];
@@ -65,8 +65,8 @@ class SystemUser extends Component {
           </Row>
           <RemoteTable
             ref='remote'
-            url={user.getRepairRecordList}
-            scroll={{x: '1800px', y: 315}}
+            url={user.findOrgAdminUserList}
+            scroll={{x: '1800px'}}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}
