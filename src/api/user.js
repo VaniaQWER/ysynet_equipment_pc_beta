@@ -5,6 +5,7 @@ const user = {
   getFileList: '/getFileList',
   getRecordList: '/getRecordList',
   getRepairRecordList: '/getRepairRecordList',//获取维修记录列表
+  findOrgAdminUserList: '/findOrgAdminUserList',//获取维修记录列表
 }
 
 export default user;
