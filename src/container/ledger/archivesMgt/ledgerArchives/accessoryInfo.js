@@ -2,8 +2,9 @@
  *  档案管理-资产档案-详情-附件信息
  */
 import React, { Component } from 'react';
-import user from '../../../../api/user';
 import TableGrid from '../../../../component/tableGrid';
+import assets from '../../../../api/assets';
+
 const { RemoteTable } = TableGrid;
 
 class AccessoryInfo extends Component {
@@ -39,7 +40,8 @@ class AccessoryInfo extends Component {
       <div>
          <RemoteTable
             ref='remote'
-            url={user.getFileList}
+            query={{ assetsRecord: this.props.assetsRecord }}
+            url={assets.selectCertInfoList}
             scroll={{x: '100%', y : document.body.clientHeight - 341}}
             columns={columns}
             rowKey={'RN'}

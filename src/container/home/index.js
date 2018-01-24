@@ -39,7 +39,7 @@ class Home extends React.Component {
       bread: []
     }
   }
-  componentDidMount() {
+  componentWillMount() {
     const { getMenu, getUser } = this.props;
     getUser();
     getMenu();
@@ -63,7 +63,7 @@ class Home extends React.Component {
             />
           </Header>
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}/>
-          <Content style={{ padding: 8 }}>
+          <Content style={{ margin: 8,padding:8,backgroundColor:'#fff', }}>
             {
               routes.map((route, i) => (
                 <RouteWithSubRoutes key={i} {...route}/>

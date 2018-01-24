@@ -1,5 +1,5 @@
 /**
- * 档案管理-资产档案-详情-基本信息-资产配件
+ * 维修记录-详情-基本信息-资产配件
  */
 import React, { Component } from 'react';
 import assets from '../../../../api/assets';

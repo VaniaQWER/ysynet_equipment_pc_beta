@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link} from 'react-router-dom';
-import user from '../../../../api/user';
+import assets from '../../../../api/assets';
 
 const { Content } = Layout;
 const Search = Input.Search;
@@ -20,56 +20,56 @@ class RepairRecordList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 60,
+        width: 80,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/operation/repairMgt/repairRecord/detail`, state: { ...record }}}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}><Icon type="form" />详情</Link>
 
           </span>  
       },
       {
         title: '维修单号',
-        dataIndex: 'repariNo',
+        dataIndex: 'rrpairOrderNo',
         width: 200
       },
       {
         title: '单据状态',
-        dataIndex: 'repairFstate',
+        dataIndex: 'orderFstate',
         width: 80
       },
       {
         title: '资产名称',
-        dataIndex: 'equipmetStandarName',
+        dataIndex: 'equipmentStandardName',
         width: 100
       },
       {
         title: '使用科室',
-        dataIndex: 'useDeptCode',
+        dataIndex: 'deptName',
         width: 100,
       },
       {
         title: '管理员',
-        dataIndex: 'adminUserName',
+        dataIndex: 'custodian',
         width: 100,
       },
       {
         title: '报修人',
-        dataIndex: 'repairdName',
+        dataIndex: 'rrpairUsername',
         width: 100
       },
       {
         title: '报修时间',
-        dataIndex: 'repairdTime',
+        dataIndex: 'createDate',
         width: 120
       },
       {
         title: '维修员',
-        dataIndex: 'repairingName',
+        dataIndex: 'inRrpairUsername',
         width: 100
       },
       {
         title: '维修时间',
-        dataIndex: 'repairimgTime',
+        dataIndex: 'createDate',
         width: 120
       }
     ];
@@ -87,8 +87,8 @@ class RepairRecordList extends Component {
           </Row>
           <RemoteTable
             ref='remote'
-            url={user.getRepairRecordList}
-            scroll={{x: '1800px', y : document.body.clientHeight - 311 }}
+            url={assets.selectRrpairList}
+            scroll={{x: '100%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

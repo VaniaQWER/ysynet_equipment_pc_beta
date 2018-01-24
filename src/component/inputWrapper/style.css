@@ -10,6 +10,7 @@
 .inputWrapper:hover {
   background: #E6F7FF;
   cursor: pointer;
+  border-radius: 3px;
 }
 
 .inputIcon {

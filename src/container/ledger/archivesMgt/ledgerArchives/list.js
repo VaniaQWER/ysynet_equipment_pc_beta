@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout,Upload,Button } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
-import user from '../../../../api/user';
+import assets from '../../../../api/assets';
 import styles from './style.css';
 
 const { Content } = Layout;
@@ -10,13 +10,12 @@ const Search = Input.Search;
 const { RemoteTable } = TableGrid;
 
 class LedgerArchivesList extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        visible: false,
-        loading: false,
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
     }
+  }
   render() {
     const columns = [
       {
@@ -25,17 +24,23 @@ class LedgerArchivesList extends Component {
         width: 80,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/efg?abc`, state: { ...record } }}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="form" />详情</Link>
           </span>  
       },
       {
         title: '资产编号',
         dataIndex: 'assetsRecord',
-        width: 200
+        width: 200,
+        sorter:true
+      },
+      {
+        title: '状态',
+        dataIndex: 'useFstate',
+        width: 100,
       },
       {
         title: '资产名称',
-        dataIndex: 'equipmetStandarName',
+        dataIndex: 'equipmetStandardName',
         width: 200
       },
       {
@@ -44,40 +49,25 @@ class LedgerArchivesList extends Component {
         width: 100
       },
       {
-        title: '状态',
-        dataIndex: 'useFstate',
-        width: 100,
-      },
-      {
-        title: '设备分类',
+        title: '资产分类',
         dataIndex: 'productType',
         width: 100,
       },
       {
-        title: '使用科室',
-        dataIndex: 'useDeptCode',
-        width: 100
+        title: '保管员',
+        dataIndex: 'custodian',
+        width: 150
       },
       {
-        title: '购置金额',
-        dataIndex: 'buyPrice',
-        width: 80
+        title: '使用科室',
+        dataIndex: 'useDept',
+        width: 100
       },
       {
         title: '管理科室',
         dataIndex: 'bDept',
         width: 100
-      },
-      {
-        title: '负责人',
-        dataIndex: 'custodian',
-        width: 150
-      },
-      {
-        title: '生产商',
-        dataIndex: 'product',
-        width: 200
-      },
+      }
     ];
     return (
         <Content>
@@ -128,10 +118,10 @@ class LedgerArchivesList extends Component {
           </Row>
           <RemoteTable
             ref='remote'
-            url={user.getLedgerArchivesList}
-            scroll={{x: '1800px', y : document.body.clientHeight - 311}}
+            url={assets.selectAssetsList}
+            scroll={{x: '100%', y : document.body.clientHeight - 311}}
             columns={columns}
-            rowKey={'assetsRecord'}
+            rowKey={'assetsRecordGuid'}
             style={{marginTop: 10}}
             size="small"
           /> 

@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import { Row,Col,Input } from 'antd';
-import user from '../../../../api/user';
+import assets from '../../../../api/assets';
 import TableGrid from '../../../../component/tableGrid';
 
 const Search = Input.Search;
@@ -47,7 +47,8 @@ class RecordList extends Component {
         </Row>
          <RemoteTable
             ref='remote'
-            url={user.getRecordList}
+            query={{rrpairOrderGuid:this.props.rrpairOrderGuid}}
+            url={assets.selectEqOperationList}
             scroll={{x: '100%',y:  document.body.clientHeight - 381}}
             columns={columns}
             rowKey={'RN'}

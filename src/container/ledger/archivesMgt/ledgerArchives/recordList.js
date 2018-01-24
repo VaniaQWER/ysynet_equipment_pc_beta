@@ -2,8 +2,9 @@
  *  档案管理-资产档案-详情-操作记录
  */
 import React, { Component } from 'react';
-import user from '../../../../api/user';
 import TableGrid from '../../../../component/tableGrid';
+import assets from '../../../../api/assets';
+
 const { RemoteTable } = TableGrid;
 
 class RecordList extends Component {
@@ -11,22 +12,22 @@ class RecordList extends Component {
     const columns = [
       {
         title: '操作分类',
-        dataIndex: 'operType',
+        dataIndex: 'opType',
         width: 100
       },
       {
         title: '操作内容',
-        dataIndex: 'operContent',
+        dataIndex: 'opText',
         width: 100
       },
       {
         title: '操作前',
-        dataIndex: 'beforeOper',
+        dataIndex: 'opA',
         width: 100
       },
       {
         title: '操作结果',
-        dataIndex: 'operResult',
+        dataIndex: 'opB',
         width: 100,
       },
       {
@@ -36,20 +37,21 @@ class RecordList extends Component {
       },
       {
         title: '操作时间',
-        dataIndex: 'operTime',
+        dataIndex: 'opTime',
         width: 100,
       },
       {
         title: '备注',
-        dataIndex: 'remark',
+        dataIndex: 'tfRemark',
         width: 100,
       }
     ];
     return (
       <div>
          <RemoteTable
+            query={{ assetsRecord: this.props.assetsRecord }}
             ref='remote'
-            url={user.getRecordList}
+            url={assets.selectEqOperationInfoList}
             scroll={{x: '100%', y : document.body.clientHeight - 341}}
             columns={columns}
             rowKey={'RN'}
