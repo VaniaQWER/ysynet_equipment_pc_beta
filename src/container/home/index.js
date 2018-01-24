@@ -1,42 +1,13 @@
 import React from 'react';
-import { Layout, Icon, Breadcrumb, Menu } from 'antd';
+import { Layout, Icon, Menu } from 'antd';
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
 import { withRouter } from 'react-router-dom';
 import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import BasicLayout from '../common/basicLayout';
+import BreadcrumbGroup from '../../component/breadcrumbGroup';
 const { Header, Content, Footer } = Layout;
 const SubMenu = Menu.SubMenu;
-const createBread = (routes, pathname) => {
-  const routesArray = pathname.split('/');
-  const pathArray = []
-  routesArray.map((item, index) => {
-    if (index > 0) {
-      pathArray.push(`/${routesArray.slice(1, index+1).join('/')}`)
-    }
-    return false;
-  })
-  let bread = []
-  //console.log(routes)
-  if (pathArray.length) {
-    const childRoute = routes.filter(item => item.path === pathArray[0])
-    const getChildRoute = (r, i) => {
-      r.map(item => {
-        if (item.path === pathArray[i]) {
-          return bread.push({
-            text: item.name,
-            path: item.path
-          })
-        } else if (item.children && item.children.length) {
-          return getChildRoute(item.children, i)
-        } 
-        return null;
-      })
-    }
-    pathArray.map((item, index) => getChildRoute(childRoute, index))
-  }
-  return bread;
-}
 // 使用递归创建菜单
 const createMenu = menuList => (
   Array.isArray(menuList) ? menuList.map((menu, index) => (
@@ -69,24 +40,12 @@ class Home extends React.Component {
     }
   }
   componentDidMount() {
-    const { getMenu, getUser, routes, routerReducer } = this.props;
+    const { getMenu, getUser } = this.props;
     getUser();
     getMenu();
-    const bread = createBread(routes, routerReducer.location.pathname);
-    this.setState({
-      bread
-    })
-  }
-  componentWillReceiveProps(nextProps) {
-    const { routes, routerReducer } = nextProps;
-    const bread = createBread(routes, routerReducer.location.pathname);
-    this.setState({
-      bread
-    })
   }
   render () {
     const { routes, menu } = this.props;
-    const { bread } = this.state;
     return (
       <Layout style={{minHeight: '100vh'}}>
         <BasicLayout menuList={menu.menuList} collapsed={this.state.collapsed}/>
@@ -103,13 +62,7 @@ class Home extends React.Component {
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} 
             />
           </Header>
-          <Breadcrumb className={'ysynet-breadcrumb'}>
-            {
-              bread.map((b, i) => (
-                <Breadcrumb.Item key={i}>{ b.text } </Breadcrumb.Item>
-              ))
-            }
-          </Breadcrumb>
+          <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}/>
           <Content style={{ padding: 8 }}>
             {
               routes.map((route, i) => (

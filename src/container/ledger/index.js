@@ -2,7 +2,7 @@
  * 资产台账
  */
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import NotFound from '../common/404';
 class Ledger extends Component {
@@ -15,6 +15,7 @@ class Ledger extends Component {
             <RouteWithSubRoutes key={i} {...route}/>
           ))
         }
+        <Redirect to={routes[0].routes[0].path}/>
         <Route component={NotFound}/>
       </Switch>
     )
