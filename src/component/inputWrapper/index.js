@@ -20,7 +20,7 @@ class InputWrapper extends PureComponent {
     this.state = {
       inputDisplay: false,
       iconDisplay: false,
-      text: this.props.text
+      outputText: this.props.text
     }
   }
   onMouseOver = () => {
@@ -32,15 +32,12 @@ class InputWrapper extends PureComponent {
   beginEdit = () => {
     this.setState({inputDisplay: true})
   }
-  onBlur = () => {
+  onBlur = (e) => {
     const { onEndEdit } = this.props;
-    this.setState({inputDisplay: false})
+    this.setState({inputDisplay: false, outputText: e.target.value})
     if (typeof onEndEdit === 'function') {
       onEndEdit(this.state.text)
     }
-  }
-  onChange = e => {
-    this.setState({text: e.target.value});
   }
   componentDidUpdate() {
     const input = document.querySelector(`#input`);
@@ -51,8 +48,8 @@ class InputWrapper extends PureComponent {
     }
   }
   render() {
-    const { placeholder, className } = this.props;
-    const { inputDisplay, iconDisplay, text } = this.state;
+    const { placeholder, className, text} = this.props;
+    const { inputDisplay, iconDisplay, outputText } = this.state;
     return (
       <div 
         className={`${className} ${styles.inputWrapper}`} 
@@ -65,11 +62,10 @@ class InputWrapper extends PureComponent {
             <Input 
               id='input'
               placeholder={placeholder} 
-              onChange={this.onChange} 
               onPressEnter={this.onBlur}
-              value={text} 
+              defaultValue={text} 
               onBlur={this.onBlur}
-            /> : text 
+            /> : outputText 
           } 
           { 
             iconDisplay && !inputDisplay ? 
