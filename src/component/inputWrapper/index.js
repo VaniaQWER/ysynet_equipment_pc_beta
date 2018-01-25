@@ -47,6 +47,12 @@ class InputWrapper extends PureComponent {
       input.setSelectionRange(len, len);
     }
   }
+  componentDidUpdate(prevProps, prevState) {
+    //console.log(prevProps.text, '12345' ,this.props.text)
+    if (prevProps.text !== this.props.text) {
+      this.setState({outputText: this.props.text})
+    }
+  }
   render() {
     const { placeholder, className, text} = this.props;
     const { inputDisplay, iconDisplay, outputText } = this.state;
@@ -63,7 +69,7 @@ class InputWrapper extends PureComponent {
               id='input'
               placeholder={placeholder} 
               onPressEnter={this.onBlur}
-              defaultValue={text} 
+              defaultValue={outputText} 
               onBlur={this.onBlur}
             /> : outputText 
           } 
