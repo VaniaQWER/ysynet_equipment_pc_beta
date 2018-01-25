@@ -47,14 +47,13 @@ class InputWrapper extends PureComponent {
       input.setSelectionRange(len, len);
     }
   }
-  componentDidUpdate(prevProps, prevState) {
-    //console.log(prevProps.text, '12345' ,this.props.text)
-    if (prevProps.text !== this.props.text) {
-      this.setState({outputText: this.props.text})
+  componentWillReceiveProps = nextProps => {
+    if (nextProps.text !== this.props.text) {
+      this.setState({outputText: nextProps.text})
     }
   }
   render() {
-    const { placeholder, className, text} = this.props;
+    const { placeholder, className } = this.props;
     const { inputDisplay, iconDisplay, outputText } = this.state;
     return (
       <div 
