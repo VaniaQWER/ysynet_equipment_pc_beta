@@ -4,7 +4,6 @@
  */
 import React, { Component } from 'react';
 import { Row, Col,Collapse } from 'antd';
-import InputWrapper from '../../../../component/inputWrapper'
 import styles from '../../../ledger/archivesMgt/ledgerArchives/style.css';
 import AssetParts from './assetParts';//资产配件
 

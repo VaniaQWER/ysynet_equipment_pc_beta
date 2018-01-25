@@ -6,6 +6,8 @@ import { withRouter } from 'react-router-dom';
 import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import BasicLayout from '../common/basicLayout';
 import BreadcrumbGroup from '../../component/breadcrumbGroup';
+import Profile from '../../component/profile';
+import Notice from '../../component/notice';
 const { Header, Content, Footer } = Layout;
 const SubMenu = Menu.SubMenu;
 // 使用递归创建菜单
@@ -35,8 +37,7 @@ class Home extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      collapsed: false,
-      bread: []
+      collapsed: false
     }
   }
   componentWillMount() {
@@ -50,7 +51,7 @@ class Home extends React.Component {
       <Layout style={{minHeight: '100vh'}}>
         <BasicLayout menuList={menu.menuList} collapsed={this.state.collapsed}/>
         <Layout>
-          <Header style={{ background: '#fff', padding: 0 }} className='ysynet-header'>
+          <Header style={{ background: '#fff', padding: '0 20px 0 0' }} className='ysynet-header'>
             <Icon 
               onClick={() => {
                 const { collapsed } = this.state;
@@ -61,6 +62,10 @@ class Home extends React.Component {
               className='ysyenert-header-icon ysynet-collapsed'
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} 
             />
+            <div style={{display: 'flex'}}>
+              <Notice/>
+              <Profile/>
+            </div>  
           </Header>
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}/>
           <Content style={{ margin: 8,padding:8,backgroundColor:'#fff', }}>

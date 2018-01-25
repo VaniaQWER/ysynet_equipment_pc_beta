@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  HashRouter as Router
+  HashRouter as Router, Switch
 } from 'react-router-dom';
 import RouteWithSubRoutes from './routeWithSubRoutes';
 import Home from '../container/home';
@@ -9,8 +9,8 @@ import ledger from './ledger';
 import operation from './operation';
 
 const routes = [
-  { path: '/login', component: () => <div>Login</div> },
-  { path: '/register', component: () =>  <div>register</div> },
+  { path: '/login', exact: true, component: () => <div>Login</div> },
+  { path: '/register', exact: true, component: () =>  <div>register</div> },
   { path: '/', component: Home, routes: [
     system, ledger, operation
   ]}
@@ -19,13 +19,13 @@ const routes = [
 
 const RouterMonitor = () => (
   <Router>
-    <div>
+    <Switch>
       {
         routes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route}/>
         ))
       }
-    </div>
+    </Switch>
   </Router>
 )
 

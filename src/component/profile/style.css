@@ -1,0 +1,28 @@
+.profile {
+  padding: 12px;
+  display: inline-block;
+}
+
+.profile:hover {
+  background: #e6f7ff;
+  cursor: pointer;
+}
+.profileItem {
+  padding: 2;
+  width: 150px;
+}
+.profileItem:hover {
+  background-color: #e6f7ff;
+}
+.profileItemLink {
+  width: 100%;
+  font-size: 14px;
+  text-align: left;
+  color: #595959;
+}
+.profileIcon {
+  padding: 2px 5px;
+}
+.username {
+  
+} 

@@ -1,4 +1,4 @@
-import {_local} from './local';
+//import {_local} from './local';
 export default {
  // selectAssetsList: `${_local}/meqm/assetsRecordController/selectAssetsList`,//查询采购汇总列
  selectAssetsList: `/meqm/assetsRecordController/selectAssetsList`, //查询资产列表
