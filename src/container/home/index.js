@@ -2,7 +2,7 @@ import React from 'react';
 import { Layout, Icon, Menu } from 'antd';
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Switch, Redirect } from 'react-router-dom';
 import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import BasicLayout from '../common/basicLayout';
 import BreadcrumbGroup from '../../component/breadcrumbGroup';
@@ -67,16 +67,28 @@ class Home extends React.Component {
               <Profile/>
             </div>  
           </Header>
-          <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}/>
-          <Content style={{ margin: 8,padding:8,backgroundColor:'#fff', }}>
-            {
-              routes.map((route, i) => (
-                <RouteWithSubRoutes key={i} {...route}/>
-              ))
-            }
+          <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}>
+            {  }
+          </BreadcrumbGroup>
+          <Content style={{ margin: '6px 8px', padding: 8, backgroundColor: '#fff'}}>
+            <Switch>
+              {
+                routes.map((route, i) => (
+                  <RouteWithSubRoutes key={i} {...route}/>
+                ))
+              }
+              <Redirect from={'/'} to={'/workplace'}/>  
+            </Switch>
           </Content>  
           <Footer style={{ textAlign: 'center', padding:'5px 0' }}>
-            医商云设备平台 ©2017 Created by 普华信联前端部
+            <div className={'ysynet-footer-link'}>
+              <ul>
+                <li><a>医商云官网</a></li>
+                <li><a>医商云供应链平台</a></li>
+                <li><a>医商云质控平台</a></li>
+              </ul>
+            </div>
+            <div className={'ysynet-footer-copyright'}>医商云设备平台 ©2017 Created by 普华信联前端部</div>
           </Footer>
         </Layout>  
       </Layout>

@@ -1,11 +1,15 @@
 .profile {
-  padding: 12px;
-  display: inline-block;
+  display: flex;
+  padding: 0 12px;
+  align-items: center;
 }
 
 .profile:hover {
   background: #e6f7ff;
   cursor: pointer;
+}
+.profileImage {
+  vertical-align: middle;
 }
 .profileItem {
   padding: 2;
@@ -24,5 +28,9 @@
   padding: 2px 5px;
 }
 .username {
-  
+  padding: 5px;
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 } 

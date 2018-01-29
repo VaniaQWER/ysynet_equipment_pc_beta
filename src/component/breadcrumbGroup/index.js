@@ -43,23 +43,25 @@ class BreadcrumbGroup extends PureComponent {
   }
   render() {
     const bread = this.createBreadcrumb();
-    console.log(bread)
     return (
-      <Breadcrumb className={this.props.className}>
-        <Breadcrumb.Item><Link to={'/'}>首页</Link></Breadcrumb.Item>
-        {
-          bread.map((item, index) => (
-            item.title ?
-            <Breadcrumb.Item key={index}> 
-            {
-              (item.hasBread && index !== bread.length - 1)
-               ? <Link to={item.url}> { item.title } </Link> : item.title
-            }
-            </Breadcrumb.Item>
-            : null
-          ))
-        }
-      </Breadcrumb>
+      <div>
+        <Breadcrumb className={this.props.className}>
+          <Breadcrumb.Item><Link to={'/'}>首页</Link></Breadcrumb.Item>
+          {
+            bread.map((item, index) => (
+              item.title ?
+              <Breadcrumb.Item key={index}> 
+              {
+                (item.hasBread && index !== bread.length - 1)
+                ? <Link to={item.url}> { item.title } </Link> : item.title
+              }
+              </Breadcrumb.Item>
+              : null
+            ))
+          }
+        </Breadcrumb>
+        { this.props.children }
+      </div>  
     )
   }
 }
