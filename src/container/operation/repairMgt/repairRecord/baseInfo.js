@@ -93,7 +93,7 @@ class BaseInfo extends Component {
           <Col span={4} className={styles['table-span']}>维修单位</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
           <Col span={4} className={styles['table-span']}>维修时间</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairimgTime }</Col>  
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>  
           <Col span={4} className={styles['table-span']}>维修费用（总计）</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.actualPrice }</Col>
           <Col span={4} className={styles['table-span']}>更换配件</Col>

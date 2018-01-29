@@ -37,7 +37,7 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>资产编号</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.assetsRecord }</Col>
         <Col span={4} className={styles['table-span']}>通用名称</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'productType')} text={ AssetInfoData.equipmetStandardName } /></Col>
+        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'equipmetStandardName')} text={ AssetInfoData.equipmetStandardName } /></Col>
         <Col span={4} className={styles['table-span']}>状态</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.useFstate }</Col>
         <Col span={4} className={styles['table-span']}>型号</Col>
