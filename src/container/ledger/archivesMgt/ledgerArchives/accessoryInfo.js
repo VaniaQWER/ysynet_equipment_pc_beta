@@ -2,15 +2,38 @@
  *  档案管理-资产档案-详情-附件信息
  */
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon,Upload,Button } from 'antd';
+import { Row,Col,Input,Icon,Upload,Button ,Select,message,Menu,Dropdown} from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
 import styles from './style.css';
 
 const { RemoteTable } = TableGrid;
 const Search = Input.Search;
+const Option = Select.Option;
 
 class AccessoryInfo extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fileType: "",
+      loading: false,
+      messageError:''
+    }
+  }
+  //附件类型改变
+  handleChange = (value) => {
+    this.setState( {fileType : value})
+    console.log(`selected ${value}`);
+  }
+  //上传前判断
+  beforeUpload = () => {
+    console.log(this.state.fileType,'1')
+    this.setState({loading: true});
+    if(!this.state.fileType){
+      message.warning("请选择上传文件类型");
+    }
+    
+  }
   render () {
     const columns = [
       {
@@ -39,6 +62,62 @@ class AccessoryInfo extends Component {
         width: 100,
       }
     ];
+    const props = {
+      action: assets.IMPORTMODEL,
+      showUploadList: false,
+      withCredentials: true,
+      beforeUpload:this.beforeUpload,
+      onError:(error)=>{
+        this.setState({loading: false})
+        console.log(error)
+      },
+      onSuccess:(result)=>{
+        this.setState({loading: false})
+        // if(result.status){
+        //     this.refs.table.fetch();
+        //     this.setState({
+        //         messageError:""
+        //     })
+        //     message.success("上传成功")
+        // }
+        // else{
+        //     this.setState({
+        //         messageError:result.msg
+        //     })
+        // }
+    }
+
+    };
+
+    const menu = (
+      <Menu>
+        <Menu.Item>
+        <Upload {...props}  data={{"fileType":"资产图片"}}>
+          <a><Icon type='export'/> 资产图片</a> 
+        </Upload>
+        </Menu.Item>
+        <Menu.Item>
+        <Upload {...props} data={{"fileType":"资产证件"}}>
+          <a><Icon type='export'/> 资产证件</a> 
+        </Upload>
+        </Menu.Item>
+        <Menu.Item>
+        <Upload {...props} data={{"fileType":"招标文件"}}>
+          <a><Icon type='export'/> 招标文件</a> 
+        </Upload>
+        </Menu.Item>
+        <Menu.Item>
+        <Upload {...props} data={{"fileType":"使用说明"}}>
+          <a><Icon type='export'/> 使用说明</a> 
+        </Upload>
+        </Menu.Item>
+        <Menu.Item>
+        <Upload {...props} data={{"fileType":"其他"}}>
+          <a><Icon type='export'/> 其他</a> 
+        </Upload>
+        </Menu.Item>
+      </Menu>
+    );
     return (
       <div>
           <Row>
@@ -51,36 +130,12 @@ class AccessoryInfo extends Component {
               />
             </Col>
             <Col span={12} className={styles['text-align-right']}>
-            <Upload
-            // data={{"certGuid":this.state.query.certGuid}}
-            //action={productUrl.IMPORTMODEL}
-            showUploadList={false}
-            withCredentials={true}
-            beforeUpload={()=>this.setState({loading: true})}
-            onError={(error)=>{
-                this.setState({loading: false})
-                console.log(error)
-            }}
-            onSuccess={(result)=>{
-                this.setState({loading: false})
-                // if(result.status){
-                //     this.refs.table.fetch();
-                //     this.setState({
-                //         messageError:""
-                //     })
-                //     message.success("上传成功")
-                // }
-                // else{
-                //     this.setState({
-                //         messageError:result.msg
-                //     })
-                // }
-            }}
-            >
-            <Button style={{ marginRight: 8 }}>
-              <Icon type='export'/> 上传
-            </Button>
-          </Upload>
+  
+
+              <Dropdown overlay={menu} placement="bottomLeft">
+                <Button>添加附件</Button>
+              </Dropdown>
+    
             </Col>
           </Row>
          <RemoteTable

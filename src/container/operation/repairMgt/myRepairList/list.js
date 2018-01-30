@@ -13,18 +13,20 @@ const { RemoteTable } = TableGrid;
 
 class MyRepairList extends Component {
 
-
-
   render() {
     const columns = [
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 80,
+        width: 120,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}><Icon type="form" />详情</Link>
-
+           {
+             record.orderFstate === "30" ?
+             <Link to={{pathname: `/operation/repairMgt/myRepairList/edit/${record.rrpairOrderGuid}`}}><Icon type="form" />指派/关闭</Link>
+             :
+             <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`}}><Icon type="double-right" />详情</Link>
+           }
           </span>  
       },
       {
@@ -63,16 +65,10 @@ class MyRepairList extends Component {
         width: 120
       },
       {
-        title: '维修员',
+        title: '故障现象',
         dataIndex: 'inRrpairUsername',
         width: 100
-      },
-      {
-        title: '维修时间',
-        dataIndex: 'createDate',
-        width: 120
-      }
-    ];
+      }];
     return (
         <Content>
           <Row>
