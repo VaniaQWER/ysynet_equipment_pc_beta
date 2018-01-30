@@ -6,7 +6,7 @@ import { Row,Col,Input,Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link} from 'react-router-dom';
 import assets from '../../../../api/assets';
-
+import { repairCommonDataSource } from '../../../../constants'
 const { Content } = Layout;
 const Search = Input.Search;
 const { RemoteTable } = TableGrid;
@@ -27,41 +27,7 @@ class RepairRecordList extends Component {
 
           </span>  
       },
-      {
-        title: '维修单号',
-        dataIndex: 'rrpairOrderNo',
-        width: 200
-      },
-      {
-        title: '单据状态',
-        dataIndex: 'orderFstate',
-        width: 80
-      },
-      {
-        title: '资产名称',
-        dataIndex: 'equipmentStandardName',
-        width: 100
-      },
-      {
-        title: '使用科室',
-        dataIndex: 'deptName',
-        width: 100,
-      },
-      {
-        title: '管理员',
-        dataIndex: 'custodian',
-        width: 100,
-      },
-      {
-        title: '报修人',
-        dataIndex: 'rrpairUsername',
-        width: 100
-      },
-      {
-        title: '报修时间',
-        dataIndex: 'createDate',
-        width: 120
-      },
+      ...repairCommonDataSource,
       {
         title: '维修员',
         dataIndex: 'inRrpairUsername',
@@ -74,7 +40,7 @@ class RepairRecordList extends Component {
       }
     ];
     return (
-        <Content>
+        <Content className='ysynet-content ysynet-common-bgColor'>
           <Row>
             <Col span={12}>
               <Search

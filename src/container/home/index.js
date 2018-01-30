@@ -8,7 +8,7 @@ import BasicLayout from '../common/basicLayout';
 import BreadcrumbGroup from '../../component/breadcrumbGroup';
 import Profile from '../../component/profile';
 import Notice from '../../component/notice';
-const { Header, Content, Footer } = Layout;
+const { Header, Footer } = Layout;
 const SubMenu = Menu.SubMenu;
 // 使用递归创建菜单
 const createMenu = menuList => (
@@ -70,16 +70,14 @@ class Home extends React.Component {
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}>
             {  }
           </BreadcrumbGroup>
-          <Content style={{ margin: '6px 8px', padding: 8, backgroundColor: '#fff'}}>
-            <Switch>
-              {
-                routes.map((route, i) => (
-                  <RouteWithSubRoutes key={i} {...route}/>
-                ))
-              }
-              <Redirect from={'/'} to={'/workplace'}/>  
-            </Switch>
-          </Content>  
+          <Switch>
+            {
+              routes.map((route, i) => (
+                <RouteWithSubRoutes key={i} {...route}/>
+              ))
+            }
+            <Redirect from={'/'} to={'/workplace'}/>  
+          </Switch>
           <Footer style={{ textAlign: 'center', padding:'5px 0' }}>
             <div className={'ysynet-footer-link'}>
               <ul>

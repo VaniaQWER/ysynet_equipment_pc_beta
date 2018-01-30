@@ -2,14 +2,13 @@
  *  档案管理-资产档案-详情-附件信息
  */
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon,Upload,Button ,Select,message,Menu,Dropdown} from 'antd';
+import { Row,Col,Input,Icon,Upload,Button ,message,Menu,Dropdown} from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
 import styles from './style.css';
 
 const { RemoteTable } = TableGrid;
 const Search = Input.Search;
-const Option = Select.Option;
 
 class AccessoryInfo extends Component {
   constructor(props) {
@@ -119,7 +118,7 @@ class AccessoryInfo extends Component {
       </Menu>
     );
     return (
-      <div>
+      <div className='ysynet-content ysynet-common-bgColor'>
           <Row>
             <Col span={12}>
               <Search

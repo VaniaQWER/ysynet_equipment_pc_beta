@@ -24,7 +24,7 @@ class LedgerArchivesList extends Component {
         width: 80,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/1`}}><Icon type="form" />详情</Link>
           </span>  
       },
       {

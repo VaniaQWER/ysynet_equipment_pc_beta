@@ -8,7 +8,7 @@ class Workplace extends Component {
   }
   render() {
     return (
-      <div>
+      <div style={{background: '#fff'}}>
         工作台
       </div>
     )

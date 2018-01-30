@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 class LedgerReg extends Component {
   render() {
     return (
-      <div>
+      <div style={{background: '#fff'}}>
         资产登记页面
       </div>
     )

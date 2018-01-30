@@ -2,17 +2,17 @@
  * 维修记录列表
  */ 
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout } from 'antd';
+import { Row, Col, Input, Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link} from 'react-router-dom';
 import assets from '../../../../api/assets';
+import { repairCommonDataSource } from '../../../../constants'
 
-const { Content } = Layout;
 const Search = Input.Search;
+const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 
 class MyRepairList extends Component {
-
   render() {
     const columns = [
       {
@@ -21,56 +21,19 @@ class MyRepairList extends Component {
         width: 120,
         render: (text, record) => 
           <span>
-           {
-             record.orderFstate === "30" ?
-             <Link to={{pathname: `/operation/repairMgt/myRepairList/edit/${record.rrpairOrderGuid}`}}><Icon type="form" />指派/关闭</Link>
-             :
-             <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`}}><Icon type="double-right" />详情</Link>
-           }
+            <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
+              <Icon type="form" />详情
+            </Link>
           </span>  
       },
-      {
-        title: '维修单号',
-        dataIndex: 'rrpairOrderNo',
-        width: 200
-      },
-      {
-        title: '单据状态',
-        dataIndex: 'orderFstate',
-        width: 80
-      },
-      {
-        title: '资产名称',
-        dataIndex: 'equipmentStandardName',
-        width: 100
-      },
-      {
-        title: '使用科室',
-        dataIndex: 'deptName',
-        width: 100,
-      },
-      {
-        title: '管理员',
-        dataIndex: 'custodian',
-        width: 100,
-      },
-      {
-        title: '报修人',
-        dataIndex: 'rrpairUsername',
-        width: 100
-      },
-      {
-        title: '报修时间',
-        dataIndex: 'createDate',
-        width: 120
-      },
+      ...repairCommonDataSource,
       {
         title: '故障现象',
         dataIndex: 'inRrpairUsername',
         width: 100
       }];
     return (
-        <Content>
+        <Content className='ysynet-content ysynet-common-bgColor'>
           <Row>
             <Col span={12}>
               <Search
