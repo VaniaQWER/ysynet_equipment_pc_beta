@@ -3,7 +3,7 @@
  */
 import React, { PureComponent } from 'react';
 import { Row, Col, Select, Input, Form } from 'antd';
-import PicWall from '../../../../../component/picWall'; 
+import PicWall from '../../../../component/picWall'; 
 const { Option } = Select;
 const { TextArea } = Input;
 const gridStyle = {
@@ -21,8 +21,7 @@ const gridStyle = {
 class RepairInfoForm extends PureComponent {
   postData = () => {
     const { form } = this.props;
-    const data = form.getFieldsValue();
-    return data;
+    return form.getFieldsValue();
   }
   render() {
     const { getFieldDecorator } = this.props.form;

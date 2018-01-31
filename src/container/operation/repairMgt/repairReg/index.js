@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Card, BackTop, Affix, Button } from 'antd';
 import { connect } from 'react-redux';
-import StepsInfo from './cardInfo/stepsInfo'
-import AssetsInfo from './cardInfo/assetsInfo';   
-import RepairInfo from './cardInfo/repairInfo'; 
+import StepsInfo from '../cardInfo/stepsInfo'
+import AssetsInfo from '../cardInfo/assetsInfo';   
+import RepairInfo from '../cardInfo/repairInfo'; 
 //import AssignInfo from './cardInfo/assignInfo';
-import ServiceInfo from './cardInfo/serviceInfo';
-import PartsInfo from './cardInfo/partsInfo';
+import ServiceInfo from '../cardInfo/serviceInfo';
+import PartsInfo from '../cardInfo/partsInfo';
 /**
  * @file 资产运维-维修管理-报修登记
  */
