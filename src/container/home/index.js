@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Icon, Menu } from 'antd';
+import { Layout, Icon, Menu } from 'antd'; //message
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
 import { withRouter, Switch, Redirect } from 'react-router-dom';
@@ -41,9 +41,14 @@ class Home extends React.Component {
     }
   }
   componentWillMount() {
-    const { getMenu, getUser } = this.props;
-    getUser();
+    const { getMenu } = this.props;//getUser history
+    //getUser();
     getMenu();
+    // const { user } = this.props;
+    // if (!user.type && !user.userName) {
+    //   message.error('会话失效, 请重新登录！');
+    //   history.push({pathname: '/login'})
+    // }
   }
   render () {
     const { routes, menu } = this.props;

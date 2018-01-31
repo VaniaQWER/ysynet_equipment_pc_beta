@@ -23,6 +23,10 @@ export const clearUserMapper = () => ({
   type: CLEAR_USER_MAPPER
 })
 
+export const setUserInfo = user => (
+  dispatch => dispatch(setUserMapper(user))
+)
+
 export const fetchUserInfo = () => (
   dispatch => (
     request(user.fetchUser, {

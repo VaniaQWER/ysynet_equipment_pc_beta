@@ -5,12 +5,12 @@ import UploadButton from './uploadButton'
 
 class PicWall extends PureComponent {
   static defaultProps = {
-    action: '',
+    action: 'http://192.168.0.200:5656/ysy/ftp/post',
     max: 3,
     defaultFileList: []
   };
   static propTypes = {
-    action: PropTypes.func,
+    action: PropTypes.string,
     max: PropTypes.number,
     defaultFileList: PropTypes.array
   };
@@ -32,8 +32,8 @@ class PicWall extends PureComponent {
     return type && isLt5M;
   }
 
-  handleChange = ({ fileList }) => {
-    this.setState({ fileList })
+  handleChange = (file) => {
+    console.log(file)
   }
   render() {
     const { action, defaultFileList, max } = this.props;

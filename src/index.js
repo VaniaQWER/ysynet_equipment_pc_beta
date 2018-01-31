@@ -10,6 +10,7 @@ import createHistory from 'history/createHashHistory'
 import registerServiceWorker from './registerServiceWorker';
 import { LocaleProvider } from 'antd';
 import zh_CN from 'antd/lib/locale-provider/zh_CN';
+import 'moment/locale/zh-cn';
 import 'ysynet_reset/men_reset.css';
 ReactDOM.render(  
   <Provider store={store}>

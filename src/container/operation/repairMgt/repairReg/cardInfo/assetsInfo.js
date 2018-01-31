@@ -1,3 +1,6 @@
+/**
+ * @file 资产信息 Card
+ */
 import React, { PureComponent } from 'react';
 import { Row, Col, Input, Switch } from 'antd';
 const { Search } = Input;
