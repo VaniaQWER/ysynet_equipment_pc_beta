@@ -37,7 +37,6 @@ class BreadcrumbGroup extends PureComponent {
     const pathArr = location.pathname.split('/');
     const breadArr = pathArr.map((item, i) => {
       const url = pathArr.slice(0, i+1).join('/');
-      console.log(url, getBreadcrumbNameWithParams(this.breadcrumbNameMap, url))
       return { url, title: getBreadcrumbNameWithParams(this.breadcrumbNameMap, url) }
     })
     return breadArr;

@@ -3,6 +3,7 @@
  */
 import React, { PureComponent } from 'react';
 import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
+import PropTypes from 'prop-types';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -36,11 +37,13 @@ class InsideRepairForm extends PureComponent {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { isClosed } = this.state;
+    const { isEdit, data } = this.props;
     const Comp = isClosed ? [
       <Col {...gridStyle.label} key={1}>关闭原因：</Col>,
       <Col {...gridStyle.content} key={2}>
         {
           getFieldDecorator('offCause')(
+            isEdit ? <span> {data.offCause} </span> :
             <Select allowClear>
               <Option value={"0"}>关闭原因1</Option>
               <Option value={"1"}>关闭原因2</Option>
@@ -53,6 +56,7 @@ class InsideRepairForm extends PureComponent {
       <Col {...gridStyle.content} key={4}>
         {
           getFieldDecorator('followupTreatment')(
+            isEdit ? <span> {data.followupTreatment} </span> :
             <Select allowClear>
               <Option value={"0"}>后续处理1</Option>
               <Option value={"1"}>后续处理2</Option>
@@ -65,6 +69,7 @@ class InsideRepairForm extends PureComponent {
       <Col span={20} style={{marginTop: 20}} key={6}>
         {
           getFieldDecorator('tfRemarkGb')(
+            isEdit ? <span> {data.tfRemarkGb} </span> :
             <TextArea rows={4} style={{width: '100%'}} />
         )}
       </Col>
@@ -73,6 +78,7 @@ class InsideRepairForm extends PureComponent {
       <Col span={20} style={{marginTop: 20}} key={8}>
         {
           getFieldDecorator('tfRemarkWx')(
+            isEdit ? <span> {data.tfRemarkWx} </span> :
             <TextArea rows={4} style={{width: '100%'}} />
         )}
       </Col>
@@ -84,6 +90,7 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('inRrpairPhone')(
+                isEdit ? <span> {data.inRrpairPhone} </span> :
                 <Input placeholder='请输入维修人电话'/>
             )}
           </Col>
@@ -91,6 +98,7 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('repairResult')(
+                isEdit ? <span> {data.repairResult} </span> :
                 <Select allowClear onChange={this.onChange}>
                   <Option value={"0"}>检测无故障</Option>
                   <Option value={"1"}>故障全部修复</Option>
@@ -99,10 +107,11 @@ class InsideRepairForm extends PureComponent {
                 </Select>
             )}
           </Col>
-          <Col {...gridStyle.label}>维修费用：（总计）</Col>
+          <Col {...gridStyle.label}>维修费用（总计）：</Col>
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('actualPrice')(
+                isEdit ? <span> ￥{data.actualPrice} </span> :
                 <Input addonBefore="￥"/>
             )}
           </Col>
@@ -110,6 +119,7 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('repairContentType')(
+                isEdit ? <span> {data.repairContentType} </span> :
                 <Select allowClear>
                   <Option value={"0"}>故障类型1</Option>
                   <Option value={"1"}>故障类型2</Option>
@@ -122,6 +132,7 @@ class InsideRepairForm extends PureComponent {
           <Col span={20} style={gridStyle.content.style}>
             {
               getFieldDecorator('repairContentTyp')(
+                isEdit ? <span> {data.repairContentTyp} </span> :
                 <Select allowClear style={{width: '40%'}}>
                   <Option value={"0"}>故障原因1</Option>
                   <Option value={"1"}>故障原因2</Option>
@@ -143,6 +154,7 @@ class InsideRepairForm extends PureComponent {
 class OutsideRepairForm extends PureComponent {
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { isEdit, data } = this.props;
     return (
       <Form>
         <Row type='flex'>
@@ -150,6 +162,7 @@ class OutsideRepairForm extends PureComponent {
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('outOrg')(
+                isEdit ? <span> {data.outOrg} </span> :
                 <Input placeholder='输入服务商'/>
             )}
           </Col>
@@ -157,6 +170,7 @@ class OutsideRepairForm extends PureComponent {
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('outRrpairPhone')(
+                isEdit ? <span> {data.outRrpairPhone} </span> :
                 <Input placeholder='输入联系电话'/>
             )}
           </Col>
@@ -164,6 +178,7 @@ class OutsideRepairForm extends PureComponent {
           <Col span={20} style={gridStyle.content.style}>
             {
               getFieldDecorator('completTime')(
+                isEdit ? <span> {data.completTime} </span> :
                 <DatePicker style={{width: '40%'}}/>
             )}
           </Col>
@@ -171,6 +186,7 @@ class OutsideRepairForm extends PureComponent {
           <Col span={20} style={{marginTop: 20}}>
             {
               getFieldDecorator('tfRemarkZp')(
+                isEdit ? <span> {data.tfRemarkZp} </span> :
                 <TextArea rows={4} style={{width: '100%'}} />
             )}
           </Col>
@@ -180,32 +196,41 @@ class OutsideRepairForm extends PureComponent {
   }
 }
 class ServiceInfo extends PureComponent {
+  static defaultProps = {
+    isEdit: false,
+    data: {}
+  };
+  static propTypes = {
+    isEdit: PropTypes.bool,
+    data: PropTypes.object
+  };
   constructor(props) {
     super(props);
     this.state = {
-      serviceType: "0"
+      rrpairType: this.props.rrpairType || '00'
     }
   }
   postData = () => {
-    const { serviceType } = this.state;
+    const { rrpairType } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
-    return {...data, rrpairType: serviceType}
+    return {...data, rrpairType: rrpairType}
   }
   render() {
-    const { serviceType } = this.state;
-    const Comp = serviceType === "0" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
+    const { rrpairType } = this.state;
+    const { isEdit, data } = this.props;
+    const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
     return (
       <div>
         <Row type="flex">
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
             <RadioGroup defaultValue="00" onChange={e => this.setState({serviceType: e.target.value})}>
-              <RadioButton value="00">内修</RadioButton>
-              <RadioButton value="01">外修</RadioButton>
+              <RadioButton value="00" disabled={isEdit && rrpairType !== '00'}>内修</RadioButton>
+              <RadioButton value="01" disabled={isEdit && rrpairType !== '01'}>外修</RadioButton>
             </RadioGroup>
           </Col>
         </Row>
-        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst}/>
+        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data}/>
       </div>  
     )
   }

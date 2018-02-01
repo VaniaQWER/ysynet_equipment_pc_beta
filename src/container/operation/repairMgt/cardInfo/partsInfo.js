@@ -4,6 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Table, Button, Icon, Modal, Form, Row, Col, Input, Select } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
+import PropTypes from 'prop-types';
 const Option = Select.Option;
 const { RemoteTable } = TableGrid;
 const gridStyle = {
@@ -16,52 +17,58 @@ const gridStyle = {
     style: { textAlign: 'left', height: 50, lineHeight: '50px' }
   }
 }
-const columns = [{
-  title: '操作',
-  dataIndex: 'rrpairFittingUseGuid',
-  key: 'rrpairFittingUseGuid',
-  width: 100
-}, {
-  title: '配件编号',
-  dataIndex: 'assetsRecord',
-  key: 'assetsRecord',
-  width: 200
-}, {
-  title: '配件名称',
-  dataIndex: 'acceName',
-  key: 'acceName',
-  width: 200
-}, {
-  title: '型号',
-  dataIndex: 'acceFmodel',
-  key: 'acceFmodel',
-  width: 150
-}, {
-  title: '规格',
-  dataIndex: 'acceSpec',
-  key: 'acceSpec',
-  width: 150
-}, {
-  title: '数量',
-  dataIndex: 'acceNum',
-  key: 'acceNum',
-  width: 100
-}, {
-  title: '单位',
-  dataIndex: 'acceUnit',
-  key: 'acceUnit',
-  width: 100
-}, {
-  title: '单价',
-  dataIndex: 'unitPrice',
-  key: 'unitPrice',
-  width: 100
-}, {
-  title: '金额',
-  dataIndex: 'money',
-  key: 'money',
-  width: 100
-}];
+const getColumns = (isEdit) => {
+  let columns = [{
+      title: '配件编号',
+      dataIndex: 'assetsRecord',
+      key: 'assetsRecord',
+      width: 200
+    }, {
+      title: '配件名称',
+      dataIndex: 'acceName',
+      key: 'acceName',
+      width: 200
+    }, {
+      title: '型号',
+      dataIndex: 'acceFmodel',
+      key: 'acceFmodel',
+      width: 150
+    }, {
+      title: '规格',
+      dataIndex: 'acceSpec',
+      key: 'acceSpec',
+      width: 150
+    }, {
+      title: '数量',
+      dataIndex: 'acceNum',
+      key: 'acceNum',
+      width: 100
+    }, {
+      title: '单位',
+      dataIndex: 'acceUnit',
+      key: 'acceUnit',
+      width: 100
+    }, {
+      title: '单价',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      width: 100
+    }, {
+      title: '金额',
+      dataIndex: 'money',
+      key: 'money',
+      width: 100
+    }]
+  if (!isEdit) {
+    columns = [ {
+      title: '操作',
+      dataIndex: 'rrpairFittingUseGuid',
+      key: 'rrpairFittingUseGuid',
+      width: 100
+    }, ...columns ]
+  } 
+  return columns;
+}
 
 /**
  * 选择配件
@@ -73,7 +80,7 @@ class SelectParts extends PureComponent {
         ref='remote'
         url={''}
         scroll={{x: '100%'}}
-        columns={columns}
+        columns={getColumns()}
         rowKey={'RN'}
         style={{marginTop: 10}}
         size="small"
@@ -153,10 +160,18 @@ class InsertParts extends PureComponent {
 const InsertPartsWrapper = Form.create()(InsertParts);
 
 class PartsInfo extends PureComponent {
+  static defaultProps = {
+    isEdit: false,
+    dataSource: []
+  };
+  static propTypes = {
+    isEdit: PropTypes.bool,
+    data: PropTypes.array
+  };
   constructor(props) {
     super(props)
     this.state = {
-      dataSource: [],
+      dataSource: this.props.dataSource || [],
       choseVisible: false,
       writeVisible: false
     }
@@ -165,6 +180,7 @@ class PartsInfo extends PureComponent {
   showModal = type => type ? this.setState({writeVisible: true}) : this.setState({choseVisible: true});
   render() {
     const { dataSource, choseVisible, writeVisible } = this.state;
+    const { isEdit } = this.props;
     return (
       <div>
         <Modal
@@ -181,6 +197,7 @@ class PartsInfo extends PureComponent {
         </Modal>
         <Modal
           title="填写配件"
+          style={{ top: 10 }}
           visible={writeVisible}
           onOk={this.hideModal.bind(this, 1)}
           onCancel={this.hideModal.bind(this, 1)}
@@ -191,24 +208,29 @@ class PartsInfo extends PureComponent {
         </Modal>
         <Table 
           dataSource={dataSource} 
-          columns={columns} 
+          columns={getColumns(isEdit)} 
           showHeader={true}
-          title={() => <div>
-            <Button 
-              style={{marginRight: 5}} 
-              type='primary'
-              onClick={this.showModal.bind(this, 0)}
-            >
-              <Icon type="switcher" />
-              选择配件
-            </Button>
-            <Button
-              onClick={this.showModal.bind(this, 1)}
-            >
-              <Icon type="edit" />
-              填写配件
-            </Button>
-          </div>}
+          {...(isEdit ? null : {
+            title: () => (
+              isEdit ? null : 
+              <div>
+                <Button 
+                  style={{marginRight: 5}} 
+                  type='primary'
+                  onClick={this.showModal.bind(this, 0)}
+                >
+                  <Icon type="switcher" />
+                  选择配件
+                </Button>
+                <Button
+                  onClick={this.showModal.bind(this, 1)}
+                >
+                  <Icon type="edit" />
+                  填写配件
+                </Button>
+              </div>
+            )
+          })}
         />
       </div>  
     )

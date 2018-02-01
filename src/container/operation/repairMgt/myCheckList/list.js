@@ -13,24 +13,6 @@ const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 
 class MyCheckList extends Component {
-  handleActions = (record) => {
-    switch (record.orderFstate) {
-      case "30" :
-        return  <span>
-                  <Link to={{pathname: `/operation/repairMgt/myCheckList/check/${record.rrpairOrderGuid}`}}>
-                    <Icon type="solution" />验收
-                  </Link>
-                </span>  
-      case "60" :
-        return <span>
-                  <Link to={{pathname: `/operation/repairMgt/myCheckList/${record.rrpairOrderGuid}`}}>
-                    <Icon type="form" />详情
-                  </Link>
-                </span>  
-      default:
-          break;
-    }
-  }
   render() {
     const columns = [
       {
@@ -38,14 +20,22 @@ class MyCheckList extends Component {
         dataIndex: 'RN',
         width: 120,
         render: (text, record) => {
-          return this.handleActions(record)
+          if (record.orderFstate === '50') {
+            return <Link to={`/operation/repairMgt/myCheckList/check/${record.rrpairOrderGuid}`}>
+                    <Icon type="check-circle-o" style={{marginRight: 5}}/>验收
+                   </Link>
+          } else {
+            return <Link to={`/operation/repairMgt/myCheckList/detail/${record.rrpairOrderGuid}`}>
+                    <Icon type='profile' style={{marginRight: 5}}/>详情
+                   </Link>
+          }
         }
       },
       ...repairCommonDataSource,
       {
         title: '故障现象',
         dataIndex: 'inRrpairUsername',
-        width: 100
+        width: 200
       }];
     return (
         <Content className='ysynet-content ysynet-common-bgColor'>
@@ -62,7 +52,7 @@ class MyCheckList extends Component {
           <RemoteTable
             ref='remote'
             url={assets.selectRrpairList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}
