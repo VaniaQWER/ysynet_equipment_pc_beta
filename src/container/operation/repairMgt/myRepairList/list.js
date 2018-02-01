@@ -21,7 +21,7 @@ class MyRepairList extends Component {
         width: 120,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/operation/repairMgt/myRepairList/${record.rrpairOrderGuid}`}}>
+            <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`}}>
               <Icon type="form" />详情
             </Link>
           </span>  

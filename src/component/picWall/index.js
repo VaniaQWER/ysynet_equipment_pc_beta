@@ -1,22 +1,22 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Upload, message } from 'antd';
+import { Upload, message,Modal } from 'antd';
 import UploadButton from './uploadButton'
 
 class PicWall extends PureComponent {
   static defaultProps = {
-    action: 'http://192.168.0.200:5656/ysy/ftp/post',
-    max: 3,
-    defaultFileList: []
+    action: "https://192.168.0.214:3000",
+    max: 3
   };
   static propTypes = {
     action: PropTypes.string,
-    max: PropTypes.number,
-    defaultFileList: PropTypes.array
+    max: PropTypes.number
   };
    constructor(props) {
      super(props);
      this.state = {
+      previewVisible: false,
+      previewImage: '',
       fileList: []
      }
    }
@@ -32,23 +32,37 @@ class PicWall extends PureComponent {
     return type && isLt5M;
   }
 
-  handleChange = (file) => {
-    console.log(file)
+  handleChange = ({ fileList }) => {
+    console.log(fileList,'fileList')
+    this.setState({ fileList })
   }
+  handleCancel = () => this.setState({ previewVisible: false })
+  handlePreview = (file) => {
+    this.setState({
+      previewImage: file.url || file.thumbUrl,
+      previewVisible: true,
+    });
+  }
+
   render() {
-    const { action, defaultFileList, max } = this.props;
-    const { fileList } = this.state;
+    const { action, max } = this.props;
+    const { fileList,previewVisible,previewImage } = this.state;
     return (
+      <div>
       <Upload
         action={ action }
         listType="picture-card"
         fileList={ fileList }
-        defaultFileList={ defaultFileList }
+        onPreview={this.handlePreview}
         onChange={this.handleChange}
         beforeUpload={this.beforeUpload}
       >
         { fileList.length >= max ? null : <UploadButton/>}
       </Upload>
+      <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+          <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        </Modal>
+      </div>
     );
   }
 }

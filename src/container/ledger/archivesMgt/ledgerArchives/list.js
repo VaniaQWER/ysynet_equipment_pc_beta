@@ -70,7 +70,7 @@ class LedgerArchivesList extends Component {
       }
     ];
     return (
-        <Content>
+      <Content className='ysynet-content ysynet-common-bgColor'>
           <Row>
             <Col span={12}>
               <Search

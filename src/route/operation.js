@@ -11,7 +11,7 @@ export default {
       routes: [
       { exact:true, path: '/operation/repairMgt/repairReg', name: '报修登记', component: asyncComponent(() => import("../container/operation/repairMgt/repairReg"))},
       { exact:true, path: '/operation/repairMgt/myRepairList', name: '我的指派', component: asyncComponent(() => import("../container/operation/repairMgt/myRepairList/list"))},
-      { exact:true, path: '/operation/repairMgt/myRepairList/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myRepairList/detail"))},
+      { exact:true, path: '/operation/repairMgt/myRepairList/detail/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myRepairList/detail"))},
       { exact:true, path: '/operation/repairMgt/myServiceList', name: '我的维修单', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/list"))},
       { exact:true, path: '/operation/repairMgt/myServiceList/orderTaking/:id', name: '接修', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/orderTaking"))},
       { exact:true, path: '/operation/repairMgt/myServiceList/complete/:id', name: '完成', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/complete"))},
