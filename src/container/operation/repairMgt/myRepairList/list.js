@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Input, Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import assets from '../../../../api/assets';
 import { repairCommonDataSource } from '../../../../constants'
 
@@ -30,7 +30,7 @@ class MyRepairList extends Component {
       {
         title: '故障现象',
         dataIndex: 'inRrpairUsername',
-        width: 100
+        width: 200
       }];
     return (
         <Content className='ysynet-content ysynet-common-bgColor'>
@@ -47,7 +47,7 @@ class MyRepairList extends Component {
           <RemoteTable
             ref='remote'
             url={assets.selectRrpairList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '130%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

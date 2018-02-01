@@ -2,7 +2,8 @@
  * @file 指派信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
+import { Row, Col, Radio, Form, Select, DatePicker, Input, Tag } from 'antd';
+import PropTypes from 'prop-types';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -119,19 +120,28 @@ class CloseRepairForm extends PureComponent {
 }
 
 class AssignInfo extends PureComponent {
+  static defaultProps = {
+    isEdit: false,
+    data: {}
+  };
+  static propTypes = {
+    isEdit: PropTypes.bool,
+    data: PropTypes.object
+  };
   constructor(props) {
     super(props)
     this.state = {
-      serviceType: "0"
+      rrpairType: this.props.rrpairType || '0'
     }
   }
   
   render() {
-    const { serviceType } = this.state;
+    const { rrpairType } = this.state;
+    const { isEdit } = this.props;
     let Comp = null;
-    if (serviceType === "0") {
+    if (rrpairType === "0") {
       Comp = InsideRepairForm;
-    } else if (serviceType === "1") {
+    } else if (rrpairType === "1") {
       Comp = OutsideRepairForm;
     } else {
       Comp = CloseRepairForm;
@@ -141,14 +151,17 @@ class AssignInfo extends PureComponent {
         <Row type="flex">
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
-            <RadioGroup defaultValue="0" onChange={e => this.setState({serviceType: e.target.value})}>
-              <RadioButton value="0">内修</RadioButton>
-              <RadioButton value="1">外修</RadioButton>
-              <RadioButton value="2">关闭</RadioButton>
-            </RadioGroup>
+            {
+              isEdit ? null :
+              <RadioGroup defaultValue="0" onChange={e => this.setState({rrpairType: e.target.value})}>
+                <RadioButton value="0">内修</RadioButton>
+                <RadioButton value="1">外修</RadioButton>
+                <RadioButton value="2">关闭</RadioButton>
+              </RadioGroup>
+            }
           </Col>
         </Row>
-        <Comp/>
+        <Comp isEdit={isEdit}/>
       </div>
     )
   }

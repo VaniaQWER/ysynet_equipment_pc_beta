@@ -15,7 +15,7 @@ export default {
       { exact:true, path: '/operation/repairMgt/myServiceList', name: '我的维修单', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/list"))},
       { exact:true, path: '/operation/repairMgt/myServiceList/orderTaking/:id', name: '接修', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/orderTaking"))},
       { exact:true, path: '/operation/repairMgt/myServiceList/complete/:id', name: '完成', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/complete"))},
-      { exact:true, path: '/operation/repairMgt/myServiceList/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/detail"))},
+      { exact:true, path: '/operation/repairMgt/myServiceList/detail/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myServiceList/detail"))},
       { exact:true, path: '/operation/repairMgt/myCheckList', name: '我的验收单', component: asyncComponent(() => import("../container/operation/repairMgt/myCheckList/list"))},
       { exact:true, path: '/operation/repairMgt/myCheckList/check/:id', name: '验收', component: asyncComponent(() => import("../container/operation/repairMgt/myCheckList/check"))},
       { exact:true, path: '/operation/repairMgt/myCheckList/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myCheckList/detail"))},
