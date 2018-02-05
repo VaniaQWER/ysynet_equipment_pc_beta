@@ -9,7 +9,6 @@ const Step = Steps.Step;
 
 class EditInfo extends Component {
   render () {
-  
     return (
       <div>
         <Steps size="small" current={1}>

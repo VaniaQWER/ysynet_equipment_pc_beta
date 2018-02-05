@@ -18,13 +18,20 @@ class MyRepairList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 120,
-        render: (text, record) => 
+        width: 130,
+        render: (text, record) => (
+          record.orderFstate === '10' ?
+          <span>
+            <Link to={{pathname: `/operation/repairMgt/myRepairList/order/${record.rrpairOrderGuid}`}}>
+              <Icon type="meh-o" style={{marginRight: 5}}/>指派
+            </Link>
+          </span>  :
           <span>
             <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`}}>
-              <Icon type="form" />详情
+              <Icon type="profile" style={{marginRight: 5}}/>详情
             </Link>
-          </span>  
+          </span>
+        )
       },
       ...repairCommonDataSource,
       {
@@ -47,7 +54,7 @@ class MyRepairList extends Component {
           <RemoteTable
             ref='remote'
             url={assets.selectRrpairList}
-            scroll={{x: '130%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

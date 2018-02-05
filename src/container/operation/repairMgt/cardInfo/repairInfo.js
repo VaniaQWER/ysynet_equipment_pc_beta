@@ -5,6 +5,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col, Select, Input, Form } from 'antd';
 import PicWall from '../../../../component/picWall'; 
 import PropTypes from 'prop-types';
+import { selectOption } from '../../../../constants';
 const { Option } = Select;
 const { TextArea } = Input;
 const gridStyle = {
@@ -43,9 +44,11 @@ class RepairInfoForm extends PureComponent {
             getFieldDecorator('urgentFlag')(
                isEdit ? <span> { data.urgentFlag }  </span> : 
                 <Select style={{width: '100%'}} allowClear>
-                  <Option value='10'>紧急</Option>
-                  <Option value='20'>急</Option>
-                  <Option value='30'>一般</Option>
+                  {
+                    selectOption.urgentFlag.map((item, index) => (
+                      <Option value={item.value} key={index}> { item.text } </Option>
+                    ))
+                  }
                 </Select>  
           )}
         </Col>
@@ -55,8 +58,11 @@ class RepairInfoForm extends PureComponent {
             getFieldDecorator('rrpairSend')(
               isEdit ? <span> { data.rrpairSend }  </span> : 
               <Select style={{width: '100%'}} allowClear>
-                <Option value='00'>是</Option>
-                <Option value='01'>否</Option>
+                {
+                  selectOption.rrpairSend.map((item, index) => (
+                    <Option value={item.value} key={index}> { item.text } </Option>
+                  ))
+                }
               </Select>
           )}
         </Col>
@@ -66,8 +72,11 @@ class RepairInfoForm extends PureComponent {
             getFieldDecorator('spare')(
               isEdit ? <span> { data.spare }  </span> : 
               <Select style={{width: '100%'}} allowClear>
-                <Option value='00'>有备用</Option>
-                <Option value='01'>无备用</Option>
+                {
+                  selectOption.spare.map((item, index) => (
+                    <Option value={item.value} key={index}> { item.text } </Option>
+                  ))
+                }
               </Select>
           )}
         </Col>
@@ -84,11 +93,11 @@ class RepairInfoForm extends PureComponent {
             getFieldDecorator('faultDescribe')( 
               isEdit ? <span> { data.faultDescribe }  </span> : 
               <Select style={{width: '100%'}} allowClear>
-                <Option value='00'>部分功能失效</Option>
-                <Option value='01'>开机后死机</Option>
-                <Option value='02'>其他</Option>
-                <Option value='03'>性能指标偏离</Option>
-                <Option value='04'>不规则或偶发故障</Option>
+                {
+                  selectOption.faultDescribe.map((item, index) => (
+                    <Option value={item.value} key={index}> { item.text } </Option>
+                  ))
+                }
               </Select>
           )}
         </Col>
@@ -98,8 +107,11 @@ class RepairInfoForm extends PureComponent {
             getFieldDecorator('useFstate')(
               isEdit ? <span> { data.useFstate }  </span> : 
               <Select style={{width: '100%'}} allowClear>
-                <Option value='00'>是</Option>
-                <Option value='01'>否</Option>
+                {
+                  selectOption.useFstate.map((item, index) => (
+                    <Option value={item.value} key={index}> { item.text } </Option>
+                  ))
+                }
               </Select>
           )}
         </Col>

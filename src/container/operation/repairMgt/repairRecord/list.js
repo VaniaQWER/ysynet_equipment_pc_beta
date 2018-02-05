@@ -20,23 +20,23 @@ class RepairRecordList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 80,
+        width: 150,
         render: (text, record) => 
-          <span>
-            <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}><Icon type="form" />详情</Link>
-
-          </span>  
+          <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
+            <Icon type="profile" style={{marginRight: 5}}/>
+            详情
+          </Link>
       },
       ...repairCommonDataSource,
       {
         title: '维修员',
         dataIndex: 'inRrpairUsername',
-        width: 100
+        width: 150
       },
       {
         title: '维修时间',
         dataIndex: 'createDate',
-        width: 120
+        width: 200
       }
     ];
     return (
@@ -54,7 +54,7 @@ class RepairRecordList extends Component {
           <RemoteTable
             ref='remote'
             url={assets.selectRrpairList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

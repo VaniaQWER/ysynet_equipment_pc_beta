@@ -4,6 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Input, Switch, Form } from 'antd';
 import PropTypes from 'prop-types';
+import { queryAssets } from '../../../../api/operation';
 const { Search } = Input;
 const gridStyle = {
   label: {
@@ -24,18 +25,33 @@ class AssetsInfoForm extends PureComponent {
     isEdit: PropTypes.bool,
     data: PropTypes.object
   };
-  constructor() {
-    super();
+  constructor(props) {
+    super(props)
     this.state = {
-      isAssets: false
+      isAssets: false,
+      data: this.props.data 
     }
+    this.onSearch = this.onSearch.bind(this);
+  }
+  async onSearch (val) {
+    const data = await queryAssets({
+      body: { searhName: val }
+    })
+    this.setState({
+      data: data.result
+    })
   }
   switchChange = checked => {
-    this.setState({isAssets: !checked})
+    const params = { isAssets: !checked }
+    checked ? this.setState({
+      ...params
+    }) : this.setState({
+      ...params, data: {}
+    })
   }
   render() {
-    const { isAssets } = this.state;
-    const { isEdit, form, data } = this.props;
+    const { isAssets, data } = this.state;
+    const { isEdit, form } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Row type="flex">
@@ -47,8 +63,8 @@ class AssetsInfoForm extends PureComponent {
                 { data.assetsRecord }
               </span>
           ) : <Search
-              placeholder="输入后点击查询或回车"
-              onSearch={value => console.log(value)}
+              placeholder="输入后点击回车"
+              onSearch={this.onSearch}
               style={{ width: '80%', marginRight: 20 }}
               disabled={isAssets}
             />
@@ -66,7 +82,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>资产名称：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('equipmentStandardName')(
+          getFieldDecorator('equipmetStandardName')(
             <span>{ data.equipmentStandardName }</span>
           )
         }
@@ -98,8 +114,8 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>使用科室：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('deptName')(
-            <span>{ data.deptName }</span>
+          getFieldDecorator('useDept')(
+            <span>{ data.useDept }</span>
           )
         }
         </Col>
@@ -114,8 +130,8 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>管理科室：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('mDeptName')(
-            <span>{ data.mDeptName }</span>
+          getFieldDecorator('bDept')(
+            <span>{ data.bDept }</span>
           )
         }
         </Col>

@@ -4,6 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
 import PropTypes from 'prop-types';
+import { selectOption } from '../../../../constants';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -45,10 +46,11 @@ class InsideRepairForm extends PureComponent {
           getFieldDecorator('offCause')(
             isEdit ? <span> {data.offCause} </span> :
             <Select allowClear>
-              <Option value={"0"}>关闭原因1</Option>
-              <Option value={"1"}>关闭原因2</Option>
-              <Option value={"2"}>关闭原因3</Option>
-              <Option value={"3"}>关闭原因4</Option>
+              {
+                selectOption.offCause.map((item, index) => (
+                  <Option value={item.value} key={index}> { item.text } </Option>
+                ))
+              }
             </Select>
         )}
       </Col>,
@@ -58,10 +60,11 @@ class InsideRepairForm extends PureComponent {
           getFieldDecorator('followupTreatment')(
             isEdit ? <span> {data.followupTreatment} </span> :
             <Select allowClear>
-              <Option value={"0"}>后续处理1</Option>
-              <Option value={"1"}>后续处理2</Option>
-              <Option value={"2"}>后续处理3</Option>
-              <Option value={"3"}>后续处理4</Option>
+              {
+                selectOption.followupTreatment.map((item, index) => (
+                  <Option value={item.value} key={index}> { item.text } </Option>
+                ))
+              }
             </Select>
         )}
       </Col>,
@@ -100,10 +103,11 @@ class InsideRepairForm extends PureComponent {
               getFieldDecorator('repairResult')(
                 isEdit ? <span> {data.repairResult} </span> :
                 <Select allowClear onChange={this.onChange}>
-                  <Option value={"0"}>检测无故障</Option>
-                  <Option value={"1"}>故障全部修复</Option>
-                  <Option value={"2"}>故障部分修复</Option>
-                  <Option value={"3"}>故障未修复</Option>
+                  {
+                    selectOption.followupTreatment.map((item, index) => (
+                      <Option value={item.value} key={index}> { item.text } </Option>
+                    ))
+                  }
                 </Select>
             )}
           </Col>
@@ -121,10 +125,11 @@ class InsideRepairForm extends PureComponent {
               getFieldDecorator('repairContentType')(
                 isEdit ? <span> {data.repairContentType} </span> :
                 <Select allowClear>
-                  <Option value={"0"}>故障类型1</Option>
-                  <Option value={"1"}>故障类型2</Option>
-                  <Option value={"2"}>故障类型3</Option>
-                  <Option value={"3"}>故障类型4</Option>
+                  {
+                    selectOption.repairContentType.map((item, index) => (
+                      <Option value={item.value} key={index}> { item.text } </Option>
+                    ))
+                  }
                 </Select>
             )}
           </Col>
@@ -134,10 +139,11 @@ class InsideRepairForm extends PureComponent {
               getFieldDecorator('repairContentTyp')(
                 isEdit ? <span> {data.repairContentTyp} </span> :
                 <Select allowClear style={{width: '40%'}}>
-                  <Option value={"0"}>故障原因1</Option>
-                  <Option value={"1"}>故障原因2</Option>
-                  <Option value={"2"}>故障原因3</Option>
-                  <Option value={"3"}>故障原因4</Option>
+                  {
+                    selectOption.repairContentTyp.map((item, index) => (
+                      <Option value={item.value} key={index}> { item.text } </Option>
+                    ))
+                  }
                 </Select>
             )}
           </Col>
@@ -224,7 +230,7 @@ class ServiceInfo extends PureComponent {
         <Row type="flex">
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
-            <RadioGroup defaultValue="00" onChange={e => this.setState({serviceType: e.target.value})}>
+            <RadioGroup defaultValue="00" onChange={e => this.setState({rrpairType: e.target.value})}>
               <RadioButton value="00" disabled={isEdit && rrpairType !== '00'}>内修</RadioButton>
               <RadioButton value="01" disabled={isEdit && rrpairType !== '01'}>外修</RadioButton>
             </RadioGroup>
