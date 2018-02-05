@@ -11,8 +11,12 @@ import PartsInfo from '../cardInfo/partsInfo';
  * @file 资产运维-维修管理-报修登记
  */
 class RepairReg extends Component {
+  state = {
+    assetsInfo: {}
+  }
   onSubmit = () => {
-    //console.log(this.repairInfo.postData)
+    console.log(this.state.assetsInfo,'assetsInfo');
+    console.log(this.repairInfo.postData(),'repaireInfo');
     console.log(this.refs.serviceInfo.postData());
   }
   render() {
@@ -27,7 +31,7 @@ class RepairReg extends Component {
           <StepsInfo current={0}/>
         </Card>
         <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
-          <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst}/>
+          <AssetsInfo  wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data)=>this.setState({ assetsInfo : data})}/>
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
           <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst}/>
@@ -36,7 +40,7 @@ class RepairReg extends Component {
           <ServiceInfo ref='serviceInfo'/>
         </Card>
         <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
-          <PartsInfo/>
+          <PartsInfo data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}}/>
         </Card>
         <BackTop />
       </div>  

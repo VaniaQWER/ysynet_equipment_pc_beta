@@ -39,7 +39,8 @@ class AssetsInfoForm extends PureComponent {
     })
     this.setState({
       data: data.result
-    })
+    });
+    this.props.callBack(data.result)
   }
   switchChange = checked => {
     const params = { isAssets: !checked }
