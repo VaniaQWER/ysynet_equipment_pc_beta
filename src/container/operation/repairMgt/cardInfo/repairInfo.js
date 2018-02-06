@@ -29,9 +29,22 @@ class RepairInfoForm extends PureComponent {
     isEdit: PropTypes.bool,
     data: PropTypes.object
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      picList: []
+    }
+  }
+
   postData = () => {
-    const { form } = this.props;
-    return form.getFieldsValue();
+    const tfAccessory = [];
+    if(this.state.picList.length > 0) {
+      this.state.picList.map((item,index) => {
+       return tfAccessory.push(item.thumbUrl);
+      })
+    }
+    const data = this.props.form.getFieldsValue();
+    return {...data,tfAccessory:tfAccessory};
   }
   render() {
     const { isEdit, data } = this.props;
@@ -41,8 +54,10 @@ class RepairInfoForm extends PureComponent {
         <Col {...gridStyle.label}>紧急度：</Col>
         <Col {...gridStyle.content}>
           {
-            getFieldDecorator('urgentFlag')(
-               isEdit ? <span> { data.urgentFlag }  </span> : 
+            getFieldDecorator('urgentFlag',{
+              initialValue: isEdit ? data.urgentFlag : null
+            })(
+               isEdit ? 
                 <Select style={{width: '100%'}} allowClear>
                   {
                     selectOption.urgentFlag.map((item, index) => (
@@ -50,13 +65,17 @@ class RepairInfoForm extends PureComponent {
                     ))
                   }
                 </Select>  
-          )}
+                :
+                <span> { data.urgentFlag }  </span> 
+          )} 
         </Col>
         <Col {...gridStyle.label}>是否送修：</Col>
         <Col {...gridStyle.content}>
           { 
-            getFieldDecorator('rrpairSend')(
-              isEdit ? <span> { data.rrpairSend }  </span> : 
+            getFieldDecorator('rrpairSend',{
+              initialValue: isEdit ? data.rrpairSend : null
+            })(
+              isEdit ? 
               <Select style={{width: '100%'}} allowClear>
                 {
                   selectOption.rrpairSend.map((item, index) => (
@@ -64,13 +83,17 @@ class RepairInfoForm extends PureComponent {
                   ))
                 }
               </Select>
+              :
+              <span> { data.rrpairSend }  </span> 
           )}
         </Col>
         <Col {...gridStyle.label}>备用情况：</Col>
         <Col {...gridStyle.content}>
           { 
-            getFieldDecorator('spare')(
-              isEdit ? <span> { data.spare }  </span> : 
+            getFieldDecorator('spare',{
+              initialValue: isEdit ? data.spare : null
+            })(
+              isEdit ?  
               <Select style={{width: '100%'}} allowClear>
                 {
                   selectOption.spare.map((item, index) => (
@@ -78,20 +101,26 @@ class RepairInfoForm extends PureComponent {
                   ))
                 }
               </Select>
+              :
+              <span> { data.spare }  </span>
           )}
         </Col>
         <Col {...gridStyle.label}>联系电话：</Col>
         <Col {...gridStyle.content}>
           { 
-            getFieldDecorator('rrpairPhone')(
-              isEdit ? <span> { data.rrpairPhone }  </span> : <Input style={{width: '100%'}}/>
+            getFieldDecorator('rrpairPhone',{
+              initialValue: isEdit ? data.rrpairPhone : null
+            })(
+              isEdit ? <Input style={{width: '100%'}}/> : <span> { data.rrpairPhone }  </span> 
           )}
         </Col>
         <Col {...gridStyle.label}>故障现象：</Col>
         <Col {...gridStyle.content}>
           { 
-            getFieldDecorator('faultDescribe')( 
-              isEdit ? <span> { data.faultDescribe }  </span> : 
+            getFieldDecorator('faultDescribe',{
+              initialValue: isEdit ? data.faultDescribe : null
+            })( 
+              isEdit ?  
               <Select style={{width: '100%'}} allowClear>
                 {
                   selectOption.faultDescribe.map((item, index) => (
@@ -99,13 +128,17 @@ class RepairInfoForm extends PureComponent {
                   ))
                 }
               </Select>
+              :
+              <span> { data.faultDescribe }  </span>
           )}
         </Col>
         <Col {...gridStyle.label}>是否停用：</Col>
         <Col {...gridStyle.content}>
           { 
-            getFieldDecorator('useFstate')(
-              isEdit ? <span> { data.useFstate }  </span> : 
+            getFieldDecorator('useFstate',{
+              initialValue: isEdit ? data.useFstate : null
+            })(
+              isEdit ? 
               <Select style={{width: '100%'}} allowClear>
                 {
                   selectOption.useFstate.map((item, index) => (
@@ -113,28 +146,40 @@ class RepairInfoForm extends PureComponent {
                   ))
                 }
               </Select>
+              :
+              <span> { data.useFstate }  </span>
           )}
         </Col>
         <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>故障描述：</Col>
         <Col span={20} style={{marginTop: 20}}>
           { 
-            getFieldDecorator('failCause')(
-              isEdit ? <span> { data.failCause }  </span> : 
+            getFieldDecorator('faultWords',{
+              initialValue: isEdit ? data.faultWords : null
+            })(
+              isEdit ? 
               <TextArea rows={4} style={{width: '100%'}} />
+              :
+              <span> { data.faultWords }  </span>
           )}
         </Col>
         <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>报修备注：</Col>
         <Col span={20} style={{marginTop: 20}}>
           { 
-            getFieldDecorator('tfRemark')(
-              isEdit ? <span> { data.tfRemark }  </span> : 
+            getFieldDecorator('tfRemarkBx',{
+              initialValue: isEdit ? data.tfRemarkBx : null
+            })(
+              isEdit ? 
               <TextArea rows={4} style={{width: '100%'}} />
+              :
+              <span> { data.tfRemarkBx }  </span>
           )}
         </Col>
         <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>附件：</Col>
         <Col span={20} style={{marginTop: 20}}>
           { /*tfAccessory*/}
-          <PicWall/>
+          <PicWall file={(file) => {
+            this.setState({ picList : file})
+          }}/>
         </Col>
       </Row>
     )

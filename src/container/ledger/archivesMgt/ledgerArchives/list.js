@@ -14,7 +14,12 @@ class LedgerArchivesList extends Component {
     super(props);
     this.state = {
       loading: false,
+      query:{}
     }
+  }
+  queryHandler = (query) => {
+    this.refs.table.fetch(query);
+    this.setState({ query })
   }
   render() {
     const columns = [
@@ -75,7 +80,7 @@ class LedgerArchivesList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入资产编号/资产名称"
-                onSearch={value => console.log(value)}
+                onSearch={value =>  {this.queryHandler({'searchName':value})}}
                 style={{ width: 300 }}
                 enterButton="搜索"
               />
@@ -117,10 +122,12 @@ class LedgerArchivesList extends Component {
             </Col>
           </Row>
           <RemoteTable
-            ref='remote'
+            ref='table'
+            query={this.state.query}
             url={assets.selectAssetsList}
             scroll={{x: '100%', y : document.body.clientHeight - 311}}
             columns={columns}
+            showHeader={true}
             rowKey={'assetsRecordGuid'}
             style={{marginTop: 10}}
             size="small"

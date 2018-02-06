@@ -12,17 +12,24 @@ class AllDetail extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      BaseInfoInfoData: {},
+      BaseInfoInfoData:{} ,
     }
   }
 
   //获取id 根据id号查详情
   componentWillMount = () =>{
-    const rrpairOrderGuid = this.props.match.params.id;
+    const rrpairOrderGuid = this.props.match.params.id || this.props.id;
     const { getSelectRrpairDetailList } = this.props;
     const params = { rrpairOrderGuid: rrpairOrderGuid };
     getSelectRrpairDetailList(assets.selectRrpairDetailList , params,(data) => {
-      this.setState( { BaseInfoInfoData : data.result[0] })
+      this.setState({ 
+        BaseInfoInfoData : {...data.result.selectRrpairDetailIsOrder,
+                              ...data.result.selectRrpairDetailIsAssets,
+                              ...data.result.selectRrpairDetailIsAcce,
+                              ...data.result.selectRrpairDetailIsRrpair,
+                              ...data.result.selectRrpairDetailIsCall
+                            }
+        })
     })
   }
 

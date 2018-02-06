@@ -182,6 +182,13 @@ class AssignInfo extends PureComponent {
       rrpairType: this.props.rrpairType || '00'
     }
   }
+
+  postData = () => {
+    const { rrpairType } = this.state;
+    const data = this.wrapperForm.props.form.getFieldsValue();
+    data.completTime =  data.completTime.format('YYYY-MM-DD');
+    return {...data, rrpairType: rrpairType}
+  }
   
   render() {
     const { rrpairType } = this.state;
@@ -208,7 +215,7 @@ class AssignInfo extends PureComponent {
             }
           </Col>
         </Row>
-        <Comp isEdit={isEdit} data={data}/>
+        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data}/>
       </div>
     )
   }

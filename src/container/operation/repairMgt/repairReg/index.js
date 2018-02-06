@@ -1,26 +1,85 @@
 import React, { Component } from 'react';
-import { Card, BackTop, Affix, Button } from 'antd';
+import { Card, BackTop, Affix, Button,message } from 'antd';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router'
 import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 //import AssignInfo from './cardInfo/assignInfo';
 import ServiceInfo from '../cardInfo/serviceInfo';
 import PartsInfo from '../cardInfo/partsInfo';
+import assets from '../../../../api/assets';
+import { operation as operationService } from '../../../../service';
+import querystring from 'querystring';
 /**
  * @file 资产运维-维修管理-报修登记
  */
 class RepairReg extends Component {
   state = {
-    assetsInfo: {}
+    assetsInfo: {},
+    isAssets:true, //判断有资产报修 还缺无资产报修的状态
+    type: "01", //this.props.user.type
   }
   onSubmit = () => {
-    console.log(this.state.assetsInfo,'assetsInfo');
-    console.log(this.repairInfo.postData(),'repaireInfo');
-    console.log(this.refs.serviceInfo.postData());
+    const { insertOrRrpair } = this.props;
+    let params = {};
+    const type = this.state.type ; //用户类型
+    if(type === "01"){ //管理科室
+      if(JSON.stringify(this.state.assetsInfo) === '{}'){
+        return message.warning("请先搜索正确的资产信息,谢谢!")
+      }
+      params= {
+        assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
+        equipmentCode:this.assetsInfo.state.data.equipmentCode,
+        isRepairs:true,
+        orderFstate:'10',
+        ...this.repairInfo.postData(),
+        ...this.refs.serviceInfo.postData() //使用科室没有维修信息
+      };
+      console.log(params,"有资产报修...管理科室")
+    }else if(type === "02") { // 使用科室
+      if(this.state.isAssets){
+        if(JSON.stringify(this.state.assetsInfo) === '{}'){
+          return message.warning("请先搜索正确的资产信息,谢谢!")
+        }
+        params= {
+          assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
+          equipmentCode:this.assetsInfo.state.data.equipmentCode,
+          isRepairs:true,
+          orderFstate:'10',
+          ...this.repairInfo.postData()
+        };
+        console.log(params,"有资产报修...使用科室")
+      }else{
+        params= {
+          isRepairs:true,
+          orderFstate:'10',
+          ...this.repairInfo.postData(),
+        };
+        console.log(params,"无资产报修...使用科室")
+      }
+    }
+
+  
+
+    console.log("报修登记接口数据",params)
+    insertOrRrpair(assets.insertOrUpdateRrpair,querystring.stringify(params),(data) => {
+      if(data.status){
+        message.success("操作成功!")
+      }else{
+        message.error(data.msg);
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    })
+
   }
+
   render() {
     //const type = this.props.user.type;
+    const { type } = this.state;
+    console.log(type,'type')
     return (
       <div className='ysynet-repair ysynet-content '>
         <Card title="报修进度" extra={[
@@ -31,21 +90,35 @@ class RepairReg extends Component {
           <StepsInfo current={0}/>
         </Card>
         <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
-          <AssetsInfo  wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data)=>this.setState({ assetsInfo : data})}/>
+          <AssetsInfo type={this.state.type}  wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data,isAssets)=>this.setState({ assetsInfo : data,isAssets:isAssets})}/>
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
-          <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst}/>
+          <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
         </Card>
-        <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
-          <ServiceInfo ref='serviceInfo'/>
-        </Card>
-        <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
-          <PartsInfo data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}}/>
-        </Card>
+       
+        {
+          type === "01" ? 
+            <div>
+              <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
+                <ServiceInfo isEdit={true} ref='serviceInfo'/>
+              </Card>
+              <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
+                <PartsInfo data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}} />
+              </Card>
+            </div>
+          :
+          null
+        }
+      
+
         <BackTop />
       </div>  
     )
   }
 }
 
-export default connect(state => state)(RepairReg);
+//export default connect(state => state)(RepairReg);
+
+export default withRouter(connect(state => state, dispatch => ({
+  insertOrRrpair: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+}))(RepairReg));

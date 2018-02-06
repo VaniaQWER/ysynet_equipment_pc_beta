@@ -17,7 +17,7 @@ class RemoteTable extends Component {
       pagination: pager,
     });
     const postData = Object.assign({}, this.state.searchParams, {
-      results: pagination.pageSize,
+      results: pagination.pagesize,
       page: pagination.current,
       sortField: sorter.field,
       sortOrder: sorter.order,
@@ -29,7 +29,7 @@ class RemoteTable extends Component {
     this.setState({ loading: true, searchParams: params });
     if(url){
       const body = querystring.stringify({
-        pagesize: this.props.pageSize || 10,
+        pagesize: this.props.pagesize || 15,
         ...params,
       })  
       request(url,{
@@ -44,9 +44,10 @@ class RemoteTable extends Component {
           let pagination = this.state.pagination;
           pagination.total = data.result.records;
           pagination.showSizeChanger = true;
+          pagination.pageSizeOptions=['20','30','40'];
           pagination.showQuickJumper = true;
           pagination.showTotal=(total, range) => `${range[0]}-${range[1]} 共 ${total} 条`;
-          pagination.pageSize = this.props.pageSize || 10;
+          pagination.pageSize = this.props.pagesize || 15;
           if(!params.page) {
             pagination.current = 1;
           }
@@ -76,11 +77,11 @@ class RemoteTable extends Component {
   }
   render () {
     const { columns, rowKey, rowClassName, 
-            rowSelection, scroll, footer } = this.props;      
+            rowSelection, scroll, footer,showHeader,title } = this.props;   
     return (
       <Table 
         style={this.props.style}
-        columns={columns}
+        columns={columns || null}
         rowKey={rowKey}
         size={this.props.size || 'normal'}
         dataSource={this.state.data}
@@ -88,6 +89,8 @@ class RemoteTable extends Component {
         loading={this.state.loading}
         onChange={this.handleTableChange}
         rowClassName={rowClassName}
+        showHeader={showHeader || null}
+        title={title || null}
         rowSelection={rowSelection || null}
         scroll={scroll || { x: '1300px' }}
         footer={footer || null}

@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 import AllDetail from '../repairMgtDetail';
 import { operation as operationService } from '../../../../service';
 /**
- * @file 指派详情
+ * @file 保修记录详情
  */
 class RepairListDetail extends PureComponent {
   constructor(props) {

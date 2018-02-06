@@ -5,7 +5,7 @@ import UploadButton from './uploadButton'
 
 class PicWall extends PureComponent {
   static defaultProps = {
-    action: "https://192.168.0.214:3000",
+    action: "https://192.168.0.212:3001",
     max: 3
   };
   static propTypes = {
@@ -35,6 +35,7 @@ class PicWall extends PureComponent {
   handleChange = ({ fileList }) => {
     console.log(fileList,'fileList')
     this.setState({ fileList })
+    this.props.file(fileList)
   }
   handleCancel = () => this.setState({ previewVisible: false })
   handlePreview = (file) => {

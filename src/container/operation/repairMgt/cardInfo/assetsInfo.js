@@ -40,7 +40,7 @@ class AssetsInfoForm extends PureComponent {
     this.setState({
       data: data.result
     });
-    this.props.callBack(data.result)
+    this.props.callBack(data.result,true)
   }
   switchChange = checked => {
     const params = { isAssets: !checked }
@@ -49,7 +49,10 @@ class AssetsInfoForm extends PureComponent {
     }) : this.setState({
       ...params, data: {}
     })
+    this.props.callBack({},checked)
+   
   }
+  
   render() {
     const { isAssets, data } = this.state;
     const { isEdit, form } = this.props;
@@ -71,7 +74,7 @@ class AssetsInfoForm extends PureComponent {
             />
           }
           {
-            isEdit ? null : <Switch 
+            isEdit || this.props.type==="01" ? null : <Switch 
               checkedChildren="有资产" 
               unCheckedChildren="无资产" 
               defaultChecked 

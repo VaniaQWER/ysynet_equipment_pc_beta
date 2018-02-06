@@ -33,7 +33,7 @@ export default function request(url, options, callback) {
       'Content-Type': 'application/json; charset=utf-8',
       ...newOptions.headers,
     };
-    newOptions.body = JSON.stringify(newOptions.body);
+    newOptions.body = newOptions.body;
   }
 
   return fetch(url, newOptions)

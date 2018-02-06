@@ -19,13 +19,13 @@ class BaseInfo extends Component {
       <Panel header="维修单" key="1">
         <Row type="flex"   className={styles['table-row']}>
           <Col span={4} className={styles['table-span']}>维修单号</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairOrderNo }</Col>
+          {/* <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairOrderNo }</Col> */}
           <Col span={4} className={styles['table-span']}>单据状态</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.orderFstate } </Col>
+          {/* <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.orderFstate } </Col> */}
           <Col span={4} className={styles['table-span']}>制单时间</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>
+          {/* <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col> */}
           <Col span={4} className={styles['table-span']}>完成时间</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairDate }</Col>
+          {/* <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairDate }</Col> */}
         </Row>
       </Panel>
       <Panel header="报修信息" key="2">
@@ -118,7 +118,7 @@ class BaseInfo extends Component {
       </Panel>
       <Panel header="资产配件" key="6">
         
-        <AssetParts />
+        <AssetParts assetsRecordGuid={BaseInfoInfoData.assetsRecordGuid}/>
       </Panel>
     </Collapse>
     )

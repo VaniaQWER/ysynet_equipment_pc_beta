@@ -2,10 +2,14 @@
  * @file 配件信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Table, Button, Icon, Modal, Form, Row, Col, Input, Select,message } from 'antd';
+import {  Button, Icon, Modal, Form, Row, Col, Input, Select,message } from 'antd';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router'
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
-import uuid from 'uuid';
+import { operation as operationService } from '../../../../service';
+import querystring from 'querystring';
+
 const Option = Select.Option;
 const FormItem = Form.Item;
 const { RemoteTable } = TableGrid;
@@ -19,7 +23,19 @@ const gridStyle = {
     style: { textAlign: 'left', height: 50, lineHeight: '50px' }
   }
 }
-const getColumns = (isEdit) => {
+const handleDelete = (record,action)=>{
+  let parms = {};
+  parms.rrpairFittingUseGuid = record.rrpairFittingUseGuid;
+  console.log(parms,'parms')
+  action(assets.deleteRrpairFitting,parms,(data) => {
+    if(data.status){
+      message.success("操作成功!")
+    }else{
+      message.error(data.msg)
+    }
+  })
+}
+const getColumns = (action) => {
   let columns = [{
       title: '配件编号',
       dataIndex: 'assetsRecord',
@@ -61,66 +77,21 @@ const getColumns = (isEdit) => {
       key: 'money',
       width: 100
     }]
-  if (!isEdit) {
+  if (action) {
     columns = [ {
       title: '操作',
       dataIndex: 'rrpairFittingUseGuid',
       key: 'rrpairFittingUseGuid',
-      width: 100
+      width: 100,
+      render: (text, record) => (
+        <a onClick={() => handleDelete(record,action)}>
+          <Icon type="delete" style={{marginRight: 5}}/>删除
+      </a>
+      )
     }, ...columns ]
   } 
   return columns;
 }
-/* const columns = [{
-  title: '操作',
-  dataIndex: 'rrpairFittingUseGuid',
-  key: 'rrpairFittingUseGuid',
-  width: 100
-}, {
-  title: '配件编号',
-  dataIndex: 'assetsRecord',
-  key: 'assetsRecord',
-  width: 200
-}, {
-  title: '配件名称',
-  dataIndex: 'equipmentName',
-  key: 'equipmentName',
-  width: 200
-}, {
-  title: '型号',
-  dataIndex: 'fmodel',
-  key: 'fmodel',
-  width: 150
-}, {
-  title: '规格',
-  dataIndex: 'spec',
-  key: 'spec',
-  width: 150
-}, {
-  title: '数量',
-  dataIndex: 'extendSum',
-  key: 'extendSum',
-  width: 100
-}, {
-  title: '单位',
-  dataIndex: 'meteringUnit',
-  key: 'meteringUnit',
-  width: 100
-}, {
-  title: '单价',
-  dataIndex: 'price',
-  key: 'price',
-  width: 100
-}, {
-  title: '金额',
-  dataIndex: 'money',
-  key: 'money',
-  width: 100
-}];
- */
-/**
- * 选择配件
- */
 class SelectParts extends PureComponent {
   state = {
     query:{
@@ -129,13 +100,8 @@ class SelectParts extends PureComponent {
     selected: [],
     selectedRows: []
   }
-  componentWillReceiveProps = nextProps =>{
-    console.log(nextProps,'nextProps')
-  }
+
   render() {
-    const { selected,selectedRows } = this.state;
-    console.log(selected,'selected');
-    console.log(selectedRows,'selectedRow')
     return (
       <RemoteTable
         ref='remote'
@@ -143,7 +109,7 @@ class SelectParts extends PureComponent {
         url={assets.selectAssetsExtendList}
         scroll={{x: '100%'}}
         columns={getColumns()}
-        rowKey={'RN'}
+        rowKey={'assetsExtendGuid'}
         style={{marginTop: 10}}
         size="small"
         rowSelection={{
@@ -162,6 +128,7 @@ class SelectParts extends PureComponent {
  * 填写配件
  */
 class InsertParts extends PureComponent {
+
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
@@ -283,7 +250,9 @@ class PartsInfo extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      dataSource: [],
+      query:{
+        rrpairOrderGuid: this.props.data.rrpairOrderGuid
+      },
       S_parts: [],//选择配件
       W_parts: {},//填写配件
       choseVisible: false,
@@ -298,21 +267,41 @@ class PartsInfo extends PureComponent {
     this.setState({ W_parts  });
   }
   hideModal = (type) => {
-    const dataSource = this.state.dataSource;
-    if(type){
-      const { W_parts } = this.state;
-      const amount = W_parts.extendSum === 'undefined' ? 1 : W_parts.extendSum;
-      W_parts.money = amount * W_parts.price;
-      W_parts.assetsRecordGuid = uuid();
-      console.log(W_parts,'W_parts')
-      this.setState({writeVisible: false,dataSource:[...dataSource , W_parts],W_parts: {}});
-    }else{
-      if(dataSource.length > 0){
-        this.setState({ dataSource:[...dataSource,...this.state.S_parts] })
-      }else{
-        this.setState({ dataSource : this.state.S_parts});
+    let parms = {};
+    parms.assetsRecordGuid = this.props.data.assetsRecordGuid;
+    const { getPartsInfo } = this.props;
+    if(type === "select") {
+      if(this.state.S_parts.length===0){
+        return message.warning("请选择要添加的资产配件!")
       }
-      this.setState({choseVisible: false })
+      const assetsExtendGuids = [];
+      this.state.S_parts.map((item) => {
+       return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
+      })
+      parms.assetsExtendGuids = assetsExtendGuids;
+      console.log(parms,'选择配件数据')
+      getPartsInfo(assets.insertRrpairFitting,JSON.stringify(parms),(data)=>{
+        if(data.status){
+          message.success("操作成功!")
+          this.setState({choseVisible: false})
+        }else{
+          message.error(data.msg)
+        }
+      })
+    }else if(type === 'edit'){
+      parms = {...this.state.W_parts,...parms};
+      console.log(parms,'填写配件数据')
+      getPartsInfo(assets.insertRrpairExtend,querystring.stringify(parms),(data)=>{
+        if(data.status){
+          message.success("操作成功!");
+          this.setState({writeVisible: false})
+        }else{
+          message.error(data.msg)
+        }
+      },{
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+      })
     }
   }
   showModal = (assetsRecordGuid,key) => {
@@ -329,9 +318,9 @@ class PartsInfo extends PureComponent {
     }
   }
   
+  
   render() {
-    console.log(this.props.data.assetsRecordGuid,'prop')
-    const { dataSource, choseVisible, writeVisible } = this.state;
+    const {  choseVisible, writeVisible } = this.state;
     return (
       <div>
         <Modal
@@ -339,8 +328,8 @@ class PartsInfo extends PureComponent {
           width={1000}
           title="选择配件"
           visible={choseVisible}
-          onOk={this.hideModal.bind(this, 0)}
-          onCancel={this.hideModal.bind(this, 0)}
+          onOk={this.hideModal.bind(this, 'select')}
+          onCancel={() => this.setState({ choseVisible: false ,writeVisible: false})}
           okText="完成"
           cancelText="取消"
         >
@@ -349,8 +338,8 @@ class PartsInfo extends PureComponent {
         <Modal
           title="填写配件"
           visible={writeVisible}
-          onOk={this.hideModal.bind(this, 1)}
-          onCancel={this.hideModal.bind(this, 1)}
+          onOk={this.hideModal.bind(this, 'edit')}
+          onCancel={() => this.setState({ choseVisible: false ,writeVisible: false})}
           okText="确认"
           cancelText="取消"
         >
@@ -359,10 +348,15 @@ class PartsInfo extends PureComponent {
             showOrHide={this.state.showOrHide}
             />
         </Modal>
-        <Table 
-          dataSource={dataSource} 
-          columns={getColumns()} 
-          rowKey={'assetsRecordGuid'}
+        <RemoteTable
+          ref='table'
+          query={this.state.query}
+          url={assets.selectRrpairFittingList}
+          scroll={{x: '100%'}}
+          columns={getColumns(this.props.getPartsInfo)}
+          rowKey={'rrpairFittingUseGuid'}
+          style={{marginTop: 10}}
+          size="small"
           showHeader={true}
           title={() => <div>
             <Button 
@@ -374,16 +368,19 @@ class PartsInfo extends PureComponent {
               选择配件
             </Button>
             <Button
-              onClick={this.showModal.bind(this, 1,'edit')}
+              onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
             >
               <Icon type="edit" />
               填写配件
             </Button>
           </div>}
-        />
+        /> 
+ 
       </div>  
     )
   }
 }
 
-export default PartsInfo;
+export default withRouter(connect(state => state, dispatch => ({
+  getPartsInfo: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+}))(PartsInfo));

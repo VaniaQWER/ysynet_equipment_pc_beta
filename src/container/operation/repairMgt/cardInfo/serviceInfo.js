@@ -43,8 +43,10 @@ class InsideRepairForm extends PureComponent {
       <Col {...gridStyle.label} key={1}>关闭原因：</Col>,
       <Col {...gridStyle.content} key={2}>
         {
-          getFieldDecorator('offCause')(
-            isEdit ? <span> {data.offCause} </span> :
+          getFieldDecorator('offCause',{
+            initialValue: isEdit ? data.offCause : null
+          })(
+            isEdit ?
             <Select allowClear>
               {
                 selectOption.offCause.map((item, index) => (
@@ -52,13 +54,17 @@ class InsideRepairForm extends PureComponent {
                 ))
               }
             </Select>
+            :
+            <span> {data.offCause} </span> 
         )}
       </Col>,
       <Col {...gridStyle.label} key={3}>后续处理：</Col>,
       <Col {...gridStyle.content} key={4}>
         {
-          getFieldDecorator('followupTreatment')(
-            isEdit ? <span> {data.followupTreatment} </span> :
+          getFieldDecorator('followupTreatment',{
+            initialValue: isEdit ? data.followupTreatment : null
+          })(
+            isEdit ? 
             <Select allowClear>
               {
                 selectOption.followupTreatment.map((item, index) => (
@@ -66,23 +72,33 @@ class InsideRepairForm extends PureComponent {
                 ))
               }
             </Select>
+            :
+            <span> {data.followupTreatment} </span> 
         )}
       </Col>,
       <Col span={4} style={{marginTop: 20, textAlign: 'right'}} key={5}>关闭备注：</Col>,
       <Col span={20} style={{marginTop: 20}} key={6}>
         {
-          getFieldDecorator('tfRemarkGb')(
-            isEdit ? <span> {data.tfRemarkGb} </span> :
+          getFieldDecorator('tfRemarkGb',{
+            initialValue: isEdit ? data.tfRemarkGb : null
+          })(
+            isEdit ?
             <TextArea rows={4} style={{width: '100%'}} />
+            :
+            <span> {data.tfRemarkGb} </span>
         )}
       </Col>
     ] : [
       <Col span={4} style={{marginTop: 20, textAlign: 'right'}} key={7}>维修备注：</Col>,
       <Col span={20} style={{marginTop: 20}} key={8}>
         {
-          getFieldDecorator('tfRemarkWx')(
-            isEdit ? <span> {data.tfRemarkWx} </span> :
+          getFieldDecorator('tfRemarkWx',{
+            initialValue: isEdit ? data.tfRemarkWx : null
+          })(
+            isEdit ? 
             <TextArea rows={4} style={{width: '100%'}} />
+            :
+            <span> {data.tfRemarkWx} </span> 
         )}
       </Col>
     ];
@@ -92,38 +108,52 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>维修人电话：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('inRrpairPhone')(
-                isEdit ? <span> {data.inRrpairPhone} </span> :
+              getFieldDecorator('inRrpairPhone',{
+                initialValue: isEdit ? data.inRrpairPhone : null
+              })(
+                isEdit ? 
                 <Input placeholder='请输入维修人电话'/>
+                :
+                <span> {data.inRrpairPhone} </span> 
             )}
           </Col>
           <Col {...gridStyle.label}>维修结果：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('repairResult')(
-                isEdit ? <span> {data.repairResult} </span> :
+              getFieldDecorator('repairResult',{
+                initialValue: isEdit ? data.repairResult : null
+              })(
+                isEdit ? 
                 <Select allowClear onChange={this.onChange}>
                   {
-                    selectOption.followupTreatment.map((item, index) => (
+                    selectOption.repairResult.map((item, index) => (
                       <Option value={item.value} key={index}> { item.text } </Option>
                     ))
                   }
                 </Select>
+                :
+                <span> {data.repairResult} </span>
             )}
           </Col>
           <Col {...gridStyle.label}>维修费用（总计）：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('actualPrice')(
-                isEdit ? <span> ￥{data.actualPrice} </span> :
+              getFieldDecorator('actualPrice',{
+                initialValue: isEdit ? data.actualPrice : null
+              })(
+                isEdit ?  
                 <Input addonBefore="￥"/>
+                :
+                <span> ￥{data.actualPrice} </span>
             )}
           </Col>
           <Col {...gridStyle.label}>故障类型：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('repairContentType')(
-                isEdit ? <span> {data.repairContentType} </span> :
+              getFieldDecorator('repairContentType',{
+                initialValue: isEdit ? data.repairContentType : null
+              })(
+                isEdit ? 
                 <Select allowClear>
                   {
                     selectOption.repairContentType.map((item, index) => (
@@ -131,13 +161,17 @@ class InsideRepairForm extends PureComponent {
                     ))
                   }
                 </Select>
+                :
+                <span> {data.repairContentType} </span> 
             )}
           </Col>
           <Col {...gridStyle.label}>故障原因：</Col>
           <Col span={20} style={gridStyle.content.style}>
             {
-              getFieldDecorator('repairContentTyp')(
-                isEdit ? <span> {data.repairContentTyp} </span> :
+              getFieldDecorator('repairContentTyp',{
+                initialValue: isEdit ? data.repairContentTyp : null
+              })(
+                isEdit ? 
                 <Select allowClear style={{width: '40%'}}>
                   {
                     selectOption.repairContentTyp.map((item, index) => (
@@ -145,6 +179,8 @@ class InsideRepairForm extends PureComponent {
                     ))
                   }
                 </Select>
+                :
+                <span> {data.repairContentTyp} </span> 
             )}
           </Col>
           {
@@ -167,33 +203,49 @@ class OutsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>指派服务商：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('outOrg')(
-                isEdit ? <span> {data.outOrg} </span> :
+              getFieldDecorator('outOrg',{
+                initialValue: isEdit ? data.outOrg : null
+              })(
+                isEdit ?  
                 <Input placeholder='输入服务商'/>
+                :
+                <span> {data.outOrg} </span>
             )}
           </Col>
           <Col {...gridStyle.label}>维修联系电话：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('outRrpairPhone')(
-                isEdit ? <span> {data.outRrpairPhone} </span> :
+              getFieldDecorator('outRrpairPhone',{
+                initialValue: isEdit ? data.outRrpairPhone : null
+              })(
+                isEdit ? 
                 <Input placeholder='输入联系电话'/>
+                :
+                <span> {data.outRrpairPhone} </span> 
             )}
           </Col>
           <Col {...gridStyle.label}>预期完成时间：</Col>
           <Col span={20} style={gridStyle.content.style}>
             {
-              getFieldDecorator('completTime')(
-                isEdit ? <span> {data.completTime} </span> :
+              getFieldDecorator('completTime',{
+                initialValue: isEdit ? data.completTime : null
+              })(
+                isEdit ?
                 <DatePicker style={{width: '40%'}}/>
+                :
+                <span> {data.completTime} </span> 
             )}
           </Col>
           <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>指派备注：</Col>
           <Col span={20} style={{marginTop: 20}}>
             {
-              getFieldDecorator('tfRemarkZp')(
-                isEdit ? <span> {data.tfRemarkZp} </span> :
+              getFieldDecorator('tfRemarkZp',{
+                initialValue: isEdit ? data.tfRemarkZp : null
+              })(
+                isEdit ? 
                 <TextArea rows={4} style={{width: '100%'}} />
+                :
+                <span> {data.tfRemarkZp} </span> 
             )}
           </Col>
         </Row>
@@ -231,8 +283,8 @@ class ServiceInfo extends PureComponent {
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
             <RadioGroup defaultValue="00" onChange={e => this.setState({rrpairType: e.target.value})}>
-              <RadioButton value="00" disabled={isEdit && rrpairType !== '00'}>内修</RadioButton>
-              <RadioButton value="01" disabled={isEdit && rrpairType !== '01'}>外修</RadioButton>
+              <RadioButton value="00" disabled={!isEdit && rrpairType !== '00'}>内修</RadioButton>
+              <RadioButton value="01" disabled={!isEdit && rrpairType !== '01'}>外修</RadioButton>
             </RadioGroup>
           </Col>
         </Row>

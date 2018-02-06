@@ -17,7 +17,7 @@ class AssetInfo extends Component {
     let params = { };
     params[field] = data;
     params.assetsRecordGuid = AssetInfoData.assetsRecordGuid;
-   updateAssetsRecordInfo(assets.updateAssetsRecordInfo,params,(data) => {
+    updateAssetsRecordInfo(assets.updateAssetsRecordInfo,params,(data) => {
      if(data.status){
       message.success("修改成功")
      }else{

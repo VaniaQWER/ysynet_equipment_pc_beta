@@ -8,6 +8,7 @@ const { RemoteTable } = TableGrid;
 
 class AssetParts extends Component {
   render () {
+    console.log(this.props.assetsRecordGuid,'11')
     const columns = [
       {
         title: '配件编号',

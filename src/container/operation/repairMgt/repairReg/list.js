@@ -1,33 +1,43 @@
 /**
- * 我的指派列表
+ * 保修记录
  */ 
 import React, { Component } from 'react';
 import { Row, Col, Input, Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import assets from '../../../../api/assets';
-import { repairCommonDataSource } from '../../../../constants'
+import { repairCommonDataSource,selectOption } from '../../../../constants'
 
 const Search = Input.Search;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 
-class MyRepairList extends Component {
+class RepairRegList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query:{}
+    }
+  }
+  queryHandler = (query) => {
+    this.refs.table.fetch(query);
+    this.setState({ query })
+  }
   render() {
     const columns = [
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 130,
+        width: 80,
         render: (text, record) => (
           record.orderFstate === '10' ?
           <span>
-            <Link to={{pathname: `/operation/repairMgt/myRepairList/order/${record.rrpairOrderGuid}`}}>
-              <Icon type="meh-o" style={{marginRight: 5}}/>指派
+            <Link to={{pathname: `/operation/repairMgt/repairRegList/edit/${record.rrpairOrderGuid}`}}>
+              <Icon type="meh-o" style={{marginRight: 5}}/>编辑
             </Link>
           </span>  :
           <span>
-            <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`}}>
+            <Link to={{pathname: `/operation/repairMgt/repairRegList/detail/${record.rrpairOrderGuid}`}}>
               <Icon type="profile" style={{marginRight: 5}}/>详情
             </Link>
           </span>
@@ -36,8 +46,16 @@ class MyRepairList extends Component {
       ...repairCommonDataSource,
       {
         title: '故障现象',
-        dataIndex: 'inRrpairUsername',
-        width: 200
+        dataIndex: 'faultDescribe',
+        width: 200,
+        render: (text)=>{
+         return selectOption.faultDescribe.map((item,index) => {
+            if(text === item.value ){
+              return item.text
+            }
+            return null;
+          })
+        }
       }];
     return (
         <Content className='ysynet-content ysynet-common-bgColor'>
@@ -45,18 +63,21 @@ class MyRepairList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
-                onSearch={value => console.log(value)}
+                onSearch={value =>  {this.queryHandler({'searchName':value})}}
                 style={{ width: 300 }}
                 enterButton="搜索"
               />
             </Col>
           </Row>
           <RemoteTable
-            ref='remote'
+            ref='table'
+            query={this.state.query}
             url={assets.selectRrpairList}
             scroll={{x: '150%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
+            pagesize={20}
+            showHeader={true}
             style={{marginTop: 10}}
             size="small"
           /> 
@@ -64,4 +85,4 @@ class MyRepairList extends Component {
     )
   }
 }
-export default MyRepairList;
+export default RepairRegList;

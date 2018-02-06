@@ -4,7 +4,6 @@
 import React, { Component } from 'react';
 class Workplace extends Component {
   componentWillUnmount() {
-    alert(3333)
   }
   render() {
     return (
