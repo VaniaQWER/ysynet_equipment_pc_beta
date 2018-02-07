@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout,Upload,Button } from 'antd';
+import { Row,Col,Input,Icon, Layout,Upload,Button,Tag } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
 import assets from '../../../../api/assets';
 import styles from './style.css';
+import { ledgerData } from '../../../../constants';
 
 const { Content } = Layout;
 const Search = Input.Search;
@@ -42,6 +43,7 @@ class LedgerArchivesList extends Component {
         title: '状态',
         dataIndex: 'useFstate',
         width: 100,
+        render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
       },
       {
         title: '资产名称',

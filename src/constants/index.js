@@ -38,7 +38,20 @@ export const repairCommonDataSource = [
     width: 150
   }
 ]
-
+export const ledgerData = {
+  "01": {
+    text: "正常",
+    color: 'green'
+  },
+  "02": {
+    text: "故障",
+    color: 'red'
+  },
+  "03": {
+    text: "报废",
+    color: 'gold'
+  },
+}
 export const repairData = {
   //10申请，20指派，30维修中,50待验收，80已拒绝 90已关闭 
   "10": {

@@ -6,21 +6,20 @@ import React, { Component } from 'react';
 import { Row, Col,Collapse } from 'antd';
 import styles from '../../../ledger/archivesMgt/ledgerArchives/style.css';
 import AssetParts from './assetParts';//资产配件
-import { selectOption, repairData } from '../../../../constants'
+
 const Panel = Collapse.Panel;
+
 class BaseInfo extends Component {
   render () {
     const { BaseInfoInfoData } = this.props;
-    console.log(BaseInfoInfoData,'BaseInfoInfoData')
-  
     return (
       <Collapse defaultActiveKey={['1','2','3','4','5','6']}>
       <Panel header="维修单" key="1">
         <Row type="flex"   className={styles['table-row']}>
           <Col span={4} className={styles['table-span']}>维修单号</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairOrderNo }</Col>
+           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairOrderNo }</Col> 
           <Col span={4} className={styles['table-span']}>单据状态</Col>
-          <Col span={8} className={styles['table-span']}>{ repairData[BaseInfoInfoData.orderFstate].text  } </Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.orderFstate } </Col>
           <Col span={4} className={styles['table-span']}>制单时间</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>
           <Col span={4} className={styles['table-span']}>完成时间</Col>
@@ -50,13 +49,13 @@ class BaseInfo extends Component {
           <Col span={4} className={styles['table-span']}>报修来源</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.orderType }</Col>
           <Col span={4} className={styles['table-span']}>紧急度</Col>
-          <Col span={8} className={styles['table-span']}>{ selectOption.urgentFlag.map((item,ind)=>item.value===BaseInfoInfoData.urgentFlag?item.text:'')}</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.urgentFlag }</Col>
           <Col span={4} className={styles['table-span']}>有无备用</Col>
-          <Col span={8} className={styles['table-span']}>{ selectOption.spare.map((item,ind)=>item.value===BaseInfoInfoData.spare?item.text:'')}</Col >
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.spare }</Col >
           <Col span={4} className={styles['table-span']}>是否在保</Col>
-          <Col span={8} className={styles['table-span']}>{ selectOption.guaranteeFlag.map((item,ind)=>item.value===BaseInfoInfoData.guaranteeFlag?item.text:'')}</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.guaranteeFlag }</Col>
           <Col span={4} className={styles['table-span']}>是否送修</Col>
-          <Col span={8} className={styles['table-span']}>{ selectOption.rrpairSend.map((item,ind)=>item.value===BaseInfoInfoData.rrpairSend?item.text:'')}</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairSend }</Col>
           <Col span={4} className={styles['table-span']}>报修部门</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.deptName }</Col>
           <Col span={4} className={styles['table-span']}>报修时间</Col>
@@ -76,7 +75,7 @@ class BaseInfo extends Component {
           <Col span={4} className={styles['table-span']}>指派人</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
           <Col span={4} className={styles['table-span']}>维修方式</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType === '00'?'内修':'外修' }</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType }</Col>
           <Col span={4} className={styles['table-span']}>被指派人/组/机构</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
           <Col span={4} className={styles['table-span']}>指派时间</Col>
@@ -98,7 +97,7 @@ class BaseInfo extends Component {
           <Col span={4} className={styles['table-span']}>更换配件</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairingName }</Col>
           <Col span={4} className={styles['table-span']}>故障原因</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairContentTyp }</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.failCause }</Col>
           <Col span={4} className={styles['table-span']}></Col>
           <Col span={8} className={styles['table-span']}></Col>
         </Row>
@@ -116,8 +115,13 @@ class BaseInfo extends Component {
         </Row>
       </Panel>
       <Panel header="资产配件" key="6">
-        
-        <AssetParts assetsRecordGuid={BaseInfoInfoData.assetsRecordGuid}/>
+        {
+          BaseInfoInfoData.assetsRecordGuid?
+          <AssetParts assetsRecordGuid={BaseInfoInfoData.assetsRecordGuid}/>
+          :
+          null
+        }
+      
       </Panel>
     </Collapse>
     )

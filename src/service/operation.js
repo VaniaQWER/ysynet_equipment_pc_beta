@@ -2,7 +2,6 @@ import request from '../utils/request';
 
 
 export const  getInfo= ( url , values , success,type ) => {
-  console.log(type,'type')
   request(url, {
     headers: type || null,
     body: values,

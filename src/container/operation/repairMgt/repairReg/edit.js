@@ -6,6 +6,7 @@ import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import ServiceInfo from '../cardInfo/serviceInfo';
+import PartsInfo from '../cardInfo/partsInfo';
 import assets from '../../../../api/assets';
 import { operation as operationService } from '../../../../service';
 import querystring from 'querystring';
@@ -16,6 +17,8 @@ class RepairReg extends Component {
     constructor(props) {
       super(props);
       this.state = {
+        type: "01", //this.props.user.type
+        orderFstate: '50', //管理科室默认的状态是完成50   关闭90  使用科室提交10
         selectRrpairDetailIsOrder: {},
         selectRrpairDetailIsAssets:{},
         selectRrpairDetailIsRrpair:{},
@@ -23,6 +26,19 @@ class RepairReg extends Component {
         selectRrpairDetailIsCall:{}
       }
     }
+    handleButtonText =(orderFstate) => {
+      if(this.state.type === "01"){
+       if(orderFstate === "50"){
+         return "完成";
+       }else if(orderFstate === "90"){
+         return "关闭";
+       }else if(orderFstate === "20"){
+         return "指派";
+       }
+      }else{
+        return "提交";
+      }
+     }
 
    //获取id 根据id号查详情
    componentWillMount = () =>{
@@ -46,12 +62,31 @@ class RepairReg extends Component {
   onSubmit = () => {
     const { insertOrRrpair } = this.props;
     const rrpairOrderGuid = this.props.match.params.id ;
-    const params= {
-      rrpairOrderGuid:rrpairOrderGuid,
-      isRepairs:true,
-      orderFstate:'10',
-      ...this.repairInfo.postData(),
-      ...this.refs.serviceInfo.postData()};
+    let params = {};
+    const type = this.state.type ; //用户类型
+    if(type === "01"){ //管理科室
+      params= {
+        rrpairOrderGuid:rrpairOrderGuid,
+        assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
+        equipmentCode:this.state.selectRrpairDetailIsAssets.equipmentCode,
+        isRepairs:true,
+        orderFstate:this.state.orderFstate,
+        ...this.repairInfo.postData(),
+        ...this.refs.serviceInfo.postData() //使用科室没有维修信息
+      };
+      console.log(params,"编辑有资产报修...管理科室")
+    }else if(type === "02") { // 使用科室
+        params= {
+          rrpairOrderGuid:rrpairOrderGuid,
+          assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
+          equipmentCode:this.state.selectRrpairDetailIsAssets.equipmentCode,
+          isRepairs:true,
+          orderFstate:'10',
+          ...this.repairInfo.postData()
+        };
+        console.log(params,"编辑有资产报修...使用科室")
+   
+    }
     console.log("报修登记编辑接口数据",params)
     insertOrRrpair(assets.insertOrUpdateRrpair,querystring.stringify(params),(data) => {
       if(data.status){
@@ -67,11 +102,12 @@ class RepairReg extends Component {
   }
 
   render() {
+    const { type } = this.state;
     return (
       <div className='ysynet-repair ysynet-content '>
         <Card title="报修进度" extra={[
           <Affix key={1}>
-            <Button type='primary' onClick={this.onSubmit}>提交</Button>
+            <Button type='primary' onClick={this.onSubmit}>{this.handleButtonText(this.state.orderFstate)}</Button>
           </Affix>
         ]} key={1}>
           <StepsInfo current={0}/>
@@ -91,13 +127,29 @@ class RepairReg extends Component {
           } 
         
         </Card>
-        <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
-          {
-            JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
-            :
-            <ServiceInfo isEdit={true}  ref='serviceInfo' data={this.state.selectRrpairDetailIsRrpair}/>
-          } 
-        </Card>
+        {
+          type === "01" ? 
+            <div>
+              <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
+                {
+                  JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
+                  :
+                  <ServiceInfo isEdit={true}  ref='serviceInfo' data={this.state.selectRrpairDetailIsRrpair} callBack={(data)=>this.setState({ orderFstate : data})}/>
+                } 
+              </Card>
+              {
+                this.state.selectRrpairDetailIsAssets.assetsRecordGuid ?
+                <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
+                  <PartsInfo data={{assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,rrpairOrderGuid:this.props.match.params.id}} />
+                </Card>
+                :
+                null
+              }
+            
+            </div>
+          :
+          null
+        }
         <BackTop />
       </div>  
     )

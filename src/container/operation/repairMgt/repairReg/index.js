@@ -7,7 +7,6 @@ import AssetsInfo from '../cardInfo/assetsInfo';
 import RepairInfo from '../cardInfo/repairInfo'; 
 //import AssignInfo from './cardInfo/assignInfo';
 import ServiceInfo from '../cardInfo/serviceInfo';
-import PartsInfo from '../cardInfo/partsInfo';
 import assets from '../../../../api/assets';
 import { operation as operationService } from '../../../../service';
 import querystring from 'querystring';
@@ -18,7 +17,21 @@ class RepairReg extends Component {
   state = {
     assetsInfo: {},
     isAssets:true, //判断有资产报修 还缺无资产报修的状态
-    type: "01", //this.props.user.type
+    type: "01", //01管理科室 02使用科室 this.props.user.type
+    orderFstate: '50' //管理科室默认的状态是完成50   关闭90  使用科室提交10
+  }
+  handleButtonText =(orderFstate) => {
+   if(this.state.type === "01"){
+    if(orderFstate === "50"){
+      return "完成";
+    }else if(orderFstate === "90"){
+      return "关闭";
+    }else if(orderFstate === "20"){
+      return "指派";
+    }
+   }else{
+     return "提交";
+   }
   }
   onSubmit = () => {
     const { insertOrRrpair } = this.props;
@@ -32,7 +45,7 @@ class RepairReg extends Component {
         assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
         isRepairs:true,
-        orderFstate:'10',
+        orderFstate:this.state.orderFstate,
         ...this.repairInfo.postData(),
         ...this.refs.serviceInfo.postData() //使用科室没有维修信息
       };
@@ -59,9 +72,6 @@ class RepairReg extends Component {
         console.log(params,"无资产报修...使用科室")
       }
     }
-
-  
-
     console.log("报修登记接口数据",params)
     insertOrRrpair(assets.insertOrUpdateRrpair,querystring.stringify(params),(data) => {
       if(data.status){
@@ -77,14 +87,12 @@ class RepairReg extends Component {
   }
 
   render() {
-    //const type = this.props.user.type;
     const { type } = this.state;
-    console.log(type,'type')
     return (
       <div className='ysynet-repair ysynet-content '>
         <Card title="报修进度" extra={[
           <Affix key={1}>
-            <Button type='primary' onClick={this.onSubmit}>提交</Button>
+            <Button type='primary' onClick={this.onSubmit} >{ this.handleButtonText(this.state.orderFstate) }</Button>
           </Affix>
         ]} key={1}>
           <StepsInfo current={0}/>
@@ -95,22 +103,14 @@ class RepairReg extends Component {
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
           <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
         </Card>
-       
         {
           type === "01" ? 
-            <div>
-              <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
-                <ServiceInfo isEdit={true} ref='serviceInfo'/>
-              </Card>
-              <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
-                <PartsInfo data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}} />
-              </Card>
-            </div>
+            <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
+              <ServiceInfo isEdit={true} ref='serviceInfo'   callBack={(data)=>this.setState({ orderFstate : data})}/>
+            </Card>
           :
           null
         }
-      
-
         <BackTop />
       </div>  
     )

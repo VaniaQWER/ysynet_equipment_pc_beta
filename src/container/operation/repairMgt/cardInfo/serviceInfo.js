@@ -1,7 +1,7 @@
 /**
  * @file 维修信息 Card
  */
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Component } from 'react';
 import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
 import PropTypes from 'prop-types';
 import { selectOption } from '../../../../constants';
@@ -20,20 +20,22 @@ const gridStyle = {
   }
 }
 // 内修
-class InsideRepairForm extends PureComponent {
+class InsideRepairForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isClosed: false
+      isClosed: this.props.isClosed,
     }
   }
-  
-  onChange = (val) => {
-    if (val === '3') {
+  handleRepairResultChange = (val) => {
+    if (val === '02') {
       this.setState({isClosed: true})
+      this.props.callBack("90"); //关闭按钮
     } else {
+      this.props.callBack("50"); //完成按钮
       this.setState({isClosed: false})
     }
+    this.props.data.repairResult = val;
   }
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -124,7 +126,7 @@ class InsideRepairForm extends PureComponent {
                 initialValue: isEdit ? data.repairResult : null
               })(
                 isEdit ? 
-                <Select allowClear onChange={this.onChange}>
+                <Select allowClear onSelect={this.handleRepairResultChange}>
                   {
                     selectOption.repairResult.map((item, index) => (
                       <Option value={item.value} key={index}> { item.text } </Option>
@@ -271,24 +273,34 @@ class ServiceInfo extends PureComponent {
   postData = () => {
     const { rrpairType } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
-    return {...data, rrpairType: rrpairType}
+    data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD'); 
+    return {...data,rrpairType: rrpairType}
   }
   render() {
     const { rrpairType } = this.state;
-    const { isEdit, data } = this.props;
+    const { isEdit, data ,callBack} = this.props;
     const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
     return (
       <div>
         <Row type="flex">
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
-            <RadioGroup defaultValue="00" onChange={e => this.setState({rrpairType: e.target.value})}>
+            <RadioGroup defaultValue="00" onChange={e => {
+              this.setState({rrpairType: e.target.value});
+              if(e.target.value === "01"){
+                this.props.callBack("20")
+              }else{
+                this.props.callBack("50")
+                data.repairResult = "";
+              }
+             
+            }}>
               <RadioButton value="00" disabled={!isEdit && rrpairType !== '00'}>内修</RadioButton>
               <RadioButton value="01" disabled={!isEdit && rrpairType !== '01'}>外修</RadioButton>
             </RadioGroup>
           </Col>
         </Row>
-        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data}/>
+        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data} callBack={callBack}/>
       </div>  
     )
   }

@@ -186,7 +186,7 @@ class AssignInfo extends PureComponent {
   postData = () => {
     const { rrpairType } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
-    data.completTime =  data.completTime.format('YYYY-MM-DD');
+    data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD'); 
     return {...data, rrpairType: rrpairType}
   }
   

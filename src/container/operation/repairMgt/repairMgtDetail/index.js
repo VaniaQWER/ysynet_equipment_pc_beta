@@ -5,7 +5,7 @@ import React, { PureComponent } from 'react';
 import { withRouter } from 'react-router'
 import BaseInfo from './baseInfo'; //基本信息
 import { connect } from 'react-redux';
-import { operation as operationService } from '../../../../service';
+import { ledger as ledgerService } from '../../../../service';
 import assets from '../../../../api/assets';
 import querystring from 'querystring';
 class AllDetail extends PureComponent {
@@ -21,7 +21,7 @@ class AllDetail extends PureComponent {
     const rrpairOrderGuid = this.props.match.params.id || this.props.id;
     const { getSelectRrpairDetailList } = this.props;
     const params = { rrpairOrderGuid: rrpairOrderGuid };
-    getSelectRrpairDetailList(assets.selectRrpairDetailList , querystring.stringify(params),(data) => {
+    getSelectRrpairDetailList(assets.selectRrpairDetailList ,querystring.stringify(params),(data) => {
       this.setState({ 
         BaseInfoInfoData : {...data.result.selectRrpairDetailIsOrder,
                               ...data.result.selectRrpairDetailIsAssets,
@@ -51,5 +51,5 @@ class AllDetail extends PureComponent {
 }
 
 export default withRouter(connect(null, dispatch => ({
-  getSelectRrpairDetailList : (url,values,success,type) => operationService.getInfo(url,values,success,type),
+  getSelectRrpairDetailList : (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
 }))(AllDetail));

@@ -43,33 +43,33 @@ const getColumns = (action) => {
       width: 200
     }, {
       title: '配件名称',
-      dataIndex: 'equipmentName',
-      key: 'equipmentName',
+      dataIndex: 'acceName',
+      key: 'acceName',
       width: 200
     }, {
       title: '型号',
-      dataIndex: 'fmodel',
-      key: 'fmodel',
+      dataIndex: 'acceFmodel',
+      key: 'acceFmodel',
       width: 150
     }, {
       title: '规格',
-      dataIndex: 'spec',
-      key: 'spec',
+      dataIndex: 'acceSpec',
+      key: 'acceSpec',
       width: 150
     }, {
       title: '数量',
-      dataIndex: 'extendSum',
-      key: 'extendSum',
+      dataIndex: 'acceNum',
+      key: 'acceNum',
       width: 100
     }, {
       title: '单位',
-      dataIndex: 'meteringUnit',
-      key: 'meteringUnit',
+      dataIndex: 'acceUnit',
+      key: 'acceUnit',
       width: 100
     }, {
       title: '单价',
-      dataIndex: 'price',
-      key: 'price',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
       width: 100
     }, {
       title: '金额',
@@ -153,14 +153,14 @@ class InsertParts extends PureComponent {
           <Col {...gridStyle.content}>
             <FormItem>
               {
-                getFieldDecorator('equipmentName',{
+                getFieldDecorator('acceName',{
                   initialValue:'',
                   rules:[
                     {pattern:/[A-Za-z0-9_\-\u4e00-\u9fa5]+$/,message:'只能是中文、英文、数字、下划线(_)、中横线(-)'},
                     {max: 50, message: '长度不能超过50'}
                   ]
                 })(
-                  <Input onBlur={(e)=>this.props.callBack('equipmentName',e.target.value)}/>
+                  <Input onBlur={(e)=>this.props.callBack('acceName',e.target.value)}/>
               )}
             </FormItem>
           </Col>
@@ -168,14 +168,14 @@ class InsertParts extends PureComponent {
           <Col {...gridStyle.content}>
             <FormItem>
               {
-                getFieldDecorator('fmodel',{
+                getFieldDecorator('acceFmodel',{
                   initialValue:'',
                   rules:[
                     {pattern:/[A-Za-z0-9_\-\u4e00-\u9fa5]+$/,message:'只能是中文、英文、数字、下划线(_)、中横线(-)'},
                     {max: 50, message: '长度不能超过50'}
                   ]
                 })(
-                  <Input onBlur={(e)=>this.props.callBack('fmodel',e.target.value)}/>
+                  <Input onBlur={(e)=>this.props.callBack('acceFmodel',e.target.value)}/>
               )}
             </FormItem>
           </Col>
@@ -183,23 +183,23 @@ class InsertParts extends PureComponent {
           <Col {...gridStyle.content}>
             <FormItem>
               {
-                getFieldDecorator('spec',{
+                getFieldDecorator('acceSpec',{
                   initialValue: '',
                   rules:[
                     {pattern:/[A-Za-z0-9_\-\u4e00-\u9fa5]+$/,message:'只能是中文、英文、数字、下划线(_)、中横线(-)'},
                     {max: 50, message: '长度不能超过50'}
                   ]
                 })(
-                  <Input onBlur={(e)=>this.props.callBack('spec',e.target.value)}/>
+                  <Input onBlur={(e)=>this.props.callBack('acceSpec',e.target.value)}/>
               )}
             </FormItem>
           </Col>
           <Col {...gridStyle.label}>单位：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('meteringUnit')(
+              getFieldDecorator('acceUnit')(
                 <Select allowClear
-                  onSelect={(value)=>this.props.callBack('meteringUnit',value)}
+                  onSelect={(value)=>this.props.callBack('acceUnit',value)}
                 >
                   <Option value='个'>个</Option>
                   <Option value='只'>只</Option>
@@ -212,14 +212,14 @@ class InsertParts extends PureComponent {
           <Col {...gridStyle.content}>
             <FormItem>
               {
-                getFieldDecorator('price',{
+                getFieldDecorator('unitPrice',{
                   initialValue:'',
                   rules:[
                     { required: true,message: '请输入单价' },
                     { pattern:/\d+$/,message:'只能是数字'},
                   ]
                 })(
-                  <Input onBlur={(e)=>this.props.callBack('price',e.target.value)}/>
+                  <Input onBlur={(e)=>this.props.callBack('unitPrice',e.target.value)}/>
               )}
             </FormItem>
           </Col>
@@ -227,7 +227,7 @@ class InsertParts extends PureComponent {
           <Col {...gridStyle.content}>
               <FormItem>
                 {
-                  getFieldDecorator('extendSum',{
+                  getFieldDecorator('acceNum',{
                     initialValue:'',
                     rules:[
                       { required: true,message: '请输入数量' },
@@ -235,7 +235,7 @@ class InsertParts extends PureComponent {
                       {max: 100, message: '最大100'}
                     ]
                   })(
-                    <Input onBlur={(e)=>this.props.callBack('extendSum',e.target.value)}/>
+                    <Input onBlur={(e)=>this.props.callBack('acceNum',e.target.value)}/>
                 )}
               </FormItem>
           </Col>
@@ -268,7 +268,7 @@ class PartsInfo extends PureComponent {
   }
   hideModal = (type) => {
     let parms = {};
-    parms.assetsRecordGuid = this.props.data.assetsRecordGuid;
+    parms.rrpairOrderGuid = this.props.data.rrpairOrderGuid;
     const { getPartsInfo } = this.props;
     if(type === "select") {
       if(this.state.S_parts.length===0){
@@ -284,6 +284,7 @@ class PartsInfo extends PureComponent {
         if(data.status){
           message.success("操作成功!")
           this.setState({choseVisible: false})
+          this.refs.table.fetch();
         }else{
           message.error(data.msg)
         }
@@ -294,7 +295,8 @@ class PartsInfo extends PureComponent {
       getPartsInfo(assets.insertRrpairExtend,querystring.stringify(parms),(data)=>{
         if(data.status){
           message.success("操作成功!");
-          this.setState({writeVisible: false})
+          this.setState({writeVisible: false});
+          this.refs.table.fetch();
         }else{
           message.error(data.msg)
         }
@@ -321,6 +323,7 @@ class PartsInfo extends PureComponent {
   
   render() {
     const {  choseVisible, writeVisible } = this.state;
+    console.log(this.props.data.assetsRecordGuid,'assetsRecordGuid')
     return (
       <div>
         <Modal
