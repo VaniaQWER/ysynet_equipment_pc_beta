@@ -81,6 +81,10 @@ export const selectOption = {
     { text: "有备用", value: "00" },
     { text: "无备用", value: "01" },
   ],
+  guaranteeFlag: [//是否在保
+    { text: "在保", value: "01" },
+    { text: "出保", value: "02" },
+  ],
   faultDescribe: [ // 故障现象
     { text: "部分功能失效", value: "00" },
     { text: "开机后死机", value: "01" },

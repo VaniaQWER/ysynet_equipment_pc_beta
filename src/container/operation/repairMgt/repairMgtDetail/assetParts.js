@@ -49,7 +49,7 @@ class AssetParts extends Component {
     return (
       <div>
          <RemoteTable
-            query={{ assetsRecord: this.props.assetsRecordGuid }}
+            query={{ assetsRecordGuid: this.props.assetsRecordGuid }}
             ref='remote'
             url={assets.selectAssetsExtendList}
             scroll={{x: '120%',y:400}}

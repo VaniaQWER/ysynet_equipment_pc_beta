@@ -5,9 +5,9 @@ import React, { PureComponent } from 'react';
 import { withRouter } from 'react-router'
 import BaseInfo from './baseInfo'; //基本信息
 import { connect } from 'react-redux';
-import { ledger as ledgerService } from '../../../../service';
+import { operation as operationService } from '../../../../service';
 import assets from '../../../../api/assets';
-
+import querystring from 'querystring';
 class AllDetail extends PureComponent {
   constructor(props) {
     super(props);
@@ -21,25 +21,35 @@ class AllDetail extends PureComponent {
     const rrpairOrderGuid = this.props.match.params.id || this.props.id;
     const { getSelectRrpairDetailList } = this.props;
     const params = { rrpairOrderGuid: rrpairOrderGuid };
-    getSelectRrpairDetailList(assets.selectRrpairDetailList , params,(data) => {
+    getSelectRrpairDetailList(assets.selectRrpairDetailList , querystring.stringify(params),(data) => {
       this.setState({ 
         BaseInfoInfoData : {...data.result.selectRrpairDetailIsOrder,
                               ...data.result.selectRrpairDetailIsAssets,
                               ...data.result.selectRrpairDetailIsAcce,
                               ...data.result.selectRrpairDetailIsRrpair,
-                              ...data.result.selectRrpairDetailIsCall
+                              ...data.result.selectRrpairDetailIsCall,
+                              ...this.props.location.state
                             }
         })
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
 
   render() {
     return (
-      <BaseInfo BaseInfoInfoData = {this.state.BaseInfoInfoData}/>
+      <div>
+          {
+            JSON.stringify(this.state.BaseInfoInfoData) === '{}'? null
+            :
+            <BaseInfo BaseInfoInfoData = {this.state.BaseInfoInfoData}/>
+          }
+      </div>
     )
   }
 }
 
 export default withRouter(connect(null, dispatch => ({
-  getSelectRrpairDetailList : (url,values,success) => ledgerService.getInfo(url,values,success),
+  getSelectRrpairDetailList : (url,values,success,type) => operationService.getInfo(url,values,success,type),
 }))(AllDetail));
