@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Card, BackTop, Affix, Button,message } from 'antd';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
@@ -60,7 +60,7 @@ class RepairReg extends Component {
   }
 
   onSubmit = () => {
-    const { insertOrRrpair } = this.props;
+    const { insertOrRrpair,history } = this.props;
     const rrpairOrderGuid = this.props.match.params.id ;
     let params = {};
     const type = this.state.type ; //用户类型
@@ -90,6 +90,7 @@ class RepairReg extends Component {
     console.log("报修登记编辑接口数据",params)
     insertOrRrpair(assets.insertOrUpdateRrpair,JSON.stringify(params),(data) => {
       if(data.status){
+        history.push("/operation/repairMgt/repairRegList");
         message.success("操作成功!")
       }else{
         message.error(data.msg);

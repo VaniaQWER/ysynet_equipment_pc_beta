@@ -27,7 +27,7 @@ class Profile extends PureComponent {
       <Popover content={<ProfileList/>} trigger="hover" placement="bottomLeft">
         <div className={styles.profile}>
           <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" className={styles.profileImage}/>
-          <span className={`${styles.username}`}>Vania Ye Yu Chen</span>
+          <span className={`${styles.username}`}>{this.props.userName}</span>
         </div>
       </Popover> 
     )

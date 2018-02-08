@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Icon, Menu } from 'antd'; //message
+import { Layout, Icon} from 'antd'; //message
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
 import { withRouter, Switch, Redirect } from 'react-router-dom';
@@ -9,30 +9,7 @@ import BreadcrumbGroup from '../../component/breadcrumbGroup';
 import Profile from '../../component/profile';
 import Notice from '../../component/notice';
 const { Header, Footer } = Layout;
-const SubMenu = Menu.SubMenu;
-// 使用递归创建菜单
-const createMenu = menuList => (
-  Array.isArray(menuList) ? menuList.map((menu, index) => (
-    menu.children ? (
-      <SubMenu
-        key={menu.key} 
-        title={<span><Icon type={menu.icon} /><span>{menu.text}</span></span>}
-      >
-        { createMenu(menu.children) }
-      </SubMenu>
-    ) : (
-      <Menu.Item key={menu.key}>
-        <Icon type={menu.icon} />
-        <span> { menu.text } </span>
-      </Menu.Item>
-    )
-  )) : (
-    <Menu.Item key={menuList.key}>
-      <Icon type={menuList.icon} />
-      <span> { menuList.text } </span>
-    </Menu.Item>
-  )
-)
+
 class Home extends React.Component {
   constructor(props) {
     super(props)
@@ -41,8 +18,8 @@ class Home extends React.Component {
     }
   }
   componentWillMount() {
-    const { getMenu } = this.props;//getUser history
-    //getUser();
+    const { getMenu,getUser } = this.props;//getUser history
+    getUser();
     getMenu();
     // const { user } = this.props;
     // if (!user.type && !user.userName) {
@@ -51,7 +28,7 @@ class Home extends React.Component {
     // }
   }
   render () {
-    const { routes, menu } = this.props;
+    const { routes, menu, user } = this.props;
     return (
       <Layout style={{minHeight: '100vh'}}>
         <BasicLayout menuList={menu.menuList} collapsed={this.state.collapsed}/>
@@ -69,7 +46,7 @@ class Home extends React.Component {
             />
             <div style={{display: 'flex'}}>
               <Notice/>
-              <Profile/>
+              <Profile userName={user.userInfo.userNo}/>
             </div>  
           </Header>
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}>

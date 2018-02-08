@@ -9,23 +9,23 @@ const SubMenu = Menu.SubMenu;
 // 使用递归创建菜单
 const createMenu = menuList => (
   Array.isArray(menuList) ? menuList.map((menu, index) => (
-    menu.children ? (
+    menu.subMenus ? (
       <SubMenu
         key={menu.key} 
-        title={<span><Icon type={menu.icon} /><span>{menu.text}</span></span>}
+        title={<span><Icon type={menu.icon} /><span>{menu.name}</span></span>}
       >
-        { createMenu(menu.children) }
+        { createMenu(menu.subMenus) }
       </SubMenu>
     ) : (
       <Menu.Item key={menu.key}>
         <Icon type={menu.icon} />
-        <span> { menu.text } </span>
+        <span> { menu.name } </span>
       </Menu.Item>
     )
   )) : (
     <Menu.Item key={menuList.key}>
       <Icon type={menuList.icon} />
-      <span> { menuList.text } </span>
+      <span> { menuList.name } </span>
     </Menu.Item>
   )
 )

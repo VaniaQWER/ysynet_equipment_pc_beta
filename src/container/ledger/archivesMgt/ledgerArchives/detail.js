@@ -49,7 +49,7 @@ class LedgerArchivesDetail extends Component {
               <CertInfo certGuid={this.state.AssetInfoData.certGuid}/>
             </TabPane>
             <TabPane tab="附件信息" key="3">
-              <AccessoryInfo assetsRecord={this.state.AssetInfoData.assetsRecord}/>
+              <AccessoryInfo assetsRecord={this.state.AssetInfoData.assetsRecord} assetsRecordGuid={this.state.AssetInfoData.assetsRecordGuid}/>
             </TabPane>
             <TabPane tab="操作记录" key="4">
               <RecordList assetsRecord={this.state.AssetInfoData.assetsRecord}/>

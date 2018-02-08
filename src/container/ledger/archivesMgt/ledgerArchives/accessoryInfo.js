@@ -2,7 +2,7 @@
  *  档案管理-资产档案-详情-附件信息
  */
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon,Upload,Button ,message,Menu,Dropdown} from 'antd';
+import { Row,Col,Input,Icon,Upload,Button ,message,Menu,Dropdown,Alert} from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
 import styles from './style.css';
@@ -16,7 +16,7 @@ class AccessoryInfo extends Component {
     this.state = {
       fileType: "",
       loading: false,
-      messageError:''
+      messageError : ""
     }
   }
   //附件类型改变
@@ -31,7 +31,11 @@ class AccessoryInfo extends Component {
     if(!this.state.fileType){
       message.warning("请选择上传文件类型");
     }
-    
+  }
+
+  queryHandler = (query) => {
+    this.refs.table.fetch(query);
+    this.setState({ query })
   }
   render () {
     const columns = [
@@ -62,7 +66,7 @@ class AccessoryInfo extends Component {
       }
     ];
     const props = {
-      action: assets.IMPORTMODEL,
+      action: assets.assetsFileUpLoad,
       showUploadList: false,
       withCredentials: true,
       beforeUpload:this.beforeUpload,
@@ -72,18 +76,18 @@ class AccessoryInfo extends Component {
       },
       onSuccess:(result)=>{
         this.setState({loading: false})
-        // if(result.status){
-        //     this.refs.table.fetch();
-        //     this.setState({
-        //         messageError:""
-        //     })
-        //     message.success("上传成功")
-        // }
-        // else{
-        //     this.setState({
-        //         messageError:result.msg
-        //     })
-        // }
+        if(result.status){
+            this.refs.table.fetch();
+            this.setState({
+                messageError:""
+            })
+            message.success("上传成功")
+        }
+        else{
+            this.setState({
+                messageError:result.msg
+            })
+        }
     }
 
     };
@@ -91,27 +95,27 @@ class AccessoryInfo extends Component {
     const menu = (
       <Menu>
         <Menu.Item>
-        <Upload {...props}  data={{"fileType":"资产图片"}}>
+        <Upload {...props}  data={{"certCode":"资产图片","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 资产图片</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"fileType":"资产证件"}}>
+        <Upload {...props} data={{"certCode":"资产证件","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 资产证件</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"fileType":"招标文件"}}>
+        <Upload {...props} data={{"certCode":"招标文件","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 招标文件</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"fileType":"使用说明"}}>
+        <Upload {...props} data={{"certCode":"使用说明","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 使用说明</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"fileType":"其他"}}>
+        <Upload {...props} data={{"certCode":"其他","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 其他</a> 
         </Upload>
         </Menu.Item>
@@ -119,18 +123,21 @@ class AccessoryInfo extends Component {
     );
     return (
       <div className='ysynet-content ysynet-common-bgColor'>
-          <Row>
+          {
+              this.state.messageError ? null
+              :
+              <Alert message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
+          }
+          <Row style={{marginTop:10}}>
             <Col span={12}>
               <Search
                 placeholder="请输入附件名称/类型"
-                onSearch={value => console.log(value)}
+                onSearch={value =>  {this.queryHandler({'params':value})}}
                 style={{ width: 300 }}
                 enterButton="搜索"
               />
             </Col>
             <Col span={12} className={styles['text-align-right']}>
-  
-
               <Dropdown overlay={menu} placement="bottomLeft">
                 <Button>添加附件</Button>
               </Dropdown>
@@ -138,7 +145,7 @@ class AccessoryInfo extends Component {
             </Col>
           </Row>
          <RemoteTable
-            ref='remote'
+            ref='table'
             query={{ assetsRecord: this.props.assetsRecord }}
             url={assets.selectCertInfoList}
             scroll={{x: '100%', y : document.body.clientHeight - 341}}

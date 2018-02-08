@@ -27,6 +27,15 @@ export const setUserInfo = user => (
   dispatch => dispatch(setUserMapper(user))
 )
 
+export const fetchUserLogin = (url,success) => (
+  dispatch => (
+    request(url, {
+      success: data => success(data),
+      error: err => alert(err)
+    })
+  )
+)
+
 export const fetchUserInfo = () => (
   dispatch => (
     request(user.fetchUser, {

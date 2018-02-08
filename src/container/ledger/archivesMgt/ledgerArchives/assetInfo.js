@@ -9,20 +9,27 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../../service';
 import assets from '../../../../api/assets';
+import querystring from 'querystring';
 
 
 class AssetInfo extends Component {
   handleUpdateAssetsRecordInfo = (data,field) =>{
+    console.log(data,'data')
     const { updateAssetsRecordInfo,AssetInfoData } = this.props;
     let params = { };
-    params[field] = data;
+    params.value = field;
+    params.text = data;
     params.assetsRecordGuid = AssetInfoData.assetsRecordGuid;
-    updateAssetsRecordInfo(assets.updateAssetsRecordInfo,params,(data) => {
+    console.log(params,'params')
+    updateAssetsRecordInfo(assets.updateAssetsRecordInfo, querystring.stringify(params),(data) => {
      if(data.status){
       message.success("修改成功")
      }else{
       message.error(data.msg);
      }
+   },{
+    Accept: 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
    })
   }
 
@@ -33,11 +40,11 @@ class AssetInfo extends Component {
     return (
       <Row type="flex" style={{marginTop: 16}}  className={styles['table-row']}>
         <Col span={4} className={styles['table-span']}>资产名称</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.equipmetStandardName }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.equipmentName }</Col>
         <Col span={4} className={styles['table-span']}>资产编号</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.assetsRecord }</Col>
         <Col span={4} className={styles['table-span']}>通用名称</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'equipmetStandardName')} text={ AssetInfoData.equipmetStandardName } /></Col>
+        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'EQUIPMENT_STANDARD_NAME')} text={ AssetInfoData.equipmetStandardName } /></Col>
         <Col span={4} className={styles['table-span']}>状态</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.useFstate }</Col>
         <Col span={4} className={styles['table-span']}>型号</Col>
@@ -111,7 +118,7 @@ class AssetInfo extends Component {
 
 
  export default withRouter(connect(null, dispatch => ({
-  updateAssetsRecordInfo: (url,values,success) => ledgerService.getInfo(url,values,success),
+  updateAssetsRecordInfo: (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
 }))(AssetInfo));
 
 

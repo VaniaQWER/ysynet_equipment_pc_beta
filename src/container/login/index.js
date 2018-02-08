@@ -4,8 +4,11 @@ import LoginForm from './loginForm';
 import PhoneLoginForm from './phoneLoginForm'
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Tabs, Icon, Form, Button } from 'antd';
+import { Row, Col, Tabs, Icon, Form, Button,message } from 'antd';
 import { user as userService } from '../../service';
+import assets from '../../api/assets';
+import sha1 from 'sha1';
+import md5 from 'md5';
 const TabPane = Tabs.TabPane;
 /**
  * @file 登录页面
@@ -26,24 +29,46 @@ class Login extends Component {
     const form = tabIndex === 1 ? this.normalForm : this.phoneForm;
     const postData = form.props.form.getFieldsValue();
     const { userName, password } = postData;
-    const { setUser, history } = this.props;
-    if ( userName === 'admin' && password === '999999' ) {
-      // 管理科室
-      setUser({userName: '管理科室', type: '01'});
-      history.push('/');
-    } else if ( userName === 'supplier' && password === '999999' ) {
-      // 供应商
-      setUser({userName: '供应商', type: '03'});
-      history.push('/');
-    } else if ( userName === 'customer' && password === '999999') {
-      // 使用科室
-      setUser({userName: '使用科室', type: '02'});
-      history.push('/');
-    } else {
-      alert('用户名或密码错误')
-    }
+    const { setUser, history,fetchUserLogin } = this.props;
+    console.log(userName,'userName');
+    console.log(password,'password');
+
+    let arr = [md5(password.toString()).substring(2, md5(password.toString()).length).toUpperCase(), 'vania']
+    let pwd = '';
+    arr.sort().map( (item, index) => {
+      return pwd += item;
+    });
+    fetchUserLogin(assets.userLogin+'?userNo='+userName+'&pwd=' + sha1(pwd) + '&token=vania',(data)=>{
+      if(data.status){
+        setUser(data.result);
+        if (!data.result.userInfo) {
+          message.error(data.result.loginResult)
+        }else{
+          history.push('/');
+        }
+      }else{
+        message.error(data.msg)
+      }
+    });
+
+    // if ( userName === 'admin' && password === '999999' ) {
+    //   // 管理科室
+    //   setUser({userName: '管理科室', type: '01'});
+    //   history.push('/');
+    // } else if ( userName === 'supplier' && password === '999999' ) {
+    //   // 供应商
+    //   setUser({userName: '供应商', type: '03'});
+    //   history.push('/');
+    // } else if ( userName === 'customer' && password === '999999') {
+    //   // 使用科室
+    //   setUser({userName: '使用科室', type: '02'});
+    //   history.push('/');
+    // } else {
+    //   alert('用户名或密码错误')
+    // }
   }
   render() {
+    console.log(this.props)
     return (
       <Row className={`${styles.container} login`}>
         <Col span={16} push={8} style={{marginTop: 100}}>
@@ -65,5 +90,6 @@ class Login extends Component {
 }
 
 export default withRouter(connect(state => state, dispatch => ({
-  setUser: user => dispatch(userService.setUserInfo(user))
+  setUser: user => dispatch(userService.setUserInfo(user)),
+  fetchUserLogin: (url,success) => dispatch(userService.fetchUserLogin(url,success))
 }))(Login));

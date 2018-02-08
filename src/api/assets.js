@@ -1,5 +1,6 @@
 import {_local} from './local';
 export default {
+ userLogin: `${_local}/meqm/login/userLogin`,//登录
  picUploadUrl: `${_local}/meqm/ftp/post`,//图片上传
  selectAssetsList: `${_local}/meqm/assetsRecordController/selectAssetsList`, //查询资产列表
  selectAssetsRecordDetail: `${_local}/meqm/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
@@ -9,6 +10,8 @@ export default {
  searchCertList: `${_local}/meqm/equipmentAdd/searchCertList`, // 根据资产 证件GUID 查询证件信息
  selectCertInfoList: `${_local}/meqm/assetsRecordController/selectCertInfoList`, // 根据资产编号assetsRecord 查询资产附件列表
  selectEqOperationInfoList: `${_local}/meqm/assetsRecordController/selectEqOperationInfoList`, // 根据资产GUID 查询资产档案操作记录列表
+ importEquipments: `${_local}/meqm/equipmentAdd/importEquipments`, // 资产信息导入
+ assetsFileUpLoad: `${_local}/meqm/assetsRecordController/assetsFileUpLoad`, // 资产附件上传
 
  //报修登记
  insertOrUpdateRrpair: `${_local}/meqm/rrpairOrderController/insertOrUpdateRrpair`,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout,Upload,Button,Tag } from 'antd';
+import { Row,Col,Input,Icon, Layout,Upload,Button,Tag,message,Alert } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
 import assets from '../../../../api/assets';
@@ -15,7 +15,8 @@ class LedgerArchivesList extends Component {
     super(props);
     this.state = {
       loading: false,
-      query:{}
+      query:{},
+      messageError:""
     }
   }
   queryHandler = (query) => {
@@ -30,7 +31,7 @@ class LedgerArchivesList extends Component {
         width: 80,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/1`}}><Icon type="profile" />详情</Link>
+            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
           </span>  
       },
       {
@@ -47,7 +48,7 @@ class LedgerArchivesList extends Component {
       },
       {
         title: '资产名称',
-        dataIndex: 'equipmetStandardName',
+        dataIndex: 'equipmentName',
         width: 200
       },
       {
@@ -76,9 +77,17 @@ class LedgerArchivesList extends Component {
         width: 100
       }
     ];
+    const messageInfo = "添加大量的信息，建议使用导入功能。导入前请先下载Excel格式模版文件。";
+    
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
-          <Row>
+         <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
+         {
+            this.state.messageError === "" ? null
+            :
+            <Alert style={{marginTop : 10}} message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
+          }
+          <Row style={{marginTop : 10}}>
             <Col span={12}>
               <Search
                 placeholder="请输入资产编号/资产名称"
@@ -90,7 +99,7 @@ class LedgerArchivesList extends Component {
             <Col span={12} className={styles['text-align-right']}>
               <Upload
                 // data={{"certGuid":this.state.query.certGuid}}
-                //action={productUrl.IMPORTMODEL}
+                action={assets.importEquipments}
                 showUploadList={false}
                 withCredentials={true}
                 beforeUpload={()=>this.setState({loading: true})}
@@ -100,18 +109,18 @@ class LedgerArchivesList extends Component {
                 }}
                 onSuccess={(result)=>{
                     this.setState({loading: false})
-                    // if(result.status){
-                    //     this.refs.table.fetch();
-                    //     this.setState({
-                    //         messageError:""
-                    //     })
-                    //     message.success("导入成功")
-                    // }
-                    // else{
-                    //     this.setState({
-                    //         messageError:result.msg
-                    //     })
-                    // }
+                    if(result.status){
+                        this.refs.table.fetch();
+                        this.setState({
+                            messageError:""
+                        })
+                        message.success("导入成功")
+                    }
+                    else{
+                        this.setState({
+                            messageError:result.msg
+                        })
+                    }
                 }}
                 >
                 <Button style={{ marginRight: 8 }}>

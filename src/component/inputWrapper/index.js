@@ -36,7 +36,7 @@ class InputWrapper extends PureComponent {
     const { onEndEdit } = this.props;
     this.setState({inputDisplay: false, outputText: e.target.value})
     if (typeof onEndEdit === 'function') {
-      onEndEdit(this.state.text)
+      onEndEdit(e.target.value)
     }
   }
   componentDidUpdate() {
