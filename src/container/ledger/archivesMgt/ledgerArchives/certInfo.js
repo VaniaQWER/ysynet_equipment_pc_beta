@@ -9,6 +9,7 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../../service';
 import assets from '../../../../api/assets';
+import querystring from 'querystring';
 
 class CertInfo extends Component {
   constructor(props) {
@@ -21,8 +22,11 @@ class CertInfo extends Component {
   componentWillMount = () =>{
     const { getSearchCertList ,certGuid } = this.props;
     const params = { certGuid: certGuid };
-    getSearchCertList(assets.searchCertList , params,(data) => {
+    getSearchCertList(assets.searchCertList , querystring.stringify(params),(data) => {
       this.setState( { certInfoData : data[0] })
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
   render () {
@@ -71,5 +75,5 @@ class CertInfo extends Component {
 //export default CertInfo;
 
 export default withRouter(connect(null, dispatch => ({
-  getSearchCertList: (url,values,success) => ledgerService.getInfo(url,values,success),
+  getSearchCertList: (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
 }))(CertInfo));

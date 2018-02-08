@@ -11,6 +11,7 @@ import RecordList from './recordList'; //操作记录
 import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../../service';
 import assets from '../../../../api/assets';
+import querystring from 'querystring';
 
 const TabPane = Tabs.TabPane;
 
@@ -26,14 +27,20 @@ class LedgerArchivesDetail extends Component {
     const assetsRecordGuid = this.props.match.params.id;
     const { getSelectAssetsRecordDetail } = this.props;
     const params = { assetsRecordGuid: assetsRecordGuid };
-    getSelectAssetsRecordDetail(assets.selectAssetsRecordDetail , params,(data) => {
+    getSelectAssetsRecordDetail(assets.selectAssetsRecordDetail , querystring.stringify(params),(data) => {
       this.setState( { AssetInfoData : data.result })
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
 
   render() {
     return (
       <div>
+         {
+          JSON.stringify(this.state.AssetInfoData) === '{}' ? null 
+          :
           <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">
               <BaseInfo AssetInfoData={this.state.AssetInfoData}/> 
@@ -48,11 +55,12 @@ class LedgerArchivesDetail extends Component {
               <RecordList assetsRecord={this.state.AssetInfoData.assetsRecord}/>
             </TabPane>
           </Tabs>
+         }
       </div>
     )
   }
 }
 
 export default withRouter(connect(null, dispatch => ({
-  getSelectAssetsRecordDetail: (url,values,success) => ledgerService.getInfo(url,values,success),
+  getSelectAssetsRecordDetail: (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
 }))(LedgerArchivesDetail));

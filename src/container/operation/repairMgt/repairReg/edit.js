@@ -88,15 +88,12 @@ class RepairReg extends Component {
    
     }
     console.log("报修登记编辑接口数据",params)
-    insertOrRrpair(assets.insertOrUpdateRrpair,querystring.stringify(params),(data) => {
+    insertOrRrpair(assets.insertOrUpdateRrpair,JSON.stringify(params),(data) => {
       if(data.status){
         message.success("操作成功!")
       }else{
         message.error(data.msg);
       }
-    },{
-      Accept: 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
 
   }

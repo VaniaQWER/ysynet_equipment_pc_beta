@@ -2,9 +2,7 @@
  * @file 配件信息 Card
  */
 import React, { PureComponent } from 'react';
-import {  Button, Icon, Modal, Form, Row, Col, Input, Select,message } from 'antd';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import {  Table,Button, Icon, Modal, Form, Row, Col, Input, Select,message } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
 import { operation as operationService } from '../../../../service';
@@ -112,6 +110,7 @@ class SelectParts extends PureComponent {
         rowKey={'assetsExtendGuid'}
         style={{marginTop: 10}}
         size="small"
+        showHeader={true}
         rowSelection={{
           selectedRowKeys: this.state.selected,
           onChange: (selectedRowKeys, selectedRows) => {
@@ -250,9 +249,7 @@ class PartsInfo extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      query:{
-        rrpairOrderGuid: this.props.data.rrpairOrderGuid
-      },
+      dataSource:[],
       S_parts: [],//选择配件
       W_parts: {},//填写配件
       choseVisible: false,
@@ -261,6 +258,23 @@ class PartsInfo extends PureComponent {
       assetsRecordGuid: this.props.data.assetsRecordGuid
     }
   }
+
+  handleTableDataSource =() => {
+    if(this.props.data.assetsRecordGuid){
+      const assetsRecordGuid = this.state.assetsRecordGuid;
+      const params = { assetsRecordGuid: assetsRecordGuid };
+      operationService.getInfo(assets.selectRrpairFittingList, querystring.stringify(params),(data) => {
+        this.setState( { dataSource : data.result.rows })
+      },{
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+      })
+    }
+  }
+  //获取配件列表dataSource
+  componentWillMount = () =>{
+    this.handleTableDataSource();
+  }
   getWriteParts = (attr,val)=>{
     let { W_parts } = this.state;
     W_parts[attr] = val;
@@ -268,42 +282,57 @@ class PartsInfo extends PureComponent {
   }
   hideModal = (type) => {
     let parms = {};
-    parms.rrpairOrderGuid = this.props.data.rrpairOrderGuid;
-    const { getPartsInfo } = this.props;
-    if(type === "select") {
-      if(this.state.S_parts.length===0){
-        return message.warning("请选择要添加的资产配件!")
+    //编辑 this.props.data.rrpairOrderGuid存在
+    if(this.props.data.rrpairOrderGuid){
+      parms.rrpairOrderGuid = this.props.data.rrpairOrderGuid;
+      if(type === "select") {
+        if(this.state.S_parts.length===0){
+          return message.warning("请选择要添加的资产配件!")
+        }
+        const assetsExtendGuids = [];
+        this.state.S_parts.map((item) => {
+        return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
+        })
+        parms.assetsExtendGuids = assetsExtendGuids;
+        console.log(parms,'选择配件数据')
+
+        operationService.getInfo(assets.insertRrpairFitting,JSON.stringify(parms),(data)=>{
+          if(data.status){
+            message.success("操作成功!")
+            this.setState({choseVisible: false})
+            this.handleTableDataSource();
+          }else{
+            message.error(data.msg)
+          }
+        })
+
+      }else if(type === 'edit'){
+        parms = {...this.state.W_parts,...parms};
+        console.log(parms,'填写配件数据')
+        operationService.getInfo(assets.insertRrpairExtend,querystring.stringify(parms),(data)=>{
+          if(data.status){
+            message.success("操作成功!");
+            this.setState({writeVisible: false});
+            this.handleTableDataSource();
+          }else{
+            message.error(data.msg)
+          }
+        },{
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        })
       }
-      const assetsExtendGuids = [];
-      this.state.S_parts.map((item) => {
-       return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
-      })
-      parms.assetsExtendGuids = assetsExtendGuids;
-      console.log(parms,'选择配件数据')
-      getPartsInfo(assets.insertRrpairFitting,JSON.stringify(parms),(data)=>{
-        if(data.status){
-          message.success("操作成功!")
-          this.setState({choseVisible: false})
-          this.refs.table.fetch();
-        }else{
-          message.error(data.msg)
+    }else{
+      //新增  this.props.data.rrpairOrderGuid不存在
+      if(type === "select") {
+        if(this.state.S_parts.length===0){
+          return message.warning("请选择要添加的资产配件!")
         }
-      })
-    }else if(type === 'edit'){
-      parms = {...this.state.W_parts,...parms};
-      console.log(parms,'填写配件数据')
-      getPartsInfo(assets.insertRrpairExtend,querystring.stringify(parms),(data)=>{
-        if(data.status){
-          message.success("操作成功!");
-          this.setState({writeVisible: false});
-          this.refs.table.fetch();
-        }else{
-          message.error(data.msg)
-        }
-      },{
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-      })
+        this.setState({choseVisible: false})
+        this.setState({ dataSource : this.state.S_parts});
+        console.log(this.state.S_parts,'新增选择配件数据');
+      }
+
     }
   }
   showModal = (assetsRecordGuid,key) => {
@@ -322,8 +351,7 @@ class PartsInfo extends PureComponent {
   
   
   render() {
-    const {  choseVisible, writeVisible } = this.state;
-    console.log(this.props.data.assetsRecordGuid,'assetsRecordGuid')
+    const {  choseVisible, writeVisible ,dataSource} = this.state;
     return (
       <div>
         <Modal
@@ -351,13 +379,11 @@ class PartsInfo extends PureComponent {
             showOrHide={this.state.showOrHide}
             />
         </Modal>
-        <RemoteTable
-          ref='table'
-          query={this.state.query}
-          url={assets.selectRrpairFittingList}
+         <Table 
+          dataSource={dataSource} 
           scroll={{x: '100%'}}
-          columns={getColumns(this.props.getPartsInfo)}
-          rowKey={'rrpairFittingUseGuid'}
+          columns={getColumns()}
+          rowKey={'assetsExtendGuid'}
           style={{marginTop: 10}}
           size="small"
           showHeader={true}
@@ -370,12 +396,17 @@ class PartsInfo extends PureComponent {
               <Icon type="switcher" />
               选择配件
             </Button>
-            <Button
+            {
+              this.props.data.rrpairOrderGuid ?
+              <Button
               onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
             >
               <Icon type="edit" />
               填写配件
             </Button>
+            :null
+            }
+         
           </div>}
         /> 
  
@@ -384,6 +415,9 @@ class PartsInfo extends PureComponent {
   }
 }
 
-export default withRouter(connect(state => state, dispatch => ({
-  getPartsInfo: (url,values,success,type) => operationService.getInfo(url,values,success,type),
-}))(PartsInfo));
+export default PartsInfo;
+// connect(state => state, dispatch => ({
+//   getPartsInfo: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+// }))(PartsInfo);
+
+//(url,values,success,type) => operationService.getInfo(url,values,success,type)

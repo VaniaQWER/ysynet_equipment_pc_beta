@@ -47,7 +47,7 @@ export const ledgerData = {
     text: "故障",
     color: 'red'
   },
-  "03": {
+  "00": {
     text: "报废",
     color: 'gold'
   },
@@ -151,3 +151,12 @@ export const selectOption = {
     { text: "其他", value: "99" },
   ]
 }
+
+export const faultDescribeData ={
+  "00" : { text: "部分功能失效" },
+  "01" : { text: "开机后死机" },
+  "03" : { text: "性能指标偏离" },
+  "04" : { text: "不规则或偶发故障" },
+  "02" : { text: "其他" }
+}  
+

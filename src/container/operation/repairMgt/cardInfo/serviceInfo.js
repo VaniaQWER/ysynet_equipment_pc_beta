@@ -1,7 +1,7 @@
 /**
  * @file 维修信息 Card
  */
-import React, { PureComponent, Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
 import PropTypes from 'prop-types';
 import { selectOption } from '../../../../constants';
@@ -20,7 +20,7 @@ const gridStyle = {
   }
 }
 // 内修
-class InsideRepairForm extends Component {
+class InsideRepairForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,6 +35,7 @@ class InsideRepairForm extends Component {
       this.props.callBack("50"); //完成按钮
       this.setState({isClosed: false})
     }
+
     this.props.data.repairResult = val;
   }
   render() {
@@ -107,18 +108,6 @@ class InsideRepairForm extends Component {
     return (
       <Form>
         <Row type='flex'>
-          <Col {...gridStyle.label}>维修人电话：</Col>
-          <Col {...gridStyle.content}>
-            {
-              getFieldDecorator('inRrpairPhone',{
-                initialValue: isEdit ? data.inRrpairPhone : null
-              })(
-                isEdit ? 
-                <Input placeholder='请输入维修人电话'/>
-                :
-                <span> {data.inRrpairPhone} </span> 
-            )}
-          </Col>
           <Col {...gridStyle.label}>维修结果：</Col>
           <Col {...gridStyle.content}>
             {
@@ -137,6 +126,19 @@ class InsideRepairForm extends Component {
                 <span> {data.repairResult} </span>
             )}
           </Col>
+          <Col {...gridStyle.label}>维修人电话：</Col>
+          <Col {...gridStyle.content}>
+            {
+              getFieldDecorator('inRrpairPhone',{
+                initialValue: isEdit ? data.inRrpairPhone : null
+              })(
+                isEdit ? 
+                <Input placeholder='请输入维修人电话'/>
+                :
+                <span> {data.inRrpairPhone} </span> 
+            )}
+          </Col>
+       
           <Col {...gridStyle.label}>维修费用（总计）：</Col>
           <Col {...gridStyle.content}>
             {

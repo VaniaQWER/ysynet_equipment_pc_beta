@@ -11,7 +11,7 @@ class AssetParts extends Component {
     const columns = [
       {
         title: '配件编号',
-        dataIndex: 'equipmentCode',
+        dataIndex: 'assetsRecord',
         width: 100
       },
       {
@@ -48,12 +48,13 @@ class AssetParts extends Component {
     return (
       <div>
          <RemoteTable
-            query={{ assetsRecord: this.props.assetsRecordGuid }}
+            query={{ assetsRecordGuid: this.props.assetsRecordGuid }}
             ref='remote'
             url={assets.selectAssetsExtendList}
             scroll={{x: '120%',y:400}}
             columns={columns}
-            rowKey={'assetsRecord'}
+            showHeader={true}
+            rowKey={'assetsExtendGuid'}
             style={{marginTop: 10}}
             size="small"
           /> 

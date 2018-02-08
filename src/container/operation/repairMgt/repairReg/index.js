@@ -5,11 +5,10 @@ import { withRouter } from 'react-router'
 import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
-//import AssignInfo from './cardInfo/assignInfo';
 import ServiceInfo from '../cardInfo/serviceInfo';
+import PartsInfo from '../cardInfo/partsInfo'; 
 import assets from '../../../../api/assets';
 import { operation as operationService } from '../../../../service';
-import querystring from 'querystring';
 /**
  * @file 资产运维-维修管理-报修登记
  */
@@ -18,7 +17,7 @@ class RepairReg extends Component {
     assetsInfo: {},
     isAssets:true, //判断有资产报修 还缺无资产报修的状态
     type: "01", //01管理科室 02使用科室 this.props.user.type
-    orderFstate: '50' //管理科室默认的状态是完成50   关闭90  使用科室提交10
+    orderFstate: '50', //管理科室默认的状态是完成50   关闭90  使用科室提交10
   }
   handleButtonText =(orderFstate) => {
    if(this.state.type === "01"){
@@ -41,13 +40,20 @@ class RepairReg extends Component {
       if(JSON.stringify(this.state.assetsInfo) === '{}'){
         return message.warning("请先搜索正确的资产信息,谢谢!")
       }
+      //配件信息提交参数
+      const selectPartsData = this.refs.partsInfo.state.dataSource;      
+      const assetsExtendGuids = [];
+      selectPartsData.map((item) => {
+        return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
+      })
       params= {
         assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
         isRepairs:true,
         orderFstate:this.state.orderFstate,
-        ...this.repairInfo.postData(),
-        ...this.refs.serviceInfo.postData() //使用科室没有维修信息
+        assetsExtendGuids:assetsExtendGuids,
+        ...this.repairInfo.postData(),    //报修信息提交数据
+        ...this.refs.serviceInfo.postData() //使用科室没有维修信息  维修信息提交数据
       };
       console.log(params,"有资产报修...管理科室")
     }else if(type === "02") { // 使用科室
@@ -73,15 +79,12 @@ class RepairReg extends Component {
       }
     }
     console.log("报修登记接口数据",params)
-    insertOrRrpair(assets.insertOrUpdateRrpair,querystring.stringify(params),(data) => {
+    insertOrRrpair(assets.insertOrUpdateRrpair,JSON.stringify(params),(data) => {
       if(data.status){
         message.success("操作成功!")
       }else{
         message.error(data.msg);
       }
-    },{
-      Accept: 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
 
   }
@@ -105,9 +108,14 @@ class RepairReg extends Component {
         </Card>
         {
           type === "01" ? 
+          <div>
             <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
-              <ServiceInfo isEdit={true} ref='serviceInfo'   callBack={(data)=>this.setState({ orderFstate : data})}/>
+              <ServiceInfo isEdit={true} ref='serviceInfo' callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
             </Card>
+            <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
+              <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}}/>
+            </Card>
+          </div>
           :
           null
         }

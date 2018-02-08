@@ -54,6 +54,7 @@ class RecordList extends Component {
             url={assets.selectEqOperationInfoList}
             scroll={{x: '100%', y : document.body.clientHeight - 341}}
             columns={columns}
+            showHeader={true}
             rowKey={'RN'}
             style={{marginTop: 10}}
             size="small"

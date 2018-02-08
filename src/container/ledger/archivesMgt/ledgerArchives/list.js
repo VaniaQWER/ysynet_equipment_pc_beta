@@ -30,7 +30,7 @@ class LedgerArchivesList extends Component {
         width: 80,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/1`}}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/1`}}><Icon type="profile" />详情</Link>
           </span>  
       },
       {
@@ -82,7 +82,7 @@ class LedgerArchivesList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入资产编号/资产名称"
-                onSearch={value =>  {this.queryHandler({'searchName':value})}}
+                onSearch={value =>  {this.queryHandler({'params':value})}}
                 style={{ width: 300 }}
                 enterButton="搜索"
               />

@@ -23,7 +23,12 @@ class BaseInfo extends Component {
             <AssetInfo AssetInfoData={AssetInfoData}/>
           </Panel>
           <Panel header="资产配件" key="3">
-            <AssetParts />
+            {
+              JSON.stringify(AssetInfoData) === '{}' ? null 
+              :
+              <AssetParts assetsRecordGuid={AssetInfoData.assetsRecordGuid}/>
+            }
+         
           </Panel>
         </Collapse>
       </div>  

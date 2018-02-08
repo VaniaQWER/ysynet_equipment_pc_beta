@@ -6,7 +6,7 @@ import { Row, Col, Input, Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import assets from '../../../../api/assets';
-import { repairCommonDataSource,selectOption } from '../../../../constants'
+import { repairCommonDataSource,faultDescribeData } from '../../../../constants'
 
 const Search = Input.Search;
 const { Content } = Layout;
@@ -33,7 +33,7 @@ class RepairRegList extends Component {
           record.orderFstate === '10' ?
           <span>
             <Link to={{pathname: `/operation/repairMgt/repairRegList/edit/${record.rrpairOrderGuid}`}}>
-              <Icon type="meh-o" style={{marginRight: 5}}/>编辑
+              <Icon type="edit" style={{marginRight: 5}}/>编辑
             </Link>
           </span>  :
           <span>
@@ -49,13 +49,12 @@ class RepairRegList extends Component {
         dataIndex: 'faultDescribe',
         width: 200,
         render: (text)=>{
-         return selectOption.faultDescribe.map((item,index) => {
-            if(text === item.value ){
-              return item.text
-            }
-            return null;
-          })
-        }
+          let str = '';
+          text ? text.map((item) => {
+           return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
+          }) : ''
+          return str;
+        }  
       }];
     return (
         <Content className='ysynet-content ysynet-common-bgColor'>
@@ -63,7 +62,7 @@ class RepairRegList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
-                onSearch={value =>  {this.queryHandler({'searchName':value})}}
+                onSearch={value =>  {this.queryHandler({'params':value})}}
                 style={{ width: 300 }}
                 enterButton="搜索"
               />

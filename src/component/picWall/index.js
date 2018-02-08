@@ -2,10 +2,11 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Upload, message,Modal } from 'antd';
 import UploadButton from './uploadButton'
+import assets from './../../api/assets'
 
 class PicWall extends PureComponent {
   static defaultProps = {
-    action: "https://192.168.0.212:3001",
+    action: assets.picUploadUrl,
     max: 3
   };
   static propTypes = {

@@ -121,7 +121,7 @@ class RepairInfoForm extends PureComponent {
               initialValue: isEdit ? data.faultDescribe : null
             })( 
               isEdit ?  
-              <Select style={{width: '100%'}} allowClear>
+              <Select style={{width: '100%'}} allowClear mode="multiple">
                 {
                   selectOption.faultDescribe.map((item, index) => (
                     <Option value={item.value} key={index}> { item.text } </Option>

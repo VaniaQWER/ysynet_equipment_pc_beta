@@ -1,6 +1,6 @@
 import {_local} from './local';
 export default {
- // selectAssetsList: `${_local}/meqm/assetsRecordController/selectAssetsList`,//查询采购汇总列
+ picUploadUrl: `${_local}/meqm/ftp/post`,//图片上传
  selectAssetsList: `${_local}/meqm/assetsRecordController/selectAssetsList`, //查询资产列表
  selectAssetsRecordDetail: `${_local}/meqm/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
  updateAssetsRecordInfo: `${_local}/meqm/assetsRecordController/updateAssetsRecordInfo`, // 修改资产档案信息 
