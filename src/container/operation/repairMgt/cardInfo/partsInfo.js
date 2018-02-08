@@ -379,32 +379,48 @@ class PartsInfo extends PureComponent {
             showOrHide={this.state.showOrHide}
             />
         </Modal>
+        {/* 
+          Table: title 
+          验收环节  无title  this.props.data.check
+          维修单 完成维修  内修:  有 title 选择/填写配件 this.props.data.SelectParts
+          维修单 完成维修  外修:  有 title  填写配件 this.props.data.WriteParts
+        */}
          <Table 
           dataSource={dataSource} 
           scroll={{x: '100%'}}
           columns={getColumns()}
-          rowKey={'assetsExtendGuid'}
+          rowKey={'rrpairFittingUseGuid'}
           style={{marginTop: 10}}
           size="small"
           showHeader={true}
           title={() => <div>
-            <Button 
-              style={{marginRight: 5}} 
-              type='primary'
-              onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'select')}
-            >
-              <Icon type="switcher" />
-              选择配件
-            </Button>
             {
-              this.props.data.rrpairOrderGuid ?
-              <Button
-              onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
-            >
-              <Icon type="edit" />
-              填写配件
-            </Button>
-            :null
+              !this.props.data.check//验收环节没有title
+              &&
+              <div>
+                { 
+                  !this.props.data.SelectParts//维修单角色权限title 
+                  &&
+                  <Button 
+                    style={{marginRight: 5}} 
+                    type='primary'
+                    onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'select')}
+                  >
+                    <Icon type="switcher" />
+                    选择配件
+                  </Button>
+                }
+                {
+                  this.props.data.rrpairOrderGuid ?
+                  <Button
+                  onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
+                >
+                  <Icon type="edit" />
+                  填写配件
+                </Button>
+                :null
+                }
+              </div>
             }
          
           </div>}

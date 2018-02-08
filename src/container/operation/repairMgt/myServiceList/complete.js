@@ -26,7 +26,7 @@ class MyServiceComplete extends PureComponent {
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
       rrpairType:'00',//维修方式 00 内修 01 外修
-      type:'02' //this.props.user.type  01 管理科室  02 维修商
+      UserType:'01' //this.props.user.type  01 管理科室内修  02 维修商 外修
     }
   }
   complete = () => {
@@ -106,8 +106,8 @@ class MyServiceComplete extends PureComponent {
     })
   }
   render() {
-    const { type } = this.state;
-    console.log(this.state.rrpairType,'type')
+    const { UserType } = this.state;
+    //console.log(this.state.rrpairType,'type')
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <Card title="报修进度" extra={[
@@ -145,18 +145,17 @@ class MyServiceComplete extends PureComponent {
             :
             <ServiceInfo ref='serviceInfo'
               setRrpairType={(Rrtype => this.setState({ rrpairType : Rrtype }))}
-              data={this.state.selectRrpairDetailIsRrpair} isEdit={false}/>
+              data={this.state.selectRrpairDetailIsRrpair} isEdit={true}/>
           }
         </Card>
         {<Card title="维修配件" style={{marginTop: 16}} hoverable={false} key={6}>
           {
             JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
             :
-            <PartsInfo  
+            <PartsInfo
               data={{
-                type: type,
-                rrpairOrderGuid:this.props.location.state.rrpairOrderGuid,
-                assetsRecordGuid:this.props.location.state.assetsRecordGuid,
+                rrpairOrderGuid: UserType === '01'? this.props.location.state.rrpairOrderGuid:'',
+                assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
               }}/>
           }
         </Card>}

@@ -206,7 +206,8 @@ class MyCheckListCheckIn extends PureComponent {
             :
             <PartsInfo  
               data={{
-                type: 'check',
+                check: 'check',
+                SelectParts:'SelectParts',
                 rrpairOrderGuid:this.props.location.state.rrpairOrderGuid,
                 assetsRecordGuid:this.props.location.state.assetsRecordGuid,
               }}
