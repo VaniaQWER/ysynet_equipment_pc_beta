@@ -11,6 +11,7 @@ import RepairInfo from '../cardInfo/repairInfo';
 import AssignInfo from '../cardInfo/assignInfo';
 import { operation as operationService } from '../../../../service';
 import assets from '../../../../api/assets';
+import querystring from 'querystring';
 const { Content } = Layout;
 class RepairOrder extends PureComponent {
   constructor(props) {
@@ -23,29 +24,42 @@ class RepairOrder extends PureComponent {
   onSubmit = () => {
     const { designateInOrOut } = this.props;
     const data = this.refs.assignInfo.postData(); //获取指派信息
-    let params ={};
-    //下面两个字段接口中无
-    //params.rrpairOrderGuid = this.AssetInfoData.rrpairOrderGuid;
-    //params.orderFstate = this.AssetInfoData.orderFstate;
+    let params = {};
+    params.rrpairOrderGuid = this.props.location.state.rrpairOrderGuid;
+    params.orderFstate = this.props.location.state.orderFstate;
     console.log({...params,...data},'指派信息');
-    designateInOrOut(assets.designateInOrOut,params,(data) => {
+    params = {...params,...data };
+    designateInOrOut(assets.designateInOrOut,querystring.stringify(params),(data) => {
       if(data.status){
         message.success("操作成功!")
       }else{
         message.error(data.msg)
       }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
   //获取id 根据id号查详情
   componentWillMount = () =>{
+    console.log(this.props,'1111')
     const assetsRecordGuid = this.props.match.params.id;
     const { getSelectAssetsRecordDetail } = this.props;
-    const params = { assetsRecordGuid: assetsRecordGuid };
-    getSelectAssetsRecordDetail(assets.selectAssetsRecordDetail , params,(data) => {
-      this.setState( { AssetInfoData : data.result })
+    const params = { rrpairOrderGuid: assetsRecordGuid };
+    console.log(params,'parma')
+    getSelectAssetsRecordDetail(assets.selectRrpairDetailList,querystring.stringify(params),(data) => {
+      if(data.status){
+        this.setState( { AssetInfoData : data.result })
+      }else{
+        message.error(data.msg);
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
   render() {
+    const { rrpairType } = this.props.location.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <Card title="报修进度" extra={[
@@ -59,7 +73,7 @@ class RepairOrder extends PureComponent {
          {
             JSON.stringify(this.state.AssetInfoData) === '{}' ? null 
             :
-            <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst} data={this.state.AssetInfoData} isEdit={true}/>
+            <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst} data={this.state.AssetInfoData.selectRrpairDetailIsAssets} isEdit={true}/>
          } 
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
@@ -67,11 +81,15 @@ class RepairOrder extends PureComponent {
           {
             JSON.stringify(this.state.AssetInfoData) === '{}' ? null 
             :
-            <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.AssetInfoData} isEdit={true}/>
+            <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.AssetInfoData.selectRrpairDetailIsOrder} isEdit={false}/>
          } 
         </Card>
         <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
-          <AssignInfo ref='assignInfo'/>
+          {
+            JSON.stringify(this.state.AssetInfoData) === '{}' ? null 
+            :
+            <AssignInfo ref='assignInfo' rrpairType={rrpairType} data={this.state.AssetInfoData.selectRrpairDetailIsCall} />
+          }
         </Card>
         <BackTop />
       </Content>
@@ -81,6 +99,6 @@ class RepairOrder extends PureComponent {
 
 
 export default withRouter(connect(null, dispatch => ({
-  getSelectAssetsRecordDetail: (url,values,success) => operationService.getInfo(url,values,success),
-  designateInOrOut: (url,values,success) => operationService.getInfo(url,values,success),
+  getSelectAssetsRecordDetail: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+  designateInOrOut: (url,values,success,type) => operationService.getInfo(url,values,success,type),
 }))(RepairOrder));

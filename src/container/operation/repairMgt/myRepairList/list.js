@@ -13,6 +13,16 @@ const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 
 class MyRepairList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query:{}
+    }
+  }
+  queryHandler = (query) => {
+    this.refs.table.fetch(query);
+    this.setState({ query })
+  }
   render() {
     const columns = [
       {
@@ -22,12 +32,12 @@ class MyRepairList extends Component {
         render: (text, record) => (
           record.orderFstate === '10' ?
           <span>
-            <Link to={{pathname: `/operation/repairMgt/myRepairList/order/${record.rrpairOrderGuid}`}}>
+            <Link to={{pathname: `/operation/repairMgt/myRepairList/order/${record.rrpairOrderGuid}`,state : record}}>
               <Icon type="meh-o" style={{marginRight: 5}}/>指派
             </Link>
           </span>  :
           <span>
-            <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`}}>
+            <Link to={{pathname: `/operation/repairMgt/myRepairList/detail/${record.rrpairOrderGuid}`,state : record}}>
               <Icon type="profile" style={{marginRight: 5}}/>详情
             </Link>
           </span>
@@ -45,18 +55,20 @@ class MyRepairList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
-                onSearch={value => console.log(value)}
+                onSearch={value =>  {this.queryHandler({'params':value})}}
                 style={{ width: 300 }}
                 enterButton="搜索"
               />
             </Col>
           </Row>
           <RemoteTable
-            ref='remote'
+            ref='table'
+            query={this.state.query}
             url={assets.selectRrpairList}
             scroll={{x: '150%', y : document.body.clientHeight - 311 }}
             columns={columns}
             rowKey={'RN'}
+            showHeader={true}
             style={{marginTop: 10}}
             size="small"
           /> 

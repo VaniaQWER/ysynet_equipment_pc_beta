@@ -2,53 +2,169 @@
  * 完成维修
  */
 import React, { PureComponent } from 'react';
-import { Layout, Card, Affix, Button, BackTop } from 'antd';
+import { Layout, Card, Affix, Button, BackTop, message } from 'antd';
 import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import AssignInfo from '../cardInfo/assignInfo';
 import ServiceInfo from '../cardInfo/serviceInfo'; 
 import PartsInfo from '../cardInfo/partsInfo';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router'
+import { operation as operationService } from '../../../../service';
+import assets from '../../../../api/assets';
+import querystring from 'querystring';
 const { Content } = Layout;
 
 class MyServiceComplete extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectRrpairDetailIsOrder: {},
+      selectRrpairDetailIsAssets: {},
+      selectRrpairDetailIsRrpair: {},
+      selectRrpairDetailIsAcce: {},
+      selectRrpairDetailIsCall: {},
+      rrpairType:'00',//维修方式 00 内修 01 外修
+      type:'02' //this.props.user.type  01 管理科室  02 维修商
+    }
+  }
   complete = () => {
-    alert('保存')
+    const { rrpairType } = this.state;
+    const { finishRepairSerivce } = this.props;
+    const baseData = this.props.location.state;
+    let params = {};
+    params.rrpairOrderGuid = baseData.rrpairOrderGuid;
+    if( rrpairType === '00' ){
+      //内修 完成
+      params.orderFstate = '50';
+      params.isRepairs = false;
+      console.log(params,'完成维修,parmas');
+      finishRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
+        if(data.status){
+          message.success('操作成功');
+        }else{
+          message.error(data.msg);
+        }
+      },{
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+      })
+
+    }else{
+      //指派  外修
+      this.saveOrdesignOperation(baseData,"1");
+    }
     console.log(this)
   }
+  //保存
   save = () => {
-    alert('保存')
+    const baseData = this.props.location.state;
+    this.saveOrdesignOperation(baseData);
+  }
+  saveOrdesignOperation = (baseData,key)=>{
+    const { finishRepairSerivce } = this.props;
+    let params = this.refs.serviceInfo.postData();
+    if(key){
+      params.orderFstate = baseData.orderFstate;
+    }
+    params.rrpairOrderGuid = baseData.rrpairOrderGuid;
+    console.log(params,'params参数')
+    finishRepairSerivce(assets.designateInOrOut,querystring.stringify(params),(data)=>{
+      if(data.status){
+        message.success('操作成功');
+      }else{
+        message.error(data.msg);
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    })
+  }
+  componentWillMount = ()=>{
+    const { finishRepairSerivce } = this.props;
+    let params = {};
+    params.rrpairOrderGuid = this.props.location.state.rrpairOrderGuid;
+    params.rrpairOrderNo = this.props.location.state.rrpairOrderNo;
+    finishRepairSerivce(assets.selectRrpairDetailList,querystring.stringify(params),(data)=>{
+      if(data.status){
+        console.log(data.result,'result')
+        this.setState({ 
+          selectRrpairDetailIsOrder: data.result.selectRrpairDetailIsOrder,
+          selectRrpairDetailIsAssets: data.result.selectRrpairDetailIsAssets,
+          selectRrpairDetailIsRrpair: data.result.selectRrpairDetailIsRrpair,
+          selectRrpairDetailIsAcce: data.result.selectRrpairDetailIsAcce,
+          selectRrpairDetailIsCall: data.result.selectRrpairDetailIsCall });
+      }else{
+        message.error(data.msg);
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    })
   }
   render() {
+    const { type } = this.state;
+    console.log(this.state.rrpairType,'type')
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <Card title="报修进度" extra={[
           <Affix key={1}>
-            <Button type='primary' onClick={this.complete} style={{marginRight: 5}}>完成</Button>
+            <Button type='primary' onClick={this.complete} style={{marginRight: 5}}>{this.state.rrpairType==='00'?'完成':'指派'}</Button>
             <Button onClick={this.save}>保存</Button>
           </Affix>
         ]} key={1}>
           <StepsInfo current={1} />
         </Card>
         <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
-          <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst} isEdit={true}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
+            :
+           <AssetsInfo  data={this.state.selectRrpairDetailIsAssets} isEdit={true}/>
+          }
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
-          <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} isEdit={true}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsOrder) === '{}' ? null 
+            :
+            <RepairInfo  data={this.state.selectRrpairDetailIsOrder} isEdit={false}/>
+          }
         </Card>
         <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
-          <AssignInfo ref='assignInfo' isEdit={true}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsCall) === '{}' ? null 
+            :
+           <AssignInfo ref='assignInfo' data={this.state.selectRrpairDetailIsCall} isEdit={true}/>
+          }
         </Card>
         <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={4}>
-          <ServiceInfo wrappedComponentRef={(inst) => this.serviceInfo = inst}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
+            :
+            <ServiceInfo ref='serviceInfo'
+              setRrpairType={(Rrtype => this.setState({ rrpairType : Rrtype }))}
+              data={this.state.selectRrpairDetailIsRrpair} isEdit={false}/>
+          }
         </Card>
-        <Card title="维修配件" style={{marginTop: 16}} hoverable={false} key={6}>
-          <PartsInfo ref='partsInfo'/>
-        </Card>
+        {<Card title="维修配件" style={{marginTop: 16}} hoverable={false} key={6}>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
+            :
+            <PartsInfo  
+              data={{
+                type: type,
+                rrpairOrderGuid:this.props.location.state.rrpairOrderGuid,
+                assetsRecordGuid:this.props.location.state.assetsRecordGuid,
+              }}/>
+          }
+        </Card>}
         <BackTop />
       </Content>
     )
   }
 }
 
-export default MyServiceComplete;
+export default withRouter(connect(null, dispatch => ({
+  pointRepaireService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+  finishRepairSerivce: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+}))(MyServiceComplete));

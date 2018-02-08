@@ -27,5 +27,5 @@ class RepairListDetail extends PureComponent {
 
 
 export default withRouter(connect(null, dispatch => ({
-  getSelectAssetsRecordDetail: (url,values,success) => operationService.getInfo(url,values,success)
+  getSelectAssetsRecordDetail: (url,values,success,type) => operationService.getInfo(url,values,success,type)
 }))(RepairListDetail));

@@ -5,7 +5,8 @@ import React, { PureComponent } from 'react';
 import { Row, Col, Select, Input, Form } from 'antd';
 import PicWall from '../../../../component/picWall'; 
 import PropTypes from 'prop-types';
-import { selectOption } from '../../../../constants';
+import { selectOption,faultDescribeData } from '../../../../constants';
+console.log(selectOption)
 const { Option } = Select;
 const { TextArea } = Input;
 const gridStyle = {
@@ -46,6 +47,13 @@ class RepairInfoForm extends PureComponent {
     const data = this.props.form.getFieldsValue();
     return {...data,tfAccessory:tfAccessory};
   }
+  showText = (res)=>{
+    let str = '';
+    res ? res.map((item) => {
+      return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
+    }) : ''
+    return str;
+  }
   render() {
     const { isEdit, data } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -66,7 +74,7 @@ class RepairInfoForm extends PureComponent {
                   }
                 </Select>  
                 :
-                <span> { data.urgentFlag }  </span> 
+                <span> { selectOption.urgentFlag.map((item,index)=>item.value===data.urgentFlag?item.text:'')}  </span> 
           )} 
         </Col>
         <Col {...gridStyle.label}>是否送修：</Col>
@@ -84,7 +92,7 @@ class RepairInfoForm extends PureComponent {
                 }
               </Select>
               :
-              <span> { data.rrpairSend }  </span> 
+              <span> { selectOption.rrpairSend.map((item,index)=>item.value===data.rrpairSend?item.text:'')}  </span> 
           )}
         </Col>
         <Col {...gridStyle.label}>备用情况：</Col>
@@ -102,7 +110,7 @@ class RepairInfoForm extends PureComponent {
                 }
               </Select>
               :
-              <span> { data.spare }  </span>
+              <span> { selectOption.spare.map((item,index)=>item.value===data.spare?item.text:'')}  </span>
           )}
         </Col>
         <Col {...gridStyle.label}>联系电话：</Col>
@@ -129,7 +137,7 @@ class RepairInfoForm extends PureComponent {
                 }
               </Select>
               :
-              <span> { data.faultDescribe }  </span>
+              <span> { this.showText(data.faultDescribe)}  </span>
           )}
         </Col>
         <Col {...gridStyle.label}>是否停用：</Col>
@@ -147,7 +155,7 @@ class RepairInfoForm extends PureComponent {
                 }
               </Select>
               :
-              <span> { data.useFstate }  </span>
+              <span> { selectOption.useFstate.map((item,index)=>item.value===data.useFstate?item.text:'')}  </span>
           )}
         </Col>
         <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>故障描述：</Col>
@@ -159,7 +167,7 @@ class RepairInfoForm extends PureComponent {
               isEdit ? 
               <TextArea rows={4} style={{width: '100%'}} />
               :
-              <span> { data.faultWords }  </span>
+              <span> { data.faultWords}  </span>
           )}
         </Col>
         <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>报修备注：</Col>

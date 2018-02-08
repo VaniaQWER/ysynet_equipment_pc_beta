@@ -4,6 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { selectOption } from '../../../../constants';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -27,6 +28,7 @@ class InsideRepairForm extends PureComponent {
       isClosed: this.props.isClosed,
     }
   }
+  
   handleRepairResultChange = (val) => {
     if (val === '02') {
       this.setState({isClosed: true})
@@ -35,7 +37,6 @@ class InsideRepairForm extends PureComponent {
       this.props.callBack("50"); //完成按钮
       this.setState({isClosed: false})
     }
-
     this.props.data.repairResult = val;
   }
   render() {
@@ -115,7 +116,7 @@ class InsideRepairForm extends PureComponent {
                 initialValue: isEdit ? data.repairResult : null
               })(
                 isEdit ? 
-                <Select allowClear onSelect={this.handleRepairResultChange}>
+                <Select allowClear onChange={this.onChange}>
                   {
                     selectOption.repairResult.map((item, index) => (
                       <Option value={item.value} key={index}> { item.text } </Option>
@@ -123,7 +124,7 @@ class InsideRepairForm extends PureComponent {
                   }
                 </Select>
                 :
-                <span> {data.repairResult} </span>
+                <span> { selectOption.repairResult.map((item,index)=>item.value=== data.repairResult ?item.text:'')} </span>
             )}
           </Col>
           <Col {...gridStyle.label}>维修人电话：</Col>
@@ -138,7 +139,6 @@ class InsideRepairForm extends PureComponent {
                 <span> {data.inRrpairPhone} </span> 
             )}
           </Col>
-       
           <Col {...gridStyle.label}>维修费用（总计）：</Col>
           <Col {...gridStyle.content}>
             {
@@ -166,7 +166,7 @@ class InsideRepairForm extends PureComponent {
                   }
                 </Select>
                 :
-                <span> {data.repairContentType} </span> 
+                <span> {selectOption.repairContentType.map((item,index)=>item.value=== data.repairContentType ?item.text:'')} </span> 
             )}
           </Col>
           <Col {...gridStyle.label}>故障原因：</Col>
@@ -184,7 +184,7 @@ class InsideRepairForm extends PureComponent {
                   }
                 </Select>
                 :
-                <span> {data.repairContentTyp} </span> 
+                <span> { selectOption.repairContentTyp.map((item,index)=>item.value=== data.repairContentTyp ?item.text:'')} </span> 
             )}
           </Col>
           {
@@ -232,7 +232,7 @@ class OutsideRepairForm extends PureComponent {
           <Col span={20} style={gridStyle.content.style}>
             {
               getFieldDecorator('completTime',{
-                initialValue: isEdit ? data.completTime : null
+                initialValue: isEdit ? data.completTime=== "" || data.completTime === null? null: moment(data.completTime,'YYYY-MM-DD') : null
               })(
                 isEdit ?
                 <DatePicker style={{width: '40%'}}/>
@@ -275,8 +275,8 @@ class ServiceInfo extends PureComponent {
   postData = () => {
     const { rrpairType } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
-    data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD'); 
-    return {...data,rrpairType: rrpairType}
+    data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD');
+    return {...data, rrpairType: rrpairType}
   }
   render() {
     const { rrpairType } = this.state;
@@ -295,7 +295,7 @@ class ServiceInfo extends PureComponent {
                 this.props.callBack("50")
                 data.repairResult = "";
               }
-             
+              this.props.setRrpairType(e.target.value);
             }}>
               <RadioButton value="00" disabled={!isEdit && rrpairType !== '00'}>内修</RadioButton>
               <RadioButton value="01" disabled={!isEdit && rrpairType !== '01'}>外修</RadioButton>

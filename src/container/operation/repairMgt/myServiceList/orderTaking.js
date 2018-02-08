@@ -1,5 +1,5 @@
 /**
- * 接单维修--内修
+ * 接单维修
  */
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, BackTop,message } from 'antd';
@@ -20,7 +20,8 @@ class OrderTaking extends PureComponent {
     this.state = {
       rrpairType: '00',
       BaseInfoInfoData: {},
-      visible: false
+      visible: false,
+      type:'02' //this.props.user.type  01 管理科室  02 维修商
 
     }
   }
@@ -45,19 +46,15 @@ class OrderTaking extends PureComponent {
     this.setState({ rrpairType : val  })
   }
   accept = () => {
-    //alert('接受');
     let baseData = this.props.location.state;
     const { acceptRepairSerivce } = this.props;
     let params = {};
-    //let params = this.refs.assignInfo.pointData.postData();
     params.rrpairOrderGuid = baseData.rrpairOrderGuid;
-    params.orderFstate = baseData.orderFstate;
-    params.rrpairType = this.state.rrpairType;
+    params.orderFstate = '30' //接修
     console.log(params,'params')
-    acceptRepairSerivce(assets.designateInOrOut,querystring.stringify(params),(data)=>{
+    acceptRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
       if(data.status){
-          message.success('接修成功')
-        //hashHistory.push({ pathname:'/operation/repairMgt/myServiceList'})
+          message.success('接修成功');
       }else{
          message.error(data.msg);
       }
@@ -71,15 +68,17 @@ class OrderTaking extends PureComponent {
     this.setState({ visible: true })
   }
   render() {
-    //const { rrpairType } = this.props.location.state;
+    const { type } = this.state;
+    const baseData = this.props.location.state;
+    console.log(baseData,'baseData')
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <Card title="报修进度" extra={[
           <Affix key={1}>
             <Button type='primary' onClick={this.accept} style={{marginRight: 5}}>接单维修</Button>
             {
-              // rrpairType==='01'
-              // &&
+              type === '02'// 服务商拒绝
+              &&
               <Button type="danger" ghost onClick={this.refuse}>拒绝</Button>
             }
           </Affix>
@@ -97,17 +96,17 @@ class OrderTaking extends PureComponent {
           {
             JSON.stringify(this.state.BaseInfoInfoData) === '{}' ? null
             :
-            <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.BaseInfoInfoData.selectRrpairDetailIsOrder} isEdit={false}/>
+            <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.BaseInfoInfoData.selectRrpairDetailIsOrder}/>
           }
         </Card>
         {
-          // rrpairType === '01'
-          //   &&
+          type === '02'//服务商 指派信息
+          &&
           <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
             {
               JSON.stringify(this.state.BaseInfoInfoData) === '{}' ? null
               :
-              <AssignInfo ref='assignInfo' isEdit={true} setRrpairType = {(val)=>this.SetRrpairType(val)} data={this.state.BaseInfoInfoData.selectRrpairDetailIsCall}/>
+              <AssignInfo ref='assignInfo' isEdit={true} rrpairType={ baseData.rrpairType } setRrpairType = {(val)=>this.SetRrpairType(val)} data={this.state.BaseInfoInfoData.selectRrpairDetailIsCall}/>
             }
           </Card>
         }

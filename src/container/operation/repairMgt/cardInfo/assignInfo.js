@@ -4,6 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -29,7 +30,9 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>维修组：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('callDeptCode')(
+              getFieldDecorator('callDeptCode',{
+                initialValue: isEdit? null : data.callDeptCode
+              })(
                 isEdit ? <span> { data.callDeptCode } </span> : 
                 <Select allowClear>
                   <Option value={"0"}>维修组1</Option>
@@ -42,8 +45,10 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>维修人：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('callDeptName')(
-                isEdit ? <span> { data.callDeptName } </span> : 
+              getFieldDecorator('inRrpairUsername',{
+                initialValue: isEdit? null : data.inRrpairUsername
+              })(
+                isEdit ? <span> { data.inRrpairUsername } </span> : 
                 <Select allowClear>
                   <Option value={"0"}>狄仁杰</Option>
                   <Option value={"1"}>韩信</Option>
@@ -55,14 +60,18 @@ class InsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>预期完成时间：</Col>
           <Col span={20} style={gridStyle.content.style}>
             {
-              getFieldDecorator('completTime')(
+              getFieldDecorator('completTime',{
+                initialValue: isEdit ? null:data.completTime=== "" || data.completTime === null? null: moment(data.completTime,'YYYY-MM-DD')
+              })(
                 isEdit ? <span> { data.completTime } </span> : <DatePicker />
             )}
           </Col>
           <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>指派备注：</Col>
           <Col span={20} style={{marginTop: 20}}>
             {
-              getFieldDecorator('tfRemarkZp')(
+              getFieldDecorator('tfRemarkZp',{
+                initialValue: isEdit? null : data.tfRemarkZp
+              })(
                 isEdit ? <span> { data.tfRemarkZp } </span> : 
                 <TextArea rows={4} style={{width: '100%'}} />
             )}
@@ -84,7 +93,9 @@ class OutsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>指派服务商：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('outOrg')(
+              getFieldDecorator('outOrg',{
+                initialValue: isEdit ? null: data.outOrg 
+              })(
                 isEdit ? <span> { data.outOrg } </span> : 
                 <Input placeholder='输入服务商'/>
             )}
@@ -92,7 +103,9 @@ class OutsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>维修联系电话：</Col>
           <Col {...gridStyle.content}>
             {
-              getFieldDecorator('outRrpairPhone')(
+              getFieldDecorator('outRrpairPhone',{
+                initialValue: isEdit ? null: data.outRrpairPhone 
+              })(
                 isEdit ? <span> { data.outRrpairPhone } </span> : 
                 <Input placeholder='输入联系电话'/>
             )}
@@ -100,15 +113,19 @@ class OutsideRepairForm extends PureComponent {
           <Col {...gridStyle.label}>预期完成时间：</Col>
           <Col span={20} style={gridStyle.content.style}>
             {
-              getFieldDecorator('completTime')(
+              getFieldDecorator('completTime',{
+                initialValue: isEdit ? null:data.completTime=== "" || data.completTime === null? null: moment(data.completTime,'YYYY-MM-DD')
+              })(
                 isEdit ? <span> { data.completTime } </span> : 
-                <DatePicker />
+                <DatePicker style={{width:'40%'}}/>
             )}
           </Col>
           <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>指派备注：</Col>
           <Col span={20} style={{marginTop: 20}}>
             {
-              getFieldDecorator('tfRemarkZp')(
+              getFieldDecorator('tfRemarkZp',{
+                initialValue: isEdit ? null: data.tfRemarkZp 
+              })(
                 isEdit ? <span> { data.tfRemarkZp } </span> : 
                 <TextArea rows={4} style={{width: '100%'}} />
             )}
@@ -186,7 +203,9 @@ class AssignInfo extends PureComponent {
   postData = () => {
     const { rrpairType } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
-    data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD'); 
+    if(this.state.rrpairType!=='02'){
+      data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD');
+    }
     return {...data, rrpairType: rrpairType}
   }
   

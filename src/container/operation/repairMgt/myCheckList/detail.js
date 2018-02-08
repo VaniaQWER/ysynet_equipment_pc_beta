@@ -6,7 +6,7 @@ import AllDetail from '../repairMgtDetail';
 class MyCheckListDetail extends PureComponent {
   render() {
     return (
-      <AllDetail />
+      <AllDetail state={this.props.location.state}/>
     )
   }
 }

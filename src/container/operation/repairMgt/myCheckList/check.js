@@ -3,7 +3,7 @@
  */
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, Row, Col, Select,
-  BackTop, Modal, Form, Radio, Rate, Input } from 'antd';
+  BackTop, Modal, Form, Radio, Rate, Input,message } from 'antd';
 import { withRouter } from 'react-router-dom'  
 import { selectOption } from '../../../../constants';
 import StepsInfo from '../cardInfo/stepsInfo'
@@ -12,6 +12,10 @@ import RepairInfo from '../cardInfo/repairInfo';
 import AssignInfo from '../cardInfo/assignInfo';
 import ServiceInfo from '../cardInfo/serviceInfo'; 
 import PartsInfo from '../cardInfo/partsInfo';
+import { connect } from 'react-redux';
+import { operation as operationService } from '../../../../service';
+import assets from '../../../../api/assets';
+import querystring from 'querystring';
 const Option = Select.Option;
 const { TextArea } = Input;
 const gridStyle = {
@@ -58,7 +62,7 @@ class CheckInForm extends PureComponent {
             <Rate allowHalf onChange={val => this.setState({rate: val})}/>
           </Col>
           {
-            isPassed === '65' ? [
+            isPassed !== '65' ? [
               <Col {...gridStyle.label} key={1}>不通过原因：</Col>,
               <Col {...gridStyle.content} key={2}>
                 {
@@ -91,17 +95,55 @@ class MyCheckListCheckIn extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false
+      visible: false,
+      selectRrpairDetailIsOrder: {},
+      selectRrpairDetailIsAssets: {},
+      selectRrpairDetailIsRrpair: {},
+      selectRrpairDetailIsAcce: {},
+      selectRrpairDetailIsCall: {},
     }
   }
-  
+  componentWillMount = ()=>{
+    const { checkRepaire } = this.props;
+    let params = {};
+    params.rrpairOrderGuid = this.props.location.state.rrpairOrderGuid;
+    params.rrpairOrderNo = this.props.location.state.rrpairOrderNo;
+    checkRepaire(assets.selectRrpairDetailList,querystring.stringify(params),(data)=>{
+      if(data.status){
+        console.log(data.result,'result')
+        this.setState({ 
+          selectRrpairDetailIsOrder: data.result.selectRrpairDetailIsOrder,
+          selectRrpairDetailIsAssets: data.result.selectRrpairDetailIsAssets,
+          selectRrpairDetailIsRrpair: data.result.selectRrpairDetailIsRrpair,
+          selectRrpairDetailIsAcce: data.result.selectRrpairDetailIsAcce,
+          selectRrpairDetailIsCall: data.result.selectRrpairDetailIsCall });
+      }else{
+        message.error(data.msg);
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    })
+  }
   checkIn = () => {
     this.setState({visible: true})
   }
   onSubmit = () => {
-    const postData = this.checkInform.getPostData()
+    const postData = this.checkInform.getPostData();
+    const { checkRepaire } = this.props;
     this.setState({visible: false})
     console.log('验收信息', {...postData, rrpairOrderGuid: this.props.match.params.id});
+    const params = {...postData, rrpairOrderGuid: this.props.match.params.id};
+    checkRepaire(assets.insertRrpairOrderAcce,querystring.stringify(params),(data)=>{
+      if(data.status){
+        message.success('操做成功');
+      }else{
+        message.error(data.msg);
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    })
   }
   onCancel = () => {
     this.setState({visible: false})
@@ -130,24 +172,52 @@ class MyCheckListCheckIn extends PureComponent {
           <StepsInfo current={2} />
         </Card>
         <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
-          <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst} isEdit={true}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
+            :
+           <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst} data={this.state.selectRrpairDetailIsAssets} isEdit={true}/>
+          }
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
-          <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} isEdit={true}/>
+          {
+             JSON.stringify(this.state.selectRrpairDetailIsOrder) === '{}' ? null 
+             :
+            <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.selectRrpairDetailIsOrder} isEdit={false}/>
+          }
         </Card>
         <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
-          <AssignInfo ref='assignInfo' isEdit={true}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsCall) === '{}' ? null 
+            :
+            <AssignInfo ref='assignInfo' data={this.state.selectRrpairDetailIsCall} isEdit={true}/>
+          }
         </Card>
         <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={4}>
-          <ServiceInfo wrappedComponentRef={(inst) => this.serviceInfo = inst} isEdit={true}/>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
+            :
+            <ServiceInfo wrappedComponentRef={(inst) => this.serviceInfo = inst} data={this.state.selectRrpairDetailIsRrpair} isEdit={false}/>
+          }
         </Card>
-        <Card title="维修配件" style={{marginTop: 16}} hoverable={false} key={6}>
-          <PartsInfo ref='partsInfo' isEdit={true}/>
-        </Card>
+        {<Card title="维修配件" style={{marginTop: 16}} hoverable={false} key={6}>
+          {
+            JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
+            :
+            <PartsInfo  
+              data={{
+                type: 'check',
+                rrpairOrderGuid:this.props.location.state.rrpairOrderGuid,
+                assetsRecordGuid:this.props.location.state.assetsRecordGuid,
+              }}
+            isEdit={true}/>
+          }
+        </Card>}
         <BackTop />
       </Content>
     )
   }
 }
 
-export default withRouter(MyCheckListCheckIn);
+export default withRouter(connect(null, dispatch => ({
+  checkRepaire: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+}))(MyCheckListCheckIn));

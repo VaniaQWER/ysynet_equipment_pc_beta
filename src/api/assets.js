@@ -24,7 +24,9 @@ export default {
  selectRrpairList: `${_local}/meqm/rrpairOrderController/selectRrpairList`, //查询设备维修列表
  selectRrpairDetailList: `${_local}/meqm/rrpairOrderController/selectRrpairDetailList`, //查询设备维修详情列表
  selectEqOperationList: `${_local}/meqm/rrpairOrderController/selectEqOperationList`, //维修单详情操作记录
+ updateRrpairOrderFstate: `${_local}/meqm/rrpairOrderController/updateRrpairOrderFstate`, //维修工单状态扭转
 
-
+ //验收
+ insertRrpairOrderAcce: `${_local}/meqm/rrpairOrderController/insertRrpairOrderAcce`, //验收维修单
 
 };

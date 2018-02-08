@@ -2,11 +2,12 @@
  * 拒绝说明--拒绝维修
  */
 import React, { PureComponent } from 'react';
-import { Form, Row, Col, Button, Input, Select, Modal } from 'antd';
+import { Form, Row, Col, Button, Input, Select, Modal, message } from 'antd';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router'
-import { operation as acceptRepairSerivce } from '../../../../service';
-//import assets from '../../../../api/assets';
+import { operation as operationService } from '../../../../service';
+import assets from '../../../../api/assets';
+import querystring from 'querystring';
 const Option = Select.Option;
 const { TextArea } = Input;
 const gridStyle = {
@@ -27,8 +28,11 @@ class refuseForm extends PureComponent{
         }
     }
     onSubmit = ()=>{
-        //let parmas = this.props.form.getFieldsValue();
-
+        let parmas = this.props.form.getFieldsValue();
+        parmas.orderFstate = '80';//拒绝
+        parmas.rrpairOrderGuid = this.props.rrpairOrderGuid;
+        console.log(parmas,'parmas');
+        this.props.refuseService(parmas);
     }
     onSelect = (value) =>{
         if(value === '其他'){
@@ -38,6 +42,7 @@ class refuseForm extends PureComponent{
         }
     }
     render(){
+        console.log(this.props,'props')
         const { getFieldDecorator } = this.props.form;
         return (
             <Form>
@@ -45,7 +50,7 @@ class refuseForm extends PureComponent{
                     <Col {...gridStyle.label}>拒绝原因：</Col>
                     <Col {...gridStyle.content}>
                         {
-                            getFieldDecorator('offCause',{
+                            getFieldDecorator('refuseCause',{
                                 initialValue:''
                             })(
                                 <Select allowClear
@@ -58,17 +63,17 @@ class refuseForm extends PureComponent{
                                 </Select>
                         )}
                     </Col>
-                    <Col span={4} style={{marginTop: 20}}>其他原因：</Col>
-                    <Col span={18} style={{marginTop: 20}}>
+                    <Col {...gridStyle.label} style={{marginTop: 20}}>其他原因：</Col>
+                    <Col {...gridStyle.content} style={{marginTop: 20}}>
                         {
-                        getFieldDecorator('cause')(
+                        getFieldDecorator('otherCause')(
                             <TextArea disabled={this.state.disabled} rows={4} style={{width: '100%'}} />
                         )}
                     </Col>
-                    <Col span={4} style={{marginTop: 20}}>备注：</Col>
-                    <Col span={18} style={{marginTop: 20}}>
+                    <Col {...gridStyle.label} style={{marginTop: 20}}>备注：</Col>
+                    <Col {...gridStyle.content} style={{marginTop: 20}}>
                         {
-                        getFieldDecorator('tfRemarkGb')(
+                        getFieldDecorator('tfRemarkJj')(
                             <TextArea rows={4} style={{width: '100%'}} />
                         )}
                     </Col>
@@ -95,6 +100,19 @@ class refuseReason extends PureComponent{
             this.setState({ visible:false })
         }
     }
+    refuseService = (val)=>{
+        const { refuseService } = this.props;
+        refuseService(assets.updateRrpairOrderFstate,querystring.stringify(val),(data)=>{
+            if(data.status){
+                message.success('操作成功');
+            }else{
+                message.error(data.msg);
+            }
+        },{
+          Accept: 'application/json',
+         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        })
+    }
     render(){
         const { visible } = this.state;
         return (
@@ -105,13 +123,14 @@ class refuseReason extends PureComponent{
                 onCancel={()=>{this.props.setVisible(false); this.setState({ visible: false })}}
                 footer={null}
             >
-                <WrapRefuseForm />
+                <WrapRefuseForm 
+                    refuseService={(val)=>this.refuseService(val)}
+                    rrpairOrderGuid={this.props.location.state.rrpairOrderGuid}/>
                 
             </Modal>
         </div>)
     }
 }
-//export default refuseReason;
 export default withRouter(connect(null, dispatch => ({
-    acceptRepairSerivce: (url,values,success,type) => acceptRepairSerivce.getInfo(url,values,success,type),
+    refuseService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
   }))(refuseReason));
