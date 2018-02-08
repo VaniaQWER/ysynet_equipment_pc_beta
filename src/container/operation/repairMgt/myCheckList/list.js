@@ -6,7 +6,7 @@ import { Row, Col, Input, Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link} from 'react-router-dom';
 import assets from '../../../../api/assets';
-import { repairCommonDataSource } from '../../../../constants'
+import { repairCommonDataSource,faultDescribeData } from '../../../../constants'
 
 const Search = Input.Search;
 const { Content } = Layout;
@@ -44,8 +44,15 @@ class MyCheckList extends Component {
       ...repairCommonDataSource,
       {
         title: '故障现象',
-        dataIndex: 'inRrpairUsername',
-        width: 200
+        dataIndex: 'faultDescribe',
+        width: 200,
+        render:(text,record)=>{
+          let str = '';
+          text ? text.map((item) => {
+           return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
+          }) : ''
+          return str;
+        }
       }];
     return (
         <Content className='ysynet-content ysynet-common-bgColor'>
