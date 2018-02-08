@@ -4,8 +4,8 @@
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, BackTop,message } from 'antd';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
-import StepsInfo from '../cardInfo/stepsInfo'
+import { withRouter } from 'react-router-dom';
+import StepsInfo from '../cardInfo/stepsInfo';
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import AssignInfo from '../cardInfo/assignInfo';
@@ -22,7 +22,7 @@ class RepairOrder extends PureComponent {
   }
 
   onSubmit = () => {
-    const { designateInOrOut } = this.props;
+    const { designateInOrOut,history } = this.props;
     const data = this.refs.assignInfo.postData(); //获取指派信息
     let params = {};
     params.rrpairOrderGuid = this.props.location.state.rrpairOrderGuid;
@@ -31,7 +31,8 @@ class RepairOrder extends PureComponent {
     params = {...params,...data };
     designateInOrOut(assets.designateInOrOut,querystring.stringify(params),(data) => {
       if(data.status){
-        message.success("操作成功!")
+        message.success("操作成功!");
+        history.push({ pathname:`/operation/repairMgt/myRepairList`});
       }else{
         message.error(data.msg)
       }

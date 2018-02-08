@@ -50,9 +50,11 @@ class MyRepairList extends Component {
         width: 200,
         render:(text,record)=>{
           let str = '';
-          text ? text.map((item) => {
-           return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
-          }) : ''
+          if(text){
+            text.map((item) => {
+              return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
+             }) 
+          }
           return str;
         }
       }];

@@ -3,8 +3,8 @@
  */
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, BackTop,message } from 'antd';
-import { withRouter } from 'react-router'
-import StepsInfo from '../cardInfo/stepsInfo'
+import { withRouter } from 'react-router-dom';
+import StepsInfo from '../cardInfo/stepsInfo';
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import AssignInfo from '../cardInfo/assignInfo';
@@ -47,7 +47,7 @@ class OrderTaking extends PureComponent {
   }
   accept = () => {
     let baseData = this.props.location.state;
-    const { acceptRepairSerivce } = this.props;
+    const { acceptRepairSerivce, history } = this.props;
     let params = {};
     params.rrpairOrderGuid = baseData.rrpairOrderGuid;
     params.orderFstate = '30' //接修
@@ -55,6 +55,7 @@ class OrderTaking extends PureComponent {
     acceptRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
       if(data.status){
           message.success('接修成功');
+          history.push({ pathname:`/operation/repairMgt/myServiceList`});
       }else{
          message.error(data.msg);
       }

@@ -6,7 +6,6 @@ import AllDetail from '../repairMgtDetail';
 
 class MyServiceDetail extends PureComponent {
   render() {
-    console.log(this.props.location.state,'props')
     return (
       <AllDetail state={this.props.location.state}/>
     )

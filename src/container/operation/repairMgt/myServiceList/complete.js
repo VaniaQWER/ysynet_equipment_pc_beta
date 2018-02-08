@@ -3,14 +3,14 @@
  */
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, BackTop, message } from 'antd';
-import StepsInfo from '../cardInfo/stepsInfo'
+import StepsInfo from '../cardInfo/stepsInfo';
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import AssignInfo from '../cardInfo/assignInfo';
 import ServiceInfo from '../cardInfo/serviceInfo'; 
 import PartsInfo from '../cardInfo/partsInfo';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom';
 import { operation as operationService } from '../../../../service';
 import assets from '../../../../api/assets';
 import querystring from 'querystring';
@@ -31,7 +31,7 @@ class MyServiceComplete extends PureComponent {
   }
   complete = () => {
     const { rrpairType } = this.state;
-    const { finishRepairSerivce } = this.props;
+    const { finishRepairSerivce, history } = this.props;
     const baseData = this.props.location.state;
     let params = {};
     params.rrpairOrderGuid = baseData.rrpairOrderGuid;
@@ -43,6 +43,7 @@ class MyServiceComplete extends PureComponent {
       finishRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
         if(data.status){
           message.success('操作成功');
+          history.push({ pathname:`/operation/repairMgt/myServiceList`});
         }else{
           message.error(data.msg);
         }
@@ -63,7 +64,7 @@ class MyServiceComplete extends PureComponent {
     this.saveOrdesignOperation(baseData);
   }
   saveOrdesignOperation = (baseData,key)=>{
-    const { finishRepairSerivce } = this.props;
+    const { finishRepairSerivce, history } = this.props;
     let params = this.refs.serviceInfo.postData();
     if(key){
       params.orderFstate = baseData.orderFstate;
@@ -73,6 +74,7 @@ class MyServiceComplete extends PureComponent {
     finishRepairSerivce(assets.designateInOrOut,querystring.stringify(params),(data)=>{
       if(data.status){
         message.success('操作成功');
+        history.push({ pathname:`/operation/repairMgt/myServiceList`});
       }else{
         message.error(data.msg);
       }

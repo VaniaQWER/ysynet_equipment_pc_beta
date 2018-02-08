@@ -4,9 +4,9 @@
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, Row, Col, Select,
   BackTop, Modal, Form, Radio, Rate, Input,message } from 'antd';
-import { withRouter } from 'react-router-dom'  
+import { withRouter } from 'react-router-dom';  
 import { selectOption } from '../../../../constants';
-import StepsInfo from '../cardInfo/stepsInfo'
+import StepsInfo from '../cardInfo/stepsInfo';
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import AssignInfo from '../cardInfo/assignInfo';
@@ -130,13 +130,14 @@ class MyCheckListCheckIn extends PureComponent {
   }
   onSubmit = () => {
     const postData = this.checkInform.getPostData();
-    const { checkRepaire } = this.props;
+    const { checkRepaire, history } = this.props;
     this.setState({visible: false})
     console.log('验收信息', {...postData, rrpairOrderGuid: this.props.match.params.id});
     const params = {...postData, rrpairOrderGuid: this.props.match.params.id};
     checkRepaire(assets.insertRrpairOrderAcce,querystring.stringify(params),(data)=>{
       if(data.status){
         message.success('操做成功');
+        history.push({pathname:`/operation/repairMgt/myCheckList`});
       }else{
         message.error(data.msg);
       }

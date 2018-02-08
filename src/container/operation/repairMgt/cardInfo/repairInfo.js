@@ -49,9 +49,11 @@ class RepairInfoForm extends PureComponent {
   }
   showText = (res)=>{
     let str = '';
-    res ? res.map((item) => {
-      return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
-    }) : ''
+    if(res){
+      res.map((item) => {
+        return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
+      }) 
+    }
     return str;
   }
   render() {
