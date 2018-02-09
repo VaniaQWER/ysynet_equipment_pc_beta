@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Icon} from 'antd'; //message
+import { Layout, Icon, message,Spin } from 'antd'; //message
 import { connect } from 'react-redux';
 import { user as userService, menu as menuService  } from '../../service';
 import { withRouter, Switch, Redirect } from 'react-router-dom';
@@ -14,22 +14,28 @@ class Home extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      collapsed: false
+      collapsed: false,
+      isLoading: true
     }
   }
-  componentWillMount() {
-    const { getMenu,getUser } = this.props;//getUser history
-    getUser();
-    getMenu();
-    // const { user } = this.props;
-    // if (!user.type && !user.userName) {
-    //   message.error('会话失效, 请重新登录！');
-    //   history.push({pathname: '/login'})
-    // }
+  async componentWillMount() {
+    const { setUser,getMenu, getUser, history } = this.props;//getUser history
+    const data = await getUser();
+    setUser(data.result);
+    if (data.status) {
+      this.setState({
+        isLoading: false
+      })
+      getMenu();
+    } else {
+      message.error('会话失效, 请重新登录！');
+      history.push({pathname: '/login'})
+    }
   }
   render () {
     const { routes, menu, user } = this.props;
     return (
+      <Spin spinning={this.state.isLoading} size="large">
       <Layout style={{minHeight: '100vh'}}>
         <BasicLayout menuList={menu.menuList} collapsed={this.state.collapsed}/>
         <Layout>
@@ -46,20 +52,23 @@ class Home extends React.Component {
             />
             <div style={{display: 'flex'}}>
               <Notice/>
-              <Profile userName={user.userInfo.userNo}/>
+              <Profile userName={user.userInfo.userName || user.userName }/>
             </div>  
           </Header>
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}>
             {  }
           </BreadcrumbGroup>
-          <Switch>
-            {
-              routes.map((route, i) => (
-                <RouteWithSubRoutes key={i} {...route}/>
-              ))
-            }
-            <Redirect from={'/'} to={'/workplace'}/>  
-          </Switch>
+          {
+            this.state.isLoading ? 'loading' : 
+            <Switch>
+              {
+                routes.map((route, i) => (
+                  <RouteWithSubRoutes key={i} {...route}/>
+                ))
+              }
+              <Redirect from={'/'} to={'/workplace'}/>  
+            </Switch>
+          }
           <Footer style={{ textAlign: 'center', padding:'5px 0' }}>
             <div className={'ysynet-footer-link'}>
               <ul>
@@ -72,10 +81,12 @@ class Home extends React.Component {
           </Footer>
         </Layout>  
       </Layout>
+      </Spin>
     )
   }
 }
 export default withRouter(connect(state => state, dispatch => ({
+  setUser: user => dispatch(userService.setUserInfo(user)),
   getUser: () => dispatch(userService.fetchUserInfo()),
   getMenu: () => dispatch(menuService.fetchMenu())
 }))(Home));

@@ -6,6 +6,9 @@ import { Row,Col,Input,Icon,Upload,Button ,message,Menu,Dropdown,Alert} from 'an
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
 import styles from './style.css';
+import { ledger as ledgerService } from '../../../../service';
+import { certCodeData } from "../../../../constants";
+import querystring from 'querystring';
 
 const { RemoteTable } = TableGrid;
 const Search = Input.Search;
@@ -14,54 +17,62 @@ class AccessoryInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fileType: "",
       loading: false,
       messageError : ""
     }
   }
-  //附件类型改变
-  handleChange = (value) => {
-    this.setState( {fileType : value})
-    console.log(`selected ${value}`);
-  }
   //上传前判断
   beforeUpload = () => {
-    console.log(this.state.fileType,'1')
     this.setState({loading: true});
-    if(!this.state.fileType){
-      message.warning("请选择上传文件类型");
-    }
   }
 
   queryHandler = (query) => {
     this.refs.table.fetch(query);
     this.setState({ query })
   }
+  //删除
+  handleDelete = (certId) => {
+    ledgerService.getInfo(assets.deleteAssetsFile,querystring.stringify({certId:certId}),(data) => {
+      if(data.status){
+        message.success("操作成功!");
+        this.refs.table.fetch();
+      }else{
+        message.error(data.msg)
+      }
+    })
+  }
   render () {
     const columns = [
       {
-        title: '附件类型',
-        dataIndex: 'fileType',
-        width: 100
+        title: '操作',
+        dataIndex: 'certId',
+        width: 80,
+        render: (text, record) => 
+          <span>
+            <a  href={assets.YSYPATH+record.tfAccessoryFile} target="_blank"><Icon type="file" />查看</a>
+            <span className="ant-divider" />
+            <a onClick={this.handleDelete.bind(null, record.certId)}><Icon type="delete" />删除</a>
+          </span>  
       },
       {
-        title: '文件名',
-        dataIndex: 'fileName',
-        width: 100
+        title: '附件类型',
+        dataIndex: 'certCode',
+        width: 100,
+        render : text => certCodeData[text].text
       },
       {
         title: '上传用户',
-        dataIndex: 'userName',
+        dataIndex: 'createUserName',
         width: 100
       },
       {
         title: '上传时间',
-        dataIndex: 'uploadTime',
+        dataIndex: 'createTime',
         width: 100,
       },
       {
         title: '备注',
-        dataIndex: 'remark',
+        dataIndex: 'tfRemark',
         width: 100,
       }
     ];
@@ -95,36 +106,32 @@ class AccessoryInfo extends Component {
     const menu = (
       <Menu>
         <Menu.Item>
-        <Upload {...props}  data={{"certCode":"资产图片","assetsRecordGuid":this.props.assetsRecordGuid}}>
+        <Upload {...props}  data={{"certCode":"15","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 资产图片</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"certCode":"资产证件","assetsRecordGuid":this.props.assetsRecordGuid}}>
-          <a><Icon type='export'/> 资产证件</a> 
-        </Upload>
-        </Menu.Item>
-        <Menu.Item>
-        <Upload {...props} data={{"certCode":"招标文件","assetsRecordGuid":this.props.assetsRecordGuid}}>
+        <Upload {...props} data={{"certCode":"13","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 招标文件</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"certCode":"使用说明","assetsRecordGuid":this.props.assetsRecordGuid}}>
+        <Upload {...props} data={{"certCode":"14","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 使用说明</a> 
         </Upload>
         </Menu.Item>
         <Menu.Item>
-        <Upload {...props} data={{"certCode":"其他","assetsRecordGuid":this.props.assetsRecordGuid}}>
+        <Upload {...props} data={{"certCode":"12","assetsRecordGuid":this.props.assetsRecordGuid}}>
           <a><Icon type='export'/> 其他</a> 
         </Upload>
         </Menu.Item>
       </Menu>
     );
+    console.log( this.state.messageError,' this.state.messageError')
     return (
       <div className='ysynet-content ysynet-common-bgColor'>
           {
-              this.state.messageError ? null
+              this.state.messageError === "" ? null
               :
               <Alert message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
           }
@@ -145,7 +152,9 @@ class AccessoryInfo extends Component {
             </Col>
           </Row>
          <RemoteTable
+            loading={ this.state.loading}
             ref='table'
+            showHeader={true}
             query={{ assetsRecord: this.props.assetsRecord }}
             url={assets.selectCertInfoList}
             scroll={{x: '100%', y : document.body.clientHeight - 341}}

@@ -30,8 +30,6 @@ class Login extends Component {
     const postData = form.props.form.getFieldsValue();
     const { userName, password } = postData;
     const { setUser, history,fetchUserLogin } = this.props;
-    console.log(userName,'userName');
-    console.log(password,'password');
 
     let arr = [md5(password.toString()).substring(2, md5(password.toString()).length).toUpperCase(), 'vania']
     let pwd = '';

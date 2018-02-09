@@ -1,7 +1,8 @@
 /**
  * @file 用户sevice 
  */
-import request from '../utils/request'
+import request from '../utils/request';
+import promiseRequest from '../utils/promise_request';
 import user from '../api/user';
 // 状态值
 const SET_USER_MAPPER = 'SET_USER_MAPPER';
@@ -38,15 +39,6 @@ export const fetchUserLogin = (url,success) => (
 
 export const fetchUserInfo = () => (
   dispatch => (
-    request(user.fetchUser, {
-      success: data => {
-        if (data.status) {
-          dispatch(setUserMapper(data.result));
-        } else {
-          dispatch(fetchFailure(data.result))
-        }
-      },
-      error: err => dispatch(fetchFailure(err))
-    })
+    promiseRequest(user.fetchUser)
   )
 )

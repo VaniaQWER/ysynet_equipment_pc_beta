@@ -51,6 +51,10 @@ export const ledgerData = {
     text: "报废",
     color: 'gold'
   },
+  null :{
+    text: "无",
+    color: 'gold'
+  }
 }
 export const repairData = {
   //10申请，20指派，30维修中,50待验收，80已拒绝 90已关闭 
@@ -159,4 +163,17 @@ export const faultDescribeData ={
   "04" : { text: "不规则或偶发故障" },
   "02" : { text: "其他" }
 }  
+
+//证件附件类别
+export const certCodeData ={
+  "15" : { text: "资产图片" },
+  "12" : { text: "其他" },
+  "13" : { text: "招标文件" },
+  "14" : { text: "使用说明书 " },
+}  
+
+//资产类别
+export const productTypeData ={
+  "01" : { text: "医疗设备" }
+} 
 

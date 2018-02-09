@@ -5,7 +5,6 @@ const initialState = {
   }
 }
 const userReducer = (state = initialState , action) => {
-  console.log(action)
   switch (action.type) {
     case 'SET_USER_MAPPER':
       return {
@@ -13,7 +12,10 @@ const userReducer = (state = initialState , action) => {
       }
     case 'CLEAR_USER_MAPPER':
       return {
-
+        loginResult: '',
+        userInfo: {
+      
+        }
       }
     default:
       return state

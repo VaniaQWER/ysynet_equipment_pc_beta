@@ -1,7 +1,7 @@
 import {_local} from './local';
 
 const user = {
-  fetchUser: `${_local}/meqm/login/getUserInfo`
+  fetchUser: `${_local}/login/getUserInfo`
 }
 
 export default user;

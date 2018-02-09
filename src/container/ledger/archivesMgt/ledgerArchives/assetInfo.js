@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../../service';
 import assets from '../../../../api/assets';
 import querystring from 'querystring';
+import { ledgerData,productTypeData } from '../../../../constants';
 
 
 class AssetInfo extends Component {
@@ -40,19 +41,19 @@ class AssetInfo extends Component {
     return (
       <Row type="flex" style={{marginTop: 16}}  className={styles['table-row']}>
         <Col span={4} className={styles['table-span']}>资产名称</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.equipmentName }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.equipmetStandardName }</Col>
         <Col span={4} className={styles['table-span']}>资产编号</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.assetsRecord }</Col>
         <Col span={4} className={styles['table-span']}>通用名称</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'EQUIPMENT_STANDARD_NAME')} text={ AssetInfoData.equipmetStandardName } /></Col>
+        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'EQUIPMENT_NAME')} text={ AssetInfoData.equipmentName } /></Col>
         <Col span={4} className={styles['table-span']}>状态</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.useFstate }</Col>
+        <Col span={8} className={styles['table-span']}>{  AssetInfoData.useFstate ? ledgerData[AssetInfoData.useFstate].text :null }</Col>
         <Col span={4} className={styles['table-span']}>型号</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.spec }</Col>
         <Col span={4} className={styles['table-span']}>规格</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.fmodel }</Col>
         <Col span={4} className={styles['table-span']}>资产分类</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productType }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productType ? productTypeData[AssetInfoData.productType].text : null }</Col>
         <Col span={4} className={styles['table-span']}>使用科室</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.useDept }</Col>
         <Col span={4} className={styles['table-span']}>保管员</Col>

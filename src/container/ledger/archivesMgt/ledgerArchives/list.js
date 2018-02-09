@@ -4,7 +4,7 @@ import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom'
 import assets from '../../../../api/assets';
 import styles from './style.css';
-import { ledgerData } from '../../../../constants';
+import { ledgerData,productTypeData } from '../../../../constants';
 
 const { Content } = Layout;
 const Search = Input.Search;
@@ -44,11 +44,11 @@ class LedgerArchivesList extends Component {
         title: '状态',
         dataIndex: 'useFstate',
         width: 100,
-        render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
+         render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
       },
       {
         title: '资产名称',
-        dataIndex: 'equipmentName',
+        dataIndex: 'equipmetStandardName',
         width: 200
       },
       {
@@ -60,6 +60,7 @@ class LedgerArchivesList extends Component {
         title: '资产分类',
         dataIndex: 'productType',
         width: 100,
+        render: text => text ?  productTypeData[text].text  : null
       },
       {
         title: '保管员',
@@ -108,6 +109,7 @@ class LedgerArchivesList extends Component {
                     console.log(error)
                 }}
                 onSuccess={(result)=>{
+                  console.log(result,'result')
                     this.setState({loading: false})
                     if(result.status){
                         this.refs.table.fetch();
@@ -133,6 +135,7 @@ class LedgerArchivesList extends Component {
             </Col>
           </Row>
           <RemoteTable
+            loading={ this.state.loading}
             ref='table'
             query={this.state.query}
             url={assets.selectAssetsList}
