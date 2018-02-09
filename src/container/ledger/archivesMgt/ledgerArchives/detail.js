@@ -36,17 +36,19 @@ class LedgerArchivesDetail extends Component {
   }
 
   render() {
+    console.log(this.state.AssetInfoData,'this.state.AssetInfoData')
     return (
       <div>
          {
-          JSON.stringify(this.state.AssetInfoData) === '{}' ? null 
+          JSON.stringify(this.state.AssetInfoData) === '{}' || this.state.AssetInfoData === null ? null 
           :
           <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">
               <BaseInfo AssetInfoData={this.state.AssetInfoData}/> 
             </TabPane>
             <TabPane tab="证件信息" key="2">
-              <CertInfo certGuid={this.state.AssetInfoData.certGuid}/>
+             
+               <CertInfo certGuid={this.state.AssetInfoData.certGuid}/> 
             </TabPane>
             <TabPane tab="附件信息" key="3">
               <AccessoryInfo assetsRecord={this.state.AssetInfoData.assetsRecord} assetsRecordGuid={this.state.AssetInfoData.assetsRecordGuid}/>

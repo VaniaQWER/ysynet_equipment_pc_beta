@@ -20,11 +20,13 @@ class Login extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      tabIndex: 1
+      tabIndex: 1,
+      loading: false,
     }
   }
   
   login = () => {
+    this.setState({loading: true})
     const { tabIndex } = this.state;
     const form = tabIndex === 1 ? this.normalForm : this.phoneForm;
     const postData = form.props.form.getFieldsValue();
@@ -38,6 +40,7 @@ class Login extends Component {
     });
     fetchUserLogin(assets.userLogin+'?userNo='+userName+'&pwd=' + sha1(pwd) + '&token=vania',(data)=>{
       if(data.status){
+        this.setState({loading: false})
         setUser(data.result);
         if (!data.result.userInfo) {
           message.error(data.result.loginResult)
@@ -45,6 +48,7 @@ class Login extends Component {
           history.push('/');
         }
       }else{
+        this.setState({loading: false})
         message.error(data.msg)
       }
     });
@@ -66,7 +70,6 @@ class Login extends Component {
     // }
   }
   render() {
-    console.log(this.props)
     return (
       <Row className={`${styles.container} login`}>
         <Col span={16} push={8} style={{marginTop: 100}}>
@@ -80,7 +83,7 @@ class Login extends Component {
           </Tabs>
         </Col>
         <Col span={16} push={8} style={{padding: 8}}>
-          <Button style={{width: 384}} type='primary' size='large' onClick={this.login}>登录</Button>
+          <Button style={{width: 384}} type='primary' size='large' onClick={this.login} loading={this.state.loading}>登录</Button>
         </Col>
       </Row>
     )
