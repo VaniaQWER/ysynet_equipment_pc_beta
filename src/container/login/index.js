@@ -42,6 +42,7 @@ class Login extends Component {
       if(data.status){
         this.setState({loading: false})
         setUser(data.result);
+        console.log(data.result)
         if (!data.result.userInfo) {
           message.error(data.result.loginResult)
         }else{
@@ -51,7 +52,7 @@ class Login extends Component {
         this.setState({loading: false})
         message.error(data.msg)
       }
-    });
+    }).then(response =>    this.setState({loading: false}))
 
     // if ( userName === 'admin' && password === '999999' ) {
     //   // 管理科室

@@ -21,7 +21,7 @@ class OrderTaking extends PureComponent {
       rrpairType: '00',
       BaseInfoInfoData: {},
       visible: false,
-      type:'02' //this.props.user.type  01 管理科室  02 维修商
+      type:this.props.user.groupName  //glks 管理科室 syks使用科室  
 
     }
   }
@@ -78,7 +78,7 @@ class OrderTaking extends PureComponent {
           <Affix key={1}>
             <Button type='primary' onClick={this.accept} style={{marginRight: 5}}>接单维修</Button>
             {
-              type === '02'// 服务商拒绝
+              type === 'syks'// 服务商拒绝
               &&
               <Button type="danger" ghost onClick={this.refuse}>拒绝</Button>
             }
@@ -101,7 +101,7 @@ class OrderTaking extends PureComponent {
           }
         </Card>
         {
-          type === '02'//服务商 指派信息
+          type === 'syks'//服务商 指派信息
           &&
           <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
             {

@@ -26,7 +26,7 @@ class MyServiceComplete extends PureComponent {
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
       rrpairType:'00',//维修方式 00 内修 01 外修
-      UserType:'01' //this.props.user.type  01 管理科室内修  02 维修商 外修
+      UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
   }
   complete = () => {
@@ -154,7 +154,7 @@ class MyServiceComplete extends PureComponent {
             :
             <PartsInfo
               data={{
-                rrpairOrderGuid: UserType === '01'? this.props.location.state.rrpairOrderGuid:'',
+                rrpairOrderGuid: UserType === 'glks'? this.props.location.state.rrpairOrderGuid:'',
                 assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
               }}/>
           }

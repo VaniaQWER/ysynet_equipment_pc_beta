@@ -17,7 +17,7 @@ class RepairReg extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        type: "01", //this.props.user.type
+        type: this.props.user.groupName, //this.props.user.groupName
         orderFstate: '50', //管理科室默认的状态是完成50   关闭90  使用科室提交10
         selectRrpairDetailIsOrder: {},
         selectRrpairDetailIsAssets:{},
@@ -27,7 +27,7 @@ class RepairReg extends Component {
       }
     }
     handleButtonText =(orderFstate) => {
-      if(this.state.type === "01"){
+      if(this.state.type === "glks"){
        if(orderFstate === "50"){
          return "完成";
        }else if(orderFstate === "90"){
@@ -64,7 +64,7 @@ class RepairReg extends Component {
     const rrpairOrderGuid = this.props.match.params.id ;
     let params = {};
     const type = this.state.type ; //用户类型
-    if(type === "01"){ //管理科室
+    if(type === "glks"){ //管理科室
       params= {
         rrpairOrderGuid:rrpairOrderGuid,
         assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
@@ -75,7 +75,7 @@ class RepairReg extends Component {
         ...this.refs.serviceInfo.postData() //使用科室没有维修信息
       };
       console.log(params,"编辑有资产报修...管理科室")
-    }else if(type === "02") { // 使用科室
+    }else if(type === "syks") { // 使用科室
         params= {
           rrpairOrderGuid:rrpairOrderGuid,
           assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
@@ -126,7 +126,7 @@ class RepairReg extends Component {
         
         </Card>
         {
-          type === "01" ? 
+          type === "glks" ? 
             <div>
               <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
                 {

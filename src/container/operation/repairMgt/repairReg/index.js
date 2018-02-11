@@ -16,11 +16,11 @@ class RepairReg extends Component {
   state = {
     assetsInfo: {},
     isAssets:true, //判断有资产报修 还缺无资产报修的状态
-    type: "01", //01管理科室 02使用科室 this.props.user.type
+    type: this.props.user.groupName, //glks管理科室 syks使用科室 this.props.user.groupName
     orderFstate: '50', //管理科室默认的状态是完成50   关闭90  使用科室提交10
   }
   handleButtonText =(orderFstate) => {
-   if(this.state.type === "01"){
+   if(this.state.type === "glks"){
     if(orderFstate === "50"){
       return "完成";
     }else if(orderFstate === "90"){
@@ -36,7 +36,7 @@ class RepairReg extends Component {
     const { insertOrRrpair, history } = this.props;
     let params = {};
     const type = this.state.type ; //用户类型
-    if(type === "01"){ //管理科室
+    if(type === "glks"){ //管理科室
       if(JSON.stringify(this.state.assetsInfo) === '{}'){
         return message.warning("请先搜索正确的资产信息,谢谢!")
       }
@@ -56,7 +56,7 @@ class RepairReg extends Component {
         ...this.refs.serviceInfo.postData() //使用科室没有维修信息  维修信息提交数据
       };
       console.log(params,"有资产报修...管理科室")
-    }else if(type === "02") { // 使用科室
+    }else if(type === "syks") { // 使用科室
       if(this.state.isAssets){
         if(JSON.stringify(this.state.assetsInfo) === '{}'){
           return message.warning("请先搜索正确的资产信息,谢谢!")
@@ -108,7 +108,7 @@ class RepairReg extends Component {
           <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
         </Card>
         {
-          type === "01" ? 
+          type === "glks" ? 
           <div>
             <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
               <ServiceInfo isEdit={true} ref='serviceInfo' callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
