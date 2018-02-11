@@ -4,18 +4,27 @@ export const repairCommonDataSource = [
   {
     title: '维修单号',
     dataIndex: 'rrpairOrderNo',
-    width: 200
+    width: 160
   }, 
   {
     title: '单据状态',
     dataIndex: 'orderFstate',
-    width: 80,
+    width: 100,
+    filters: [
+      { text: '待接修', value: '10' },
+      { text: '指派', value: '20' },
+      { text: '维修中', value: '30' },
+      { text: '已拒绝', value: '80' },
+      { text: '关闭', value: '90' },
+    ],
+    onFilter: (value, record) => record.orderFstate.indexOf(value) === 0,
+    sorter: false,
     render: text =>  <Tag color={repairData[text].color}> { repairData[text].text } </Tag>
   },
   {
     title: '资产名称',
     dataIndex: 'equipmentStandardName',
-    width: 250
+    width: 180
   },
   {
     title: '使用科室',
@@ -25,17 +34,17 @@ export const repairCommonDataSource = [
   {
     title: '管理员',
     dataIndex: 'custodian',
-    width: 100,
+    width: 80,
   },
   {
     title: '报修人',
     dataIndex: 'rrpairUsername',
-    width: 100
+    width: 80
   },
   {
     title: '报修时间',
     dataIndex: 'createDate',
-    width: 150
+    width: 130
   }
 ]
 export const ledgerData = {

@@ -59,7 +59,7 @@ class Home extends React.Component {
             {  }
           </BreadcrumbGroup>
           {
-            this.state.isLoading ? 'loading' : 
+            this.state.isLoading ? '数据加载中...' : 
             <Switch>
               {
                 routes.map((route, i) => (

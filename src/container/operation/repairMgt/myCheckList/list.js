@@ -7,6 +7,7 @@ import TableGrid from '../../../../component/tableGrid';
 import { Link} from 'react-router-dom';
 import assets from '../../../../api/assets';
 import { repairCommonDataSource,faultDescribeData } from '../../../../constants'
+import  textTips  from '../../../../utils/tools'
 
 const Search = Input.Search;
 const { Content } = Layout;
@@ -28,7 +29,7 @@ class MyCheckList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 120,
+        width: 80,
         render: (text, record) => {
           if (record.orderFstate === '50') {
             return <Link to={{pathname:`/operation/repairMgt/myCheckList/check/${record.rrpairOrderGuid}`,state: record}}>
@@ -53,7 +54,7 @@ class MyCheckList extends Component {
               return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
              }) 
           }
-          return str;
+          return str === null ? "" : textTips(200,str);
         }
       }];
     return (
@@ -63,7 +64,7 @@ class MyCheckList extends Component {
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
                 onSearch={value =>  {this.queryHandler({'params':value})}}
-                style={{ width: 300 }}
+                style={{ width: 400 }}
                 enterButton="搜索"
               />
             </Col>

@@ -93,7 +93,7 @@ class LedgerArchivesList extends Component {
               <Search
                 placeholder="请输入资产编号/资产名称"
                 onSearch={value =>  {this.queryHandler({'params':value})}}
-                style={{ width: 300 }}
+                style={{ width: 400 }}
                 enterButton="搜索"
               />
             </Col>

@@ -7,6 +7,7 @@ import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import assets from '../../../../api/assets';
 import { repairCommonDataSource,faultDescribeData } from '../../../../constants'
+import  textTips  from '../../../../utils/tools'
 
 const Search = Input.Search;
 const { Content } = Layout;
@@ -55,7 +56,7 @@ class RepairRegList extends Component {
               return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
              }) 
           }
-          return str;
+          return str === null ? "" : textTips(200,str);
         }  
       }];
     return (
@@ -65,7 +66,7 @@ class RepairRegList extends Component {
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
                 onSearch={value =>  {this.queryHandler({'params':value})}}
-                style={{ width: 300 }}
+                style={{ width: 400 }}
                 enterButton="搜索"
               />
             </Col>
@@ -74,7 +75,7 @@ class RepairRegList extends Component {
             ref='table'
             query={this.state.query}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '150%', y : document.body.clientHeight - 110 }}
             columns={columns}
             rowKey={'RN'}
             pagesize={20}

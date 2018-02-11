@@ -30,7 +30,7 @@ class InsideRepairForm extends PureComponent {
   }
   
   handleRepairResultChange = (val) => {
-    if (val === '02') {
+    if (val === '00') {
       this.setState({isClosed: true})
       this.props.callBack("90"); //关闭按钮
     } else {
@@ -116,7 +116,7 @@ class InsideRepairForm extends PureComponent {
                 initialValue: isEdit ? data.repairResult : null
               })(
                 isEdit ? 
-                <Select allowClear onChange={this.onChange}>
+                <Select allowClear onChange={this.handleRepairResultChange}>
                   {
                     selectOption.repairResult.map((item, index) => (
                       <Option value={item.value} key={index}> { item.text } </Option>
@@ -232,7 +232,7 @@ class OutsideRepairForm extends PureComponent {
           <Col span={20} style={gridStyle.content.style}>
             {
               getFieldDecorator('completTime',{
-                initialValue: isEdit ? data.completTime=== "" || data.completTime === null? null: moment(data.completTime,'YYYY-MM-DD') : null
+                initialValue: isEdit ? data || data.completTime=== "" || data.completTime === null? null: moment(data.completTime,'YYYY-MM-DD') : null
               })(
                 isEdit ?
                 <DatePicker style={{width: '40%'}}/>
@@ -275,12 +275,13 @@ class ServiceInfo extends PureComponent {
   postData = () => {
     const { rrpairType } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
-    data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD');
+    data.completTime =  data.completTime === undefined || data.completTime === null ? '':data.completTime.format('YYYY-MM-DD');
     return {...data, rrpairType: rrpairType}
   }
   render() {
     const { rrpairType } = this.state;
     const { isEdit, data ,callBack} = this.props;
+    console.log(data,'1')
     const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
     return (
       <div>
@@ -295,7 +296,7 @@ class ServiceInfo extends PureComponent {
                 this.props.callBack("50")
                 data.repairResult = "";
               }
-              this.props.setRrpairType(e.target.value);
+              //this.props.setRrpairType(e.target.value);
             }}>
               <RadioButton value="00" disabled={!isEdit && rrpairType !== '00'}>内修</RadioButton>
               <RadioButton value="01" disabled={!isEdit && rrpairType !== '01'}>外修</RadioButton>

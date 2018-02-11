@@ -6,7 +6,6 @@ import { Row, Col, Select, Input, Form } from 'antd';
 import PicWall from '../../../../component/picWall'; 
 import PropTypes from 'prop-types';
 import { selectOption,faultDescribeData } from '../../../../constants';
-console.log(selectOption)
 const { Option } = Select;
 const { TextArea } = Input;
 const gridStyle = {
@@ -131,7 +130,7 @@ class RepairInfoForm extends PureComponent {
               initialValue: isEdit ? data.faultDescribe : null
             })( 
               isEdit ?  
-              <Select style={{width: '100%'}} allowClear mode="multiple">
+              <Select style={{width: '100%'}} allowClear mode="multiple" className="ysynet-ant-select">
                 {
                   selectOption.faultDescribe.map((item, index) => (
                     <Option value={item.value} key={index}> { item.text } </Option>

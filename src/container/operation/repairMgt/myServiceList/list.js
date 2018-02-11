@@ -6,7 +6,8 @@ import { Row, Col, Input, Layout, Icon } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import assets from '../../../../api/assets';
-import { repairCommonDataSource,faultDescribeData } from '../../../../constants'
+import { repairCommonDataSource,faultDescribeData } from '../../../../constants';
+import  textTips  from '../../../../utils/tools'
 
 const Search = Input.Search;
 const { Content } = Layout;
@@ -28,7 +29,7 @@ class MyServiceList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 120,
+        width: 80,
         render: (text, record) => {
           //return <Link to={'/operation/repairMgt/myServiceList/100'}>详情</Link>
           switch (record.orderFstate) {
@@ -40,19 +41,21 @@ class MyServiceList extends Component {
               return <Link to={{pathname:`/operation/repairMgt/myServiceList/detail/${record.rrpairOrderGuid}`,state: record}}><Icon style={{marginRight: 5}} type="profile" />详情</Link>
           }
         }
-      },{
-        title:'维修方式',
-        dataIndex:'rrpairType',
-        render: (text,record)=>{
-          if(record.rrpairType==='00'){
-            return '内修'
-          }else if(record.rrpairType ==='01'){
-            return '外修'
-          }else{
-            return 'null'
-          }
-        }
       },
+      // {
+      //   title:'维修方式',
+      //   width: 100,
+      //   dataIndex:'rrpairType',
+      //   render: (text,record)=>{
+      //     if(record.rrpairType==='00'){
+      //       return '内修'
+      //     }else if(record.rrpairType ==='01'){
+      //       return '外修'
+      //     }else{
+      //       return 'null'
+      //     }
+      //   }
+      // },
       ...repairCommonDataSource,
       {
         title: '故障现象',
@@ -65,7 +68,7 @@ class MyServiceList extends Component {
               return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
              }) 
           }
-          return str;
+          return str === null ? "" : textTips(200,str);
         }
       }];
     return (
@@ -75,7 +78,7 @@ class MyServiceList extends Component {
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
                 onSearch={value =>  {this.queryHandler({'params':value})}}
-                style={{ width: 300 }}
+                style={{ width: 400 }}
                 enterButton="搜索"
               />
             </Col>
@@ -84,7 +87,7 @@ class MyServiceList extends Component {
             ref='table'
             query={this.state.query}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '150%', y : document.body.clientHeight - 110 }}
             columns={columns}
             rowKey={'RN'}
             showHeader={true}

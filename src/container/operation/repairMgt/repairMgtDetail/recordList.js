@@ -10,6 +10,11 @@ const Search = Input.Search;
 const { RemoteTable } = TableGrid;
 
 class RecordList extends Component {
+  queryHandler = (query) => {
+    this.refs.table.fetch(query);
+    this.setState({ query })
+  }
+
   render () {
     const columns = [
       {
@@ -39,14 +44,14 @@ class RecordList extends Component {
           <Col span={12}>
             <Search
               placeholder="请输入操作分类/操作员"
-              onSearch={value => console.log(value)}
-              style={{ width: 300 }}
+              onSearch={value =>  {this.queryHandler({'params':value})}}
+              style={{ width: 400 }}
               enterButton="搜索"
             />
           </Col>
         </Row>
          <RemoteTable
-            ref='remote'
+            ref='table'
             query={{rrpairOrderGuid:this.props.rrpairOrderGuid}}
             url={assets.selectEqOperationList}
             scroll={{x: '100%',y:  document.body.clientHeight - 381}}

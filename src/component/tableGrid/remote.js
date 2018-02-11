@@ -29,7 +29,7 @@ class RemoteTable extends Component {
     this.setState({ loading: true, searchParams: params });
     if(url){
       const body = querystring.stringify({
-        pagesize: this.props.pagesize || 15,
+        pagesize: this.props.pagesize || 20,
         ...params,
       })  
       request(url,{
@@ -47,7 +47,7 @@ class RemoteTable extends Component {
           pagination.pageSizeOptions=['20','30','40'];
           pagination.showQuickJumper = true;
           pagination.showTotal=(total, range) => `${range[0]}-${range[1]} 共 ${total} 条`;
-          pagination.pageSize = this.props.pagesize || 15;
+          pagination.pageSize = this.props.pagesize || 20;
           if(!params.page) {
             pagination.current = 1;
           }

@@ -23,7 +23,7 @@ class RepairRecordList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 150,
+        width: 80,
         render: (text, record) => 
           <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
             <Icon type="profile" style={{marginRight: 5}}/>
@@ -34,12 +34,12 @@ class RepairRecordList extends Component {
       {
         title: '维修员',
         dataIndex: 'inRrpairUsername',
-        width: 150
+        width: 100
       },
       {
         title: '维修时间',
         dataIndex: 'createDate',
-        width: 200
+        width: 130
       }
     ];
     return (
@@ -49,7 +49,7 @@ class RepairRecordList extends Component {
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
                 onSearch={value =>  {this.queryHandler({'params':value})}}
-                style={{ width: 300 }}
+                style={{ width: 400 }}
                 enterButton="搜索"
               />
             </Col>

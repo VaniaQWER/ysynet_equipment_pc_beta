@@ -7256,6 +7256,12 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
+<<<<<<< Updated upstream
 ysynet_reset@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/ysynet_reset/-/ysynet_reset-1.0.2.tgz#61f4b4421e0f117cfcf32d64211164fdea69c4a5"
+=======
+ysynet_reset@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ysynet_reset/-/ysynet_reset-1.0.5.tgz#40fa88b4b117c65653af87b32a64c38ab3dcc73b"
+>>>>>>> Stashed changes
