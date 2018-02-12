@@ -178,28 +178,34 @@ class MyCheckListCheckIn extends PureComponent {
           {
             JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
             :
-           <AssetsInfo wrappedComponentRef={(inst) => this.assetsInfo = inst} data={this.state.selectRrpairDetailIsAssets} isEdit={true}/>
+           <AssetsInfo  data={this.state.selectRrpairDetailIsAssets} isEdit={true}/>
           }
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
           {
              JSON.stringify(this.state.selectRrpairDetailIsOrder) === '{}' ? null 
              :
-            <RepairInfo wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.selectRrpairDetailIsOrder} isEdit={false}/>
+            <RepairInfo  data={this.state.selectRrpairDetailIsOrder} isEdit={false}/>
           }
         </Card>
         <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
           {
             JSON.stringify(this.state.selectRrpairDetailIsCall) === '{}' ? null 
             :
-            <AssignInfo ref='assignInfo' data={this.state.selectRrpairDetailIsCall} isEdit={true}/>
+            <AssignInfo ref='assignInfo' 
+              rrpairType={this.state.selectRrpairDetailIsCall.rrpairType} 
+              data={this.state.selectRrpairDetailIsCall} isEdit={true
+            }/>
           }
         </Card>
         <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={4}>
           {
             JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
             :
-            <ServiceInfo wrappedComponentRef={(inst) => this.serviceInfo = inst} data={this.state.selectRrpairDetailIsRrpair} isEdit={false}/>
+            <ServiceInfo  
+              rrpairType={this.state.selectRrpairDetailIsCall.rrpairType} 
+              data={this.state.selectRrpairDetailIsRrpair} isEdit={false}
+            />
           }
         </Card>
         {<Card title="维修配件" style={{marginTop: 16}} hoverable={false} key={6}>

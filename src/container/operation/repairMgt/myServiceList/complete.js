@@ -137,7 +137,9 @@ class MyServiceComplete extends PureComponent {
           {
             JSON.stringify(this.state.selectRrpairDetailIsCall) === '{}' ? null 
             :
-           <AssignInfo ref='assignInfo' data={this.state.selectRrpairDetailIsCall} isEdit={true}/>
+           <AssignInfo ref='assignInfo' 
+            rrpairType={this.state.selectRrpairDetailIsCall.rrpairType} 
+            data={this.state.selectRrpairDetailIsCall} isEdit={true}/>
           }
         </Card>
         <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={4}>
@@ -146,6 +148,7 @@ class MyServiceComplete extends PureComponent {
             :
             <ServiceInfo ref='serviceInfo'
               callBack={(Rrtype => this.setState({ rrpairType : Rrtype==='20'?'01':'00' }))}
+              rrpairType={this.state.selectRrpairDetailIsRrpair.rrpairType}
               data={this.state.selectRrpairDetailIsRrpair} isEdit={true}/>
           }
         </Card>

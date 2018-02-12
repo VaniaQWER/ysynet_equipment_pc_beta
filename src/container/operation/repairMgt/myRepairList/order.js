@@ -26,7 +26,7 @@ class RepairOrder extends PureComponent {
     const data = this.refs.assignInfo.postData(); //获取指派信息
     let params = {};
     params.rrpairOrderGuid = this.props.location.state.rrpairOrderGuid;
-    params.orderFstate = this.props.location.state.orderFstate;
+    params.orderFstate = data.rrpairType==='00'?'30':data.rrpairType==='01'?'20':'90';
     console.log({...params,...data},'指派信息');
     params = {...params,...data };
     designateInOrOut(assets.designateInOrOut,querystring.stringify(params),(data) => {
@@ -43,7 +43,6 @@ class RepairOrder extends PureComponent {
   }
   //获取id 根据id号查详情
   componentWillMount = () =>{
-    console.log(this.props,'1111')
     const assetsRecordGuid = this.props.match.params.id;
     const { getSelectAssetsRecordDetail } = this.props;
     const params = { rrpairOrderGuid: assetsRecordGuid };

@@ -42,9 +42,6 @@ class OrderTaking extends PureComponent {
       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
-  SetRrpairType = (val)=>{
-    this.setState({ rrpairType : val  })
-  }
   accept = () => {
     let baseData = this.props.location.state;
     const { acceptRepairSerivce, history } = this.props;
@@ -107,7 +104,9 @@ class OrderTaking extends PureComponent {
             {
               JSON.stringify(this.state.BaseInfoInfoData) === '{}' ? null
               :
-              <AssignInfo ref='assignInfo' isEdit={true} rrpairType={ baseData.rrpairType } setRrpairType = {(val)=>this.SetRrpairType(val)} data={this.state.BaseInfoInfoData.selectRrpairDetailIsCall}/>
+              <AssignInfo ref='assignInfo' isEdit={true} rrpairType={ baseData.rrpairType } 
+                callBack={(Rrtype => this.setState({ rrpairType : Rrtype==='20'?'01':'00' }))}
+                data={this.state.BaseInfoInfoData.selectRrpairDetailIsCall}/>
             }
           </Card>
         }

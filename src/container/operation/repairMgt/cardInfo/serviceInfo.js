@@ -288,7 +288,7 @@ class ServiceInfo extends PureComponent {
         <Row type="flex">
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
-            <RadioGroup defaultValue="00" onChange={e => {
+            <RadioGroup defaultValue={rrpairType} onChange={e => {
               this.setState({rrpairType: e.target.value});
               if(e.target.value === "01"){
                 this.props.callBack("20")

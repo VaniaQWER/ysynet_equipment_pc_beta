@@ -121,7 +121,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('productType')(
-            <span>{ data.productType === "01" ? "医疗设备" : "其他" }</span>
+            <span>{ data.productType === null? '': data.productType === "01" ? "医疗设备" : "其他" }</span>
           )
         }
         </Col>
@@ -161,7 +161,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('guaranteeFlag')(
-            <span>{ data.guaranteeFlag === "00" ? "出保" : "在保" }</span>
+            <span>{ data.guaranteeFlag===null? '': data.guaranteeFlag === "00" ? "出保" : "在保" }</span>
           )
         }
         </Col>
