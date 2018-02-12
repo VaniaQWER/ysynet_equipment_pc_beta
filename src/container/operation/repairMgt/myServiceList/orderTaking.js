@@ -75,7 +75,7 @@ class OrderTaking extends PureComponent {
           <Affix key={1}>
             <Button type='primary' onClick={this.accept} style={{marginRight: 5}}>接单维修</Button>
             {
-              type === 'syks'// 服务商拒绝
+              type === 'glks'// 服务商拒绝
               &&
               <Button type="danger" ghost onClick={this.refuse}>拒绝</Button>
             }
@@ -98,7 +98,7 @@ class OrderTaking extends PureComponent {
           }
         </Card>
         {
-          type === 'syks'//服务商 指派信息
+          type === 'glks'//服务商 指派信息
           &&
           <Card title="指派信息" style={{marginTop: 16}} hoverable={false} key={5}>
             {

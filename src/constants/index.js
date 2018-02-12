@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag } from 'antd';
+import { Badge } from 'antd';
 export const repairCommonDataSource = [
   {
     title: '维修单号',
@@ -19,7 +19,8 @@ export const repairCommonDataSource = [
     ],
     onFilter: (value, record) => record.orderFstate.indexOf(value) === 0,
     sorter: false,
-    render: text =>  <Tag color={repairData[text].color}> { repairData[text].text } </Tag>
+    render: text =>  <Badge status={repairData[text].color} text={ repairData[text].text} /> 
+
   },
   {
     title: '资产名称',
@@ -69,30 +70,30 @@ export const repairData = {
   //10申请，20指派，30维修中,50待验收，80已拒绝 90已关闭 
   "10": {
     text: "待接修",
-    color: 'blue'
+    color: 'processing'
   },
   "20": {
     text: "已指派",
-    color: 'green'
+    color: 'success'
   },
   "30": {
     text: "维修中",
-    color: 'gold'
+    color: 'success'
   },
   "50": {
     text: "待验收",
-    color: 'orange'
+    color: 'warning'
   },
   "80": {
     text: "已拒绝",
-    color: 'magenta'
+    color: 'error'
   },
   "90": {
     text: "已关闭",
-    color: 'red'
+    color: 'error'
   },
   null :{
-    text: "无"
+    text: "default"
   }
 }
 

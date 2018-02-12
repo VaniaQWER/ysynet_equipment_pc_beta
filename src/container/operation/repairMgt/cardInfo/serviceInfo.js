@@ -22,28 +22,20 @@ const gridStyle = {
 }
 // 内修
 class InsideRepairForm extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isClosed: this.props.isClosed,
-    }
-  }
   
   handleRepairResultChange = (val) => {
-    if (val === '00') {
-      this.setState({isClosed: true})
+    if (val === '02') {
       this.props.callBack("90"); //关闭按钮
     } else {
       this.props.callBack("50"); //完成按钮
-      this.setState({isClosed: false})
     }
     this.props.data.repairResult = val;
   }
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { isClosed } = this.state;
+    //const { isClosed } = this.state;
     const { isEdit, data } = this.props;
-    const Comp = isClosed ? [
+    const Comp = data.repairResult === '02' ? [
       <Col {...gridStyle.label} key={1}>关闭原因：</Col>,
       <Col {...gridStyle.content} key={2}>
         {

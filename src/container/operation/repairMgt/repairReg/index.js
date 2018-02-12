@@ -114,7 +114,7 @@ class RepairReg extends Component {
               <ServiceInfo isEdit={true} ref='serviceInfo' callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
             </Card>
             <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
-              <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}}/>
+              <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}} isAddParts={false}/>
             </Card>
           </div>
           :

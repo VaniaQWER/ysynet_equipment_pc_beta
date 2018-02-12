@@ -21,21 +21,20 @@ const gridStyle = {
     style: { textAlign: 'left', height: 50, lineHeight: '50px' }
   }
 }
-const handleDelete = (record,action)=>{
-  let parms = {};
-  parms.rrpairFittingUseGuid = record.rrpairFittingUseGuid;
-  console.log(parms,'parms')
-  action(assets.deleteRrpairFitting,parms,(data) => {
-    if(data.status){
-      message.success("操作成功!")
-    }else{
-      message.error(data.msg)
-    }
-  })
-}
-const getColumns = (action) => {
-  let columns = [{
-      title: '配件编号',
+
+
+class SelectParts extends PureComponent {
+  state = {
+    query:{
+      assetsRecordGuid: this.props.assetsRecordGuid
+    },
+    selected: [],
+    selectedRows: []
+  }
+
+  render() {
+    const columns = [{
+        title: '配件编号',
       dataIndex: 'assetsRecord',
       key: 'assetsRecord',
       width: 200
@@ -74,39 +73,14 @@ const getColumns = (action) => {
       dataIndex: 'money',
       key: 'money',
       width: 100
-    }]
-  if (action) {
-    columns = [ {
-      title: '操作',
-      dataIndex: 'rrpairFittingUseGuid',
-      key: 'rrpairFittingUseGuid',
-      width: 100,
-      render: (text, record) => (
-        <a onClick={() => handleDelete(record,action)}>
-          <Icon type="delete" style={{marginRight: 5}}/>删除
-      </a>
-      )
-    }, ...columns ]
-  } 
-  return columns;
-}
-class SelectParts extends PureComponent {
-  state = {
-    query:{
-      assetsRecordGuid: this.props.assetsRecordGuid
-    },
-    selected: [],
-    selectedRows: []
-  }
-
-  render() {
+    }];
     return (
       <RemoteTable
         ref='remote'
         query={this.state.query}
         url={assets.selectAssetsExtendList}
         scroll={{x: '100%'}}
-        columns={getColumns()}
+        columns={columns}
         rowKey={'assetsExtendGuid'}
         style={{marginTop: 10}}
         size="small"
@@ -255,14 +229,15 @@ class PartsInfo extends PureComponent {
       choseVisible: false,
       writeVisible: false,
       showOrHide: false,
-      assetsRecordGuid: this.props.data.assetsRecordGuid
+      assetsRecordGuid: this.props.data.assetsRecordGuid,
+      rrpairOrderGuid : this.props.data.rrpairOrderGuid
     }
   }
 
   handleTableDataSource =() => {
-    if(this.props.data.assetsRecordGuid){
-      const assetsRecordGuid = this.state.assetsRecordGuid;
-      const params = { assetsRecordGuid: assetsRecordGuid };
+    if(this.props.data.rrpairOrderGuid){
+      const rrpairOrderGuid = this.state.rrpairOrderGuid;
+      const params = { rrpairOrderGuid: rrpairOrderGuid };
       operationService.getInfo(assets.selectRrpairFittingList, querystring.stringify(params),(data) => {
         this.setState( { dataSource : data.result.rows })
       },{
@@ -348,10 +323,116 @@ class PartsInfo extends PureComponent {
       this.setState({choseVisible: false,writeVisible: false});
     }
   }
+
+  handleDelete = (record)=>{
+    let parms = {};
+    parms.rrpairFittingUseGuid = record.rrpairFittingUseGuid;
+    console.log(parms,'parms')
+    operationService.getInfo(assets.deleteRrpairFitting,querystring.stringify(parms),(data) => {
+      if(data.status){
+        message.success("操作成功!")
+      }else{
+        message.error(data.msg)
+      }
+    })
+  }
   
   
   render() {
     const {  choseVisible, writeVisible ,dataSource} = this.state;
+    console.log(this.props.data.check,'check')
+    const columns = this.props.data.check === "check"  ? [{
+      title: '操作',
+      dataIndex: 'rrpairFittingUseGuid',
+      key: 'rrpairFittingUseGuid',
+      width: 100,
+      render: (text, record) => (
+        <a onClick={(record)=>this.handleDelete(record)}>
+          <Icon type="delete" style={{marginRight: 5}}/>删除
+      </a>
+      )
+    },{
+        title: '配件编号',
+      dataIndex: 'assetsRecord',
+      key: 'assetsRecord',
+      width: 200
+    }, {
+      title: '配件名称',
+      dataIndex: 'acceName',
+      key: 'acceName',
+      width: 200
+    }, {
+      title: '型号',
+      dataIndex: 'acceFmodel',
+      key: 'acceFmodel',
+      width: 150
+    }, {
+      title: '规格',
+      dataIndex: 'acceSpec',
+      key: 'acceSpec',
+      width: 150
+    }, {
+      title: '数量',
+      dataIndex: 'acceNum',
+      key: 'acceNum',
+      width: 100
+    }, {
+      title: '单位',
+      dataIndex: 'acceUnit',
+      key: 'acceUnit',
+      width: 100
+    }, {
+      title: '单价',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      width: 100
+    }, {
+      title: '金额',
+      dataIndex: 'money',
+      key: 'money',
+      width: 100
+    }]:
+    [{
+        title: '配件编号',
+      dataIndex: 'assetsRecord',
+      key: 'assetsRecord',
+      width: 200
+    }, {
+      title: '配件名称',
+      dataIndex: 'acceName',
+      key: 'acceName',
+      width: 200
+    }, {
+      title: '型号',
+      dataIndex: 'acceFmodel',
+      key: 'acceFmodel',
+      width: 150
+    }, {
+      title: '规格',
+      dataIndex: 'acceSpec',
+      key: 'acceSpec',
+      width: 150
+    }, {
+      title: '数量',
+      dataIndex: 'acceNum',
+      key: 'acceNum',
+      width: 100
+    }, {
+      title: '单位',
+      dataIndex: 'acceUnit',
+      key: 'acceUnit',
+      width: 100
+    }, {
+      title: '单价',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      width: 100
+    }, {
+      title: '金额',
+      dataIndex: 'money',
+      key: 'money',
+      width: 100
+    }];
     return (
       <div>
         <Modal
@@ -388,7 +469,7 @@ class PartsInfo extends PureComponent {
          <Table 
           dataSource={dataSource} 
           scroll={{x: '100%'}}
-          columns={getColumns()}
+          columns={columns}
           rowKey={'rrpairFittingUseGuid'}
           style={{marginTop: 10}}
           size="small"
@@ -411,7 +492,7 @@ class PartsInfo extends PureComponent {
                   </Button>
                 }
                 {
-                  this.props.data.rrpairOrderGuid ?
+                  this.props.isAddParts ?
                   <Button
                   onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
                 >
@@ -432,8 +513,3 @@ class PartsInfo extends PureComponent {
 }
 
 export default PartsInfo;
-// connect(state => state, dispatch => ({
-//   getPartsInfo: (url,values,success,type) => operationService.getInfo(url,values,success,type),
-// }))(PartsInfo);
-
-//(url,values,success,type) => operationService.getInfo(url,values,success,type)

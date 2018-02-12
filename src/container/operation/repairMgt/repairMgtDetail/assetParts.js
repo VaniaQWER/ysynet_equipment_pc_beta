@@ -48,13 +48,13 @@ class AssetParts extends Component {
     return (
       <div>
          <RemoteTable
-            query={{ assetsRecordGuid: this.props.assetsRecordGuid }}
+            query={{ rrpairOrderGuid: this.props.rrpairOrderGuid }}
             ref='remote'
-            url={assets.selectAssetsExtendList}
+            url={assets.selectRrpairFittingList}
             scroll={{x: '120%',y:400}}
             columns={columns}
             showHeader={true}
-            rowKey={'assetsExtendGuid'}
+            rowKey={'rrpairFittingUseGuid'}
             style={{marginTop: 10}}
             size="small"
           /> 

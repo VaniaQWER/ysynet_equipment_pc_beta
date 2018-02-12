@@ -26,8 +26,8 @@ class MyServiceComplete extends PureComponent {
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
       selectRrpairDetail: {},
-      rrpairType:'00',//维修方式 00 内修 01 外修
-      UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
+      rrpairType:this.props.location.state.rrpairType || '00',//维修方式 00 内修 01 外修
+      //UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
   }
   complete = () => {
@@ -68,7 +68,7 @@ class MyServiceComplete extends PureComponent {
     const { finishRepairSerivce, history } = this.props;
     let params = this.refs.serviceInfo.postData();
     if(key){
-      params.orderFstate = baseData.orderFstate;
+      params.orderFstate = '20';
     }
     params.rrpairOrderGuid = baseData.rrpairOrderGuid;
     console.log(params,'params参数')
@@ -107,7 +107,7 @@ class MyServiceComplete extends PureComponent {
     })
   }
   render() {
-    const { UserType } = this.state;
+    //const { UserType } = this.state;
     //console.log(this.state.rrpairType,'type')
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
@@ -158,9 +158,9 @@ class MyServiceComplete extends PureComponent {
             :
             <PartsInfo
               data={{
-                rrpairOrderGuid: UserType === 'glks'? this.props.location.state.rrpairOrderGuid:'',
+                rrpairOrderGuid:  this.props.location.state.rrpairOrderGuid,
                 assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
-              }}/>
+              }} isAddParts={true}/>
           }
         </Card>}
         <BackTop />
