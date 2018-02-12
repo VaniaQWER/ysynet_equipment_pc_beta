@@ -28,6 +28,7 @@ class AllDetail extends PureComponent {
                               ...data.result.selectRrpairDetailIsAcce,
                               ...data.result.selectRrpairDetailIsRrpair,
                               ...data.result.selectRrpairDetailIsCall,
+                              ...data.result.selectRrpairDetail,
                               ...this.props.location.state
                             }
         })

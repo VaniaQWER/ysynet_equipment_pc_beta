@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { Row, Col,Collapse } from 'antd';
 import styles from '../../../ledger/archivesMgt/ledgerArchives/style.css';
 import AssetParts from './assetParts';//资产配件
-import { selectOption } from '../../../../constants'
+import { selectOption,repairData } from '../../../../constants'
 
 const Panel = Collapse.Panel;
 
@@ -20,7 +20,7 @@ class BaseInfo extends Component {
           <Col span={4} className={styles['table-span']}>维修单号</Col>
            <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairOrderNo }</Col> 
           <Col span={4} className={styles['table-span']}>单据状态</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.orderFstate } </Col>
+          <Col span={8} className={styles['table-span']}>{ repairData[BaseInfoInfoData.orderFstate].text } </Col>
           <Col span={4} className={styles['table-span']}>制单时间</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>
           <Col span={4} className={styles['table-span']}>完成时间</Col>

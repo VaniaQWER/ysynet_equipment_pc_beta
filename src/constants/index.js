@@ -12,7 +12,7 @@ export const repairCommonDataSource = [
     width: 100,
     filters: [
       { text: '待接修', value: '10' },
-      { text: '指派', value: '20' },
+      { text: '已指派', value: '20' },
       { text: '维修中', value: '30' },
       { text: '已拒绝', value: '80' },
       { text: '关闭', value: '90' },
@@ -72,7 +72,7 @@ export const repairData = {
     color: 'blue'
   },
   "20": {
-    text: "指派",
+    text: "已指派",
     color: 'green'
   },
   "30": {
@@ -88,7 +88,7 @@ export const repairData = {
     color: 'magenta'
   },
   "90": {
-    text: "关闭",
+    text: "已关闭",
     color: 'red'
   },
   null :{
@@ -112,7 +112,7 @@ export const selectOption = {
   ],
   guaranteeFlag: [//是否在保
     { text: "在保", value: "01" },
-    { text: "出保", value: "02" },
+    { text: "出保", value: "00" },
   ],
   faultDescribe: [ // 故障现象
     { text: "部分功能失效", value: "00" },

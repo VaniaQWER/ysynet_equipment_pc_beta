@@ -73,7 +73,10 @@ class Login extends Component {
   render() {
     return (
       <Row className={`${styles.container} login`}>
-        <Col span={16} push={8} style={{marginTop: 100}}>
+        <Col span={24}>
+          <a href="/" className={styles['login-logo']}> </a>
+        </Col>
+        <Col span={16} push={8}>
           <Tabs defaultActiveKey="1" animated={false} style={{width: 400}} onChange={index => this.setState({tabIndex: index})}>
             <TabPane style={{padding: 8}} tab={<span style={{fontSize: 16}}><Icon type="solution" />账户密码登录</span>} key="1">
               <WrappedNormalLoginForm wrappedComponentRef={(inst) => this.normalForm = inst}/>

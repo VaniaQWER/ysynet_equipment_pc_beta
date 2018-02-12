@@ -120,6 +120,6 @@ class OrderTaking extends PureComponent {
   }
 }
 //export default OrderTaking;
-export default withRouter(connect(null, dispatch => ({
+export default withRouter(connect(state => state, dispatch => ({
   acceptRepairSerivce: (url,values,success,type) => acceptRepairSerivce.getInfo(url,values,success,type),
 }))(OrderTaking));

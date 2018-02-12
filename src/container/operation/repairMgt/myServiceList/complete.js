@@ -25,6 +25,7 @@ class MyServiceComplete extends PureComponent {
       selectRrpairDetailIsRrpair: {},
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
+      selectRrpairDetail: {},
       rrpairType:'00',//维修方式 00 内修 01 外修
       UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
@@ -90,13 +91,13 @@ class MyServiceComplete extends PureComponent {
     params.rrpairOrderNo = this.props.location.state.rrpairOrderNo;
     finishRepairSerivce(assets.selectRrpairDetailList,querystring.stringify(params),(data)=>{
       if(data.status){
-        console.log(data.result,'result')
         this.setState({ 
           selectRrpairDetailIsOrder: data.result.selectRrpairDetailIsOrder,
           selectRrpairDetailIsAssets: data.result.selectRrpairDetailIsAssets,
           selectRrpairDetailIsRrpair: data.result.selectRrpairDetailIsRrpair,
           selectRrpairDetailIsAcce: data.result.selectRrpairDetailIsAcce,
-          selectRrpairDetailIsCall: data.result.selectRrpairDetailIsCall });
+          selectRrpairDetailIsCall: data.result.selectRrpairDetailIsCall,
+          selectRrpairDetail : data.result.selectRrpairDetail });
       }else{
         message.error(data.msg);
       }
@@ -144,7 +145,7 @@ class MyServiceComplete extends PureComponent {
             JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
             :
             <ServiceInfo ref='serviceInfo'
-              setRrpairType={(Rrtype => this.setState({ rrpairType : Rrtype }))}
+              callBack={(Rrtype => this.setState({ rrpairType : Rrtype==='20'?'01':'00' }))}
               data={this.state.selectRrpairDetailIsRrpair} isEdit={true}/>
           }
         </Card>
@@ -165,7 +166,7 @@ class MyServiceComplete extends PureComponent {
   }
 }
 
-export default withRouter(connect(null, dispatch => ({
+export default withRouter(connect(state => state, dispatch => ({
   pointRepaireService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
   finishRepairSerivce: (url,values,success,type) => operationService.getInfo(url,values,success,type),
 }))(MyServiceComplete));

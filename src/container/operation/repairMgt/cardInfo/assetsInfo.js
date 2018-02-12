@@ -2,9 +2,11 @@
  * @file 资产信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Row, Col, Input, Switch, Form } from 'antd';
+import { Row, Col, Input, Switch, Form ,message} from 'antd';
 import PropTypes from 'prop-types';
-import { queryAssets } from '../../../../api/operation';
+import { operation as operationService } from '../../../../service';
+import querystring from 'querystring';
+import assets from '../../../../api/assets';
 const { Search } = Input;
 const gridStyle = {
   label: {
@@ -34,13 +36,21 @@ class AssetsInfoForm extends PureComponent {
     this.onSearch = this.onSearch.bind(this);
   }
   async onSearch (val) {
-    const data = await queryAssets({
-      body: { searhName: val }
+    operationService.getInfo(assets.selectAssetsRecordDetail,querystring.stringify({assetsRecord: val}),(data)=>{
+      if(data.status){
+        this.setState({
+          data: data.result
+        });
+        this.props.callBack(data.result,true)
+      }
+      else{
+        message.error(data.msg)
+      }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
-    this.setState({
-      data: data.result
-    });
-    this.props.callBack(data.result,true)
+
   }
   switchChange = checked => {
     const params = { isAssets: !checked }
@@ -151,7 +161,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('guaranteeFlag')(
-            <span>{ data.guaranteeFlag }</span>
+            <span>{ data.guaranteeFlag === "00" ? "出保" : "在保" }</span>
           )
         }
         </Col>

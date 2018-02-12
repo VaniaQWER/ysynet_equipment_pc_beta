@@ -187,7 +187,7 @@ class RepairInfoForm extends PureComponent {
         <Col span={20} style={{marginTop: 20}}>
           { /*tfAccessory*/}
           {
-            data.tfAccessory ?   
+            isEdit ?
             <PicWall  file={(file) => {
               this.setState({ picList : file})
             }}/>

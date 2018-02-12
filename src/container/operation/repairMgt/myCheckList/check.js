@@ -101,6 +101,7 @@ class MyCheckListCheckIn extends PureComponent {
       selectRrpairDetailIsRrpair: {},
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
+      selectRrpairDetail :{}
     }
   }
   componentWillMount = ()=>{
@@ -116,7 +117,8 @@ class MyCheckListCheckIn extends PureComponent {
           selectRrpairDetailIsAssets: data.result.selectRrpairDetailIsAssets,
           selectRrpairDetailIsRrpair: data.result.selectRrpairDetailIsRrpair,
           selectRrpairDetailIsAcce: data.result.selectRrpairDetailIsAcce,
-          selectRrpairDetailIsCall: data.result.selectRrpairDetailIsCall });
+          selectRrpairDetailIsCall: data.result.selectRrpairDetailIsCall,
+          selectRrpairDetail : data.result.selectRrpairDetail });
       }else{
         message.error(data.msg);
       }

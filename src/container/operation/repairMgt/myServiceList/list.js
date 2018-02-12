@@ -35,6 +35,8 @@ class MyServiceList extends Component {
           switch (record.orderFstate) {
             case '10':
               return <Link to={{pathname:`/operation/repairMgt/myServiceList/orderTaking/${record.rrpairOrderGuid}`,state:record}}><Icon style={{marginRight: 5}} type="tool" />接修</Link>
+              case '20':
+              return <Link to={{pathname:`/operation/repairMgt/myServiceList/orderTaking/${record.rrpairOrderGuid}`,state:record}}><Icon style={{marginRight: 5}} type="tool" />接修</Link>
             case '30':
               return <Link to={{pathname: `/operation/repairMgt/myServiceList/complete/${record.rrpairOrderGuid}`,state: record}}><Icon style={{marginRight: 5}} type="poweroff" />完成</Link>
             default:
