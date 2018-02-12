@@ -117,28 +117,58 @@ class BaseInfo extends Component {
        </Row>
      </TabPane>
      <TabPane tab="维修信息" key="3">
-       <Row type="flex"   className={styles['table-row']}>
-         <Col span={4} className={styles['table-span']}>维修人</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType === "00" ? BaseInfoInfoData.inRrpairUsername : BaseInfoInfoData.outRrpairUsername }</Col>
-         <Col span={4} className={styles['table-span']}>联系电话</Col>
-         <Col span={8} className={styles['table-span']}>{  BaseInfoInfoData.rrpairType === "00" ? BaseInfoInfoData.inRrpairPhone : BaseInfoInfoData.outRrpairPhone  }</Col>
-         <Col span={4} className={styles['table-span']}>维修单位</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
-         <Col span={4} className={styles['table-span']}>维修时间</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>  
-         <Col span={4} className={styles['table-span']}>故障类型</Col>
-         <Col span={8} className={styles['table-span']}> { selectOption.repairContentType.map((item,ind)=>item.value===BaseInfoInfoData.repairContentType?item.text:'')}</Col>
-         <Col span={4} className={styles['table-span']}>故障原因</Col>
-         <Col span={8} className={styles['table-span']}>{ selectOption.repairContentTyp.map((item,ind)=>item.value===BaseInfoInfoData.repairContentTyp?item.text:'')}</Col>
-         <Col span={4} className={styles['table-span']}>维修结果</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairResult }</Col>
-         <Col span={4} className={styles['table-span']}>维修费用（总计）</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.actualPrice }</Col>
-         <Col span={4} className={styles['table-span']}>维修备注</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.tfRemarkWx }</Col>
-         <Col span={4} className={styles['table-span']}></Col>
-         <Col span={8} className={styles['table-span']}></Col>
-       </Row>
+         {
+          BaseInfoInfoData.repairResult === "02"?
+             <Row type="flex"   className={styles['table-row']}>
+              <Col span={4} className={styles['table-span']}>维修人</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType === "00" ? BaseInfoInfoData.inRrpairUsername : BaseInfoInfoData.outRrpairUsername }</Col>
+              <Col span={4} className={styles['table-span']}>联系电话</Col>
+              <Col span={8} className={styles['table-span']}>{  BaseInfoInfoData.rrpairType === "00" ? BaseInfoInfoData.inRrpairPhone : BaseInfoInfoData.outRrpairPhone  }</Col>
+              <Col span={4} className={styles['table-span']}>维修单位</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
+              <Col span={4} className={styles['table-span']}>维修时间</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>  
+              <Col span={4} className={styles['table-span']}>故障类型</Col>
+              <Col span={8} className={styles['table-span']}> { selectOption.repairContentType.map((item,ind)=>item.value===BaseInfoInfoData.repairContentType?item.text:'')}</Col>
+              <Col span={4} className={styles['table-span']}>故障原因</Col>
+              <Col span={8} className={styles['table-span']}>{ selectOption.repairContentTyp.map((item,ind)=>item.value===BaseInfoInfoData.repairContentTyp?item.text:'')}</Col>
+              <Col span={4} className={styles['table-span']}>维修结果</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairResult }</Col>
+              <Col span={4} className={styles['table-span']}>维修费用（总计）</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.actualPrice }</Col>
+              <Col span={4} className={styles['table-span']}>关闭原因</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.offCause }</Col>
+              <Col span={4} className={styles['table-span']}>后续处理</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.followupTreatment }</Col>
+              <Col span={4} className={styles['table-span']}>关闭备注</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.tfRemarkGb }</Col>
+              <Col span={4} className={styles['table-span']}></Col>
+              <Col span={8} className={styles['table-span']}></Col>
+            </Row>
+              :
+             <Row type="flex"   className={styles['table-row']}>
+              <Col span={4} className={styles['table-span']}>维修人</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType === "00" ? BaseInfoInfoData.inRrpairUsername : BaseInfoInfoData.outRrpairUsername }</Col>
+              <Col span={4} className={styles['table-span']}>联系电话</Col>
+              <Col span={8} className={styles['table-span']}>{  BaseInfoInfoData.rrpairType === "00" ? BaseInfoInfoData.inRrpairPhone : BaseInfoInfoData.outRrpairPhone  }</Col>
+              <Col span={4} className={styles['table-span']}>维修单位</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
+              <Col span={4} className={styles['table-span']}>维修时间</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>  
+              <Col span={4} className={styles['table-span']}>故障类型</Col>
+              <Col span={8} className={styles['table-span']}> { selectOption.repairContentType.map((item,ind)=>item.value===BaseInfoInfoData.repairContentType?item.text:'')}</Col>
+              <Col span={4} className={styles['table-span']}>故障原因</Col>
+              <Col span={8} className={styles['table-span']}>{ selectOption.repairContentTyp.map((item,ind)=>item.value===BaseInfoInfoData.repairContentTyp?item.text:'')}</Col>
+              <Col span={4} className={styles['table-span']}>维修结果</Col>
+              <Col span={8} className={styles['table-span']}>{ selectOption.repairResult.map((item,ind)=>item.value===BaseInfoInfoData.repairResult?item.text:'')}</Col>
+              <Col span={4} className={styles['table-span']}>维修费用（总计）</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.actualPrice }</Col>
+              <Col span={4} className={styles['table-span']}>维修备注</Col>
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.tfRemarkWx }</Col>
+              <Col span={4} className={styles['table-span']}></Col>
+              <Col span={8} className={styles['table-span']}></Col>
+            </Row>
+         }
      </TabPane>
      <TabPane tab="验收信息" key="4">
        <Row type="flex"  className={styles['table-row']}>
@@ -147,7 +177,7 @@ class BaseInfo extends Component {
          <Col span={4} className={styles['table-span']}>验收人</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceUsername }</Col>
          <Col span={4} className={styles['table-span']}>验收结果</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceFstate }</Col>  
+         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceFstate === "65" ? "验收通过" : "验收不通过" }</Col>  
          <Col span={4} className={styles['table-span']}>验收时间</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceAate }</Col>
        </Row>

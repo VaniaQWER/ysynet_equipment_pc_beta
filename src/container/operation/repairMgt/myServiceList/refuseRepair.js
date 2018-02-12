@@ -101,9 +101,10 @@ class refuseReason extends PureComponent{
         }
     }
     refuseService = (val)=>{
-        const { refuseService } = this.props;
+        const { refuseService,history } = this.props;
         refuseService(assets.updateRrpairOrderFstate,querystring.stringify(val),(data)=>{
             if(data.status){
+                history.push({ pathname:'/operation/repairMgt/myServiceList' });
                 message.success('操作成功');
             }else{
                 message.error(data.msg);
