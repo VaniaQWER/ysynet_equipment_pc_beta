@@ -87,7 +87,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('equipmetStandardName')(
-            <span>{ data.equipmentStandardName }</span>
+            <span>{ data.equipmetStandardName }</span>
           )
         }
         </Col>
@@ -111,7 +111,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('productType')(
-            <span>{ data.productType }</span>
+            <span>{ data.productType === "01" ? "医疗设备" : "其他" }</span>
           )
         }
         </Col>

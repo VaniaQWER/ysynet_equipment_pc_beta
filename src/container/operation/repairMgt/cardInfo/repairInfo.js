@@ -186,9 +186,15 @@ class RepairInfoForm extends PureComponent {
         <Col span={4} style={{marginTop: 20, textAlign: 'right'}}>附件：</Col>
         <Col span={20} style={{marginTop: 20}}>
           { /*tfAccessory*/}
-          <PicWall file={(file) => {
-            this.setState({ picList : file})
-          }}/>
+          {
+            data.tfAccessory ?   
+            <PicWall  file={(file) => {
+              this.setState({ picList : file})
+            }}/>
+            :
+            "无"
+          }
+        
         </Col>
       </Row>
     )

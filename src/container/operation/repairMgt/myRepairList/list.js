@@ -75,7 +75,7 @@ class MyRepairList extends Component {
             ref='table'
             query={this.state.query}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
+            scroll={{x: '150%', y : document.body.clientHeight - 111 }}
             columns={columns}
             rowKey={'RN'}
             showHeader={true}

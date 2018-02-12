@@ -32,15 +32,15 @@ class BaseInfo extends Component {
           <Col span={4} className={styles['table-span']}>资产编号</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.assetsRecord }</Col>
           <Col span={4} className={styles['table-span']}>资产名称</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.equipmetStandardName }</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.equipmentStandardName }</Col>
             <Col span={4} className={styles['table-span']}>型号</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.spec }</Col>
           <Col span={4} className={styles['table-span']}>规格</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.fmodel }</Col>
           <Col span={4} className={styles['table-span']}>资产类别</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.productType }</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.productType ===  "01" ? "医疗设备" : "其他"  }</Col>
           <Col span={4} className={styles['table-span']}>使用科室</Col>
-          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.useDept }</Col>
+          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.deptName }</Col>
           <Col span={4} className={styles['table-span']}>保管员</Col>
           <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.custodian }</Col>
           <Col span={4} className={styles['table-span']}>管理科室</Col>

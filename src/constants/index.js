@@ -91,6 +91,9 @@ export const repairData = {
     text: "关闭",
     color: 'red'
   },
+  null :{
+    text: "无"
+  }
 }
 
 export const selectOption = {
