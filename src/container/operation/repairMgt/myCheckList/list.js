@@ -54,7 +54,7 @@ class MyCheckList extends Component {
               return  str += faultDescribeData[item] ? faultDescribeData[item].text + "," : '' 
              }) 
           }
-          return str === null ? "" : textTips(200,str);
+          return str === null ? "" : textTips(200,str.substring(0, str.length - 1));
         }
       }];
     return (
