@@ -10,6 +10,20 @@ import Profile from '../../component/profile';
 import Notice from '../../component/notice';
 const { Header, Footer } = Layout;
 
+const checkPath = (ownList, index) => {
+  const path = window.location.hash.split('#')[1].replace(/\s/g,'').toUpperCase();
+  console.log(path,'path');
+  console.log(ownList,'ownList')
+  for( let i = 0;i < ownList.length; i++){
+    for ( let j=0; j<ownList[i].subMenus.length; j++){
+      if (path.includes(ownList[i].subMenus[j].path.replace(/\s/g,'').toUpperCase()) || path.includes('WORKPLACE')) { 
+          console.log(ownList[i].subMenus[j].path.replace(/\s/g,'').toUpperCase(),'subMenu PTH') 
+          return true;
+      }
+    }
+  }
+}
+
 class Home extends React.Component {
   constructor(props) {
     super(props)
@@ -20,13 +34,17 @@ class Home extends React.Component {
   }
   async componentWillMount() {
     const { setUser,getMenu, getUser, history } = this.props;//getUser history
-    const data = await getUser();
-    setUser(data.result);
-    if (data.status) {
-      this.setState({
-        isLoading: false
-      })
-      getMenu();
+      const data = await getUser();
+      setUser(data.result);
+      if (data.status) {
+        this.setState({
+          isLoading: false
+        })
+        const menu = await getMenu();
+        if(!checkPath(menu,1)){
+          alert('路径错误')
+        }
+       
     } else {
       message.error('会话失效, 请重新登录！');
       history.push({pathname: '/login'})

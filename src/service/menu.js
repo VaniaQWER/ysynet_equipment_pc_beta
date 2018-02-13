@@ -35,6 +35,7 @@ export const fetchMenu = () => (
       success: data => {
         if (data.status) {
           dispatch(setMenuMapper(data.result));
+          return data.result;
         } else {
           dispatch(fetchFailure(data.result))
         }
