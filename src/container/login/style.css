@@ -18,10 +18,14 @@
  
 }
 .login-logo {
-  margin: 80px auto 0 auto;
+  margin-top: 50px;
   width: 120px;
   height: 45px;
   background: url('../../assets/login_logo.png');
   background-size: 100% 100%;
   display: block; 
+}
+.middle{
+  margin: 0 auto;
+  width: 400px;
 }

@@ -4,7 +4,7 @@ import LoginForm from './loginForm';
 import PhoneLoginForm from './phoneLoginForm'
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Tabs, Icon, Form, Button,message } from 'antd';
+import { Row, Tabs, Icon, Form, Button,message } from 'antd';
 import { user as userService } from '../../service';
 import assets from '../../api/assets';
 import sha1 from 'sha1';
@@ -73,10 +73,10 @@ class Login extends Component {
   render() {
     return (
       <Row className={`${styles.container} login`}>
-        <Col span={24}>
+        <div className={styles['top']}>
           <a href="/" className={styles['login-logo']}> </a>
-        </Col>
-        <Col span={16} push={8}>
+        </div>
+        <div className={styles['middle']}>
           <Tabs defaultActiveKey="1" animated={false} style={{width: 400}} onChange={index => this.setState({tabIndex: index})}>
             <TabPane style={{padding: 8}} tab={<span style={{fontSize: 16}}><Icon type="solution" />账户密码登录</span>} key="1">
               <WrappedNormalLoginForm wrappedComponentRef={(inst) => this.normalForm = inst}/>
@@ -85,10 +85,10 @@ class Login extends Component {
               <WrappedPhoneLoginForm wrappedComponentRef={(inst) => this.phoneForm = inst}/>
             </TabPane>
           </Tabs>
-        </Col>
-        <Col span={16} push={8} style={{padding: 8}}>
+        </div>
+        <div className={styles['middle']}>
           <Button style={{width: 384}} type='primary' size='large' onClick={this.login} loading={this.state.loading}>登录</Button>
-        </Col>
+        </div>
       </Row>
     )
   }
