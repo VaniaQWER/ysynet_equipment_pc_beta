@@ -18,7 +18,7 @@ class RepairReg extends Component {
       super(props);
       this.state = {
         type: this.props.user.groupName, //this.props.user.groupName
-        orderFstate: '50', //管理科室默认的状态是完成50   关闭90  使用科室提交10
+        orderFstate: '10', //管理科室默认的状态是完成50   关闭90  使用科室提交10
         selectRrpairDetailIsOrder: {},
         selectRrpairDetailIsAssets:{},
         selectRrpairDetailIsRrpair:{},
@@ -34,6 +34,8 @@ class RepairReg extends Component {
          return "关闭";
        }else if(orderFstate === "20"){
          return "指派";
+       }else {
+        return "保存";
        }
       }else{
         return "提交";
@@ -72,7 +74,7 @@ class RepairReg extends Component {
         isRepairs:true,
         orderFstate:this.state.orderFstate,
         ...this.repairInfo.postData(),
-        ...this.refs.serviceInfo.postData() //使用科室没有维修信息
+        //...this.refs.serviceInfo.postData() //使用科室没有维修信息
       };
       console.log(params,"编辑有资产报修...管理科室")
     }else if(type === "syks") { // 使用科室
@@ -101,6 +103,7 @@ class RepairReg extends Component {
 
   render() {
     const { type } = this.state;
+    console.log(type,'1111')
     return (
       <div className='ysynet-repair ysynet-content '>
         <Card title="报修进度" extra={[
@@ -125,7 +128,7 @@ class RepairReg extends Component {
           } 
         
         </Card>
-        {
+        {/* {
           type === "glks" ? 
             <div>
               <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
@@ -147,7 +150,7 @@ class RepairReg extends Component {
             </div>
           :
           null
-        }
+        } */}
         <BackTop />
       </div>  
     )
