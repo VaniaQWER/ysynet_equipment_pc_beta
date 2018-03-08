@@ -283,9 +283,9 @@ class ServiceInfo extends PureComponent {
             <RadioGroup defaultValue={rrpairType} onChange={e => {
               this.setState({rrpairType: e.target.value});
               if(e.target.value === "01"){
-                this.props.callBack("20")
+                this.props.cb_rrpairType("20")
               }else{
-                this.props.callBack("50")
+                this.props.cb_rrpairType("50")
                 data.repairResult = "";
               }
               //this.props.setRrpairType(e.target.value);

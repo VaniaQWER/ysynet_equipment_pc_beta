@@ -26,33 +26,51 @@ class MyServiceComplete extends PureComponent {
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
       selectRrpairDetail: {},
-      rrpairType:this.props.location.state.rrpairType || '00',//维修方式 00 内修 01 外修
+      rrpairType: this.props.location.state.rrpairType || '00',//维修方式 00 内修 01 外修
+      repairFlag: '50' // 50 完成  90 关闭
       //UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
   }
   complete = () => {
     const { rrpairType } = this.state;
-    const { finishRepairSerivce, history } = this.props;
+    const { finishRepairSerivce, closeRepairService, history } = this.props;
     const baseData = this.props.location.state;
     let params = {};
     params.rrpairOrderGuid = baseData.rrpairOrderGuid;
     if( rrpairType === '00' ){
       //内修 完成
-      params.orderFstate = '50';
       params.isRepairs = false;
-      console.log(params,'完成维修,parmas');
-      finishRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
-        if(data.status){
-          message.success('操作成功');
-          history.push({ pathname:`/operation/repairMgt/myServiceList`});
-        }else{
-          message.error(data.msg);
-        }
-      },{
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-      })
-
+      if(this.state.repairFlag === '50'){
+          params.orderFstate = '50';
+          console.log(params,'完成维修,parmas');
+          finishRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
+          if(data.status){
+            message.success('操作成功');
+            history.push({ pathname:`/operation/repairMgt/myServiceList`});
+          }else{
+            message.error(data.msg);
+          }
+        },{
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        })
+      }else{
+        // 内修 关闭
+        params.orderFstate = '90';
+        let postData = Object.assign( {}, params, this.refs.serviceInfo.postData() );
+        console.log(postData,'内修关闭原因');
+        closeRepairService(assets.insertOrUpdateRrpair,querystring.stringify(postData),(data)=>{
+          if(data.status){
+            message.success('操作成功');
+            history.push({ pathname:`/operation/repairMgt/myServiceList`});
+          }else{
+            message.error(data.msg);
+          }
+        },{
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        })
+      }
     }else{
       //指派  外修
       this.saveOrdesignOperation(baseData,"1");
@@ -107,13 +125,11 @@ class MyServiceComplete extends PureComponent {
     })
   }
   render() {
-    //const { UserType } = this.state;
-    //console.log(this.state.rrpairType,'type')
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <Card title="报修进度" extra={[
           <Affix key={1}>
-            <Button type='primary' onClick={this.complete} style={{marginRight: 5}}>{this.state.rrpairType==='00'?'完成':'指派'}</Button>
+            <Button type='primary' onClick={this.complete} style={{marginRight: 5}}>{this.state.rrpairType==='00'? this.state.repairFlag==='50'? '完成':'关闭':'指派'}</Button>
             <Button onClick={this.save}>保存</Button>
           </Affix>
         ]} key={1}>
@@ -147,7 +163,8 @@ class MyServiceComplete extends PureComponent {
             JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
             :
             <ServiceInfo ref='serviceInfo'
-              callBack={(Rrtype => this.setState({ rrpairType : Rrtype==='20'?'01':'00' }))}
+              callBack={(val)=> this.setState({ repairFlag: val })}
+              cb_rrpairType={(Rrtype => this.setState({ rrpairType : Rrtype==='20'?'01':'00' }))}             
               rrpairType={this.state.selectRrpairDetailIsRrpair.rrpairType}
               data={this.state.selectRrpairDetailIsRrpair} isEdit={true}/>
           }
@@ -170,6 +187,7 @@ class MyServiceComplete extends PureComponent {
 }
 
 export default withRouter(connect(state => state, dispatch => ({
+  closeRepairService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
   pointRepaireService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
   finishRepairSerivce: (url,values,success,type) => operationService.getInfo(url,values,success,type),
 }))(MyServiceComplete));

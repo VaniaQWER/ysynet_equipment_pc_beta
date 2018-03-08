@@ -87,7 +87,6 @@ class RepairReg extends Component {
         message.error(data.msg);
       }
     })
-
   }
 
   render() {
