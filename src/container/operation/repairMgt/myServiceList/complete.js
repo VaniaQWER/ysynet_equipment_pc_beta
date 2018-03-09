@@ -31,9 +31,21 @@ class MyServiceComplete extends PureComponent {
       //UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
   }
+  // 完成维修, 关闭  交互
+  repairStatusUpdata = (postData)=>{
+    const { closeOrfinishRepairService, history } = this.props;
+    closeOrfinishRepairService(assets.insertOrUpdateRrpair,JSON.stringify(postData),(data)=>{
+      if(data.status){
+        message.success('操作成功');
+        history.push({ pathname:`/operation/repairMgt/myServiceList`});
+      }else{
+        message.error(data.msg);
+      }
+    })
+  }
+
   complete = () => {
     const { rrpairType } = this.state;
-    const { finishRepairSerivce, closeRepairService, history } = this.props;
     const baseData = this.props.location.state;
     let params = {};
     params.rrpairOrderGuid = baseData.rrpairOrderGuid;
@@ -42,34 +54,15 @@ class MyServiceComplete extends PureComponent {
       params.isRepairs = false;
       if(this.state.repairFlag === '50'){
           params.orderFstate = '50';
-          console.log(params,'完成维修,parmas');
-          finishRepairSerivce(assets.updateRrpairOrderFstate,querystring.stringify(params),(data)=>{
-          if(data.status){
-            message.success('操作成功');
-            history.push({ pathname:`/operation/repairMgt/myServiceList`});
-          }else{
-            message.error(data.msg);
-          }
-        },{
-          Accept: 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-        })
+          let postData = Object.assign( {}, params, this.refs.serviceInfo.postData());
+          console.log(JSON.stringify(postData),'内修完成维修原因');
+          this.repairStatusUpdata(postData);
       }else{
         // 内修 关闭
         params.orderFstate = '90';
         let postData = Object.assign( {}, params, this.refs.serviceInfo.postData() );
-        console.log(postData,'内修关闭原因');
-        closeRepairService(assets.insertOrUpdateRrpair,querystring.stringify(postData),(data)=>{
-          if(data.status){
-            message.success('操作成功');
-            history.push({ pathname:`/operation/repairMgt/myServiceList`});
-          }else{
-            message.error(data.msg);
-          }
-        },{
-          Accept: 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-        })
+        console.log(JSON.stringify(postData),'内修关闭原因');
+        this.repairStatusUpdata(postData);
       }
     }else{
       //指派  外修
@@ -187,7 +180,7 @@ class MyServiceComplete extends PureComponent {
 }
 
 export default withRouter(connect(state => state, dispatch => ({
-  closeRepairService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
+  closeOrfinishRepairService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
   pointRepaireService: (url,values,success,type) => operationService.getInfo(url,values,success,type),
   finishRepairSerivce: (url,values,success,type) => operationService.getInfo(url,values,success,type),
 }))(MyServiceComplete));

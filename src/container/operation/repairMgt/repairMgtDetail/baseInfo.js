@@ -133,13 +133,13 @@ class BaseInfo extends Component {
               <Col span={4} className={styles['table-span']}>故障原因</Col>
               <Col span={8} className={styles['table-span']}>{ selectOption.repairContentTyp.map((item,ind)=>item.value===BaseInfoInfoData.repairContentTyp?item.text:'')}</Col>
               <Col span={4} className={styles['table-span']}>维修结果</Col>
-              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.repairResult }</Col>
+              <Col span={8} className={styles['table-span']}>{ selectOption.repairResult.map((item,ind)=>item.value===BaseInfoInfoData.repairResult?item.text:'')}</Col>
               <Col span={4} className={styles['table-span']}>维修费用（总计）</Col>
               <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.actualPrice }</Col>
               <Col span={4} className={styles['table-span']}>关闭原因</Col>
-              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.offCause }</Col>
+              <Col span={8} className={styles['table-span']}>{ selectOption.offCause.map((item,ind)=>item.value===BaseInfoInfoData.offCause?item.text:'')}</Col>
               <Col span={4} className={styles['table-span']}>后续处理</Col>
-              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.followupTreatment }</Col>
+              <Col span={8} className={styles['table-span']}>{ selectOption.followupTreatment.map((item,ind)=>item.value===BaseInfoInfoData.followupTreatment?item.text:'')}</Col>
               <Col span={4} className={styles['table-span']}>关闭备注</Col>
               <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.tfRemarkGb }</Col>
               <Col span={4} className={styles['table-span']}></Col>

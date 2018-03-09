@@ -5,8 +5,8 @@ import { withRouter } from 'react-router-dom'
 import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
-import ServiceInfo from '../cardInfo/serviceInfo';
-import PartsInfo from '../cardInfo/partsInfo';
+//import ServiceInfo from '../cardInfo/serviceInfo';
+//import PartsInfo from '../cardInfo/partsInfo'; 
 import assets from '../../../../api/assets';
 import { operation as operationService } from '../../../../service';
 import querystring from 'querystring';
