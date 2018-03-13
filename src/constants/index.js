@@ -57,9 +57,17 @@ export const ledgerData = {
     text: "故障",
     color: 'red'
   },
-  "00": {
+  "03": {
     text: "报废",
+    color: 'gray'
+  },
+  "04": {
+    text: "借出",
     color: 'gold'
+  },
+  "05": {
+    text: "闲置",
+    color: 'blue'
   },
   null :{
     text: "无",
@@ -113,7 +121,7 @@ export const selectOption = {
   ],
   guaranteeFlag: [//是否在保
     { text: "在保", value: "01" },
-    { text: "出保", value: "00" },
+    { text: "出保", value: "02" },
   ],
   faultDescribe: [ // 故障现象
     { text: "部分功能失效", value: "00" },
@@ -123,7 +131,7 @@ export const selectOption = {
     { text: "其他", value: "02" }
   ],
   useFstate: [ //是否停用
-    { text: "是", value: "00" },
+    { text: "是", value: "02" },
     { text: "否", value: "01" },
   ],
   offCause: [ //关闭原因
