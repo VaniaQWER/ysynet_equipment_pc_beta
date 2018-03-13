@@ -283,7 +283,7 @@ class PartsInfo extends PureComponent {
 
       }else if(type === 'edit'){
         parms = {...this.state.W_parts,...parms};
-        console.log(parms,'填写配件数据')
+        console.log(parms,'填写配件数据');
         operationService.getInfo(assets.insertRrpairExtend,querystring.stringify(parms),(data)=>{
           if(data.status){
             message.success("操作成功!");
@@ -316,6 +316,9 @@ class PartsInfo extends PureComponent {
         this.setState({ choseVisible: true, writeVisible: false });
       }else{
         //填写配件
+        if(this.refs.writeParts){
+          this.refs.writeParts.resetFields();
+        }
         this.setState({choseVisible: false, writeVisible: true });
       }
     }else{
@@ -340,8 +343,7 @@ class PartsInfo extends PureComponent {
   
   render() {
     const {  choseVisible, writeVisible ,dataSource} = this.state;
-    console.log(this.props.data.check,'check')
-    const columns = this.props.data.check === "check"  ? [{
+    const columns = this.props.data.check !== "check"  ? [{
       title: '操作',
       dataIndex: 'rrpairFittingUseGuid',
       key: 'rrpairFittingUseGuid',
@@ -456,6 +458,7 @@ class PartsInfo extends PureComponent {
           cancelText="取消"
         >
           <InsertPartsWrapper 
+            ref='writeParts'
             callBack={(attr,val)=>this.getWriteParts(attr,val)}
             showOrHide={this.state.showOrHide}
             />

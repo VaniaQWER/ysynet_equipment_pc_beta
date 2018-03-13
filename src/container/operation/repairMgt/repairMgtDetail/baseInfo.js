@@ -177,7 +177,7 @@ class BaseInfo extends Component {
          <Col span={4} className={styles['table-span']}>验收人</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceUsername }</Col>
          <Col span={4} className={styles['table-span']}>验收结果</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceFstate === "65" ? "验收通过" : "验收不通过" }</Col>  
+         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceFstate === "65" ? "验收通过":BaseInfoInfoData.rrAcceFstate === "66" ? "验收不通过":'' }</Col>  
          <Col span={4} className={styles['table-span']}>验收时间</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrAcceAate }</Col>
        </Row>

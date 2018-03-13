@@ -16,27 +16,27 @@ class AssetParts extends Component {
       },
       {
         title: '配件名称',
-        dataIndex: 'equipmentName',
+        dataIndex: 'acceName',
         width: 100
       },
       {
         title: '型号',
-        dataIndex: 'fmodel',
+        dataIndex: 'acceFmodel',
         width: 100
       },
       {
         title: '规格',
-        dataIndex: 'spec',
+        dataIndex: 'acceSpec',
         width: 100,
       },
       {
         title: '数量',
-        dataIndex: 'extendSum',
+        dataIndex: 'acceNum',
         width: 100,
       },
       {
         title: '单位',
-        dataIndex: 'meteringUnit',
+        dataIndex: 'acceUnit',
         width: 100
       },
       {
