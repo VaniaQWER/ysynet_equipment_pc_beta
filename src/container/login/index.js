@@ -53,22 +53,6 @@ class Login extends Component {
         message.error(data.msg)
       }
     }).then(response =>    this.setState({loading: false}))
-
-    // if ( userName === 'admin' && password === '999999' ) {
-    //   // 管理科室
-    //   setUser({userName: '管理科室', type: '01'});
-    //   history.push('/');
-    // } else if ( userName === 'supplier' && password === '999999' ) {
-    //   // 供应商
-    //   setUser({userName: '供应商', type: '03'});
-    //   history.push('/');
-    // } else if ( userName === 'customer' && password === '999999') {
-    //   // 使用科室
-    //   setUser({userName: '使用科室', type: '02'});
-    //   history.push('/');
-    // } else {
-    //   alert('用户名或密码错误')
-    // }
   }
   render() {
     return (

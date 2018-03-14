@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { withRouter, Link } from 'react-router-dom';
-import { Breadcrumb } from 'antd';
+import { Breadcrumb ,Icon} from 'antd';
 
 function getBreadcrumbNameWithParams(breadcrumbNameMap, url) {
   let name = '';
@@ -45,20 +45,26 @@ class BreadcrumbGroup extends PureComponent {
     const bread = this.createBreadcrumb();
     return (
       <div>
-        <Breadcrumb className={this.props.className}>
+        <Breadcrumb className={this.props.className} style={{position:'relative'}}>
+          <a  style={{position: 'absolute', right: '40px', top: '4px'}}  href="javascript:history.go(-1);">
+          <Icon type="rollback" style={{fontWeight:'bolder',color:'#666'}}/>返回</a>
           <Breadcrumb.Item><Link to={'/'}>首页</Link></Breadcrumb.Item>
           {
             bread.map((item, index) => (
               item.title ?
               <Breadcrumb.Item key={index}> 
-              {
+              {/* {
                 (index !== 1 && index !== bread.length - 1)
                 ? <Link to={item.url}> { item.title } </Link> : item.title
+              } */}
+              {
+                item.title
               }
               </Breadcrumb.Item>
               : null
             ))
           }
+
         </Breadcrumb>
         { this.props.children }
       </div>  

@@ -83,14 +83,15 @@ class AssetsInfoForm extends PureComponent {
               disabled={isAssets}
             />
           }
-          {
+          {/* 无资产报修暂时取消 */}
+          {/* {
             isEdit || this.props.type==="01" ? null : <Switch 
               checkedChildren="有资产" 
               unCheckedChildren="无资产" 
               defaultChecked 
               onChange={this.switchChange}
             />
-          }
+          } */}
 
         </Col>
         <Col {...gridStyle.label}>资产名称：</Col>

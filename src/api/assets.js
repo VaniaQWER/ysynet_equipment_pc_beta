@@ -14,6 +14,7 @@ export default {
  importEquipments: `${_local}/equipmentAdd/importEquipments`, // 资产信息导入
  assetsFileUpLoad: `${_local}/assetsRecordController/assetsFileUpLoad`, // 资产附件上传
  deleteAssetsFile: `${_local}/assetsRecordController/deleteAssetsFile`, // 删除资产附件信息
+ printEquipmentQrcode: `${_local}/equipmentAdd/printEquipmentQrcode`, // 打码
 
  //报修登记
  insertOrUpdateRrpair: `${_local}/rrpairOrderController/insertOrUpdateRrpair`,

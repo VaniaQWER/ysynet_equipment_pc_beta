@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import assets from '../../../../api/assets';
 import styles from './style.css';
 import { ledgerData,productTypeData } from '../../../../constants';
-
+import querystring from 'querystring';
 const { Content } = Layout;
 const Search = Input.Search;
 const { RemoteTable } = TableGrid;
@@ -28,10 +28,11 @@ class LedgerArchivesList extends Component {
       {
         title: '操作',
         dataIndex: 'RN',
-        width: 80,
+        width: 120,
         render: (text, record) => 
           <span>
             <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
+            <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+querystring.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a> 
           </span>  
       },
       {
@@ -48,7 +49,7 @@ class LedgerArchivesList extends Component {
       },
       {
         title: '资产名称',
-        dataIndex: 'equipmetStandardName',
+        dataIndex: 'equipmentStandardName',
         width: 200
       },
       {
@@ -92,14 +93,13 @@ class LedgerArchivesList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入资产编号/资产名称"
-                onSearch={value =>  {this.queryHandler({'params':value})}}
+                onSearch={value =>  {this.queryHandler({'mobile':value})}}
                 style={{ width: 400 }}
                 enterButton="搜索"
               />
             </Col>
             <Col span={12} className={styles['text-align-right']}>
               <Upload
-                // data={{"certGuid":this.state.query.certGuid}}
                 action={assets.importEquipments}
                 showUploadList={false}
                 withCredentials={true}

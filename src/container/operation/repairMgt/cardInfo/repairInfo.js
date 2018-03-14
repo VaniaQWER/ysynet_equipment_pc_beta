@@ -127,7 +127,7 @@ class RepairInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
           { 
             getFieldDecorator('faultDescribe',{
-              initialValue: isEdit ? data.faultDescribe : null
+              initialValue: isEdit && data.faultDescribe ? data.faultDescribe : undefined
             })( 
               isEdit ?  
               <Select style={{width: '100%'}} allowClear mode="multiple" className="ysynet-ant-select">

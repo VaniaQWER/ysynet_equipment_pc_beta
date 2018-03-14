@@ -2,7 +2,7 @@
  * @file 配件信息 Card
  */
 import React, { PureComponent } from 'react';
-import {  Table,Button, Icon, Modal, Form, Row, Col, Input, Select,message } from 'antd';
+import {  Table,Button, Icon, Modal, Form, Row, Col, Input, Select,message ,Alert} from 'antd';
 import TableGrid from '../../../../component/tableGrid';
 import assets from '../../../../api/assets';
 import { operation as operationService } from '../../../../service';
@@ -330,7 +330,6 @@ class PartsInfo extends PureComponent {
   handleDelete = (record)=>{
     let parms = {};
     parms.rrpairFittingUseGuid = record.rrpairFittingUseGuid;
-    console.log(parms,'parms')
     operationService.getInfo(assets.deleteRrpairFitting,querystring.stringify(parms),(data) => {
       if(data.status){
         message.success("操作成功!")
@@ -338,6 +337,14 @@ class PartsInfo extends PureComponent {
         message.error(data.msg)
       }
     })
+  }
+  total = (record) => {
+    let total = 0;
+    record.map( (item, index) => {
+      let amount = typeof item.money === 'undefined' ? 1 : item.money
+      return total += amount ;
+    })
+    return total;
   }
   
   
@@ -469,6 +476,16 @@ class PartsInfo extends PureComponent {
           维修单 完成维修  内修:  有 title 选择/填写配件 this.props.data.SelectParts
           维修单 完成维修  外修:  有 title  填写配件 this.props.data.WriteParts
         */}
+         <Alert
+            message={(
+              <div>
+
+                所需配件总金额： <span style={{ fontWeight: 600,color:'red' }}>{this.total(dataSource)}</span> 元
+              </div>
+            )}
+            type="info"
+            showIcon
+          />
          <Table 
           dataSource={dataSource} 
           scroll={{x: '100%'}}
@@ -478,38 +495,43 @@ class PartsInfo extends PureComponent {
           size="small"
           showHeader={true}
           title={() => <div>
-            {
-              !this.props.data.check//验收环节没有title
-              &&
-              <div>
-                { 
-                  !this.props.data.SelectParts//维修单角色权限title 
-                  &&
-                  <Button 
-                    style={{marginRight: 5}} 
-                    type='primary'
-                    onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'select')}
-                  >
-                    <Icon type="switcher" />
-                    选择配件
-                  </Button>
-                }
+            <Row>
+              <Col span={12}>
                 {
-                  this.props.isAddParts ?
-                  <Button
-                  onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
-                >
-                  <Icon type="edit" />
-                  填写配件
-                </Button>
-                :null
+                  !this.props.data.check//验收环节没有title
+                  &&
+                  <div>
+                    { 
+                      !this.props.data.SelectParts//维修单角色权限title 
+                      &&
+                      <Button 
+                        style={{marginRight: 5}} 
+                        type='primary'
+                        onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'select')}
+                      >
+                        <Icon type="switcher" />
+                        选择配件
+                      </Button>
+                    }
+                    {
+                      this.props.isAddParts ?
+                      <Button
+                      onClick={this.showModal.bind(this, this.props.data.assetsRecordGuid,'edit')}
+                    >
+                      <Icon type="edit" />
+                      填写配件
+                    </Button>
+                    :null
+                    }
+                  </div>
                 }
-              </div>
-            }
-         
+              </Col>
+            </Row>
           </div>}
+        
+     
         /> 
- 
+      
       </div>  
     )
   }

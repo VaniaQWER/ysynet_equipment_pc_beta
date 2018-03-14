@@ -41,6 +41,7 @@ class Home extends React.Component {
           isLoading: false
         })
         const menu = await getMenu();
+        console.log(menu)
         if(!checkPath(menu,1)){
           alert('路径错误')
         }
