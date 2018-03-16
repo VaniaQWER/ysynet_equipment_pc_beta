@@ -44,20 +44,6 @@ class MyServiceList extends Component {
           }
         }
       },
-      // {
-      //   title:'维修方式',
-      //   width: 100,
-      //   dataIndex:'rrpairType',
-      //   render: (text,record)=>{
-      //     if(record.rrpairType==='00'){
-      //       return '内修'
-      //     }else if(record.rrpairType ==='01'){
-      //       return '外修'
-      //     }else{
-      //       return 'null'
-      //     }
-      //   }
-      // },
       ...repairCommonDataSource,
       {
         title: '故障现象',

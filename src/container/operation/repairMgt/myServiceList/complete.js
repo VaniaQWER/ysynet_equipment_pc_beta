@@ -31,7 +31,7 @@ class MyServiceComplete extends PureComponent {
       //UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
   }
-  // 完成维修, 关闭  交互
+  // 完成维修, 关闭, 保存  交互
   repairStatusUpdata = (postData)=>{
     const { closeOrfinishRepairService, history } = this.props;
     closeOrfinishRepairService(assets.insertOrUpdateRrpair,JSON.stringify(postData),(data)=>{
@@ -72,8 +72,13 @@ class MyServiceComplete extends PureComponent {
   }
   //保存
   save = () => {
+    let params = {};
     const baseData = this.props.location.state;
-    this.saveOrdesignOperation(baseData);
+    params.isRepairs = false;
+    params.rrpairOrderGuid = baseData.rrpairOrderGuid;
+    let postData = Object.assign( {}, params, this.refs.serviceInfo.postData() );
+    console.log(postData,'postData')
+    this.repairStatusUpdata(postData);
   }
   saveOrdesignOperation = (baseData,key)=>{
     const { finishRepairSerivce, history } = this.props;

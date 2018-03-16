@@ -8,7 +8,6 @@ const SubMenu = Menu.SubMenu;
 
 // 使用递归创建菜单
 const createMenu = menuList => {
-  console.log(menuList)
   return (
     Array.isArray(menuList) ? menuList.map((menu, index) => {
       return (

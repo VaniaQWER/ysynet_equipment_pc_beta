@@ -327,15 +327,20 @@ class PartsInfo extends PureComponent {
     }
   }
 
-  handleDelete = (record)=>{
+   handleDelete = (record) =>{
     let parms = {};
     parms.rrpairFittingUseGuid = record.rrpairFittingUseGuid;
+    console.log(parms,'parms')
     operationService.getInfo(assets.deleteRrpairFitting,querystring.stringify(parms),(data) => {
       if(data.status){
-        message.success("操作成功!")
+        message.success("操作成功!");
+        this.handleTableDataSource();
       }else{
         message.error(data.msg)
       }
+    },{
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
   total = (record) => {
@@ -347,7 +352,6 @@ class PartsInfo extends PureComponent {
     return total;
   }
   
-  
   render() {
     const {  choseVisible, writeVisible ,dataSource} = this.state;
     const columns = this.props.data.check !== "check"  ? [{
@@ -355,11 +359,11 @@ class PartsInfo extends PureComponent {
       dataIndex: 'rrpairFittingUseGuid',
       key: 'rrpairFittingUseGuid',
       width: 100,
-      render: (text, record) => (
-        <a onClick={(record)=>this.handleDelete(record)}>
+      render: (text,record,index) => {
+        return  <a onClick={()=>this.handleDelete(record)}>
           <Icon type="delete" style={{marginRight: 5}}/>删除
-      </a>
-      )
+        </a>
+      }
     },{
         title: '配件编号',
       dataIndex: 'assetsRecord',

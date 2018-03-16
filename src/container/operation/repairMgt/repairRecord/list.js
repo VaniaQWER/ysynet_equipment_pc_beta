@@ -38,7 +38,7 @@ class RepairRecordList extends Component {
       },
       {
         title: '维修时间',
-        dataIndex: 'createDate',
+        dataIndex: 'callTime',
         width: 130
       }
     ];

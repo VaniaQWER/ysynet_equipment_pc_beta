@@ -2,7 +2,7 @@
  * @file 资产信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Row, Col, Input, Switch, Form ,message} from 'antd';
+import { Row, Col, Input, Form ,message} from 'antd';
 import PropTypes from 'prop-types';
 import { operation as operationService } from '../../../../service';
 import querystring from 'querystring';
