@@ -69,7 +69,7 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>生产商国家</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.productCountry }</Col>
         <Col span={4} className={styles['table-span']}>出厂日期</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate.split(' ')[0] }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate?AssetInfoData.productionDate.split(' ')[0]:'' }</Col>
         <Col span={4} className={styles['table-span']}>供应商</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.fOrgName }</Col>
         <Col span={4} className={styles['table-span']}>购置日期</Col>
@@ -93,9 +93,9 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>保养周期</Col>
         <Col span={8} className={styles['table-span']}><InputWrapper text={ AssetInfoData.maintainDay } onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'MAINTAIN_DAY')} /></Col>
         <Col span={4} className={styles['table-span']}>下次保养</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.nextMaintainDate.split(' ')[0] }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.nextMaintainDate ? AssetInfoData.nextMaintainDate.split(' ')[0]:'' }</Col>
         <Col span={4} className={styles['table-span']}>保修截止期</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.inDate.split(' ')[0] }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.inDate ? AssetInfoData.inDate.split(' ')[0]:'' }</Col>
         <Col span={4} className={styles['table-span']}>折旧方式</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.depreciationType ? depreciationTypeData[AssetInfoData.depreciationType].text : null }</Col>
         <Col span={4} className={styles['table-span']}>原值</Col>
