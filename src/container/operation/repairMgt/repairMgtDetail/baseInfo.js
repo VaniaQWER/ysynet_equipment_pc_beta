@@ -21,16 +21,18 @@ class BaseInfo extends Component {
   }
   componentWillMount = ()=>{
     const { faultAccessory } = this.props.BaseInfoInfoData;
-    let urls = faultAccessory.split(';');
-    let u = urls.splice(0, urls.length-1);
-    let files = [];
-    u.map((item, index) => {
-      return files.push({
-        url: FTP + item,
-        id: index
-      })
-    });
-    this.setState({files: files});
+    if(faultAccessory){
+      let urls = faultAccessory.split(';');
+      let u = urls.splice(0, urls.length-1);
+      let files = [];
+      u.map((item, index) => {
+        return files.push({
+          url: FTP + item,
+          id: index
+        })
+      });
+      this.setState({files: files});
+    }
   }
   handlefaultDescribeData = (text) => {
     let str = '';
