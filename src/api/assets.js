@@ -1,4 +1,4 @@
-import {_local} from './local';
+import { _local, FTP } from './local';
 export default {
  userLogin: `${_local}/login/userLogin`,//登录
  picUploadUrl: `${_local}/ftp/post`,//图片上传
@@ -15,6 +15,7 @@ export default {
  assetsFileUpLoad: `${_local}/assetsRecordController/assetsFileUpLoad`, // 资产附件上传
  deleteAssetsFile: `${_local}/assetsRecordController/deleteAssetsFile`, // 删除资产附件信息
  printEquipmentQrcode: `${_local}/equipmentAdd/printEquipmentQrcode`, // 打码
+ importAssetsTemplate: `${FTP}/meqmFile/importAssetsTemplate.xlsx`, // 下载模板
 
  //报修登记
  insertOrUpdateRrpair: `${_local}/rrpairOrderController/insertOrUpdateRrpair`,

@@ -129,7 +129,7 @@ class LedgerArchivesList extends Component {
                   <Icon type='export'/> 导入
                 </Button>
               </Upload>
-              <a  style={{ marginLeft: 8 }} target="_self">
+              <a  href={assets.importAssetsTemplate} style={{ marginLeft: 8 }} target="_self">
                 <Icon type='cloud-download'/> 下载模板
               </a>
             </Col>
