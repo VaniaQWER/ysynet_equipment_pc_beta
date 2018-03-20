@@ -11,7 +11,8 @@ class RemoteTable extends Component {
     searchParams: {}
   };
   handleTableChange = (pagination, filters, sorter) => {
-    const pager = { ...this.state.pagination };
+    const pager = this.state.pagination;
+    pager.pageSize = pagination.pageSize;
     pager.current = pagination.current;
     this.setState({
       pagination: pager,
@@ -28,8 +29,9 @@ class RemoteTable extends Component {
   fetch = (params = {...this.props.query}, url = this.props.url) => {
     this.setState({ loading: true, searchParams: params });
     if(url){
+      let pagination = this.state.pagination;
       const body = querystring.stringify({
-        pagesize: this.props.pagesize || 20,
+        pagesize: pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || 20 ),
         ...params,
       })  
       request(url,{
@@ -41,13 +43,12 @@ class RemoteTable extends Component {
           if(!data.status){
             message.error(data.msg);
           }
-          let pagination = this.state.pagination;
           pagination.total = data.result.records;
           pagination.showSizeChanger = true;
           pagination.pageSizeOptions=['20','30','40'];
           pagination.showQuickJumper = true;
           pagination.showTotal=(total, range) => `${range[0]}-${range[1]} 共 ${total} 条`;
-          pagination.pageSize = this.props.pagesize || 20;
+          pagination.pageSize = pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || 20 );
           if(!params.page) {
             pagination.current = 1;
           }

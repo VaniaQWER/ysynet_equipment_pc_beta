@@ -9,6 +9,7 @@
     "history": "^4.7.2",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
+    "md5": "^2.2.1",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-app-rewire-less": "^2.1.0",
@@ -23,6 +24,7 @@
     "react-scripts": "1.0.17",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
+    "sha1": "^1.1.1",
     "ysynet_reset": "^1.0.2"
   },
   "scripts": {
