@@ -6,12 +6,32 @@ import React, { Component } from 'react';
 import { Row, Col,Collapse,Tabs ,Layout} from 'antd';
 import styles from '../../../ledger/archivesMgt/ledgerArchives/style.css';
 import AssetParts from './assetParts';//资产配件
+import { FTP } from '../../../../api/local';
 import { selectOption,repairData,faultDescribeData } from '../../../../constants';
 const { Content } = Layout;
 const Panel = Collapse.Panel;
 const TabPane = Tabs.TabPane;
 
 class BaseInfo extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      files: []
+    }
+  }
+  componentWillMount = ()=>{
+    const { faultAccessory } = this.props.BaseInfoInfoData;
+    let urls = faultAccessory.split(';');
+    let u = urls.splice(0, urls.length-1);
+    let files = [];
+    u.map((item, index) => {
+      return files.push({
+        url: FTP + item,
+        id: index
+      })
+    });
+    this.setState({files: files});
+  }
   handlefaultDescribeData = (text) => {
     let str = '';
     if(text){
@@ -21,7 +41,9 @@ class BaseInfo extends Component {
     }
     return str ;
   }
+  
   render () {
+    console.log(this.state.files,'1111')
     const { BaseInfoInfoData } = this.props;
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
@@ -88,7 +110,7 @@ class BaseInfo extends Component {
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.tfRemarkBx }</Col>
          <Col span={4} className={styles['table-span']}>附件</Col>
          <Col span={8} className={styles['table-span']}>{ 
-           BaseInfoInfoData.faultAccessory ?<div><a href={BaseInfoInfoData.faultAccessory}>附件1</a></div>
+           BaseInfoInfoData.faultAccessory ?<div>{this.state.files.map((item,index)=><a target='_blank' key={index} href={item.url} style={{marginRight : 8}}>{`附件${index+1}`}</a>)}</div>
             :
             "无" }
           </Col>
@@ -99,7 +121,7 @@ class BaseInfo extends Component {
      <TabPane tab="指派信息" key="2">
        <Row type="flex"  className={styles['table-row']}>
          <Col span={4} className={styles['table-span']}>维修方式</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType === '00'?'内修':'外修' }</Col>
+         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairType === '00'?'内修':BaseInfoInfoData.rrpairType==='01'?'外修':'' }</Col>
          <Col span={4} className={styles['table-span']}>指派服务商</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
          <Col span={4} className={styles['table-span']}>指派人</Col>
@@ -127,7 +149,7 @@ class BaseInfo extends Component {
               <Col span={4} className={styles['table-span']}>维修单位</Col>
               <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
               <Col span={4} className={styles['table-span']}>维修时间</Col>
-              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>  
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.callTime }</Col>  
               <Col span={4} className={styles['table-span']}>故障类型</Col>
               <Col span={8} className={styles['table-span']}> { selectOption.repairContentType.map((item,ind)=>item.value===BaseInfoInfoData.repairContentType?item.text:'')}</Col>
               <Col span={4} className={styles['table-span']}>故障原因</Col>
@@ -154,7 +176,7 @@ class BaseInfo extends Component {
               <Col span={4} className={styles['table-span']}>维修单位</Col>
               <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.outOrg }</Col>
               <Col span={4} className={styles['table-span']}>维修时间</Col>
-              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.createDate }</Col>  
+              <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.callTime }</Col>  
               <Col span={4} className={styles['table-span']}>故障类型</Col>
               <Col span={8} className={styles['table-span']}> { selectOption.repairContentType.map((item,ind)=>item.value===BaseInfoInfoData.repairContentType?item.text:'')}</Col>
               <Col span={4} className={styles['table-span']}>故障原因</Col>

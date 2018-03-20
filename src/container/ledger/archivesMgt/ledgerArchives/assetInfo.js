@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../../service';
 import assets from '../../../../api/assets';
 import querystring from 'querystring';
-import { ledgerData,productTypeData } from '../../../../constants';
+import { ledgerData, productTypeData, certSourceFunds,depreciationTypeData } from '../../../../constants';
 
 
 class AssetInfo extends Component {
@@ -33,9 +33,7 @@ class AssetInfo extends Component {
     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
    })
   }
-
-
-
+  
   render () {
     const { AssetInfoData } = this.props;
     return (
@@ -63,29 +61,29 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>管理科室</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.bDept }</Col>
         <Col span={4} className={styles['table-span']}>注册证号</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.certGuid }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.registerNo }</Col>
         <Col span={4} className={styles['table-span']}>品牌</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.product }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.tfBrand }</Col>
         <Col span={4} className={styles['table-span']}>生产商</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.product }</Col>
         <Col span={4} className={styles['table-span']}>生产商国家</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.product }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productCountry }</Col>
         <Col span={4} className={styles['table-span']}>出厂日期</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate.split(' ')[0] }</Col>
         <Col span={4} className={styles['table-span']}>供应商</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.fOrgName }</Col>
         <Col span={4} className={styles['table-span']}>购置日期</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.buyDate }</Col>
         <Col span={4} className={styles['table-span']}>合同编号</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.contractNo }</Col>
         <Col span={4} className={styles['table-span']}>计量单位</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.meteringUnit }</Col>
         <Col span={4} className={styles['table-span']}>购买金额</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.buyPrice }</Col>
         <Col span={4} className={styles['table-span']}>安装费</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.installPrice }</Col>
         <Col span={4} className={styles['table-span']}>经费来源</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.sourceFunds }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.sourceFunds ? certSourceFunds[AssetInfoData.sourceFunds].text : null }</Col>
         <Col span={4} className={styles['table-span']}>维修分类</Col>
         <Col span={8} className={styles['table-span']}><InputWrapper text={ AssetInfoData.rrpairType } onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'RRPAIR_TYPE')} /></Col>
         <Col span={4} className={styles['table-span']}>保养分类</Col>
@@ -95,13 +93,13 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>保养周期</Col>
         <Col span={8} className={styles['table-span']}><InputWrapper text={ AssetInfoData.maintainDay } onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'MAINTAIN_DAY')} /></Col>
         <Col span={4} className={styles['table-span']}>下次保养</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.nextMaintainDate }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.nextMaintainDate.split(' ')[0] }</Col>
         <Col span={4} className={styles['table-span']}>保修截止期</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.inDate }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.inDate.split(' ')[0] }</Col>
         <Col span={4} className={styles['table-span']}>折旧方式</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.depreciationType }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.depreciationType ? depreciationTypeData[AssetInfoData.depreciationType].text : null }</Col>
         <Col span={4} className={styles['table-span']}>原值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.enableDate }</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.originalValue }</Col>
         <Col span={4} className={styles['table-span']}>净值</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.carryingAmount }</Col>
         <Col span={4} className={styles['table-span']}>残值率</Col>

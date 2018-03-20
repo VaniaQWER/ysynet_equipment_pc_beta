@@ -198,3 +198,19 @@ export const productTypeData ={
   "01" : { text: "医疗设备" }
 } 
 
+//资产经费来源
+export const certSourceFunds = {
+  "01": { text: '通用设备'},
+  "02": { text: '自建'},
+  "03": { text: '融资租入'},
+  "04": { text: '接受捐赠'},
+  "05": { text: '盘盈'},
+  "06": { text: '其他'},
+}
+//资产折旧方式
+export const depreciationTypeData = {
+  "01": { text: '平均年限法'},
+  "02": { text: '工作量法'},
+  "03": { text: '双倍余额递减法'},
+  "04": { text: '年数总和法'},
+}

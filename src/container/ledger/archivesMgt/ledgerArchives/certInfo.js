@@ -21,7 +21,7 @@ class CertInfo extends Component {
   //获取id 根据证件号查证件信息
   componentWillMount = () =>{
     const { getSearchCertList ,certGuid } = this.props;
-    const params = { certGuid: certGuid };
+    const params = { specCertGuid: certGuid };
     getSearchCertList(assets.searchCertList , querystring.stringify(params),(data) => {
       this.setState( { certInfoData : data[0] })
     },{
