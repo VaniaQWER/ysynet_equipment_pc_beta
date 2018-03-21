@@ -26,7 +26,7 @@ class MyServiceComplete extends PureComponent {
       selectRrpairDetailIsAcce: {},
       selectRrpairDetailIsCall: {},
       selectRrpairDetail: {},
-      rrpairType: this.props.location.state.rrpairType || '00',//维修方式 00 内修 01 外修
+      rrpairType: this.props.location.state === undefined ? '00' : this.props.location.state.rrpairType,//维修方式 00 内修 01 外修
       repairFlag: '50' // 50 完成  90 关闭
       //UserType: this.props.user.groupName  // glks管理科室内修 syks使用科室  02 维修商 外修
     }
@@ -103,8 +103,7 @@ class MyServiceComplete extends PureComponent {
   componentWillMount = ()=>{
     const { finishRepairSerivce } = this.props;
     let params = {};
-    params.rrpairOrderGuid = this.props.location.state.rrpairOrderGuid;
-    params.rrpairOrderNo = this.props.location.state.rrpairOrderNo;
+    params.rrpairOrderGuid = this.props.match.params.id;
     finishRepairSerivce(assets.selectRrpairDetailList,querystring.stringify(params),(data)=>{
       if(data.status){
         this.setState({ 
@@ -173,7 +172,7 @@ class MyServiceComplete extends PureComponent {
             :
             <PartsInfo
               data={{
-                rrpairOrderGuid:  this.props.location.state.rrpairOrderGuid,
+                rrpairOrderGuid:  this.props.match.params.id,
                 assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,
               }} isAddParts={true}/>
           }
