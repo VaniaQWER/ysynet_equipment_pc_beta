@@ -25,6 +25,13 @@ export default {
       { exact:true, path: '/operation/repairMgt/myCheckList/detail/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myCheckList/detail"))},
       { exact:true, path: '/operation/repairMgt/repairRecord', name: '维修记录', component: asyncComponent(() => import("../container/operation/repairMgt/repairRecord/list"))},
       { exact:true, path: '/operation/repairMgt/repairRecord/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/repairRecord/detail"))},
-    ] }
+    ] }, {
+      path: '/operation/maintain', 
+      name: '保养管理', 
+      component: asyncComponent(() => import("../container/maintain")),
+      routes: [
+        { path: '/operation/maintain/plan', name: '新建计划', exact:true, component: asyncComponent(() => import("../container/maintain/plan")) }
+      ]
+    }
   ]
 }

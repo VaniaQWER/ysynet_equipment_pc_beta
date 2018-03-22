@@ -75,7 +75,7 @@ class MyServiceList extends Component {
             ref='table'
             query={this.state.query}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 110 }}
+            scroll={{x: '150%'}}
             columns={columns}
             rowKey={'RN'}
             showHeader={true}

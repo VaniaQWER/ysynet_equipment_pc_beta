@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { Table, message } from 'antd';
 import querystring from 'querystring';
 import request from '../../utils/request'
-
 class RemoteTable extends Component {
-  state = {
-    data: [],
-    pagination: {},
-    loading: false,
-    searchParams: {}
-  };
+  constructor(props) {
+    super(props)
+    this.defaultPageSize = window.screen.height >= 1080 ? 20 : 10
+    this.state = {
+      data: [],
+      pagination: {},
+      loading: false,
+      searchParams: {}
+    }
+  }
   handleTableChange = (pagination, filters, sorter) => {
     const pager = this.state.pagination;
     pager.pageSize = pagination.pageSize;
@@ -31,7 +34,7 @@ class RemoteTable extends Component {
     if(url){
       let pagination = this.state.pagination;
       const body = querystring.stringify({
-        pagesize: pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || 20 ),
+        pagesize: pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || this.defaultPageSize ),
         ...params,
       })  
       request(url,{
@@ -45,10 +48,10 @@ class RemoteTable extends Component {
           }
           pagination.total = data.result.records;
           pagination.showSizeChanger = true;
-          pagination.pageSizeOptions=['20','30','40'];
+          pagination.pageSizeOptions=['10','20','30'];
           pagination.showQuickJumper = true;
           pagination.showTotal=(total, range) => `${range[0]}-${range[1]} 共 ${total} 条`;
-          pagination.pageSize = pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || 20 );
+          pagination.pageSize = pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || this.defaultPageSize );
           if(!params.page) {
             pagination.current = 1;
           }
@@ -84,6 +87,7 @@ class RemoteTable extends Component {
         style={this.props.style}
         columns={columns || null}
         rowKey={rowKey}
+        bordered={true}
         size={this.props.size || 'normal'}
         dataSource={this.state.data}
         pagination={this.state.pagination}
@@ -95,6 +99,7 @@ class RemoteTable extends Component {
         rowSelection={rowSelection || null}
         scroll={scroll || { x: '1300px' }}
         footer={footer || null}
+        expandedRowRender={this.props.expandedRowRender}
       />
     )
   }

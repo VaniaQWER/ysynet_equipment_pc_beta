@@ -4,25 +4,36 @@
 import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout } from 'antd';
 import TableGrid from '../../../../component/tableGrid';
-import { Link} from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import assets from '../../../../api/assets';
+import { connect } from 'react-redux';
 import { repairCommonDataSource } from '../../../../constants'
+import { repairRecord } from '../../../../service';
 const { Content } = Layout;
 const Search = Input.Search;
 const { RemoteTable } = TableGrid;
 
 class RepairRecordList extends Component {
-
-
   queryHandler = (query) => {
     this.refs.table.fetch(query);
-    this.setState({ query })
+    this.setState({ query });
+    this.props.setRepairRecordSearch(['searchCondition'], {
+      ...query
+    })
   }
+  
   render() {
+    const { repairRecord } = this.props;
     const columns = [
       {
-        title: '操作',
+        title: '',
         dataIndex: 'RN',
+        width: 30,
+        render: (text, record, index) => index + 1
+      },
+      {
+        title: '操作',
+        dataIndex: 'rrpairOrderGuid',
         width: 80,
         render: (text, record) => 
           <Link to={{pathname: `/operation/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
@@ -42,19 +53,24 @@ class RepairRecordList extends Component {
         width: 130
       }
     ];
+    const defaultParams = repairRecord.searchCondition ? repairRecord.searchCondition.params : null;
     return (
         <Content className='ysynet-content ysynet-common-bgColor'>
           <Row>
             <Col span={12}>
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
-                onSearch={value =>  {this.queryHandler({'params':value})}}
+                onSearch={ value =>  this.queryHandler({params: value}) }
                 style={{ width: 400 }}
                 enterButton="搜索"
+                defaultValue={ defaultParams }
               />
             </Col>
           </Row>
           <RemoteTable
+            query={{
+              params: defaultParams
+            }}
             ref='table'
             showHeader={true}
             url={assets.selectRrpairList}
@@ -68,4 +84,6 @@ class RepairRecordList extends Component {
     )
   }
 }
-export default RepairRecordList;
+export default withRouter(connect(state => state, dispatch => ({
+  setRepairRecordSearch: (nestKeys, value) => dispatch(repairRecord.setRepairRecordSearch(nestKeys, value)),
+}))(RepairRecordList));

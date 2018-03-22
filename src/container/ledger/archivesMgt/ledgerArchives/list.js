@@ -9,7 +9,62 @@ import querystring from 'querystring';
 const { Content } = Layout;
 const Search = Input.Search;
 const { RemoteTable } = TableGrid;
-
+const columns = [
+  {
+    title: '操作',
+    dataIndex: 'RN',
+    width: 120,
+    render: (text, record) => 
+      <span>
+        <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
+        <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+querystring.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a> 
+      </span>  
+  },
+  {
+    title: '资产编号',
+    dataIndex: 'assetsRecord',
+    width: 200,
+    sorter:true
+  },
+  {
+    title: '状态',
+    dataIndex: 'useFstate',
+    width: 100,
+     render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
+  },
+  {
+    title: '资产名称',
+    dataIndex: 'equipmentStandardName',
+    width: 200
+  },
+  {
+    title: '型号',
+    dataIndex: 'spec',
+    width: 100
+  },
+  {
+    title: '资产分类',
+    dataIndex: 'productType',
+    width: 100,
+    render: text => text ?  productTypeData[text].text  : null
+  },
+  {
+    title: '保管员',
+    dataIndex: 'custodian',
+    width: 150
+  },
+  {
+    title: '使用科室',
+    dataIndex: 'useDept',
+    width: 100
+  },
+  {
+    title: '管理科室',
+    dataIndex: 'bDept',
+    width: 100
+  }
+];
+const messageInfo = "添加大量的信息，建议使用导入功能。导入前请先下载Excel格式模版文件。";
 class LedgerArchivesList extends Component {
   constructor(props) {
     super(props);
@@ -24,63 +79,6 @@ class LedgerArchivesList extends Component {
     this.setState({ query })
   }
   render() {
-    const columns = [
-      {
-        title: '操作',
-        dataIndex: 'RN',
-        width: 120,
-        render: (text, record) => 
-          <span>
-            <Link to={{pathname: `/ledger/archivesMgt/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
-            <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+querystring.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a> 
-          </span>  
-      },
-      {
-        title: '资产编号',
-        dataIndex: 'assetsRecord',
-        width: 200,
-        sorter:true
-      },
-      {
-        title: '状态',
-        dataIndex: 'useFstate',
-        width: 100,
-         render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
-      },
-      {
-        title: '资产名称',
-        dataIndex: 'equipmentStandardName',
-        width: 200
-      },
-      {
-        title: '型号',
-        dataIndex: 'spec',
-        width: 100
-      },
-      {
-        title: '资产分类',
-        dataIndex: 'productType',
-        width: 100,
-        render: text => text ?  productTypeData[text].text  : null
-      },
-      {
-        title: '保管员',
-        dataIndex: 'custodian',
-        width: 150
-      },
-      {
-        title: '使用科室',
-        dataIndex: 'useDept',
-        width: 100
-      },
-      {
-        title: '管理科室',
-        dataIndex: 'bDept',
-        width: 100
-      }
-    ];
-    const messageInfo = "添加大量的信息，建议使用导入功能。导入前请先下载Excel格式模版文件。";
-    
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
