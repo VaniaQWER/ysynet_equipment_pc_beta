@@ -35,4 +35,7 @@ export default {
  //验收
  insertRrpairOrderAcce: `${_local}/rrpairOrderController/insertRrpairOrderAcce`, //验收维修单
 
+//保养工单
+selectMaintainOrderList:`${_local}/maintainOrderController/selectMaintainOrderList`, //查询保养工单列表
+
 };

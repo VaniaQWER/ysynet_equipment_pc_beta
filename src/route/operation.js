@@ -25,6 +25,17 @@ export default {
       { exact:true, path: '/operation/repairMgt/myCheckList/detail/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/myCheckList/detail"))},
       { exact:true, path: '/operation/repairMgt/repairRecord', name: '维修记录', component: asyncComponent(() => import("../container/operation/repairMgt/repairRecord/list"))},
       { exact:true, path: '/operation/repairMgt/repairRecord/:id', name: '详情', component: asyncComponent(() => import("../container/operation/repairMgt/repairRecord/detail"))},
-    ] }
+    ] },
+    {
+      path: '/operation/upkeep',
+      name: '保养手续', 
+      component: asyncComponent(() => import("../container/operation/upkeep")), 
+      routes: [
+        { exact:true, path: '/operation/upkeep/addUpKeep', name: '保养登记', component: asyncComponent(() => import("../container/operation/upkeep/addUpKeep"))},
+        { exact:true, path: '/operation/upkeep/upkeeplist', name: '保养列表', component: asyncComponent(() => import("../container/operation/upkeep/upkeeplist"))},
+        { exact:true, path: '/operation/upkeep/UpKeepDetail/details/:id', name: '保养列表详情', component: asyncComponent(() => import("../container/operation/upkeep/UpKeepDetail/details"))},
+        { exact:true, path: '/operation/upkeep/UpKeepDetail/finish/:id', name: '保养列表修改', component: asyncComponent(() => import("../container/operation/upkeep/UpKeepDetail/finish"))},
+      ]
+    }
   ]
 }

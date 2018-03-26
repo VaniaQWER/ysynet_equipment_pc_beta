@@ -214,3 +214,22 @@ export const depreciationTypeData = {
   "03": { text: '双倍余额递减法'},
   "04": { text: '年数总和法'},
 }
+
+//保养登记
+export const upkeepState = {
+  "00": { text: '待完成',color: 'darkgray'},
+  "01": { text: '已完成',color: 'limegreen'},
+  "02": { text: '已关闭',color: 'red'},
+  null :{text: "",color: 'transparent'}
+}
+export const upkeepMainTainType = {
+  "00": { text: '内保'},
+  "01": { text: '外保'},
+  null :{text: "未知"}
+}
+export const upkeepDetailsTable = {
+  "01":{ text: '合格' },
+  "02":{ text: '不合格' },
+  "03":{ text: '保养后合格' },
+  null:{text: '请选择结果'}
+}
