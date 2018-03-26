@@ -35,6 +35,13 @@ export default {
         { exact:true, path: '/operation/upkeep/upkeeplist', name: '保养列表', component: asyncComponent(() => import("../container/operation/upkeep/upkeeplist"))},
         { exact:true, path: '/operation/upkeep/UpKeepDetail/details/:id', name: '保养列表详情', component: asyncComponent(() => import("../container/operation/upkeep/UpKeepDetail/details"))},
         { exact:true, path: '/operation/upkeep/UpKeepDetail/finish/:id', name: '保养列表修改', component: asyncComponent(() => import("../container/operation/upkeep/UpKeepDetail/finish"))},
+    ] }, 
+    {
+      path: '/operation/maintain', 
+      name: '保养管理', 
+      component: asyncComponent(() => import("../container/maintain")),
+      routes: [
+        { path: '/operation/maintain/plan', name: '新建计划', exact:true, component: asyncComponent(() => import("../container/maintain/plan")) }
       ]
     }
   ]
