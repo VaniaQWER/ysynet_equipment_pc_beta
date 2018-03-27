@@ -11,14 +11,25 @@ const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
 
 class UpKeepDetails extends React.Component{
     state={
-			formInfo:{}
-		}
+        formInfo:{}
+    }
+    componentWillMount = () => {
+        const maintainGuid = this.props.match.params.id;
+        this.setState({
+            maintainGuid:maintainGuid
+        })
+    }
     render(){
-        const formInfo  = this.state;
+        const {formInfo , maintainGuid}  = this.state;
         return(
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData'/>
+                <WrappedAdvancedSearchForm  
+                formInfo={formInfo} 
+                maintainGuid = {maintainGuid} 
+                editState = {false}
+                ref='getFormData'
+                />
             </Content>
           </div>
         )

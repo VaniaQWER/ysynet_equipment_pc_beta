@@ -21,19 +21,19 @@ class AddUpKeep extends React.Component{
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
 					console.log('Received values of form: ', values);
-						values.maintainDate = moment(values['maintainDate']).format('YYYY-MM-DD HH:mm') 
-						values.endMaintainDate = moment(values['endMaintainDate']).format('YYYY-MM-DD HH:mm') 
-						values.nextMaintainDate = moment(values['nextMaintainDate']).format('YYYY-MM-DD') 
-            values.fstate = fstate;
-            let thumburl = []
-            if(values.tfAccessoryList){
-              for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-                let files = values.tfAccessoryList.fileList[i];
-                files.thumbUrl ? thumburl.push(files.thumbUrl) :'';
-              }
-            }	
-            values.tfAccessoryList = thumburl;
-            this.sendAjax(values)
+          values.maintainDate = moment(values['maintainDate']).format('YYYY-MM-DD HH:mm') 
+          values.endMaintainDate = moment(values['endMaintainDate']).format('YYYY-MM-DD HH:mm') 
+          values.nextMaintainDate = moment(values['nextMaintainDate']).format('YYYY-MM-DD') 
+          values.fstate = fstate;
+          let thumburl = []
+          if(values.tfAccessoryList){
+            for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
+              let files = values.tfAccessoryList.fileList[i];
+              files.thumbUrl ? thumburl.push(files.thumbUrl) :'';
+            }
+          }	
+          values.tfAccessoryList = thumburl;
+          this.sendAjax(values)
 				}
 			});
     }
@@ -87,7 +87,11 @@ class AddUpKeep extends React.Component{
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData' callback={dataSource => this.setState({ dataSource })}/>
+                <WrappedAdvancedSearchForm  
+                formInfo={formInfo} 
+                ref='getFormData' 
+                editState = {true}
+                callback={dataSource => this.setState({ dataSource })}/>
             </Content>
           </div>
         )

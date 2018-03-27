@@ -202,27 +202,10 @@ export default class AddUpKeepForm extends React.Component {
     //-----------------上传结束-------------------------------
     
     componentWillMount =() =>{
-        const apath = window.location.hash.split('#')[1].replace(/\s/g,'');
-        const sortPath = apath.split("/").slice(0,apath.split("/").length-1).join("/");
+        const { maintainGuid , editState} =this.props;
         //获取资产编号相关信息
-        const maintainGuid = apath.split('/')[apath.split('/').length-1];
-        if(maintainGuid && apath.split('/').length>=5){
+        if(maintainGuid){
           this.getDetailAjax({maintainGuid})
-        }
-        //设置该页面状态
-        let editState = true;
-        switch(sortPath){
-          case '/operation/upkeep/UpKeepDetail/details'://详情- 不可编辑
-            editState = false ;
-            break;
-          case '/operation/upkeep/UpKeepDetail/finish'://完成  可以编辑
-            editState = true ;
-            break;
-          case '/operation/upkeep/addUpKeep'://新增  可以编辑
-            editState = true ;
-            break;
-          default:
-            return true;
         }
         this.setState({
           editState:editState,

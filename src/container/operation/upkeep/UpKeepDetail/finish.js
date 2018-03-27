@@ -68,15 +68,13 @@ class UpKeepFinish extends React.Component{
     }
 		//获取详情数据
 		componentWillMount = () =>{
-      console.log('表单组建装在details')
-			const path = window.location.hash.split('#')[1].replace(/\s/g,'')
-			const maintainGuid = path.split('/')[path.split('/').length-1];
+			const maintainGuid = this.props.match.params.id;
 			this.setState({
 				maintainGuid:maintainGuid
 			})
 		}
     render(){
-        const {formInfo}  = this.state;
+        const {formInfo , maintainGuid}  = this.state;
         return(
           <div>
             <Affix>
@@ -87,6 +85,8 @@ class UpKeepFinish extends React.Component{
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
                 <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData'
+                maintainGuid={maintainGuid}
+                editState = {true}
                 callback={dataSource=>this.setState({dataSource})}/>
             </Content>
           </div>

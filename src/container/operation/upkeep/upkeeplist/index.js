@@ -28,8 +28,8 @@ class UpKeepList extends React.Component{
           render: (text,record) =>
 						<span>
 							{ (record.fstate==="00") ? 
-                <span><Link to={{pathname:`/operation/upkeep/UpKeepDetail/finish/${record.maintainGuid}`,state: record }}>完成</Link></span>
-                :<span><Link to={{pathname:`/operation/upkeep/UpKeepDetail/details/${record.maintainGuid}`,state: record }}>详情</Link></span>
+                <span><Link to={{pathname:`/operation/upkeep/UpKeepDetail/finish/${record.maintainGuid}`}}>完成</Link></span>
+                :<span><Link to={{pathname:`/operation/upkeep/UpKeepDetail/details/${record.maintainGuid}`}}>详情</Link></span>
 							}
 						</span>
 					},
