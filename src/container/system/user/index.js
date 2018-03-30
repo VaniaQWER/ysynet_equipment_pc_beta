@@ -17,7 +17,7 @@ class SystemUser extends Component {
         width: 60,
         render: (text, record) => 
           <span>
-            <Link to={{pathname: `/operation/repairMgt/repairRecord/detail`, state: { ...record } }}><Icon type="form" />详情</Link>
+            <Link to={{pathname: `/repairMgt/repairRecord/detail`, state: { ...record } }}><Icon type="form" />详情</Link>
           </span>  
       },
       {

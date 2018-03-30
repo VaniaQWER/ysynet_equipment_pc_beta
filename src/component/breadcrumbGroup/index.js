@@ -46,7 +46,7 @@ class BreadcrumbGroup extends PureComponent {
     return (
       <div>
         <Breadcrumb className={this.props.className} style={{position:'relative'}}>
-          <a  style={{position: 'absolute', right: '40px', top: '4px'}}  href="javascript:history.go(-1);">
+          <a  style={{position: 'absolute', right: '40px', top: '4px'}} onClick={() => window.history.go(-1)}>
           <Icon type="rollback" style={{fontWeight:'bolder',color:'#666'}}/>返回</a>
           <Breadcrumb.Item><Link to={'/'}>首页</Link></Breadcrumb.Item>
           {

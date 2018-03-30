@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Icon, Spin } from 'antd';
+import { Layout, Menu, Icon, Spin, message } from 'antd';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { menu as menuService } from '../../service';
@@ -106,8 +106,12 @@ class BasicLayout extends Component {
             selectedKeys={[selectedKeys]}
             onOpenChange={this.onOpenChange}
             openKeys={openKeys}
-            onSelect={item => {
-              history.push({pathname: `${item.key}`})
+            onClick={item => {
+              const { pathname } = history.location;
+              if (pathname !== item.key)
+                history.push({pathname: `${item.key}`})
+              else 
+                message.info('您正位于该页面')
             }}
           >
           <Menu.Item key='/workplace'>

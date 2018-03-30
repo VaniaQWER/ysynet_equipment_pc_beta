@@ -9,6 +9,7 @@ import { user as userService } from '../../service';
 import assets from '../../api/assets';
 import sha1 from 'sha1';
 import md5 from 'md5';
+import { login, getUser } from '../../api/login';
 const TabPane = Tabs.TabPane;
 /**
  * @file 登录页面
@@ -53,6 +54,33 @@ class Login extends Component {
         message.error(data.msg)
       }
     }).then(response =>    this.setState({loading: false}))
+  }
+  async login () {
+    // const { tabIndex } = this.state;
+    // const form = tabIndex === 1 ? this.normalForm : this.phoneForm;
+    // const postData = form.props.form.getFieldsValue();
+    // const { userName, password } = postData;
+    // const { setUser, history } = this.props;
+    const data = await login();
+    if (data.status) {
+      const d = getUser()
+      console.log(d)
+    }
+    // if ( userName === 'admin' && password === '999999' ) {
+    //   // 管理科室
+    //   setUser({userName: '管理科室', type: '01'});
+    //   history.push('/');
+    // } else if ( userName === 'supplier' && password === '999999' ) {
+    //   // 供应商
+    //   setUser({userName: '供应商', type: '03'});
+    //   history.push('/');
+    // } else if ( userName === 'customer' && password === '999999') {
+    //   // 使用科室
+    //   setUser({userName: '使用科室', type: '02'});
+    //   history.push('/');
+    // } else {
+    //   alert('用户名或密码错误')
+    // }
   }
   render() {
     return (
