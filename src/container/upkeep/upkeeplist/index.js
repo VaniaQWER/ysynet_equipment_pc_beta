@@ -5,6 +5,7 @@ import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
 import { upkeepState , upkeepMainTainType } from '../../../constants';
 import { Link } from 'react-router-dom';
+import { timeToStamp } from '../../../utils/tools';
 const Search = Input.Search;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
@@ -16,16 +17,16 @@ class UpKeepList extends React.Component{
       filteredInfo: null,
       sortedInfo: null,
     };
-
+    sortTime = (a,b,key) =>{
+      if(a[key] && b[key]){
+        return timeToStamp(a[key]) - timeToStamp(b[key])
+      }
+    }
     handleChange = (pagination, filters, sorter) => {
-      debugger
       console.log('Various parameters', pagination, filters, sorter);
       this.setState({
         filteredInfo: filters,
       });
-    }
-    changeFileter =(v,r)=>{
-        return r && r.fstate===v
     }
     queryHandler = (query) => {
       this.refs.table.fetch(query);
@@ -66,7 +67,7 @@ class UpKeepList extends React.Component{
               { text: '已完成', value: '01' },
               { text: '已关闭', value: '02' },
             ],
-            onFilter: (value, record) => (this.changeFileter(value,record)),
+            onFilter: (value, record) => (record && record.fstate===value),
             render: text => 
               <div><span style={{marginRight:5,backgroundColor:upkeepState[text].color ,width:10,height:10,borderRadius:'50%',display:'inline-block'}}></span>
               { upkeepState[text].text }
@@ -88,16 +89,20 @@ class UpKeepList extends React.Component{
             title: '保养开始时间',
             width:50,
             dataIndex: 'maintainDate',
+            sorter: (a, b) => (this.sortTime(a,b,'maintainDate')),
+            // sortOrder: 'maintainDate' === 'maintainDate' && 'descend',
           },
           {
             title: '保养结束时间',
             width:50,
             dataIndex: 'endMaintainDate',
+            sorter: (a, b) => (this.sortTime(a,b,'endMaintainDate')),
           },
           {
             title: '下次保养时间',
             width:50,
             dataIndex: 'nextMaintainDate',
+            sorter: (a, b) => (this.sortTime(a,b,'nextMaintainDate')),
           },
           {
             title: '操作员',

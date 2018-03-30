@@ -53,7 +53,8 @@ class Login extends Component {
         this.setState({loading: false})
         message.error(data.msg)
       }
-    }).then(response =>    this.setState({loading: false}))
+    })
+    //.then(response =>    this.setState({loading: false}))
   }
   async login () {
     // const { tabIndex } = this.state;
