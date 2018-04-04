@@ -216,10 +216,15 @@ export const depreciationTypeData = {
 }
 
 //保养登记
+export const upkeepStateSel =[
+  { text: '待完成', value: '00' },
+  { text: '已完成', value: '01' },
+  { text: '已作废', value: '02' },
+] 
 export const upkeepState = {
   "00": { text: '待完成',color: 'darkgray'},
   "01": { text: '已完成',color: 'limegreen'},
-  "02": { text: '已关闭',color: 'red'},
+  "02": { text: '已作废',color: 'red'},
   null :{text: "",color: 'transparent'}
 }
 export const upkeepMainTainType = {

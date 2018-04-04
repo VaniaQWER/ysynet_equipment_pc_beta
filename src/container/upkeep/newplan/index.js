@@ -5,13 +5,21 @@
  * @version 1.0.0
  */
 import React, { PureComponent } from 'react';
-import { Card, Row, Col, Form, Input, Tooltip, DatePicker, Icon, Tag, Button,
-  Select, Radio, Layout } from 'antd';
+import {Tree, Card, Row, Col, Form, Input, Tooltip, DatePicker, Icon, Tag, Button, Modal,Table,
+  Select, Radio, Layout ,message } from 'antd';
+import querystring from 'querystring';
 import TableGrid from '../../../component/tableGrid';
+import request from '../../../utils/request';
+import upkeep from '../../../api/upkeep';
+import basicdata from '../../../api/basicdata';
 import assets from '../../../api/assets';
+import _ from 'lodash';
 import { ledgerData, productTypeData } from '../../../constants';
+import styles from './style.css';
+const TreeNode = Tree.TreeNode;
 const FormItem = Form.Item;
-const Option = Select;
+const Option = Select.Option;
+const Search = Input.Search;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const { RemoteTable } = TableGrid;
@@ -27,65 +35,253 @@ const formItemLayout = {
     sm: { span: 16 },
   },
 };
-const data = [
-  '外观检查外观检查外观检查外观检查外观检查外观检查外观检查外观检查外观检查.',
-  '清洁与保养.',
-  '功能检查.',
-  '安全检查.'
-];
+const data = [{
+  key: 1,
+  assetsRecord: 'John Brown sr.',
+  age: 60,
+  address: 'New York No. 1 Lake Park',
+  children: [{
+    key: 11,
+    assetsRecord: 'John Brown',
+    age: 42,
+    address: 'New York No. 2 Lake Park',
+  }],
+}, {
+  key: 2,
+  assetsRecord: 'Joe Black',
+  age: 32,
+  address: 'Sidney No. 1 Lake Park',
+}];
 /** 表头 */
-const columns = [
+
+/** 选择资产弹窗的modal */
+const productColumns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    width:35,
+    render:(text,record,index)=> <span>{index+1}</span>
+  },
   {
     title: '资产编号',
     dataIndex: 'assetsRecord',
-    width: 200,
+    width: 80,
     sorter:true
   },
   {
-    title: '状态',
-    dataIndex: 'useFstate',
-    width: 100,
-     render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
-  },
-  {
-    title: '资产名称',
+    title: '设备名称',
     dataIndex: 'equipmentStandardName',
-    width: 200
+    width: 50
   },
   {
     title: '型号',
     dataIndex: 'spec',
-    width: 100
+    width: 50
   },
   {
-    title: '资产分类',
+    title: '规格',
+    dataIndex: 'useDept',
+    width: 50
+  },
+  {
+    title: '设备分类',
     dataIndex: 'productType',
-    width: 100,
+    width: 50,
     render: text => text ?  productTypeData[text].text  : null
   },
   {
-    title: '保管员',
-    dataIndex: 'custodian',
-    width: 150
-  },
-  {
     title: '使用科室',
-    dataIndex: 'useDept',
-    width: 100
+    dataIndex: 'bDept',
+    width: 50
   },
   {
-    title: '管理科室',
-    dataIndex: 'bDept',
-    width: 100
+    title: '有效保养计划',
+    dataIndex: 'custodian',
+    width: 60
+  },
+]
+const prjColumns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    width:35,
+    render:(text,record,index)=> <span>{index+1}</span>
+  },
+  {
+    title: '项目名称',
+    dataIndex: 'templateTypeName',
+    width: 80,
+  },
+]
+const dataList = [];
+const getParentKey = (key, tree) => {
+  let parentKey;
+  for (let i = 0; i < tree.length; i++) {
+    const node = tree[i];
+    if (node.children) {
+      if (node.children.some(item => item.key === key)) {
+        parentKey = node.key;
+      } else if (getParentKey(key, node.children)) {
+        parentKey = getParentKey(key, node.children);
+      }
+    }
   }
-];
-/**
- * @class 保养计划class
- * @summary 保养计划返回视图
- */
+  return parentKey;
+};
+
 class MaintainPlan extends PureComponent {
+
+  state={
+    selectDropData:[],//项目弹出层 下拉框内容
+    prjTableData:[],//项目弹出层  下拉框带出对应table内容
+    prjVisible:false,//项目新增弹窗内容
+    productVisible:false,//产品可视内容
+    selctParentKey:'',//存储做操作的产品KEY--将在这里插入children
+    loading:false,
+    defaultParams:'',
+    ProductModalCallBack:[],//选择保养资产返回的数据
+    ProductTabledata:[],//选择保养资产返回的数据
+    projecrModalCallBack:[],//选择项目返回的数据
+    treeData:[],//选择项目的树状结构
+    prjCheckedKeys:[],//被选择的项目
+    formatPrjData:[],
+    expandedKeys: [],
+    searchValue: '',
+    autoExpandParent: true,
+  }
+  componentWillMount = ()=>{
+    this.getOneModule();//获取弹窗树状结构
+  }
+  showModal = (modalName,recordKey) => {
+    if(modalName==='prjVisible'){
+      this.setState({
+        selctParentKey:recordKey
+      })
+    }
+    this.setState({
+      [modalName]: true,
+    });
+
+  }
+  handleOk = (modalName) => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      //设置
+      if(modalName=='productVisible'){
+        this.setState({
+          ProductTabledata:this.state.ProductModalCallBack
+        })
+      }else{
+        //处理选中的项目数据并赋值给formatPrjData之后 将该数据混合入ProductTabledata
+        debugger
+      }
+      this.setState({ loading: false, [modalName]: false });
+    }, 1000);
+  }
+  handleCancel = (modalName) => {
+    this.setState({ [modalName]: false });
+  }
+  //获取添加项目的一级下拉框
+  getOneModule = () =>{
+    let options = {
+      body:'',
+      success: data => {
+        if(data.status){
+          
+          this.setState({
+            'selectDropData':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryOneModule,options)
+  }
+  //获取添加项目的一级下拉框 带出的二级数据
+  changeOneModule =(value)=>{
+    debugger
+    console.log(value)
+    let json ={
+      'maintainTemplateId':value
+    }
+    //发出请求获取对应二级项目内容 并给弹窗中的table
+    let options = {
+      body:querystring.stringify(json),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({
+            'prjTableData':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryTwoModule,options)
+
+  }
+ 
   render() {
+    const columns = [
+      {
+        title: '序号',
+        dataIndex: 'index',
+        width: 50,
+        render:(text,record,index)=>{<span>{index+1}</span>}
+      },
+      {
+        title: '操作',
+        dataIndex: 'action',
+        width: 200,
+        render:(text,record,index)=>{
+          return (
+            <div>
+              <a>删除</a>&nbsp;&nbsp;
+              <a onClick={()=>this.showModal('prjVisible',record)}>新增项目</a>
+            </div>
+          )
+        }
+      },
+      {
+        title: '资产编号',
+        dataIndex: 'assetsRecord',
+        width: 200,
+        sorter:true
+      },
+      {
+        title: '资产名称',
+        dataIndex: 'equipmentStandardName',
+        width: 200
+      },
+      {
+        title: '型号',
+        dataIndex: 'spec',
+        width: 100
+      },
+      {
+        title: '规格',
+        dataIndex: 'productType',
+        width: 100
+      },
+      {
+        title: '使用科室',
+        dataIndex: 'useDept',
+        width: 100
+      }
+    ];
+    const { prjTableData , selectDropData , productVisible , prjVisible , loading ,defaultParams , ProductModalCallBack ,ProductTabledata} =this.state;
     const { getFieldDecorator } = this.props.form;
+
+    const mapOption = data => data.map((item)=>{
+      return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
+    })
+
     return (
       <Content className='ysynet-content'>
         <Card title="计划信息" bordered={false} className='min_card'>
@@ -105,8 +301,14 @@ class MaintainPlan extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              
-              <Col span={16}>
+              <Col span={8}>
+                <FormItem label={`计划名称`} {...formItemLayout}>
+                  {getFieldDecorator(`name`)(
+                    <Input placeholder="请输入计划名称" style={{width: 200}}/>
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={10}>
                 <FormItem label={`临床风险等级`} {...formItemLayout}>
                   {getFieldDecorator(`level`)(
                     <Select allowClear style={{width: 200}}>
@@ -117,8 +319,6 @@ class MaintainPlan extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              </Row>
-              <Row>
               <Col span={6}>
                 <FormItem label={`循环方式`} {...formItemLayout}>
                   {getFieldDecorator(`type1`, {
@@ -165,24 +365,100 @@ class MaintainPlan extends PureComponent {
             </Row>
           </Form>
         </Card>
-        <Card title={
-          <Tooltip title="展开查看项目信息">
-            产品信息&nbsp;<Icon type="question-circle-o" />
-          </Tooltip>} bordered={false} style={{marginTop: 4}} className='min_card'>
+        <Card title='资产信息' bordered={false} style={{marginTop: 4}} className='min_card'>
+          <Button type='primary' style={{marginBottom: 2}} onClick={()=>this.showModal('productVisible')}>添加产品</Button>
+          {/*资产信息表格*/}
+          <Table columns={columns} 
+            rowKey={'assetsRecordGuid'}
+            rowSelection={{
+            onChange: (selectedRowKeys, selectedRows) => {
+              console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            },
+            onSelect: (record, selected, selectedRows) => {
+              console.log(record, selected, selectedRows);
+            },
+            onSelectAll: (selected, selectedRows, changeRows) => {
+              console.log(selected, selectedRows, changeRows);
+            },
+            }} 
+            dataSource={ProductTabledata} />
+        </Card>
 
-          <Button type='primary' style={{marginBottom: 2}}>添加产品</Button>
+        {/*选择资产弹窗*/}
+        <Modal
+          visible={productVisible}
+          title="选择要保养的资产"
+          width='900px'
+          onOk={()=>this.handleOk('productVisible')}
+          onCancel={()=>this.handleCancel('productVisible')}
+          footer={null}
+        >
+          <Row>
+            <Col className={styles.mbLarge} span={20}>
+              <Select name="fenlei" placehodler='全部分类' style={{ width: 150 }} className={styles.mrLarge}>
+                <Option value="00">全部分类</Option>
+              </Select>
+              <Select name="shiyongkeshi" style={{ width: 150 }} className={styles.mrLarge}>
+                <Option value="00">选择使用科室</Option>
+              </Select>
+              <Search
+                placeholder="请输入设备编号/名称"
+                onSearch={ value =>  this.queryHandler({params: value}) }
+                style={{ width: 300 }}
+                enterButton="搜索"
+                defaultValue={ defaultParams }
+              />
+            </Col>
+            <Col span={4} style={{textAlign:'right'}}>
+              <Button key="submit" type="primary" loading={loading} onClick={()=>this.handleOk('productVisible')}>
+                添加
+              </Button>
+            </Col>
+          </Row>
           <RemoteTable
-            showHeader={true}
-            url={assets.selectAssetsList}
-            scroll={{x: '150%'}}
-            columns={columns}
-            rowKey={'RN'}
-            size="small"
-            expandedRowRender={ record => (
-              data.map((item, index) => (
-                <Tag key={index} closable>{ item }</Tag>
-              ))
-            )}
+              showHeader={true}
+              url={assets.selectAssetsList}
+              scroll={{x: '100%' }}
+              columns={productColumns}
+              rowKey={'assetsRecordGuid'}
+              size="small"
+              rowSelection={{
+                onChange: (selectedRowKeys, selectedRows) => {
+                  console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+                  this.setState({
+                    'ProductModalCallBack':selectedRows
+                  })
+                },
+                getCheckboxProps: record => ({
+                  disabled: record.name === 'Disabled User', // Column configuration not to be checked
+                  name: record.name,
+                }),
+              }}
+            /> 
+        </Modal>
+
+         {/*选择项目*/}
+         <Modal
+            visible={prjVisible}
+            title="选择项目"
+            onOk={()=>this.handleOk('prjVisible')}
+            onCancel={()=>this.handleCancel('prjVisible')}
+            footer={null}
+          >
+          <Row>
+            <Col className={styles.mbLarge}>
+              <Select name="fenlei" style={{ width: 250 }} className={styles.mrLarge}
+                onChange={(value)=>this.changeOneModule(value)} defaultValue="">
+                <Option value=''>请选择模板添加项目</Option>
+                {mapOption(selectDropData)}
+              </Select>
+              <Button key="submit" type="primary" loading={loading} onClick={()=>this.handleOk('prjVisible')}>
+                添加
+              </Button>
+            </Col>
+          </Row>
+          <Table 
+            rowKey={'templateDetailGuid'}
             rowSelection={{
               onChange: (selectedRowKeys, selectedRows) => {
                 console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -191,9 +467,10 @@ class MaintainPlan extends PureComponent {
                 disabled: record.name === 'Disabled User', // Column configuration not to be checked
                 name: record.name,
               }),
-            }}
-          /> 
-        </Card>
+            }} 
+            columns={prjColumns} 
+            dataSource={prjTableData} />
+        </Modal>
       </Content>  
     )
   }

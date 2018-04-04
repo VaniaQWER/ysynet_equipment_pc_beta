@@ -79,7 +79,7 @@ class UpKeepFinish extends React.Component{
           <div>
             <Affix>
               <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-                <Button type="default" onClick={()=>this.handleSubmit('02')}>关闭</Button>
+                <Button type="default" onClick={()=>this.handleSubmit('02')}>作废</Button>
                 <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('01')}>完成</Button>
               </div>
             </Affix>

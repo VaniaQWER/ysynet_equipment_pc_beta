@@ -6,6 +6,7 @@ import request from '../../../utils/request';
 import querystring from 'querystring';
 import upkeep from '../../../api/upkeep';
 import assets from '../../../api/assets';
+import basicdata from '../../../api/basicdata';
 import _ from 'lodash';
 import { FTP } from '../../../api/local';
 import { upkeepDetailsTable } from '../../../constants';
@@ -64,7 +65,12 @@ function UnStateTable(value){
     <span>{txt}</span>
   )
 }
-
+const prjColumns = [
+  {
+    title: '项目名称',
+    dataIndex: 'templateTypeName'
+  },
+]
 const initSearch = {
   assetsRecordGuid:"",
   maintainType:"",
@@ -81,6 +87,8 @@ const initSearch = {
 
 export default class AddUpKeepForm extends React.Component {
     state = {
+      selectDropData:[],//项目弹出层 下拉框内容
+      prjTableData:[],//项目弹出层  下拉框带出对应table内容
       expand: false,
       data:{},
       previewVisible: false,
@@ -151,7 +159,8 @@ export default class AddUpKeepForm extends React.Component {
         if(maintainGuid){
           this.getDetailAjax({maintainGuid})
         }
-        this.getTreeData();//获取弹窗树状结构
+        // this.getTreeData();//获取弹窗树状结构
+        this.getOneModule();
         this.setState({
           editState:editState,
         })
@@ -296,16 +305,18 @@ export default class AddUpKeepForm extends React.Component {
     handleOkTree = () => {
       this.setState({ loading: true });
       //modal获得treenode之后需要向table中添加一条数据
-      let newData = this.findDetailInfo();
+      // let newData = this.findDetailInfo();
+      let newData = this.state.checkedKeys;
       setTimeout(() => {//含清空tree勾选内容
         this.setState((prevState)=>{ 
-          this.props.callback(prevState.tableData.concat(newData))
-          console.log(prevState.tableData.concat(newData))
+        
+          //let uniqTableData = _.uniqBy(prevState.tableData.concat(newData),'maintainTypeId');
+          this.props.callback(newData)
           return{
             loading: false, 
             visible: false ,
             checkedKeys:[],
-            tableData:prevState.tableData.concat(newData)
+            tableData:newData
           }
         });
       }, 1000);
@@ -380,11 +391,58 @@ export default class AddUpKeepForm extends React.Component {
         return <TreeNode {...item} />;
       });
     }
+    //获取添加项目的一级下拉框
+  getOneModule = () =>{
+    let options = {
+      body:'',
+      success: data => {
+        if(data.status){
+          
+          this.setState({
+            'selectDropData':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryOneModule,options)
+  }
+  //获取添加项目的一级下拉框 带出的二级数据
+  changeOneModule =(value)=>{
+    console.log(value)
+    let json ={
+      'maintainTemplateId':value
+    }
+    //发出请求获取对应二级项目内容 并给弹窗中的table
+    let options = {
+      body:querystring.stringify(json),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({
+            'prjTableData':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryTwoModule,options)
+
+  }
 
     render() {
       const { getFieldDecorator } = this.props.form;
-      const { treeData , data , editState , visible, loading , tableData} = this.state;
+      const { prjTableData ,selectDropData , treeData , data , editState , visible, loading , tableData} = this.state;
       const { previewVisible, previewImage } = this.state;
+      const mapOption = data => data.map((item)=>{
+        return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
+      })
       const columns = [
         {
           title: '序号',
@@ -498,7 +556,7 @@ export default class AddUpKeepForm extends React.Component {
                   </Col>
               </Row>    
               <Row>
-                  <Col span={8} >
+                  <Col span={8}>
                       {UnStateText('型号',data.fmodel)}
                   </Col>
                   <Col span={8}>
@@ -659,6 +717,8 @@ export default class AddUpKeepForm extends React.Component {
               <Table ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
               </Table>
              </Row>
+
+
              <Modal
               visible={visible}
               title="选择项目"
@@ -670,18 +730,43 @@ export default class AddUpKeepForm extends React.Component {
                   提交
                 </Button>,
               ]}>
-                    <Tree
-                    checkable
-                    onExpand={this.onExpand}
-                    expandedKeys={this.state.expandedKeys}
-                    autoExpandParent={this.state.autoExpandParent}
-                    onCheck={this.onCheck}
-                    checkedKeys={this.state.checkedKeys}
-                    onSelect={this.onSelect}
-                    selectedKeys={this.state.selectedKeys}
-                  >
-                    {this.renderTreeNodes(treeData)}
-                  </Tree>
+                    {/*<Tree
+                      checkable
+                      onExpand={this.onExpand}
+                      expandedKeys={this.state.expandedKeys}
+                      autoExpandParent={this.state.autoExpandParent}
+                      onCheck={this.onCheck}
+                      checkedKeys={this.state.checkedKeys}
+                      onSelect={this.onSelect}
+                      selectedKeys={this.state.selectedKeys}
+                    >
+                      {this.renderTreeNodes(treeData)}
+                    </Tree>*/}
+                    <Row>
+                      <Col>
+                        <Select name="fenlei" style={{ width: 250,marginBottom:15 }} 
+                          onChange={(value)=>this.changeOneModule(value)} defaultValue="">
+                          <Option value=''>请选择模板添加项目</Option>
+                          {mapOption(selectDropData)}
+                        </Select>
+                      </Col>
+                    </Row>
+                    <Table 
+                      rowKey={'templateDetailGuid'}
+                      rowSelection={{
+                        onChange: (selectedRowKeys, selectedRows) => {
+                          this.setState({
+                            'checkedKeys':selectedRows
+                          })
+                          console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+                        },
+                        getCheckboxProps: record => ({
+                          disabled: record.name === 'Disabled User', // Column configuration not to be checked
+                          name: record.name,
+                        }),
+                      }} 
+                      columns={prjColumns} 
+                      dataSource={prjTableData} />
              </Modal>
           </Card>
         </Form>

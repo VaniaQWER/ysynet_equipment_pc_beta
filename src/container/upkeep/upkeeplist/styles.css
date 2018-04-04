@@ -11,7 +11,29 @@
     composes: width50;
     color: #333;
 }
-
+:global(.col05) {
+    display:inline-block;
+    width:5%;
+    height:38px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}:global(.col08) {
+    display:inline-block;
+    width:8%;
+    height:38px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+:global(.col12) {
+    display:inline-block;
+    width:12%;
+    height:38px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 :global(.col-1) {
     display:inline-block;
     width:10%;
