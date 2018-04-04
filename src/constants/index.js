@@ -228,8 +228,8 @@ export const upkeepMainTainType = {
   null :{text: "未知"}
 }
 export const upkeepDetailsTable = {
-  "01":{ text: '合格' },
-  "02":{ text: '不合格' },
-  "03":{ text: '保养后合格' },
+  "00":{ text: '合格' },
+  "01":{ text: '不合格' },
+  "02":{ text: '保养后合格' },
   null:{text: '请选择结果'}
 }

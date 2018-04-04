@@ -1,5 +1,8 @@
 /**
- * @file 保养管理 - 新建计划
+ * @file 保养管理 - 新增计划
+ * @author Vania
+ * @since 2018-03-21 14:00:00
+ * @version 1.0.0
  */
 import React, { PureComponent } from 'react';
 import { Card, Row, Col, Form, Input, Tooltip, DatePicker, Icon, Tag, Button,
@@ -102,14 +105,8 @@ class MaintainPlan extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col span={8}>
-                <FormItem label={`计划名称`} {...formItemLayout}>
-                  {getFieldDecorator(`name`)(
-                    <Input placeholder="请输入计划名称" style={{width: 200}}/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={10}>
+              
+              <Col span={16}>
                 <FormItem label={`临床风险等级`} {...formItemLayout}>
                   {getFieldDecorator(`level`)(
                     <Select allowClear style={{width: 200}}>
@@ -120,6 +117,8 @@ class MaintainPlan extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+              </Row>
+              <Row>
               <Col span={6}>
                 <FormItem label={`循环方式`} {...formItemLayout}>
                   {getFieldDecorator(`type1`, {
@@ -175,7 +174,7 @@ class MaintainPlan extends PureComponent {
           <RemoteTable
             showHeader={true}
             url={assets.selectAssetsList}
-            scroll={{x: '150%' }}
+            scroll={{x: '150%'}}
             columns={columns}
             rowKey={'RN'}
             size="small"

@@ -15,7 +15,19 @@ class AddUpKeep extends React.Component{
       formInfo:{},
       dataSource: []
 		}
-		
+		clearArray=(data)=>{
+      for(let i=0;i<data.length;i++){
+        for(let item in data[i]){
+          if(item ==='key'|| item==='levelr'||item ==='key'||item==='maintainTemplateId'
+            || item ==='templateDetailGuid' || item ==='templateTypeName'
+            || item ==='title'
+          ){
+            delete data[i][item]
+          }
+        }
+      }
+      return data
+    }
     handleSubmit = (fstate) =>{
       console.log(this.state.dataSource)//下方表格附带内容[] --接口未对
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
@@ -25,11 +37,13 @@ class AddUpKeep extends React.Component{
           values.endMaintainDate = moment(values['endMaintainDate']).format('YYYY-MM-DD HH:mm') 
           values.nextMaintainDate = moment(values['nextMaintainDate']).format('YYYY-MM-DD') 
           values.fstate = fstate;
+          values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
+
           let thumburl = []
           if(values.tfAccessoryList){
             for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
               let files = values.tfAccessoryList.fileList[i];
-              files.thumbUrl ? thumburl.push(files.thumbUrl) :'';
+              if(files.thumbUrl){thumburl.push(files.thumbUrl)}
             }
           }	
           values.tfAccessoryList = thumburl;
@@ -50,7 +64,7 @@ class AddUpKeep extends React.Component{
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.submitAssetInfo, options)
+      request(upkeep.submitAssetInfo,options)
     }
     //重置表单
     handleReset = () => {
@@ -66,7 +80,7 @@ class AddUpKeep extends React.Component{
           useDept:"",
           fmodel:"",
           productType:"",
-          equipmentStandardName:""
+          equipmentStandardName:"",
         }
       })
       this.refs.getFormData.resetFields();

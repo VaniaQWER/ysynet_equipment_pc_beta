@@ -73,7 +73,6 @@ class Home extends React.Component {
             </div>  
           </Header>
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}>
-            {  }
           </BreadcrumbGroup>
           {
             this.state.isLoading ? '数据加载中...' : 

@@ -1,206 +1,147 @@
-/**
- * @file 保养管理 - 保养计划
- * @author Vania
- * @since 2018-03-21 14:00:00
- * @version 1.0.0
- */
-import React, { PureComponent } from 'react';
-import { Card, Row, Col, Form, Input, Tooltip, DatePicker, Icon, Tag, Button,
-  Select, Radio, Layout } from 'antd';
+/**保养登记--列表*/
+import React from 'react';
+import { Row, Col, Input, Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
-import { ledgerData, productTypeData } from '../../../constants';
-const FormItem = Form.Item;
-const Option = Select;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
-const { RemoteTable } = TableGrid;
+// import styles from './styles.css';  
+import { upkeepState , upkeepMainTainType } from '../../../constants';
+import { Link } from 'react-router-dom';
+import { timeToStamp } from '../../../utils/tools';
+const Search = Input.Search;
 const { Content } = Layout;
-/* 表单布局样式 */ 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-const data = [
-  '外观检查外观检查外观检查外观检查外观检查外观检查外观检查外观检查外观检查.',
-  '清洁与保养.',
-  '功能检查.',
-  '安全检查.'
-];
-/** 表头 */
-const columns = [
-  {
-    title: '资产编号',
-    dataIndex: 'assetsRecord',
-    width: 200,
-    sorter:true
-  },
-  {
-    title: '状态',
-    dataIndex: 'useFstate',
-    width: 100,
-     render: text =>  <Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>
-  },
-  {
-    title: '资产名称',
-    dataIndex: 'equipmentStandardName',
-    width: 200
-  },
-  {
-    title: '型号',
-    dataIndex: 'spec',
-    width: 100
-  },
-  {
-    title: '资产分类',
-    dataIndex: 'productType',
-    width: 100,
-    render: text => text ?  productTypeData[text].text  : null
-  },
-  {
-    title: '保管员',
-    dataIndex: 'custodian',
-    width: 150
-  },
-  {
-    title: '使用科室',
-    dataIndex: 'useDept',
-    width: 100
-  },
-  {
-    title: '管理科室',
-    dataIndex: 'bDept',
-    width: 100
-  }
-];
-/**
- * @class 保养计划class
- * @summary 保养计划返回视图
- */
-class MaintainPlan extends PureComponent {
-  render() {
-    const { getFieldDecorator } = this.props.form;
-    return (
-      <Content className='ysynet-content'>
-        <Card title="计划信息" bordered={false} className='min_card'>
-          <Form >
-            <Row>
-              <Col span={6}>
-                <FormItem label={`保养类型`} {...formItemLayout}>
-                  {getFieldDecorator(`type`, {
-                    initialValue: '00'
-                  })(
-                    <RadioGroup>
-                      <RadioButton value="00">内保</RadioButton>
-                      <Tooltip title="暂不提供该项服务">
-                        <RadioButton value="01" disabled>外保</RadioButton>
-                      </Tooltip>
-                    </RadioGroup>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem label={`计划名称`} {...formItemLayout}>
-                  {getFieldDecorator(`name`)(
-                    <Input placeholder="请输入计划名称" style={{width: 200}}/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={10}>
-                <FormItem label={`临床风险等级`} {...formItemLayout}>
-                  {getFieldDecorator(`level`)(
-                    <Select allowClear style={{width: 200}}>
-                      <Option value={'低'}>低</Option>
-                      <Option value={'中'}>中</Option>
-                      <Option value={'高'}>高</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={6}>
-                <FormItem label={`循环方式`} {...formItemLayout}>
-                  {getFieldDecorator(`type1`, {
-                    initialValue: '00'
-                  })(
-                    <RadioGroup>
-                      <RadioButton value="00">单次</RadioButton>
-                      <RadioButton value="01">循环</RadioButton>
-                    </RadioGroup>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem label={`循环周期`} {...formItemLayout}>
-                  {getFieldDecorator(`loopCycle`)(
-                    <Input placeholder="请输入循环周期" style={{width: 200}} addonAfter={'月'}/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={10}>
-                <FormItem label={`提前生成保养单`} {...formItemLayout}>
-                  {getFieldDecorator(`advance`)(
-                    <Input placeholder="请输入天数" style={{width: 200}} addonAfter={'天'}/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={6}>
-                <FormItem label={
-                  <Tooltip title="循环保养时用于首次保养时间">
-                    <span><Icon type="question-circle-o" style={{marginRight: 1}}/>保养时间</span>
-                  </Tooltip>} {...formItemLayout}>
-                  {getFieldDecorator(`maintainDate`)(
-                    <DatePicker />
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={8} >
-                <FormItem label={`失效时间`} {...formItemLayout}>
-                  {getFieldDecorator(`invalidDate`)(
-                    <DatePicker />
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-        <Card title={
-          <Tooltip title="展开查看项目信息">
-            产品信息&nbsp;<Icon type="question-circle-o" />
-          </Tooltip>} bordered={false} style={{marginTop: 4}} className='min_card'>
+const { RemoteTable } = TableGrid;
 
-          <Button type='primary' style={{marginBottom: 2}}>添加产品</Button>
-          <RemoteTable
-            showHeader={true}
-            url={assets.selectAssetsList}
-            scroll={{x: '150%' }}
-            columns={columns}
-            rowKey={'RN'}
-            size="small"
-            expandedRowRender={ record => (
-              data.map((item, index) => (
-                <Tag key={index} closable>{ item }</Tag>
-              ))
-            )}
-            rowSelection={{
-              onChange: (selectedRowKeys, selectedRows) => {
-                console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-              },
-              getCheckboxProps: record => ({
-                disabled: record.name === 'Disabled User', // Column configuration not to be checked
-                name: record.name,
-              }),
-            }}
-          /> 
-        </Card>
-      </Content>  
-    )
-  }
+class MaintainPlan extends React.Component{
+
+    state = {
+      query:'',
+    };
+    sortTime = (a,b,key) =>{
+      if(a[key] && b[key]){
+        return timeToStamp(a[key]) - timeToStamp(b[key])
+      }
+    }
+    queryHandler = (query) => {
+      this.refs.table.fetch(query);
+      this.setState({ query })
+    }
+    render(){
+        const columns=[
+					{ title: '操作', 
+					dataIndex: 'maintainGuid', 
+          key: 'x', 
+          render: (text,record) =>
+						<span>
+							{ (record.fstate==="00") ? 
+                <span><Link to={{pathname:`/upkeep/planEdit/${record.maintainGuid}`}}>编辑</Link>&nbsp;&nbsp;
+                <Link to={{pathname:`/upkeep/UpKeepDetail/details/${record.maintainGuid}`}}>删除</Link>&nbsp;&nbsp;
+                <Link to={{pathname:`/upkeep/planEdit/${record.maintainGuid}`}}>执行</Link></span>
+                :<span><Link to={{pathname:`/upkeep/planDetail/${record.maintainGuid}`}}>详情</Link></span>
+							}
+						</span>
+					},
+					{
+            title: '保养计划单号',
+            dataIndex: 'maintainNo',
+            render(text, record) {
+              return <span title={text}>{text}</span>
+            }
+          },
+          {
+            title: '计划状态',
+            dataIndex: 'fstate',
+            key: 'fstate',
+            filters: [
+              { text: '待执行', value: '00' },
+              { text: '已执行', value: '01' },
+              { text: '已关闭', value: '02' },
+            ],
+            onFilter: (value, record) => (record && record.fstate===value),
+            render: text => 
+              <div><span style={{marginRight:5,backgroundColor:upkeepState[text].color ,width:10,height:10,borderRadius:'50%',display:'inline-block'}}></span>
+              { upkeepState[text].text }
+              </div>
+              
+          },
+          {
+            title: '资产名称',
+            dataIndex: 'equipmentName',
+            render:(text,record) =>
+              <Popover  content={
+                <div style={{padding:20}}>
+                  <p>设备名称：{record.equipmentName}</p>
+                  <p>操作员：{record.modifyUserName}</p>
+                  <p>保养单状态：{upkeepState[record.fstate].text}</p>
+                </div>
+              }>
+                {text}
+              </Popover>
+          },
+          {
+            title: '使用科室',
+            dataIndex: 'a',
+            render: text => <span>使用科室</span>
+          },
+          {
+            title: '保养类型',
+            dataIndex: 'maintainType',
+            render: text => <span>{upkeepMainTainType[text].text}</span>
+          },
+          {
+            title: '上次保养时间',
+            dataIndex: 'maintainDate',
+            sorter: (a, b) => this.sortTime(a,b,'maintainDate'),
+          },
+          {
+            title: '计划保养时间',
+            dataIndex: 'endMaintainDate',
+            sorter: (a, b) => this.sortTime(a,b,'endMaintainDate'),
+          },
+          {
+            title: '循环方式',
+            dataIndex: 'nextMaintainDate',
+            sorter: (a, b) => (this.sortTime(a,b,'nextMaintainDate')),
+          },
+          {
+            title: '循环周期',
+            dataIndex: 'b',
+          },
+          {
+            title: '操作员',
+            dataIndex: 'modifyUserName',
+          },
+          {
+            title: '创建时间',
+            dataIndex: 'c',
+          }
+        ]
+        return(
+            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+              <Row>
+                  <Col span={12}>
+                  <Search
+                      placeholder="请输入计划单号/资产名称/资产编码"
+                      onSearch={value =>  {this.queryHandler({'params':value})}}
+                      style={{ width: 400 }}
+                      enterButton="搜索"
+                  />
+                  </Col>
+              </Row>
+              <RemoteTable
+                  ref='table'
+                  query={this.state.query}
+                  url={assets.selectMaintainOrderList}
+                  scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+                  columns={columns}
+                  rowKey={'maintainGuid'}
+                  showHeader={true}
+                  style={{marginTop: 10}}
+                  size="small"
+                  onChange={this.handleChange}
+              /> 
+            </Content>
+        )
+    }
 }
 
-export default Form.create()(MaintainPlan);
+export default MaintainPlan;

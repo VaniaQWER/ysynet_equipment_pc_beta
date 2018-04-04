@@ -29,13 +29,14 @@ class RemoteTable extends Component {
     })
     this.fetch(postData);
   }
-  fetch = (params = {...this.props.query}, url = this.props.url) => {
+  fetch = (params = {...this.props.query}, url = this.props.url,catchData={...this.props.catchData}) => {
     this.setState({ loading: true, searchParams: params });
     if(url){
       let pagination = this.state.pagination;
       const body = querystring.stringify({
         pagesize: pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || this.defaultPageSize ),
         ...params,
+        ...catchData
       })  
       request(url,{
         body,

@@ -1,6 +1,6 @@
 /**保养登记--列表*/
 import React from 'react';
-import { Row, Col, Input, Layout} from 'antd';
+import { Row, Col, Input, Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
 import { upkeepState , upkeepMainTainType } from '../../../constants';
@@ -14,33 +14,22 @@ class UpKeepList extends React.Component{
 
     state = {
       query:'',
-      filteredInfo: null,
-      sortedInfo: null,
     };
     sortTime = (a,b,key) =>{
       if(a[key] && b[key]){
         return timeToStamp(a[key]) - timeToStamp(b[key])
       }
     }
-    handleChange = (pagination, filters, sorter) => {
-      console.log('Various parameters', pagination, filters, sorter);
-      this.setState({
-        filteredInfo: filters,
-      });
-    }
     queryHandler = (query) => {
       this.refs.table.fetch(query);
       this.setState({ query })
     }
     render(){
-      let { sortedInfo, filteredInfo } = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
         const columns=[
 					{ title: '操作', 
 					dataIndex: 'maintainGuid', 
           key: 'x', 
-          width:30,
+          className:'col-1',
           render: (text,record) =>
 						<span>
 							{ (record.fstate==="00") ? 
@@ -51,7 +40,7 @@ class UpKeepList extends React.Component{
 					},
 					{
             title: '保养单号',
-            width:50,
+            className:'col-2',
             dataIndex: 'maintainNo',
             render(text, record) {
               return <span title={text}>{text}</span>
@@ -60,7 +49,7 @@ class UpKeepList extends React.Component{
           {
             title: '保养单状态',
             dataIndex: 'fstate',
-            width:50,
+            className:'col-1',
             key: 'fstate',
             filters: [
               { text: '待完成', value: '00' },
@@ -76,37 +65,46 @@ class UpKeepList extends React.Component{
           },
           {
             title: '设备名称',
-            width:50,
             dataIndex: 'equipmentName',
+            className:'col-1',
+            render:(text,record) =>
+              <Popover  content={
+                <div style={{padding:20}}>
+                  <p>设备名称：{record.equipmentName}</p>
+                  <p>操作员：{record.modifyUserName}</p>
+                  <p>保养单状态：{upkeepState[record.fstate].text}</p>
+                </div>
+              }>
+                {text}
+              </Popover>
           },
           {
             title: '保养类型',
-            width:30,
+            className:'col-1',
             dataIndex: 'maintainType',
             render: text => <span>{upkeepMainTainType[text].text}</span>
           },
           {
             title: '保养开始时间',
-            width:50,
+            className:'col-1',
             dataIndex: 'maintainDate',
-            sorter: (a, b) => (this.sortTime(a,b,'maintainDate')),
-            // sortOrder: 'maintainDate' === 'maintainDate' && 'descend',
+            sorter: (a, b) => this.sortTime(a,b,'maintainDate'),
           },
           {
             title: '保养结束时间',
-            width:50,
+            className:'col-1',
             dataIndex: 'endMaintainDate',
-            sorter: (a, b) => (this.sortTime(a,b,'endMaintainDate')),
+            sorter: (a, b) => this.sortTime(a,b,'endMaintainDate'),
           },
           {
             title: '下次保养时间',
-            width:50,
+            className:'col-1',
             dataIndex: 'nextMaintainDate',
             sorter: (a, b) => (this.sortTime(a,b,'nextMaintainDate')),
           },
           {
             title: '操作员',
-            width:20,
+            className:'col-1',
             dataIndex: 'modifyUserName',
           }
         ]
