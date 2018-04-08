@@ -88,7 +88,6 @@ class BasicLayout extends Component {
   render() {
     const { history, menuList, collapsed } = this.props;
     const { selectedKeys, openKeys } = this.state;
-    // if(menuList){}
     return (
       <Sider
         width={'256'}      
@@ -107,7 +106,7 @@ class BasicLayout extends Component {
             onOpenChange={this.onOpenChange}
             openKeys={openKeys}
             onClick={item => {
-              const { pathname } = history.location;
+              const { pathname } = history.location; 
               if (pathname !== item.key)
                 history.push({pathname: `${item.key}`})
               else 

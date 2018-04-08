@@ -460,7 +460,7 @@ class MaintainPlan extends PureComponent {
           <Table 
             rowKey={'templateDetailGuid'}
             rowSelection={{
-              onChange: (selectedRowKeys, selectedRows) => {
+               onChange: (selectedRowKeys, selectedRows) => {
                 console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
               },
               getCheckboxProps: record => ({
