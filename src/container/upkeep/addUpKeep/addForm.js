@@ -438,7 +438,7 @@ export default class AddUpKeepForm extends React.Component {
 
     render() {
       const { getFieldDecorator } = this.props.form;
-      const { prjTableData ,selectDropData , treeData , data , editState , visible, loading , tableData} = this.state;
+      const { prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
       const { previewVisible, previewImage } = this.state;
       const mapOption = data => data.map((item)=>{
         return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>

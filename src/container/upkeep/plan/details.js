@@ -2,12 +2,12 @@
  * 保养计划-》保养详情
  */
 import React from 'react'
-import AddUpKeepForm from '../addUpKeep/addPlanForm.js';
+import AddUpKeepPlanForm from '../addUpKeep/addPlanForm.js';
 import { Form ,Layout} from 'antd';
 import { withRouter  } from 'react-router-dom';
 const { Content } = Layout; 
 
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
+const WrappedAdvancedSearchForm = Form.create()(AddUpKeepPlanForm);
 
 class UpKeepDetails extends React.Component{
     state={

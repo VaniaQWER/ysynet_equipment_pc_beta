@@ -7,10 +7,6 @@
     background: red;
 }
 
-.normal {
-    composes: width50;
-    color: #333;
-}
 :global(.col05) {
     display:inline-block;
     width:5%;

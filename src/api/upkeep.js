@@ -5,6 +5,11 @@ const upkeep = {
   listToDetails:`${_local}/maintainOrderController/selectMaintainOrderDetail`,//立标进入详情获取对应信息
   getTreeData:`${_local}/maintainOrderController/selectTemplateAndTypeList`,//获取保养模板树状结构
   queryAllProject:`${_local}/maintainOrderController/searchMaintainType`,//查询引用新增-------------
+  //保养计划列表
+  planList:`${_local}/maintainOrderController/selectMaintainPlanList`,//保养计划列表
+
+  //新建计划添加
+  selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室
 }
 
 export default upkeep;

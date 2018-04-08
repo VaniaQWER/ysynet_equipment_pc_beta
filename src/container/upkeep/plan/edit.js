@@ -2,7 +2,7 @@
  * 保养计划--》编辑页面
  */
 import React from 'react'
-import AddUpKeepForm from '../addUpKeep/addPlanForm.js';
+import AddUpKeepPlanForm from '../addUpKeep/addPlanForm.js';
 import { Form, Button ,Layout,Affix ,message} from 'antd'
 import moment from 'moment';
 import {withRouter  } from 'react-router-dom';
@@ -11,7 +11,7 @@ import request from '../../../utils/request';
 
 const { Content } = Layout; 
 
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
+const WrappedAdvancedSearchForm = Form.create()(AddUpKeepPlanForm);
 
 class UpKeepFinish extends React.Component{
     state={
@@ -55,7 +55,7 @@ class UpKeepFinish extends React.Component{
           if(data.status){
             message.success( '操作成功')
             setTimeout(()=>{
-              this.props.history.push('/upkeep/upkeeplist')
+              this.props.history.push('/upkeep/plan')
             },1000)
           }else{
             message.error(data.msg)

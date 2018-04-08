@@ -1,10 +1,13 @@
 import React from 'react'
 import moment from 'moment';
-import { Tree ,Table , message ,  Row, Col, Input, Card ,Form, Button , Radio ,Select ,DatePicker ,Modal} from 'antd'
+import { Tree ,Table , message ,  Row, Col, Input,Card ,Form, Button , Radio ,Select ,DatePicker ,Modal} from 'antd'
 import request from '../../../utils/request';
 import querystring from 'querystring';
 import upkeep from '../../../api/upkeep';
+import basicdata from '../../../api/basicdata';
+import _ from 'lodash';
 import { FTP } from '../../../api/local';
+import { upkeepPlanLoopFlag,upkeepDetailsTable } from '../../../constants';
 const TreeNode = Tree.TreeNode;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -54,6 +57,18 @@ function UnStateText(label,data){
   }
 }
 
+function UnStateTable(value){
+  let txt = value;
+  return  (
+    <span>{txt}</span>
+  )
+}
+const prjColumns = [
+  {
+    title: '项目名称',
+    dataIndex: 'templateTypeName'
+  },
+]
 const initSearch = {
   assetsRecordGuid:"",
   maintainType:"",
@@ -67,66 +82,10 @@ const initSearch = {
   productType:"",
 	equipmentStandardName:""
 }
-const treeData = [{
-  title: '0-0',
-  key: '0-0',
-  children: [{
-    title: '0-0-0',
-    key: '0-0-0',
-    children: [
-      { title: '0-0-0-0', key: '0-0-0-0' },
-      { title: '0-0-0-1', key: '0-0-0-1' },
-      { title: '0-0-0-2', key: '0-0-0-2' },
-    ],
-  }, {
-    title: '0-0-1',
-    key: '0-0-1',
-    children: [
-      { title: '0-0-1-0', key: '0-0-1-0' },
-      { title: '0-0-1-1', key: '0-0-1-1' },
-      { title: '0-0-1-2', key: '0-0-1-2' },
-    ],
-  }, {
-    title: '0-0-2',
-    key: '0-0-2',
-  }],
-}, {
-  title: '0-1',
-  key: '0-1',
-  children: [
-    { title: '0-1-0-0', key: '0-1-0-0' },
-    { title: '0-1-0-1', key: '0-1-0-1' },
-    { title: '0-1-0-2', key: '0-1-0-2' },
-  ],
-}, {
-  title: '0-2',
-  key: '0-2',
-}];
-const tabledata = [{
-  key: '1',
-  name: 'John Brown',
-  age: 32,
-  address: 'New York No. 1 Lake Park',
-  result:'01',
-  remark:'1346'
-}, {
-  key: '2',
-  name: 'Jim Green',
-  age: 42,
-  address: 'London No. 1 Lake Park',
-  result:'01',
-  remark:'1346'
-}, {
-  key: '3',
-  name: 'Joe Black',
-  age: 32,
-  address: 'Sidney No. 1 Lake Park',
-  result:'01',
-  remark:'1346'
-}];
-
-export default class AddUpKeepForm extends React.Component {
+export default class AddUpKeepPlanForm extends React.Component {
     state = {
+      selectDropData:[],//项目弹出层 下拉框内容
+      prjTableData:[],//项目弹出层  下拉框带出对应table内容
       expand: false,
       data:{},
       fileList: [],
@@ -144,26 +103,13 @@ export default class AddUpKeepForm extends React.Component {
       selectedKeys: [],
     };
 
-    onChange = (e) => {
-			// const value = e.target.value;
-			// const expandedKeys = dataList.map((item) => {
-			// 	if (item.key.indexOf(value) > -1) {
-			// 		return getParentKey(item.key, gData);
-			// 	}
-			// 	return null;
-			// }).filter((item, i, self) => item && self.indexOf(item) === i);
-			// this.setState({
-			// 	expandedKeys,
-			// 	searchValue: value,
-			// 	autoExpandParent: true,
-			// });
-		}
     componentWillMount =() =>{
         const { maintainGuid , editState} =this.props;
         //获取资产编号相关信息
         if(maintainGuid){
           this.getDetailAjax({maintainGuid})
         }
+        this.getOneModule();
         this.setState({
           editState:editState,
         })
@@ -195,9 +141,10 @@ export default class AddUpKeepForm extends React.Component {
               });
               retData.tfAccessoryList=files;
             }
+            let tabledata =data.result.maintainDetailList;
             this.setState({
               data:retData,
-              tableData:tabledata //此处tabledata接口未对
+              tableData:tabledata 
             })
             if(this.state.editState){this.props.callback(tabledata)}
             
@@ -215,7 +162,8 @@ export default class AddUpKeepForm extends React.Component {
     componentWillReceiveProps = (nextProps)=> {
       if(nextProps.formInfo.assetsRecordGuid===""){
         this.setState({
-          data:nextProps.formInfo
+          data:nextProps.formInfo,
+          tableData:[]
         })
       }
     }
@@ -273,26 +221,44 @@ export default class AddUpKeepForm extends React.Component {
     handleOkTree = () => {
       this.setState({ loading: true });
       //modal获得treenode之后需要向table中添加一条数据
-      let newData = {
-        key: '4',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-        result:'',
-        remark:''
-      }
-
+      // let newData = this.findDetailInfo();
+      let newData = this.state.checkedKeys;
       setTimeout(() => {//含清空tree勾选内容
         this.setState((prevState)=>{ 
-          this.props.callback([...prevState.tableData,newData])
+        
+          //let uniqTableData = _.uniqBy(prevState.tableData.concat(newData),'maintainTypeId');
+          this.props.callback(newData)
           return{
             loading: false, 
             visible: false ,
             checkedKeys:[],
-            tableData:[...prevState.tableData,newData]
+            tableData:newData
           }
         });
       }, 1000);
+    }
+    findDetailInfo =(checkedKeys)=>{
+      let b = _.cloneDeep(this.state.treeData);
+      let checkedKeyState = _.uniq(this.state.checkedKeys);
+      let relArray = [];
+      _.map(checkedKeyState,function(ItemKey){
+          let c =_.find(b,function(item){
+              if(item.key === ItemKey && item.children.length!==0){
+                return 
+              }else if(item.key !== ItemKey  && item.children.length!==0){
+                let rel = _.map(item.children,function(childrenItem){
+                   if(childrenItem.key=== ItemKey){
+                    relArray.push(childrenItem)
+                    return childrenItem
+                   } 
+                })
+                return rel ;//此处才是真的子集数据
+              } 
+          })
+          return c
+      })
+      console.log('relArray',relArray)
+      return relArray
     }
     //-----table删除
     deleteTableData = (record) =>{
@@ -305,7 +271,7 @@ export default class AddUpKeepForm extends React.Component {
     //-----table行内修改--并向外传送
     changeTableRow = (value,record,keyName) =>{
       const arr = this.state.tableData;
-      let v = keyName==="result" ? value: value.target.value;
+      let v = keyName==="maintainResult" ? value: value.target.value;
       arr[arr.findIndex(item => item === record)][keyName]=v;
       this.props.callback(arr);
     }
@@ -340,18 +306,67 @@ export default class AddUpKeepForm extends React.Component {
         return <TreeNode {...item} />;
       });
     }
+    //获取添加项目的一级下拉框
+  getOneModule = () =>{
+    let options = {
+      body:'',
+      success: data => {
+        if(data.status){
+          
+          this.setState({
+            'selectDropData':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryOneModule,options)
+  }
+  //获取添加项目的一级下拉框 带出的二级数据
+  changeOneModule =(value)=>{
+    console.log(value)
+    let json ={
+      'maintainTemplateId':value
+    }
+    //发出请求获取对应二级项目内容 并给弹窗中的table
+    let options = {
+      body:querystring.stringify(json),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({
+            'prjTableData':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryTwoModule,options)
+
+  }
 
     render() {
-
+      const { getFieldDecorator } = this.props.form;
+      const { prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
+      const mapOption = data => data.map((item)=>{
+        return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
+      })
       const columns = [
         {
           title: '序号',
-          dataIndex: 'key',
+          dataIndex: 'index',
           width:100,
+          render:(text, record, index) => index + 1
         },
         {
           title: '操作',
-          dataIndex: 'name',
+          dataIndex: 'maintainOrderDetailGuid',
           width:150,
           render:(text,record)=>{
             if(editState){
@@ -366,13 +381,41 @@ export default class AddUpKeepForm extends React.Component {
         {
           title: '项目名称',
           width:350,
-          dataIndex: 'address',
-        }
+          dataIndex: 'templateTypeName',
+        },
+        {
+          title: '结果',
+          dataIndex: 'maintainResult',
+          width:250,
+          render:(text,record)=>{
+            if(editState){
+              return( <Select value={record.maintainResult} name='maintainResult' onSelect={(value)=>this.changeTableRow(value,record,'maintainResult')}>
+                  <Option value="">请选择结果</Option>
+                  <Option value="00">合格</Option>
+                  <Option value="01">不合格</Option>
+                  <Option value="02">保养后合格</Option>
+                </Select>)
+              }else{
+                return UnStateTable(upkeepDetailsTable[record.maintainResult].text)
+              }
+          }
+        },
+        {
+          title: '备注',
+          dataIndex: 'tfRemark',
+          render:(text,record)=>{
+            if(editState){
+                return(
+                  <Input value={record.tfRemark} onChange={(e)=>this.changeTableRow(e,record,'tfRemark')} />
+                )
+            }else{
+              return UnStateTable(record.tfRemark)
+            }
+            
+          }
+        },
       ]
-     
-      const { getFieldDecorator } = this.props.form;
-      const { data , editState , visible, loading , tableData} = this.state;
-      
+
       
       const formItemLayout = {
         labelCol: {
@@ -384,6 +427,7 @@ export default class AddUpKeepForm extends React.Component {
           sm: { span: 16 },
         },
       };
+
       return (
         <Form>
           <Card title="资产信息" bordered={false} >
@@ -459,16 +503,7 @@ export default class AddUpKeepForm extends React.Component {
                   :UnStateText('保养类型','内保')
                 }
                 </Col>
-                <Col span={8}>
-                {editState ? 
-                  <FormItem label='保养人' {...formItemLayout}>
-                  {getFieldDecorator(`engineerName`,{initialValue:data.engineerName})(
-                    <Input placeholder="支持多人"/>
-                  )}
-                  </FormItem>
-                  :UnStateText('保养人',data.engineerName)
-                }
-                </Col>
+                
                 <Col span={8}>
                   {editState ? 
                     <FormItem label='临床风险等级' {...formItemLayout}>
@@ -489,21 +524,24 @@ export default class AddUpKeepForm extends React.Component {
                     <Col span={8}>
                       {editState ? 
                         <FormItem label='循环方式' {...formItemLayout}>
-                        {getFieldDecorator(`xunhuanfangsih`,{initialValue:data.xunhuanfangsih})(
-                          <Input placeholder="多次循环"/>
+                        {getFieldDecorator(`loopFlag`,{initialValue:data.loopFlag})(
+                          <Select placeholder='请选择'>
+                            <Option value="01">循环</Option>
+                            <Option value="00">单次</Option>
+                          </Select>
                         )}
                         </FormItem>
-                        :UnStateText('循环方式',"多次循环")
+                        :UnStateText('循环方式',upkeepPlanLoopFlag[data.loopFlag].text)
                       }
                     </Col>
                     <Col span={8}>
                       {editState ? 
                         <FormItem label='循环周期' {...formItemLayout}>
-                        {getFieldDecorator(`xunhuanzhouqi`,{initialValue:data.xunhuanzhouqi})(
+                        {getFieldDecorator(`tfCycle`,{initialValue:data.tfCycle})(
                           <Input placeholder="3月"/>
                         )}
                         </FormItem>
-                        :UnStateText('循环方式',"3月")
+                        :UnStateText('循环方式',data.tfCycle)
                       }
                     </Col>
                   </Row>
@@ -542,11 +580,11 @@ export default class AddUpKeepForm extends React.Component {
                 <Col span={8}>
                 {editState ?
                   <FormItem label='提前生成保单' {...formItemLayout}>
-                    {getFieldDecorator(`xunhuanzhouqi`,{initialValue:data.xunhuanzhouqi})(
+                    {getFieldDecorator(`advancePlan`,{initialValue:data.advancePlan})(
                       <Input placeholder="12天"/>
                     )}
                     </FormItem>
-                    :UnStateText('提前生成保单',"12天")
+                    :UnStateText('提前生成保单',data.advancePlan)
                 }
                 </Col>
               </Row>
@@ -555,7 +593,7 @@ export default class AddUpKeepForm extends React.Component {
           <Card title="项目信息" bordered={false} style={{marginTop:30}}>
              <Row><Button type="buttom" onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
              <Row>
-              <Table ref='tableItem' columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
+              <Table ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
               </Table>
              </Row>
              <Modal
@@ -569,25 +607,31 @@ export default class AddUpKeepForm extends React.Component {
                   提交
                 </Button>,
               ]}>
-                    
-                  <Select placeholder='请选择' style={{width:300}}>
-                    <Option value="">请选择</Option>
-                    <Option value="02">高</Option>
-                    <Option value="01">中</Option>
-                    <Option value="00">低</Option>
-                  </Select>
-                  <Tree
-                    checkable
-                    onExpand={this.onExpand}
-                    expandedKeys={this.state.expandedKeys}
-                    autoExpandParent={this.state.autoExpandParent}
-                    onCheck={this.onCheck}
-                    checkedKeys={this.state.checkedKeys}
-                    onSelect={this.onSelect}
-                    selectedKeys={this.state.selectedKeys}
-                  >
-                    {this.renderTreeNodes(treeData)}
-                  </Tree>
+                    <Row>
+                      <Col>
+                        <Select name="fenlei" style={{ width: 250,marginBottom:15 }} 
+                          onChange={(value)=>this.changeOneModule(value)} defaultValue="">
+                          <Option value=''>请选择模板添加项目</Option>
+                          {mapOption(selectDropData)}
+                        </Select>
+                      </Col>
+                    </Row>
+                    <Table 
+                      rowKey={'templateDetailGuid'}
+                      rowSelection={{
+                        onChange: (selectedRowKeys, selectedRows) => {
+                          this.setState({
+                            'checkedKeys':selectedRows
+                          })
+                          console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+                        },
+                        getCheckboxProps: record => ({
+                          disabled: record.name === 'Disabled User', // Column configuration not to be checked
+                          name: record.name,
+                        }),
+                      }} 
+                      columns={prjColumns} 
+                      dataSource={prjTableData} />
              </Modal>
           </Card>
         </Form>

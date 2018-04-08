@@ -238,3 +238,31 @@ export const upkeepDetailsTable = {
   "02":{ text: '保养后合格' },
   null:{text: '请选择结果'}
 }
+
+export const upkeepPlanStateSel =[
+  { text: '待执行', value: '20' },
+  { text: '执行中', value: '30' },
+  { text: '已执行', value: '40' },
+  { text: '已关闭', value: '80' },
+] 
+export const upkeepPlanState = {
+  "20": { text: '待执行'},
+  "30": { text: '执行中'},
+  "40": { text: '已执行'},
+  "80": { text: '已关闭'},
+  null :{text: "",color: 'transparent'}
+}
+export const upkeepPlanLoopFlag ={
+  "00":{ text: '单次' },
+  "01":{ text: '循环' },
+  null:{text: ''}
+}
+
+export const newPlanProductTypeSel =[
+  { text: '通用设备', value: '00' },
+  { text: '电气设备', value: '02' },
+  { text: '电子产品及通信设备', value: '03' },
+  { text: '仪器仪表及其他', value: '04' },
+  { text: '专业设备', value: '05' },
+  { text: '其他', value: '06' },
+]
