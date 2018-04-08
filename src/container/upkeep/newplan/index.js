@@ -13,7 +13,7 @@ import request from '../../../utils/request';
 import upkeep from '../../../api/upkeep';
 import basicdata from '../../../api/basicdata';
 import assets from '../../../api/assets';
-import _ from 'lodash';
+//import _ from 'lodash';
 import moment from 'moment';
 import { productTypeData } from '../../../constants';
 import styles from './style.css';
@@ -258,7 +258,7 @@ class MaintainPlan extends PureComponent {
         title: '序号',
         dataIndex: 'index',
         width: 50,
-        render:(text,record,index)=>{ <span>{index+1}</span>}
+        render:(text,record,index) => <span>{index+1}</span>
       },
       {
         title: '操作',

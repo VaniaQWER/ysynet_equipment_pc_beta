@@ -4,6 +4,9 @@
 import React, { Component } from 'react';
 import { Row, Col, Card, Avatar } from 'antd';
 
+import { withRouter } from 'react-router'
+import { connect } from 'react-redux';
+
 const gridStyle = {
   width: '25%',
   textAlign: 'center',
@@ -12,6 +15,8 @@ const gridStyle = {
 class Workplace extends Component {
   
   render() {
+    console.log(this.props)
+    const { orgName,userName } = this.props.user
     return (
      <div className='ysynet-content ysynet-common-bgColor'>
         <Row>
@@ -21,7 +26,7 @@ class Workplace extends Component {
             src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
           </Col>
           <Col span={10}>
-              <h2 style={{lineHeight:'36px',color:"#666"}}>普华信联，祝你新年快乐!</h2>
+              <h2 style={{lineHeight:'36px',color:"#666"}}>{orgName}==>{userName}</h2>
               专业的医用设备管理服务平台,提供一站式物资解决方案
           </Col>
           <Col span={12}>
@@ -46,4 +51,5 @@ class Workplace extends Component {
   }
 }
 
-export default Workplace;
+//export default Workplace;
+export default withRouter(connect(state => state)(Workplace));

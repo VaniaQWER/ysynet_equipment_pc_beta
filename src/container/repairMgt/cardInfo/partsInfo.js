@@ -351,7 +351,9 @@ class PartsInfo extends PureComponent {
     })
     return total;
   }
-  
+  postData = () =>{
+    return { quoredPrice: this.total(this.state.dataSource) };
+  }
   render() {
     const {  choseVisible, writeVisible ,dataSource} = this.state;
     const columns = this.props.data.check !== "check"  ? [{
