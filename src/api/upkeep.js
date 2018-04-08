@@ -9,7 +9,9 @@ const upkeep = {
   planList:`${_local}/maintainOrderController/selectMaintainPlanList`,//保养计划列表
 
   //新建计划添加
+  insertMaintainPlan:`${_local}/maintainOrderController/insertMaintainPlan`,//新建计划添加
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室
+  getAssetsListInfo:`${_local}/maintainOrderController/selectAssetsListGetMainType`,//根据资产的GUID获取资产表格给的内容
 }
 
 export default upkeep;

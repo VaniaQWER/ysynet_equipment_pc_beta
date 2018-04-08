@@ -34,6 +34,8 @@ class MyServiceComplete extends PureComponent {
   // 完成维修, 关闭, 保存  交互
   repairStatusUpdata = (postData)=>{
     const { closeOrfinishRepairService, history } = this.props;
+    postData.quotedPrice = this.refs.partsInfo.postData().quoredPrice + "";
+    console.log(postData,'postData')
     closeOrfinishRepairService(assets.insertOrUpdateRrpair,JSON.stringify(postData),(data)=>{
       if(data.status){
         message.success('操作成功');
@@ -68,7 +70,6 @@ class MyServiceComplete extends PureComponent {
       //指派  外修
       this.saveOrdesignOperation(baseData,"1");
     }
-    console.log(this)
   }
   //保存
   save = () => {
@@ -170,7 +171,7 @@ class MyServiceComplete extends PureComponent {
           {
             JSON.stringify(this.state.selectRrpairDetailIsAssets) === '{}' ? null 
             :
-            <PartsInfo
+            <PartsInfo ref='partsInfo'
               data={{
                 rrpairOrderGuid:  this.props.match.params.id,
                 assetsRecordGuid:this.state.selectRrpairDetailIsAssets.assetsRecordGuid,

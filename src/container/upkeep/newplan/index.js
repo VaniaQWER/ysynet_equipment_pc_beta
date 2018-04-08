@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 import React, { PureComponent } from 'react';
-import {Card, Row, Col, Form, Input, Tooltip, DatePicker, Icon, Button, Modal,Table,Affix,
+import { Card, Row, Col, Form, Input, Tooltip, DatePicker, Icon, Button, Modal,Table,Affix,
   Select, Radio, Layout ,message } from 'antd';
 import querystring from 'querystring';
 import TableGrid from '../../../component/tableGrid';
@@ -43,7 +43,7 @@ const productColumns = [
     title: '序号',
     dataIndex: 'index',
     width:35,
-    render:(text,record,index)=> <span>{index+1}</span>
+    render:(text,record,index)=> <span>{`${index+1}`}</span>
   },
   {
     title: '资产编号',
@@ -88,7 +88,7 @@ const prjColumns = [
     title: '序号',
     dataIndex: 'index',
     width:35,
-    render:(text,record,index)=> <span>{index+1}</span>
+    render:(text,record,index)=> <span>{`${index+1}`}</span>
   },
   {
     title: '项目名称',
@@ -108,7 +108,7 @@ class MaintainPlan extends PureComponent {
     productVisible:false,//产品可视内容
     selctParentKey:'',//存储做操作的产品KEY--将在这里插入children
     loading:false,
-    defaultParams:'',
+    ProductModalCallBackKeys:[],//选中保存数据的key
     ProductModalCallBack:[],//选择保养资产返回的数据
     ProductTabledata:[],//选择保养资产返回的数据
     projecrModalCallBack:[],//选择项目返回的数据
@@ -120,10 +120,27 @@ class MaintainPlan extends PureComponent {
     autoExpandParent: true,
     ProductType:'',//资产搜索条件
     useDeptGuid:'',//资产搜索条件
+    mobile:'',
+    PopconfirmVisible:false,//删除的确认窗
   }
+ 
   componentWillMount = ()=>{
     this.getOneModule();//获取弹窗树状结构
     this.getDetpSelect();
+  }
+  //给添加的资产表格中的项目添加唯一的key,将父级GUID+自己GUID
+  changeTreeData =(mock)=>{
+    let a = _.cloneDeep(mock);
+    _.forEach(a,function(item,index){
+      let parentId = item.assetsRecordGuid;
+      item.children = item.subList;
+      delete item.subList;
+      _.forEach(item.children,function(subItem,index){
+        subItem.parentKey = parentId;
+        subItem.assetsRecordGuid = parentId.toString() + subItem.templateDetailGuid;
+      })
+    })
+    return a
   }
   showModal = (modalName,recordKey) => {
     if(modalName==='prjVisible'){
@@ -137,22 +154,81 @@ class MaintainPlan extends PureComponent {
 
   }
   handleOk = (modalName) => {
-    this.setState({ loading: true });
-    setTimeout(() => {
-      //设置
-      if(modalName==='productVisible'){
-        this.setState({
-          ProductTabledata:this.state.ProductModalCallBack
-        })
-      }else{
-        //处理选中的项目数据并赋值给formatPrjData之后 将该数据混合入ProductTabledata
-        debugger
-      }
-      this.setState({ loading: false, [modalName]: false });
-    }, 1000);
+    if(this.state.ProductModalCallBackKeys.length!==0 || this.state.projecrModalCallBack.length!==0){
+      this.setState({ loading: true });
+      setTimeout(() => {
+        //设置
+        if(modalName==='productVisible'){
+          //1-在此处通过ProductModalCallBackKeys获取对应的树状结构-赋值给ProductTabledata-资产信息table
+          this.productSubmitGetTree();
+          
+        }else{
+          //2-处理选中的项目数据并赋值给formatPrjData之后 将该数据混合入ProductTabledata
+          this.prjInsertParenTable();
+        }
+        this.setState({ loading: false, [modalName]: false });
+      }, 1000);
+
+    }else{
+      message.warning('请选择项目之后再添加！')
+    }
   }
   handleCancel = (modalName) => {
+    if(modalName==='productVisible'){
+      this.setState({ 
+        ProductType:'',//资产搜索条件
+        useDeptGuid:'',//资产搜索条件
+        mobile:'',
+        ProductModalCallBack:[],
+        ProductModalCallBackKeys:[]
+      });
+    }
     this.setState({ [modalName]: false });
+
+  }
+  //1-在此处通过ProductModalCallBackKeys获取对应的树状结构-赋值给ProductTabledata-资产信息table
+  productSubmitGetTree =()=>{
+    let options = {
+      body:querystring.stringify({'asstesGuids':this.state.ProductModalCallBackKeys}),
+				headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({
+            'ProductTabledata':this.changeTreeData(data.result)
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(upkeep.getAssetsListInfo,options)
+  }
+  //2-处理选中的项目数据并赋值给formatPrjData之后 将该数据混合入ProductTabledata
+  prjInsertParenTable =()=>{
+    
+    console.log(this.state.projecrModalCallBack)
+    console.log(this.state.selctParentKey);//这个为选中的父级的信息
+    let a  = _.cloneDeep(this.state.ProductTabledata);
+    let parentKey = this.state.selctParentKey.assetsRecord;
+    let pushData = _.cloneDeep(this.state.projecrModalCallBack);
+    let ind = _.findIndex(a,{assetsRecord:parentKey})
+    if(ind !==-1){
+      _.forEach(pushData,function(item){
+        item.parentKey = parentKey;
+        item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
+       
+          a[ind].children.push(item)
+      })
+      a[ind].children = _.uniqBy(a[ind].children,'maintainTypeId')
+    }
+    console.log('添加项目之后的table数据',a)
+    this.setState({
+      ProductTabledata:a
+    })
+
   }
   //获取添加项目的一级下拉框
   getOneModule = () =>{
@@ -193,7 +269,6 @@ class MaintainPlan extends PureComponent {
   }
   //获取添加项目的一级下拉框 带出的二级数据
   changeOneModule =(value)=>{
-    debugger
     console.log(value)
     let json ={
       'maintainTemplateId':value
@@ -218,38 +293,94 @@ class MaintainPlan extends PureComponent {
     request(basicdata.queryTwoModule,options)
 
   }
-
+  //此处为保存所有的新增计划表单
   handleSubmit =(status)=>{
     //此处提交所有搜集到的数据
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        let json = values;
+        let json = {};
+        let maintainPlan = values;
         if(values.loopFlag==="00"){//单次循环
-          json.maintainDate = moment(json.maintainDate).format('YYYY-MM-DD');
-          console.log('Received values of form: ', json);
+          maintainPlan.maintainDate = moment(maintainPlan.maintainDate).format('YYYY-MM-DD');
         }else{
-          json.maintainDate = moment(json.Date[0]).format('YYYY-MM-DD');
-          json.endMaintainDate = moment(json.Date[1]).format('YYYY-MM-DD');
-          delete json.Date;//删除Date
-          console.log('Received values of form: ', json);
+          maintainPlan.maintainDate = moment(maintainPlan.Date[0]).format('YYYY-MM-DD');
+          maintainPlan.endMaintainDate = moment(maintainPlan.Date[1]).format('YYYY-MM-DD');
+          delete maintainPlan.Date;//删除Date
         }
         //此处还需要继续做表格的数据添加
-        // json.assetsRecordGuidList
-        // json.maintainTypes
-
-
+        json.maintainPlan = maintainPlan;
+        json.assetsRecordGuidList = this.formatTableData(this.state.ProductTabledata);
+        this.sendEndAjax(json)
       }
     });
-
+  }
+  /**
+   * [{
+	 *  assetsRecordGuid 资产id
+	 *  maintainTypes; 保养项目id（集合）
+	 *}]
+  */
+  formatTableData = (data)=>{
+    let a = _.cloneDeep(data);
+    let ret = [];
+    _.forEach(a,function(item,index){
+      let j ={}
+      j.assetsRecordGuid = item.assetsRecordGuid;
+      j.maintainTypes=[];
+      _.forEach(item.children,function(subItem,index){
+        j.maintainTypes.push(subItem.maintainTypeId)
+      })
+      ret.push(j);
+    })
+    return ret;
   }
 
+  sendEndAjax =(json)=>{
+    console.log('send Ajax:',JSON.stringify(json))
+    let options = {
+      body:JSON.stringify(json),
+      success: data => {
+        if(data.status){
+          message.success('操作成功');
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(upkeep.insertMaintainPlan,options)
+  }
   productQueryHandler =(value)=>{
+      this.setState({
+        mobile:value
+      })
       let json ={
         ProductType:this.state.ProductType,
         useDeptGuid:this.state.useDeptGuid,
-        assetsRecord:value
+        mobile:value
       }
-      console.log(json)
+      this.refs.proTable.fetch(json)
+
+  }
+
+  deleteProRow =(isParent,record)=>{
+    let a =_.cloneDeep(this.state.ProductTabledata);
+    if(isParent){//如果是删除父级
+      _.remove(a,function(n){
+        return n.assetsRecord===record.assetsRecord
+      })
+    }else{//如果删除子集
+      let parentKey = record.parentKey;
+      let ind = _.findIndex(a,{'assetsRecordGuid':parentKey});
+      if(ind!==-1){
+        _.remove(a[ind].children,function(item){
+          return item.templateDetailGuid===record.templateDetailGuid
+       })
+      }
+    }
+    this.setState({
+      ProductTabledata:a,
+    })
   }
 
   render() {
@@ -258,19 +389,27 @@ class MaintainPlan extends PureComponent {
         title: '序号',
         dataIndex: 'index',
         width: 50,
-        render:(text,record,index)=>{ <span>{index+1}</span>}
+        render:(text,record,index)=>{return `${index+1}`}
       },
       {
         title: '操作',
         dataIndex: 'action',
         width: 200,
         render:(text,record,index)=>{
-          return (
-            <div>
-              <a>删除</a>&nbsp;&nbsp;
-              <a onClick={()=>this.showModal('prjVisible',record)}>新增项目</a>
-            </div>
-          )
+          if(record.templateDetailGuid){
+            return (
+              <span>
+                <a onClick={()=>this.deleteProRow(false,record)}>删除</a>&nbsp;&nbsp;
+              </span>
+            )
+          }else{
+            return (
+              <div>
+                  <a onClick={()=>this.deleteProRow(true,record)}>删除</a>&nbsp;&nbsp;
+                  <a onClick={()=>this.showModal('prjVisible',record)}>新增项目</a>
+              </div>
+            )
+          }
         }
       },
       {
@@ -280,9 +419,24 @@ class MaintainPlan extends PureComponent {
         sorter:true
       },
       {
-        title: '资产名称',
+        title: '资产名称/项目名称',
         dataIndex: 'equipmentStandardName',
-        width: 200
+        width: 200,
+        render:(text,record,index)=>{
+          if(record.equipmentStandardName){
+            return (
+              <span>
+                {record.equipmentStandardName}
+              </span>
+            )
+          }else{
+            return (
+              <span>
+                {record.templateTypeName}
+              </span>
+            )
+          }
+        }
       },
       {
         title: '型号',
@@ -300,7 +454,7 @@ class MaintainPlan extends PureComponent {
         width: 100
       }
     ];
-    const { detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,defaultParams  ,ProductTabledata} =this.state;
+    const { useDeptGuid ,ProductType ,mobile , detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,ProductTabledata} =this.state;
     const { getFieldDecorator } = this.props.form;
     //选择项目中的下拉框
     const mapOption = data => data.map((item)=>{
@@ -319,7 +473,11 @@ class MaintainPlan extends PureComponent {
               <Tooltip title="循环保养时用于首次保养时间">
                 <span><Icon type="question-circle-o" style={{marginRight: 1}}/>保养时间</span>
               </Tooltip>} {...formItemLayout}>
-                {getFieldDecorator(`maintainDate`)(
+                {getFieldDecorator(`maintainDate`,{
+                  rules:[{
+                    required:true,message:'请选择保养时间！'
+                  }]
+                })(
                 <DatePicker />
               )}
             </FormItem>
@@ -331,14 +489,22 @@ class MaintainPlan extends PureComponent {
           <div>
             <Col span={8}>
             <FormItem label={`循环周期`} {...formItemLayout}>
-              {getFieldDecorator(`tfCycle`)(
+              {getFieldDecorator(`tfCycle`,{
+                rules:[{
+                  required:true,message:'请输入循环周期！'
+                }]
+              })(
                 <Input placeholder="请输入循环周期" style={{width: 200}} addonAfter={'月'}/>
               )}
             </FormItem>
             </Col>
             <Col span={10}>
               <FormItem label={`提前生成保养单`} {...formItemLayout}>
-                {getFieldDecorator(`advancePlan`)(
+                {getFieldDecorator(`advancePlan`,{
+                  rules:[{
+                    required:true,message:'请输入天数！'
+                  }]
+                })(
                   <Input placeholder="请输入天数" style={{width: 200}} addonAfter={'天'}/>
                 )}
               </FormItem>
@@ -347,9 +513,13 @@ class MaintainPlan extends PureComponent {
               {/* maintainDate - endMaintainDate*/}
               <FormItem
                 {...formItemLayout}
-                label="保养有效期"
+                label="保养计划有效期"
               >
-                {getFieldDecorator('Date')(
+                {getFieldDecorator('Date',{
+                  rules:[{
+                    required:true,message:'请填写保养计划有效期！'
+                  }]
+                })(
                   <RangePicker />
                 )}
               </FormItem>
@@ -358,7 +528,6 @@ class MaintainPlan extends PureComponent {
         )
       }
     }
-
     return (
       <Content className='ysynet-content'>
       <Affix>
@@ -372,7 +541,7 @@ class MaintainPlan extends PureComponent {
             <Row>
               <Col span={6}>
                 <FormItem label={`保养类型`} {...formItemLayout}>
-                  {getFieldDecorator(`type`, {
+                  {getFieldDecorator(`maintainType`, {
                     initialValue: '00'
                   })(
                     <RadioGroup>
@@ -386,14 +555,22 @@ class MaintainPlan extends PureComponent {
               </Col>
               <Col span={8}>
                 <FormItem label={`计划名称`} {...formItemLayout}>
-                  {getFieldDecorator(`maintainPlanName`)(
+                  {getFieldDecorator(`maintainPlanName`,{
+                    rules:[
+                      {required:true,message: '请输入计划名称',}
+                    ]
+                  })(
                     <Input placeholder="请输入计划名称" style={{width: 200}}/>
                   )}
                 </FormItem>
               </Col>
               <Col span={10}>
                 <FormItem label={`临床风险等级`} {...formItemLayout}>
-                  {getFieldDecorator(`clinicalRisk`)(
+                  {getFieldDecorator(`clinicalRisk`,{
+                    rules:[
+                      {required:true,message: '请选择临床风险等级',}
+                    ]
+                  })(
                     <Select allowClear style={{width: 200}}>
                       <Option value={'00'}>低</Option>
                       <Option value={'01'}>中</Option>
@@ -405,7 +582,10 @@ class MaintainPlan extends PureComponent {
               <Col span={6}>
                 <FormItem label={`循环方式`} {...formItemLayout}>
                   {getFieldDecorator(`loopFlag`, {
-                    initialValue: '00'
+                    initialValue: '00',
+                    rules:[
+                      {required:true,message: '请选择循环方式',}
+                    ]
                   })(
                     <RadioGroup onChange={(e)=>{this.setState({'cycleModule':e.target.value}) } }>
                       <RadioButton value="00">单次</RadioButton>
@@ -424,18 +604,7 @@ class MaintainPlan extends PureComponent {
           {/*资产信息表格*/}
           <Table columns={columns} 
             rowKey={'assetsRecordGuid'}
-            rowSelection={{
-            onChange: (selectedRowKeys, selectedRows) => {
-              console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            },
-            onSelect: (record, selected, selectedRows) => {
-              console.log(record, selected, selectedRows);
-            },
-            onSelectAll: (selected, selectedRows, changeRows) => {
-              console.log(selected, selectedRows, changeRows);
-            },
-            }} 
-            dataSource={ProductTabledata} />
+            dataSource={ProductTabledata } />
         </Card>
 
         {/*选择资产弹窗*/}
@@ -449,8 +618,8 @@ class MaintainPlan extends PureComponent {
         >
           <Row>
             <Col className={styles.mbLarge} span={20}>
-              <Select name="ProductType" defaultValue="00" onChange={(e)=>this.setState({ProductType:e.target.value})} style={{ width: 150 }} className={styles.mrLarge}>
-                <Option value="00">全部分类</Option>
+              <Select name="ProductType" value={ProductType} onChange={(v)=>{this.setState({ProductType:v}) }} style={{ width: 150 }} className={styles.mrLarge}>
+                <Option value="">全部分类</Option>
                 <Option value="01">通用设备</Option>
                 <Option value="02">电气设备</Option>
                 <Option value="03">电子产品及通信设备</Option>
@@ -458,16 +627,17 @@ class MaintainPlan extends PureComponent {
                 <Option value="05">专业设备</Option>
                 <Option value="06">其他</Option>
               </Select>
-              <Select name="useDeptGuid" defaultValue="00" onChange={(e)=>this.setState({useDeptGuid:e.target.value})} style={{ width: 150 }} className={styles.mrLarge}>
-                <Option value="00">选择使用科室</Option>
+              <Select name="useDeptGuid" value={useDeptGuid} onChange={(v)=>{this.setState({useDeptGuid:v})}} style={{ width: 150 }} className={styles.mrLarge}>
+                <Option value="">选择使用科室</Option>
                 {deptSelFn(detpSel)}
               </Select>
               <Search
                 placeholder="请输入设备编号/名称"
+                onChange={(v)=>{this.setState({mobile:v.target.value})}}
                 onSearch={ value =>  this.productQueryHandler(value) }
                 style={{ width: 300 }}
                 enterButton="搜索"
-                defaultValue={ defaultParams }
+                value={mobile }
               />
             </Col>
             <Col span={4} style={{textAlign:'right'}}>
@@ -477,6 +647,7 @@ class MaintainPlan extends PureComponent {
             </Col>
           </Row>
           <RemoteTable
+              ref='proTable'
               showHeader={true}
               url={assets.selectAssetsList}
               scroll={{x: '100%' }}
@@ -487,7 +658,8 @@ class MaintainPlan extends PureComponent {
                 onChange: (selectedRowKeys, selectedRows) => {
                   console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                   this.setState({
-                    'ProductModalCallBack':selectedRows
+                    'ProductModalCallBack':selectedRows,
+                    'ProductModalCallBackKeys':selectedRowKeys
                   })
                 },
                 getCheckboxProps: record => ({
@@ -523,6 +695,10 @@ class MaintainPlan extends PureComponent {
             rowSelection={{
                onChange: (selectedRowKeys, selectedRows) => {
                 console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+                this.setState({
+                  'projecrModalCallBack':selectedRows,
+                  'projecrModalCallBackKeys':selectedRowKeys
+                })
               },
               getCheckboxProps: record => ({
                 disabled: record.name === 'Disabled User', // Column configuration not to be checked
