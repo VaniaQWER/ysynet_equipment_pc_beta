@@ -641,7 +641,7 @@ export default class AddUpKeepForm extends React.Component {
                     {editState ?
                       <FormItem label='备注（可选）' {...formItemRowLayout}>
                       {getFieldDecorator(`remark`,{initialValue:data.remark})(
-                        <TextArea placeholder='请输入备注' style={{resize:'none'}}></TextArea>
+                        <TextArea placeholder='请输入备注' style={{resize:'none',height:120}} maxLength={500}></TextArea>
                       )}
                       </FormItem>
                       : UnStateText('备注（可选）',data.remark)
