@@ -42,58 +42,48 @@ const productColumns = [
   {
     title: '序号',
     dataIndex: 'index',
-    width:35,
     render:(text,record,index)=> <span>{`${index+1}`}</span>
   },
   {
     title: '资产编号',
     dataIndex: 'assetsRecord',
-    width: 80,
     sorter:true
   },
   {
     title: '设备名称',
     dataIndex: 'equipmentStandardName',
-    width: 50
   },
   {
     title: '型号',
     dataIndex: 'spec',
-    width: 50
   },
   {
     title: '规格',
     dataIndex: 'useDept',
-    width: 50
   },
   {
     title: '设备分类',
     dataIndex: 'productType',
-    width: 50,
     render: text => text ?  productTypeData[text].text  : null
   },
   {
     title: '使用科室',
     dataIndex: 'bDept',
-    width: 50
   },
   {
     title: '有效保养计划',
     dataIndex: 'custodian',
-    width: 60
   },
 ]
 const prjColumns = [
   {
     title: '序号',
     dataIndex: 'index',
-    width:35,
     render:(text,record,index)=> <span>{`${index+1}`}</span>
   },
   {
     title: '项目名称',
     dataIndex: 'templateTypeName',
-    width: 80,
   },
 ]
 
@@ -613,6 +603,7 @@ class MaintainPlan extends PureComponent {
           <Button type='primary' style={{marginBottom: 2}} onClick={()=>this.showModal('productVisible')}>添加产品</Button>
           {/*资产信息表格*/}
           <Table columns={columns} 
+            scroll={{x: '130%' }}
             rowKey={'assetsRecordGuid'}
             dataSource={ProductTabledata } />
         </Card>

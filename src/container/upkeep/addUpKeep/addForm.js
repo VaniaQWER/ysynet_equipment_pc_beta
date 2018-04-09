@@ -395,13 +395,11 @@ export default class AddUpKeepForm extends React.Component {
         {
           title: '序号',
           dataIndex: 'index',
-          width:100,
           render:(text, record, index) => index + 1
         },
         {
           title: '操作',
           dataIndex: 'maintainOrderDetailGuid',
-          width:150,
           render:(text,record)=>{
             if(editState){
               return(
@@ -414,7 +412,6 @@ export default class AddUpKeepForm extends React.Component {
         },
         {
           title: '项目名称',
-          width:350,
           dataIndex: 'templateTypeName',
         },
         {
@@ -622,18 +619,18 @@ export default class AddUpKeepForm extends React.Component {
                   }
                 </Col>
                 <Col span={8}>
-                {editState ?
-                  <FormItem label='下次保养时间' {...formItemLayout}>
-                  {getFieldDecorator(`nextMaintainDate`,{initialValue:data.nextMaintainDate})(
-                    <DatePicker
-                      showTime
-                      format={"YYYY-MM-DD"}
-                      placeholder="请选择下次保养时间"
-                    /> 
-                  )}
-                  </FormItem>
-                  : UnStateText('下次保养时间',moment(data.nextMaintainDate).format('YYYY-MM-DD'))
-                }
+                  {editState ?
+                    <FormItem label='下次保养时间' {...formItemLayout}>
+                    {getFieldDecorator(`nextMaintainDate`,{initialValue:data.nextMaintainDate})(
+                      <DatePicker
+                        showTime
+                        format={"YYYY-MM-DD"}
+                        placeholder="请选择下次保养时间"
+                      /> 
+                    )}
+                    </FormItem>
+                    : UnStateText('下次保养时间',moment(data.nextMaintainDate).format('YYYY-MM-DD'))
+                  }
                 </Col>
               </Row>
               <Row>
@@ -674,7 +671,7 @@ export default class AddUpKeepForm extends React.Component {
           <Card title="项目信息" bordered={false} style={{marginTop:30}}>
              <Row><Button type="buttom" onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
              <Row>
-              <Table ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
+              <Table  ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
               </Table>
              </Row>
              <Modal

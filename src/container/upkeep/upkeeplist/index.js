@@ -152,7 +152,7 @@ class UpKeepList extends React.Component{
                   ref='table'
                   query={this.state.query}
                   url={assets.selectMaintainOrderList}
-                  scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+                  scroll={{x: '160%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainGuid'}
                   showHeader={true}

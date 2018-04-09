@@ -48,7 +48,6 @@ class MaintainPlan extends React.Component{
       request(upkeep.deletePlanDetails, options)
     }
     doPlanDetails = (record)=>{//执行
-      console.log(record.maintainPlanDetailId);
       let options = {
         body:querystring.stringify({maintainPlanDetailId:record.maintainPlanDetailId}),
         headers:{
@@ -77,9 +76,9 @@ class MaintainPlan extends React.Component{
         render: (text,record) =>
           <span>
             { (record.fstate==="20") ? 
-              <span><Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>编辑</Link>&nbsp;&nbsp;
-              <a onClick={()=>this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
-              <a onClick={()=>this.doPlanDetails(record)}>执行</a></span>
+              <span title='编辑'><Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>编辑</Link>&nbsp;&nbsp;
+              <a  title='删除' onClick={()=>this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
+              <a title='执行' onClick={()=>this.doPlanDetails(record)}>执行</a></span>
               :<span><Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link></span>
             }
           </span>
@@ -103,7 +102,6 @@ class MaintainPlan extends React.Component{
             <div>
             { upkeepPlanState[text].text }
             </div>
-            
         },
         {
           title: '资产名称',
@@ -185,7 +183,7 @@ class MaintainPlan extends React.Component{
                   ref='table'
                   query={this.state.query}
                   url={upkeep.planList}
-                  scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+                  scroll={{x: '140%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainPlanDetailId'}
                   showHeader={true}
