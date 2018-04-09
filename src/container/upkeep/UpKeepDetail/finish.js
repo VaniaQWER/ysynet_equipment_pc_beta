@@ -34,20 +34,25 @@ class UpKeepFinish extends React.Component{
     }
     //提交数据
     handleSubmit = (fstate) =>{
-      console.log(this.state.dataSource)//下方表格附带内容[] --接口未对
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
-					console.log('Received values of form: ', values);
+            if(this.state.dataSource.length===0){
+              message.warning('请最少添加一条项目!')
+              return false
+            }
 						const startTime = values['maintainDate'];
 						const endTime = values['endMaintainDate'];
 						const nextTme = values['nextMaintainDate'];
 						values.maintainDate = moment(startTime).format('YYYY-MM-DD') 
 						values.endMaintainDate = moment(endTime).format('YYYY-MM-DD') 
-						values.nextMaintainDate = moment(nextTme).format('YYYY-MM-DD') 
+            if(nextTme&& nextTme!=="Invalid date"){
+              values.nextMaintainDate = moment(nextTme).format('YYYY-MM-DD') 
+            }else{
+              values.nextMaintainDate = ''
+            }
             values.fstate = fstate;
             values.maintainGuid = this.state.maintainGuid;
             values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
-						console.log('发出修改请求')
 						//更改附件格式
 						let thumburl = []
 						if(values.tfAccessoryList){
@@ -62,7 +67,7 @@ class UpKeepFinish extends React.Component{
 		}
 		//发出请求
 		sendAjax = (value) =>{
-			console.log('will SendAjax',JSON.stringify(value))
+			// console.log('will SendAjax',JSON.stringify(value))
       let options = {
         body:JSON.stringify(value),
         success: data => {

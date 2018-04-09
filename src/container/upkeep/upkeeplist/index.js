@@ -74,35 +74,54 @@ const columns=[
   {
     title: '本次计划保养时间',
     className:'col-1',
-    dataIndex: ''
+    dataIndex: 'maintainPlanDate',
+    sorter: (a, b) => sortTime(a,b,'maintainPlanDate'),
+    render(text, record) {
+      return <span title={text}>{text}</span>
+    }
   },
   {
     title: '保养开始时间',
     className:'col-1',
     dataIndex: 'maintainDate',
     sorter: (a, b) => sortTime(a,b,'maintainDate'),
+    render(text, record) {
+      return <span title={text}>{text}</span>
+    }
   },
   {
     title: '保养结束时间',
     className:'col-1',
     dataIndex: 'endMaintainDate',
     sorter: (a, b) => sortTime(a,b,'endMaintainDate'),
+    render(text, record) {
+      return <span title={text}>{text}</span>
+    }
   },
   {
     title: '保养计划单号',
     className:'col12',
-    dataIndex: ''
+    dataIndex: 'maintainPlanNo',
+    render(text, record) {
+      return <span title={text}>{text}</span>
+    }
   },
   {
     title: '下次保养时间',
     className:'col-1',
     dataIndex: 'nextMaintainDate',
     sorter: (a, b) => (sortTime(a,b,'nextMaintainDate')),
+    render(text, record) {
+      return <span title={text}>{text}</span>
+    }
   },
   {
     title: '操作员',
     className:'col-1',
     dataIndex: 'modifyUserName',
+    render(text, record) {
+      return <span title={text}>{text}</span>
+    }
   }
 ]
 class UpKeepList extends React.Component{

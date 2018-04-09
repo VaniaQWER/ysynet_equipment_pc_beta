@@ -29,13 +29,19 @@ class AddUpKeep extends React.Component{
       return data
     }
     handleSubmit = (fstate) =>{
-      console.log(this.state.dataSource)//下方表格附带内容[] --接口未对
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
-					console.log('Received values of form: ', values);
+          if(this.state.dataSource.length===0){
+            message.warning('请最少添加一条项目!')
+            return false
+          }
           values.maintainDate = moment(values['maintainDate']).format('YYYY-MM-DD HH:mm') 
           values.endMaintainDate = moment(values['endMaintainDate']).format('YYYY-MM-DD HH:mm') 
-          values.nextMaintainDate = moment(values['nextMaintainDate']).format('YYYY-MM-DD') 
+          if(values['nextMaintainDate']){
+            values.nextMaintainDate = moment(values['nextMaintainDate']).format('YYYY-MM-DD') 
+          }else{
+            values.nextMaintainDate = ''
+          }
           values.fstate = fstate;
           values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 

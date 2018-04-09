@@ -219,29 +219,7 @@ export default class AddUpKeepPlanForm extends React.Component {
         });
       }, 1000);
     }
-    findDetailInfo =(checkedKeys)=>{
-      let b = _.cloneDeep(this.state.treeData);
-      let checkedKeyState = _.uniq(this.state.checkedKeys);
-      let relArray = [];
-      _.map(checkedKeyState,function(ItemKey){
-          let c =_.find(b,function(item){
-              if(item.key === ItemKey && item.children.length!==0){
-                return 
-              }else if(item.key !== ItemKey  && item.children.length!==0){
-                let rel = _.map(item.children,function(childrenItem){
-                   if(childrenItem.key=== ItemKey){
-                    relArray.push(childrenItem)
-                    return childrenItem
-                   } 
-                })
-                return rel ;//此处才是真的子集数据
-              } 
-          })
-          return c
-      })
-      console.log('relArray',relArray)
-      return relArray
-    }
+   
     //-----table删除
     deleteTableData = (record) =>{
       const arr = this.state.tableData;
@@ -277,7 +255,6 @@ export default class AddUpKeepPlanForm extends React.Component {
     }
     //获取添加项目的一级下拉框 带出的二级数据
     changeOneModule =(value)=>{
-      console.log(value)
       let json ={
         'maintainTemplateId':value
       }
@@ -592,7 +569,6 @@ export default class AddUpKeepPlanForm extends React.Component {
                             'selKey':selectedRowKeys,
                             'checkedKeys':selectedRows
                           })
-                          console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                         },
                         getCheckboxProps: record => ({
                           disabled: record.name === 'Disabled User', // Column configuration not to be checked

@@ -13,7 +13,9 @@ import { upkeepDetailsTable } from '../../../constants';
 const FormItem = Form.Item;
 const Option = Select.Option;
 function UnStateText(label,data){
-
+  if(data==='Invalid date'){
+    data=''
+  }
   let txt = '';
   switch(data){
     case '02':
@@ -161,7 +163,6 @@ export default class AddUpKeepForm extends React.Component {
         if(maintainGuid){
           this.getDetailAjax({maintainGuid})
         }
-        // this.getTreeData();//获取弹窗树状结构
         this.getOneModule();
         this.setState({
           editState:editState,
@@ -178,9 +179,12 @@ export default class AddUpKeepForm extends React.Component {
           if(data.status){
             let retData = data.result;
             //拿到回显数据--处理时间格式
-            retData.maintainDate=moment(retData.maintainDate,'YYYY-MM-DD HH:mm')
+            retData.maintainDate=moment(retData.maintainDate ,'YYYY-MM-DD HH:mm') 
             retData.endMaintainDate=moment(retData.endMaintainDate,'YYYY-MM-DD HH:mm')
-            retData.nextMaintainDate=moment(retData.nextMaintainDate,'YYYY-MM-DD')
+            if(retData.nextMaintainDate){
+              retData.nextMaintainDate=moment(retData.nextMaintainDate,'YYYY-MM-DD')
+            }
+            
             //处理附件格式
             if(retData.tfAccessory){
               let urls = retData.tfAccessory.split(';');
@@ -210,41 +214,7 @@ export default class AddUpKeepForm extends React.Component {
       }
       request(upkeep.listToDetails, options)
     }
-    getTreeData =()=>{
-      let options = {
-        body:'',
-        success: data => {
-          if(data.status){
-            let retData = data.result;
-            this.formatTreeData(retData)
-            this.setState({
-              treeData:retData //改变树状结构
-            })
-          }else{
-            message.error(data.msg)
-          }
-        },
-        error: err => {console.log(err)}
-      }
-      request(upkeep.getTreeData, options)
-    }
-    formatTreeData=(data)=>{
-      let b = _.map(data,function(item){
-          item.key=item.id;
-          item.title=item.name;
-          if(item.subList){
-            _.map(item.subList,function(subItem){
-              subItem.key=subItem.maintainTypeId;
-              subItem.title = subItem.templateTypeName;
-              return subItem
-            })
-          }
-          item.children = item.subList;
-          return item
-      })
-      console.log(b)
-    }
-    
+  
     componentWillReceiveProps = (nextProps)=> {
       if(nextProps.formInfo.assetsRecordGuid===""){//重置表格中的内容
         this.setState({
@@ -321,29 +291,6 @@ export default class AddUpKeepForm extends React.Component {
         });
       }, 1000);
     }
-    findDetailInfo =(checkedKeys)=>{
-      let b = _.cloneDeep(this.state.treeData);
-      let checkedKeyState = _.uniq(this.state.checkedKeys);
-      let relArray = [];
-      _.map(checkedKeyState,function(ItemKey){
-          let c =_.find(b,function(item){
-              if(item.key === ItemKey && item.children.length!==0){
-                return 
-              }else if(item.key !== ItemKey  && item.children.length!==0){
-                let rel = _.map(item.children,function(childrenItem){
-                   if(childrenItem.key=== ItemKey){
-                    relArray.push(childrenItem)
-                    return childrenItem
-                   } 
-                })
-                return rel ;//此处才是真的子集数据
-              } 
-          })
-          return c
-      })
-      console.log('relArray',relArray)
-      return relArray
-    }
     //-----table删除
     deleteTableData = (record) =>{
       const arr = this.state.tableData;
@@ -364,7 +311,6 @@ export default class AddUpKeepForm extends React.Component {
     handleCancelTree = () => {//含清空tree勾选内容
       this.setState({ visible: false ,checkedKeys:[],checkedKeyArray:[]});
     }
-    
     //获取添加项目的一级下拉框
     getOneModule = () =>{
       let options = {
@@ -385,7 +331,6 @@ export default class AddUpKeepForm extends React.Component {
     }
     //获取添加项目的一级下拉框 带出的二级数据
     changeOneModule =(value)=>{
-      console.log(value)
       let json ={
         'maintainTemplateId':value
       }
@@ -407,9 +352,38 @@ export default class AddUpKeepForm extends React.Component {
         error: err => {console.log(err)}
       }
       request(basicdata.queryTwoModule,options)
-
     }
 
+    //*******************************************/
+    disabledStartDate = (startValue) => {
+      const endValue = this.state.data.endMaintainDate;
+      if (!startValue || !endValue) {
+        return false;
+      }
+      return startValue.valueOf() > endValue.valueOf();
+    }
+  
+    disabledEndDate = (endValue) => {
+      const startValue = this.state.data.maintainDate;
+      if (!endValue || !startValue) {
+        return false;
+      }
+      return endValue.valueOf() <= startValue.valueOf();
+    }
+    onChange = (field, value) => {
+      let options = {
+        [field]:value
+      }
+      this.setState({
+        data:Object.assign(this.state.data,options)
+      });
+    }
+    onStartChange = (value) => {
+      this.onChange('maintainDate', value);
+    }
+    onEndChange = (value) => {
+      this.onChange('endMaintainDate', value);
+    }
     render() {
       const { getFieldDecorator } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
@@ -609,8 +583,15 @@ export default class AddUpKeepForm extends React.Component {
                 <Col span={8}>
                 {editState ? 
                     <FormItem label='开始保养时间' {...formItemLayout}>
-                      {getFieldDecorator(`maintainDate`,{initialValue:data.maintainDate})(
+                      {getFieldDecorator(`maintainDate`,{
+                        initialValue:data.maintainDate,
+                        rules:[
+                          {required:true,message:'请选择开始保养时间'}
+                        ]
+                      })(
                         <DatePicker
+                          disabledDate={this.disabledStartDate}
+                          onChange={this.onStartChange}
                           showTime
                           format={"YYYY-MM-DD"}
                           placeholder="请选择开始保养时间"
@@ -619,13 +600,18 @@ export default class AddUpKeepForm extends React.Component {
                     </FormItem>
                     : UnStateText('开始保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
                   }
-                     
                 </Col>
                 <Col span={8}>
                   {editState ?
                     <FormItem label='结束保养时间' {...formItemLayout}>
-                    {getFieldDecorator(`endMaintainDate`,{initialValue:data.endMaintainDate})(
+                    {getFieldDecorator(`endMaintainDate`,{
+                      initialValue:data.endMaintainDate,
+                      rules:[
+                        {required:true,message:'请选择开始保养时间'}
+                      ]})(
                       <DatePicker
+                        disabledDate={this.disabledEndDate}
+                        onChange={this.onEndChange}
                         showTime
                         format={"YYYY-MM-DD"}
                         placeholder="请选择结束保养时间"
@@ -691,8 +677,6 @@ export default class AddUpKeepForm extends React.Component {
               <Table ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
               </Table>
              </Row>
-
-
              <Modal
               visible={visible}
               title="选择项目"
@@ -722,7 +706,6 @@ export default class AddUpKeepForm extends React.Component {
                             'checkedKeys':selectedRows,
                             'checkedKeyArray':selectedRowKeys
                           })
-                          console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                         },
                         getCheckboxProps: record => ({
                           disabled: record.name === 'Disabled User', // Column configuration not to be checked

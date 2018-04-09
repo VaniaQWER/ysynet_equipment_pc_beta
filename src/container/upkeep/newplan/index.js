@@ -181,7 +181,6 @@ class MaintainPlan extends PureComponent {
         mobile:'',
         ProductModalCallBack:[],
         ProductModalCallBackKeys:[],
-        
       });
     }else{
       this.setState({ 
@@ -200,7 +199,9 @@ class MaintainPlan extends PureComponent {
       success: data => {
         if(data.status){
           this.setState({
-            'ProductTabledata':this.changeTreeData(data.result)
+            'ProductTabledata':this.changeTreeData(data.result),
+            ProductModalCallBack:[],
+            ProductModalCallBackKeys:[],
           })
         }else{
           message.error(data.msg)
@@ -217,15 +218,18 @@ class MaintainPlan extends PureComponent {
     let pushData = _.cloneDeep(this.state.projecrModalCallBack);
     let ind = _.findIndex(a,{assetsRecord:parentKey})
     if(ind !==-1){
+      let children = [];
       _.forEach(pushData,function(item){
         item.parentKey = parentKey;
         item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
-          a[ind].children.push(item)
+        children.push(item)
       })
-      a[ind].children = _.uniqBy(a[ind].children,'maintainTypeId')
+      a[ind].children = _.uniqBy(children,'maintainTypeId')
+      
     }
     this.setState({
-      ProductTabledata:a
+      ProductTabledata:a,
+      projecrModalCallBackKeys:[]
     })
 
   }
