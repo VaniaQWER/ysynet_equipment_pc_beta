@@ -11,6 +11,11 @@ const Search = Input.Search;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 
+const sortTime = (a,b,key) =>{
+  if(a[key] && b[key]){
+    return timeToStamp(a[key]) - timeToStamp(b[key])
+  }
+}
 const columns=[
   { title: '操作', 
   dataIndex: 'maintainGuid', 
@@ -75,13 +80,13 @@ const columns=[
     title: '保养开始时间',
     className:'col-1',
     dataIndex: 'maintainDate',
-    sorter: (a, b) => this.sortTime(a,b,'maintainDate'),
+    sorter: (a, b) => sortTime(a,b,'maintainDate'),
   },
   {
     title: '保养结束时间',
     className:'col-1',
     dataIndex: 'endMaintainDate',
-    sorter: (a, b) => this.sortTime(a,b,'endMaintainDate'),
+    sorter: (a, b) => sortTime(a,b,'endMaintainDate'),
   },
   {
     title: '保养计划单号',
@@ -92,7 +97,7 @@ const columns=[
     title: '下次保养时间',
     className:'col-1',
     dataIndex: 'nextMaintainDate',
-    sorter: (a, b) => (this.sortTime(a,b,'nextMaintainDate')),
+    sorter: (a, b) => (sortTime(a,b,'nextMaintainDate')),
   },
   {
     title: '操作员',
@@ -105,11 +110,7 @@ class UpKeepList extends React.Component{
     state = {
       query:'',
     };
-    sortTime = (a,b,key) =>{
-      if(a[key] && b[key]){
-        return timeToStamp(a[key]) - timeToStamp(b[key])
-      }
-    }
+    
     queryHandler = (query) => {
       this.refs.table.fetch(query);
       this.setState({ query })
@@ -121,7 +122,7 @@ class UpKeepList extends React.Component{
               <Row>
                   <Col span={12}>
                   <Search
-                      placeholder="请输入保养单号"
+                      placeholder="请输入保养单号/资产名称/资产编码"
                       onSearch={value =>  {this.queryHandler({'maintainNo':value})}}
                       style={{ width: 400 }}
                       enterButton="搜索"

@@ -18,8 +18,21 @@ class UpKeepFinish extends React.Component{
 			formInfo:{},
       maintainGuid:'',
       dataSource:[]
-		}
-			//提交数据
+    }
+    clearArray=(data)=>{
+      for(let i=0;i<data.length;i++){
+        for(let item in data[i]){
+          if(item ==='key'|| item==='levelr'||item ==='key'||item==='maintainTemplateId'
+            || item ==='templateDetailGuid' || item ==='templateTypeName'
+            || item ==='title'
+          ){
+            delete data[i][item]
+          }
+        }
+      }
+      return data
+    }
+    //提交数据
     handleSubmit = (fstate) =>{
       console.log(this.state.dataSource)//下方表格附带内容[] --接口未对
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
@@ -33,6 +46,7 @@ class UpKeepFinish extends React.Component{
 						values.nextMaintainDate = moment(nextTme).format('YYYY-MM-DD') 
             values.fstate = fstate;
             values.maintainGuid = this.state.maintainGuid;
+            values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 						console.log('发出修改请求')
 						//更改附件格式
 						let thumburl = []

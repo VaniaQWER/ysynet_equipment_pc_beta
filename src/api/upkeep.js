@@ -7,11 +7,16 @@ const upkeep = {
   queryAllProject:`${_local}/maintainOrderController/searchMaintainType`,//查询引用新增-------------
   //保养计划列表
   planList:`${_local}/maintainOrderController/selectMaintainPlanList`,//保养计划列表
-
+  //计划列表进详情
+  queryPlanDetails:`${_local}/maintainOrderController/selectMaintainPlanDetail`,//查询单条明细
+  editPlanDetails:`${_local}/maintainOrderController/updateMaintainPlan`,//修改保存计划
+  deletePlanDetails:`${_local}/maintainOrderController/deleteMaintainPlan`,//删除计划
+  doPlanDetails:`${_local}/maintainOrderController/updateMaintainPlanFstate`,//执行计划
   //新建计划添加
   insertMaintainPlan:`${_local}/maintainOrderController/insertMaintainPlan`,//新建计划添加
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室
   getAssetsListInfo:`${_local}/maintainOrderController/selectAssetsListGetMainType`,//根据资产的GUID获取资产表格给的内容
+  
 }
 
 export default upkeep;

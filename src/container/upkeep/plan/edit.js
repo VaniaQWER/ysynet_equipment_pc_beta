@@ -16,39 +16,36 @@ const WrappedAdvancedSearchForm = Form.create()(AddUpKeepPlanForm);
 class UpKeepFinish extends React.Component{
     state={
 			formInfo:{},
-      maintainGuid:'',
+      maintainPlanDetailId:'',
       dataSource:[]
 		}
 			//提交数据
     handleSubmit = (fstate) =>{
-      console.log(this.state.dataSource)//下方表格附带内容[] --接口未对
+      console.log(this.state.dataSource)
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
-					console.log('Received values of form: ', values);
-						const startTime = values['maintainDate'];
-						const endTime = values['endMaintainDate'];
-						const nextTme = values['nextMaintainDate'];
-						values.maintainDate = moment(startTime).format('YYYY-MM-DD') 
-						values.endMaintainDate = moment(endTime).format('YYYY-MM-DD') 
-						values.nextMaintainDate = moment(nextTme).format('YYYY-MM-DD') 
-            values.fstate = fstate;
-            values.maintainGuid = this.state.maintainGuid;
-						console.log('发出修改请求')
-						//更改附件格式
-						let thumburl = []
-						if(values.tfAccessoryList){
-							for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-								thumburl.push(values.tfAccessoryList.fileList[i].thumbUrl)
-							}
-						}	
-						values.tfAccessoryList = thumburl;
-						this.sendAjax(values)
+            let json = {}
+            if(values['loopFlag']==='00'){//单次循环
+              delete values['maintainDate']
+              // values.maintainDate = moment(values['maintainDate']).format('YYYY-MM-DD'); 
+            }else{
+              const endTime = values['endMaintainDate'];
+              values.endMaintainDate = moment(endTime).format('YYYY-MM-DD');
+              delete values['Date'];//删除数据中的Date
+              delete values['maintainDate'];
+            }
+            delete values['assetsRecord'];//删除资产编号
+            json.maintainPlanDetailId = this.state.maintainPlanDetailId;
+            json.fstate = fstate;
+            json.maintainTypes =this.state.dataSource;//保养项目合集ID
+						json.maintainPlan = values;
+						console.log('will SendAjax',JSON.stringify(json))
+						this.sendAjax(json)
 				}
 			});
 		}
 		//发出请求
 		sendAjax = (value) =>{
-			console.log('will SendAjax',JSON.stringify(value))
       let options = {
         body:JSON.stringify(value),
         success: data => {
@@ -63,29 +60,30 @@ class UpKeepFinish extends React.Component{
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.submitAssetInfo, options)
+      request(upkeep.editPlanDetails, options)
       
     }
 		//获取详情数据
 		componentWillMount = () =>{
-			const maintainGuid = this.props.match.params.id;
+			const maintainPlanDetailId = this.props.match.params.id;
 			this.setState({
-				maintainGuid:maintainGuid
-			})
+				maintainPlanDetailId:maintainPlanDetailId
+      })
+      
 		}
     render(){
-        const {formInfo , maintainGuid}  = this.state;
+        const {formInfo , maintainPlanDetailId}  = this.state;
         return(
           <div>
             <Affix>
               <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-                <Button type="default" onClick={()=>this.handleSubmit('02')}>关闭</Button>
-                <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('01')}>保存计划</Button>
+                <Button type="default" onClick={()=>this.handleSubmit('80')}>关闭</Button>
+                <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('20')}>保存计划</Button>
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
                 <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData'
-                maintainGuid={maintainGuid}
+                maintainPlanDetailId={maintainPlanDetailId}
                 editState = {true}
                 callback={dataSource=>this.setState({dataSource})}/>
             </Content>

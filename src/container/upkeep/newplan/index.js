@@ -98,7 +98,7 @@ const prjColumns = [
 ]
 
 class MaintainPlan extends PureComponent {
-
+  
   state={
     cycleModule:'00',
     detpSel:[],//资产 选择科室  下拉框内容
@@ -180,11 +180,15 @@ class MaintainPlan extends PureComponent {
         useDeptGuid:'',//资产搜索条件
         mobile:'',
         ProductModalCallBack:[],
-        ProductModalCallBackKeys:[]
+        ProductModalCallBackKeys:[],
+        
+      });
+    }else{
+      this.setState({ 
+        projecrModalCallBackKeys:[]
       });
     }
     this.setState({ [modalName]: false });
-
   }
   //1-在此处通过ProductModalCallBackKeys获取对应的树状结构-赋值给ProductTabledata-资产信息table
   productSubmitGetTree =()=>{
@@ -208,9 +212,6 @@ class MaintainPlan extends PureComponent {
   }
   //2-处理选中的项目数据并赋值给formatPrjData之后 将该数据混合入ProductTabledata
   prjInsertParenTable =()=>{
-    
-    console.log(this.state.projecrModalCallBack)
-    console.log(this.state.selctParentKey);//这个为选中的父级的信息
     let a  = _.cloneDeep(this.state.ProductTabledata);
     let parentKey = this.state.selctParentKey.assetsRecord;
     let pushData = _.cloneDeep(this.state.projecrModalCallBack);
@@ -219,12 +220,10 @@ class MaintainPlan extends PureComponent {
       _.forEach(pushData,function(item){
         item.parentKey = parentKey;
         item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
-       
           a[ind].children.push(item)
       })
       a[ind].children = _.uniqBy(a[ind].children,'maintainTypeId')
     }
-    console.log('添加项目之后的table数据',a)
     this.setState({
       ProductTabledata:a
     })
@@ -341,7 +340,8 @@ class MaintainPlan extends PureComponent {
       body:JSON.stringify(json),
       success: data => {
         if(data.status){
-          message.success('操作成功');
+          message.success('新增成功');
+          this.resetAll();
         }else{
           message.error(data.msg)
         }
@@ -349,6 +349,13 @@ class MaintainPlan extends PureComponent {
       error: err => {console.log(err)}
     }
     request(upkeep.insertMaintainPlan,options)
+  }
+  resetAll=()=>{
+    this.props.form.resetFields();
+    this.setState({
+      ProductTabledata:[],
+      cycleModule:'00'
+    })
   }
   productQueryHandler =(value)=>{
       this.setState({
@@ -360,7 +367,6 @@ class MaintainPlan extends PureComponent {
         mobile:value
       }
       this.refs.proTable.fetch(json)
-
   }
 
   deleteProRow =(isParent,record)=>{
@@ -406,7 +412,7 @@ class MaintainPlan extends PureComponent {
             return (
               <div>
                   <a onClick={()=>this.deleteProRow(true,record)}>删除</a>&nbsp;&nbsp;
-                  <a onClick={()=>this.showModal('prjVisible',record)}>新增项目</a>
+                  <a onClick={()=>{this.showModal('prjVisible',record)}}>新增项目</a>
               </div>
             )
           }
@@ -454,7 +460,7 @@ class MaintainPlan extends PureComponent {
         width: 100
       }
     ];
-    const { useDeptGuid ,ProductType ,mobile , detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,ProductTabledata} =this.state;
+    const { ProductModalCallBackKeys , projecrModalCallBackKeys , useDeptGuid ,ProductType ,mobile , detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,ProductTabledata} =this.state;
     const { getFieldDecorator } = this.props.form;
     //选择项目中的下拉框
     const mapOption = data => data.map((item)=>{
@@ -655,6 +661,7 @@ class MaintainPlan extends PureComponent {
               rowKey={'assetsRecordGuid'}
               size="small"
               rowSelection={{
+                selectedRowKeys:ProductModalCallBackKeys,
                 onChange: (selectedRowKeys, selectedRows) => {
                   console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                   this.setState({
@@ -693,6 +700,7 @@ class MaintainPlan extends PureComponent {
           <Table 
             rowKey={'templateDetailGuid'}
             rowSelection={{
+              selectedRowKeys:projecrModalCallBackKeys,
                onChange: (selectedRowKeys, selectedRows) => {
                 console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                 this.setState({

@@ -14,19 +14,19 @@ class UpKeepDetails extends React.Component{
         formInfo:{}
     }
     componentWillMount = () => {
-        const maintainGuid = this.props.match.params.id;
+        const maintainPlanDetailId = this.props.match.params.id;
         this.setState({
-            maintainGuid:maintainGuid
+            maintainPlanDetailId:maintainPlanDetailId
         })
     }
     render(){
-        const {formInfo , maintainGuid}  = this.state;
+        const {formInfo , maintainPlanDetailId}  = this.state;
         return(
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
                 <WrappedAdvancedSearchForm  
                 formInfo={formInfo} 
-                maintainGuid = {maintainGuid} 
+                maintainPlanDetailId = {maintainPlanDetailId} 
                 editState = {false}
                 ref='getFormData'
                 />

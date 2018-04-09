@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment';
-import { Tree ,Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button , Radio ,Select ,DatePicker ,Upload ,Modal} from 'antd'
+import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button , Radio ,Select ,DatePicker ,Upload ,Modal} from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import request from '../../../utils/request';
 import querystring from 'querystring';
@@ -10,7 +10,6 @@ import basicdata from '../../../api/basicdata';
 import _ from 'lodash';
 import { FTP } from '../../../api/local';
 import { upkeepDetailsTable } from '../../../constants';
-const TreeNode = Tree.TreeNode;
 const FormItem = Form.Item;
 const Option = Select.Option;
 function UnStateText(label,data){
@@ -107,7 +106,10 @@ export default class AddUpKeepForm extends React.Component {
       expandedKeys:[],//展开项目 ['0-0-0', '0-0-1']
       autoExpandParent: true,
       checkedKeys: [],//默认勾选项目['0-0-0']
-      selectedKeys: []
+      checkedKeyArray:[],
+      selectedKeys: [],
+      startValue: null,
+      endValue: null,
     };
     //图片上传内容---------------------------------------------
     handleCancel = () => this.setState({ previewVisible: false })
@@ -304,19 +306,17 @@ export default class AddUpKeepForm extends React.Component {
     //-----table添加
     handleOkTree = () => {
       this.setState({ loading: true });
-      //modal获得treenode之后需要向table中添加一条数据
-      // let newData = this.findDetailInfo();
       let newData = this.state.checkedKeys;
       setTimeout(() => {//含清空tree勾选内容
         this.setState((prevState)=>{ 
-        
-          //let uniqTableData = _.uniqBy(prevState.tableData.concat(newData),'maintainTypeId');
-          this.props.callback(newData)
+          let uniqTableData = _.uniqBy(prevState.tableData.concat(newData),'maintainTypeId');
+          this.props.callback(uniqTableData)
           return{
             loading: false, 
             visible: false ,
             checkedKeys:[],
-            tableData:newData
+            checkedKeyArray:[],
+            tableData:uniqTableData
           }
         });
       }, 1000);
@@ -351,6 +351,7 @@ export default class AddUpKeepForm extends React.Component {
       this.setState({
         tableData:arr
       })
+      this.props.callback(arr);
     }
     //-----table行内修改--并向外传送
     changeTableRow = (value,record,keyName) =>{
@@ -361,84 +362,57 @@ export default class AddUpKeepForm extends React.Component {
       this.props.callback(arr);
     }
     handleCancelTree = () => {//含清空tree勾选内容
-      this.setState({ visible: false ,checkedKeys:[]});
+      this.setState({ visible: false ,checkedKeys:[],checkedKeyArray:[]});
     }
     
-    //3-项目信息-tree
-    onExpand = (expandedKeys) => {
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.setState({
-        expandedKeys,
-        autoExpandParent: false,
-      });
-    }
-    onCheck = (checkedKeys) => {
-      this.setState({ checkedKeys });
-    }
-    onSelect = (selectedKeys, info) => {
-      this.setState({ selectedKeys });
-    }
-    renderTreeNodes = (data) => {
-      return data.map((item) => {
-        if (item.children) {
-          return (
-            <TreeNode title={item.title} key={item.key} dataRef={item}>
-              {this.renderTreeNodes(item.children)}
-            </TreeNode>
-          );
-        }
-        return <TreeNode {...item} />;
-      });
-    }
     //获取添加项目的一级下拉框
-  getOneModule = () =>{
-    let options = {
-      body:'',
-      success: data => {
-        if(data.status){
-          
-          this.setState({
-            'selectDropData':data.result
-          })
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
+    getOneModule = () =>{
+      let options = {
+        body:'',
+        success: data => {
+          if(data.status){
+            
+            this.setState({
+              'selectDropData':data.result
+            })
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(basicdata.queryOneModule,options)
     }
-    request(basicdata.queryOneModule,options)
-  }
-  //获取添加项目的一级下拉框 带出的二级数据
-  changeOneModule =(value)=>{
-    console.log(value)
-    let json ={
-      'maintainTemplateId':value
-    }
-    //发出请求获取对应二级项目内容 并给弹窗中的table
-    let options = {
-      body:querystring.stringify(json),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: data => {
-        if(data.status){
-          this.setState({
-            'prjTableData':data.result
-          })
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
-    }
-    request(basicdata.queryTwoModule,options)
+    //获取添加项目的一级下拉框 带出的二级数据
+    changeOneModule =(value)=>{
+      console.log(value)
+      let json ={
+        'maintainTemplateId':value
+      }
+      //发出请求获取对应二级项目内容 并给弹窗中的table
+      let options = {
+        body:querystring.stringify(json),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: data => {
+          if(data.status){
+            this.setState({
+              'prjTableData':data.result
+            })
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(basicdata.queryTwoModule,options)
 
-  }
+    }
 
     render() {
       const { getFieldDecorator } = this.props.form;
-      const { prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
+      const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
       const { previewVisible, previewImage } = this.state;
       const mapOption = data => data.map((item)=>{
         return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
@@ -730,18 +704,6 @@ export default class AddUpKeepForm extends React.Component {
                   提交
                 </Button>,
               ]}>
-                    {/*<Tree
-                      checkable
-                      onExpand={this.onExpand}
-                      expandedKeys={this.state.expandedKeys}
-                      autoExpandParent={this.state.autoExpandParent}
-                      onCheck={this.onCheck}
-                      checkedKeys={this.state.checkedKeys}
-                      onSelect={this.onSelect}
-                      selectedKeys={this.state.selectedKeys}
-                    >
-                      {this.renderTreeNodes(treeData)}
-                    </Tree>*/}
                     <Row>
                       <Col>
                         <Select name="fenlei" style={{ width: 250,marginBottom:15 }} 
@@ -754,9 +716,11 @@ export default class AddUpKeepForm extends React.Component {
                     <Table 
                       rowKey={'templateDetailGuid'}
                       rowSelection={{
+                        selectedRowKeys:checkedKeyArray,
                         onChange: (selectedRowKeys, selectedRows) => {
                           this.setState({
-                            'checkedKeys':selectedRows
+                            'checkedKeys':selectedRows,
+                            'checkedKeyArray':selectedRowKeys
                           })
                           console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
                         },

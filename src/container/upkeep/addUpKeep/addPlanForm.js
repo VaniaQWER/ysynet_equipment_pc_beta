@@ -1,68 +1,51 @@
 import React from 'react'
 import moment from 'moment';
-import { Tree ,Table , message ,  Row, Col, Input,Card ,Form, Button , Radio ,Select ,DatePicker ,Modal} from 'antd'
+import { Table , message ,  Row, Col, Input,Card ,Form, Button , Radio ,Select ,DatePicker ,Modal} from 'antd'
 import request from '../../../utils/request';
 import querystring from 'querystring';
 import upkeep from '../../../api/upkeep';
 import basicdata from '../../../api/basicdata';
 import _ from 'lodash';
-import { FTP } from '../../../api/local';
-import { upkeepPlanLoopFlag,upkeepDetailsTable } from '../../../constants';
-const TreeNode = Tree.TreeNode;
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
 function UnStateText(label,data){
-
   let txt = '';
   switch(data){
     case '02':
-    if(label==="设备状态"){
-      txt='故障';
-    }else{
       txt = '高';
-    }
     break;
     
     case '01':
-      if(label==="设备状态"){
-        txt='正常';
+      if(label==="循环方式"){
+        txt='循环';
       }else{
         txt = '中';
       }
     break;
 
     case '00':
-    txt = '低';
+    if(label==="循环方式"){
+      txt='单次';
+    }else{
+      txt = '低';
+    }
     break;
 
     default:
     txt = data;
   }
-
-  if(label ==="备注（可选）"){
-    return (
-      <Row style={{padding:'15px 0px'}}>
-        <Col span={4} style={{textAlign: 'right',paddingRight:8}}>{label} :</Col>
-        <Col span={8}>{txt}</Col>
-      </Row>
-    )
-  }else{
-    return (
-      <Row style={{padding:'15px 0px'}}>
-        <Col span={8} style={{textAlign: 'right',paddingRight:8}}>{label} :</Col>
-        <Col span={16}>{txt}</Col>
-      </Row>
-
-    )
-  }
-}
-
-function UnStateTable(value){
-  let txt = value;
-  return  (
-    <span>{txt}</span>
+    
+  return (
+    <Row style={{padding:'10px 0px'}}>
+      <Col span={8} style={{textAlign: 'right',paddingRight:8}}>{label} :</Col>
+      <Col span={16}>{txt}</Col>
+    </Row>
   )
+    
 }
+
 const prjColumns = [
   {
     title: '项目名称',
@@ -101,13 +84,15 @@ export default class AddUpKeepPlanForm extends React.Component {
       autoExpandParent: true,
       checkedKeys: [],//默认勾选项目['0-0-0']
       selectedKeys: [],
+      selKey:[],
+      cycleModule:'00',
     };
 
     componentWillMount =() =>{
-        const { maintainGuid , editState} =this.props;
+        const { maintainPlanDetailId , editState} =this.props;
         //获取资产编号相关信息
-        if(maintainGuid){
-          this.getDetailAjax({maintainGuid})
+        if(maintainPlanDetailId){
+          this.getDetailAjax({maintainDetailId:maintainPlanDetailId})
         }
         this.getOneModule();
         this.setState({
@@ -125,38 +110,25 @@ export default class AddUpKeepPlanForm extends React.Component {
           if(data.status){
             let retData = data.result;
             //拿到回显数据--处理时间格式
-            retData.maintainDate=moment(retData.maintainDate,'YYYY-MM-DD HH:mm')
-            retData.endMaintainDate=moment(retData.endMaintainDate,'YYYY-MM-DD HH:mm')
-            retData.nextMaintainDate=moment(retData.nextMaintainDate,'YYYY-MM-DD')
-            //处理附件格式
-            if(retData.tfAccessory){
-              let urls = retData.tfAccessory.split(';');
-              let u = urls.splice(0, urls.length-1);
-              let files = [];
-              u.map((item, index) => {
-                return files.push({
-                  url: FTP + item,
-                  uid: index
-                })
-              });
-              retData.tfAccessoryList=files;
+            retData.maintainDate=moment(retData.maintainDate,'YYYY-MM-DD')
+            if(retData.loopFlag==="01"){//如果该数据为循环的数据-则如下处理
+              retData.endMaintainDate=moment(retData.endMaintainDate,'YYYY-MM-DD')
             }
-            let tabledata =data.result.maintainDetailList;
+            let tabledata =data.result.typeList;
             this.setState({
               data:retData,
               tableData:tabledata 
             })
-            if(this.state.editState){this.props.callback(tabledata)}
-            
+            if(this.state.editState){this.props.callback(this.getKey(tabledata))}
             //获取第一个板块的信息内容
-            this.getAssetInfoAjax(retData.assetsRecord)
+            this.getAssetInfoAjax(retData.assetsRecord)//assetsRecord
           }else{
             message.error(data.msg)
           }
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.listToDetails, options)
+      request(upkeep.queryPlanDetails, options)
     }
     
     componentWillReceiveProps = (nextProps)=> {
@@ -167,12 +139,21 @@ export default class AddUpKeepPlanForm extends React.Component {
         })
       }
     }
+
     componentWillUnmount = () =>{
         this.handleReset();
     }
   
     handleReset = () => {
       this.props.form.resetFields();
+    }
+
+    getKey = (array)=>{
+      let a = [];
+      array.forEach(element => {
+          a.push(element.maintainTypeId)
+      });
+      return a;
     }
 
     //1-资产信息-资产编号搜索带值
@@ -211,7 +192,7 @@ export default class AddUpKeepPlanForm extends React.Component {
       this.getAssetInfoAjax(e.target.value)
     }
     
-    //3-项目信息-选择项目弹窗以及树状图
+    //3-项目信息-选择项目弹窗
     toggleTree = () => {
       this.setState({
         visible: true,
@@ -220,19 +201,20 @@ export default class AddUpKeepPlanForm extends React.Component {
     //-----table添加
     handleOkTree = () => {
       this.setState({ loading: true });
-      //modal获得treenode之后需要向table中添加一条数据
-      // let newData = this.findDetailInfo();
       let newData = this.state.checkedKeys;
-      setTimeout(() => {//含清空tree勾选内容
+      newData.forEach(ele=>{
+        ele.maintainTypeName = ele.templateTypeName;
+      })
+      setTimeout(() => {
         this.setState((prevState)=>{ 
-        
-          //let uniqTableData = _.uniqBy(prevState.tableData.concat(newData),'maintainTypeId');
-          this.props.callback(newData)
+          let uniqTableData = _.uniqBy(prevState.tableData.concat(newData),'maintainTypeId');
+          this.props.callback(this.getKey(uniqTableData))
           return{
             loading: false, 
             visible: false ,
+            selKey:[],
             checkedKeys:[],
-            tableData:newData
+            tableData:uniqTableData
           }
         });
       }, 1000);
@@ -267,93 +249,62 @@ export default class AddUpKeepPlanForm extends React.Component {
       this.setState({
         tableData:arr
       })
-    }
-    //-----table行内修改--并向外传送
-    changeTableRow = (value,record,keyName) =>{
-      const arr = this.state.tableData;
-      let v = keyName==="maintainResult" ? value: value.target.value;
-      arr[arr.findIndex(item => item === record)][keyName]=v;
-      this.props.callback(arr);
-    }
-    handleCancelTree = () => {//含清空tree勾选内容
-      this.setState({ visible: false ,checkedKeys:[]});
+      this.props.callback(this.getKey(arr))
     }
     
-    //3-项目信息-tree
-    onExpand = (expandedKeys) => {
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.setState({
-        expandedKeys,
-        autoExpandParent: false,
-      });
+    //关闭模态窗
+    handleCancelTree = () => {
+      this.setState({ visible: false ,checkedKeys:[],selKey:[]});
     }
-    onCheck = (checkedKeys) => {
-      this.setState({ checkedKeys });
-    }
-    onSelect = (selectedKeys, info) => {
-      this.setState({ selectedKeys });
-    }
-    renderTreeNodes = (data) => {
-      return data.map((item) => {
-        if (item.children) {
-          return (
-            <TreeNode title={item.title} key={item.key} dataRef={item}>
-              {this.renderTreeNodes(item.children)}
-            </TreeNode>
-          );
-        }
-        return <TreeNode {...item} />;
-      });
-    }
+    
     //获取添加项目的一级下拉框
-  getOneModule = () =>{
-    let options = {
-      body:'',
-      success: data => {
-        if(data.status){
-          
-          this.setState({
-            'selectDropData':data.result
-          })
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
+    getOneModule = () =>{
+      let options = {
+        body:'',
+        success: data => {
+          if(data.status){
+            
+            this.setState({
+              'selectDropData':data.result
+            })
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(basicdata.queryOneModule,options)
     }
-    request(basicdata.queryOneModule,options)
-  }
-  //获取添加项目的一级下拉框 带出的二级数据
-  changeOneModule =(value)=>{
-    console.log(value)
-    let json ={
-      'maintainTemplateId':value
-    }
-    //发出请求获取对应二级项目内容 并给弹窗中的table
-    let options = {
-      body:querystring.stringify(json),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: data => {
-        if(data.status){
-          this.setState({
-            'prjTableData':data.result
-          })
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
-    }
-    request(basicdata.queryTwoModule,options)
+    //获取添加项目的一级下拉框 带出的二级数据
+    changeOneModule =(value)=>{
+      console.log(value)
+      let json ={
+        'maintainTemplateId':value
+      }
+      //发出请求获取对应二级项目内容 并给弹窗中的table
+      let options = {
+        body:querystring.stringify(json),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: data => {
+          if(data.status){
+            this.setState({
+              'prjTableData':data.result
+            })
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(basicdata.queryTwoModule,options)
 
-  }
+    }
 
     render() {
       const { getFieldDecorator } = this.props.form;
-      const { prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
+      const {  selKey ,cycleModule , prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
       const mapOption = data => data.map((item)=>{
         return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
       })
@@ -366,7 +317,7 @@ export default class AddUpKeepPlanForm extends React.Component {
         },
         {
           title: '操作',
-          dataIndex: 'maintainOrderDetailGuid',
+          dataIndex: 'checkboxDetailGuid',
           width:150,
           render:(text,record)=>{
             if(editState){
@@ -381,42 +332,10 @@ export default class AddUpKeepPlanForm extends React.Component {
         {
           title: '项目名称',
           width:350,
-          dataIndex: 'templateTypeName',
-        },
-        {
-          title: '结果',
-          dataIndex: 'maintainResult',
-          width:250,
-          render:(text,record)=>{
-            if(editState){
-              return( <Select value={record.maintainResult} name='maintainResult' onSelect={(value)=>this.changeTableRow(value,record,'maintainResult')}>
-                  <Option value="">请选择结果</Option>
-                  <Option value="00">合格</Option>
-                  <Option value="01">不合格</Option>
-                  <Option value="02">保养后合格</Option>
-                </Select>)
-              }else{
-                return UnStateTable(upkeepDetailsTable[record.maintainResult].text)
-              }
-          }
-        },
-        {
-          title: '备注',
-          dataIndex: 'tfRemark',
-          render:(text,record)=>{
-            if(editState){
-                return(
-                  <Input value={record.tfRemark} onChange={(e)=>this.changeTableRow(e,record,'tfRemark')} />
-                )
-            }else{
-              return UnStateTable(record.tfRemark)
-            }
-            
-          }
-        },
+          dataIndex: 'maintainTypeName',
+        }
       ]
 
-      
       const formItemLayout = {
         labelCol: {
           xs: { span: 24 },
@@ -427,6 +346,98 @@ export default class AddUpKeepPlanForm extends React.Component {
           sm: { span: 16 },
         },
       };
+
+      const cycleModuleFn =(val)=>{
+        if(val==='00'){
+          return(
+            <Col span={8}>
+              {editState ? 
+                <FormItem label='保养时间' {...formItemLayout}>
+                    {getFieldDecorator(`maintainDate`,{
+                      initialValue:data.maintainDate,
+                    })(
+                    <DatePicker  disabled/>
+                  )}
+                </FormItem>
+                :UnStateText('保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
+              }
+            </Col>
+          )
+        }else{
+          return(
+            <div>
+              <Col span={8}>
+              {editState ? 
+                <FormItem label={`循环周期`} {...formItemLayout}>
+                  {getFieldDecorator(`tfCycle`,{
+                    initialValue:data.tfCycle,
+                    rules:[{
+                      required:true,message:'请输入循环周期！'
+                    }]
+                  })(
+                    <Input placeholder="请输入循环周期" style={{width: 200}} addonAfter={'月'}/>
+                  )}
+                </FormItem>
+                :UnStateText('循环周期',data.tfCycle)
+              }
+              </Col>
+              <Col span={8}>
+                {editState ? 
+                  <FormItem label={`提前生成保养单`} {...formItemLayout}>
+                    {getFieldDecorator(`advancePlan`,{
+                      initialValue:data.advancePlan,
+                      rules:[{
+                        required:true,message:'请输入天数！'
+                      }]
+                    })(
+                      <Input placeholder="请输入天数" style={{width: 200}} addonAfter={'天'}/>
+                    )}
+                  </FormItem>
+                  :UnStateText('提前生成保养单',data.advancePlan)
+                }
+              </Col>
+              <Col span={8} >
+                {/* maintainDate - endMaintainDate*/}
+                  {editState ? 
+                    <FormItem
+                      {...formItemLayout}
+                      label="保养计划开始时间"
+                    >
+                      {getFieldDecorator('maintainDate',{
+                        initialValue:data.maintainDate,
+                      })(
+                        <DatePicker
+                          format="YYYY-MM-DD"
+                          disabled
+                          />
+                      )}
+                    </FormItem>
+                    :UnStateText('保养计划开始时间', moment(data.maintainDate).format('YYYY-MM-DD'))
+                  }
+              </Col>
+              <Col span={8} >
+                  {editState ? 
+                    <FormItem
+                      {...formItemLayout}
+                      label="保养失效时间"
+                    >
+                      {getFieldDecorator('endMaintainDate',{
+                        initialValue:data.endMaintainDate,
+                        rules:[{
+                          required:true,message:'请填写保养计划有效期！'
+                        }]
+                      })(<DatePicker
+                          format="YYYY-MM-DD"
+                          disabledDate={(current)=>{return current && current < moment().endOf('day');}}
+                        />)}
+                    </FormItem>
+                    :UnStateText('保养失效时间',moment(data.endMaintainDate).format('YYYY-MM-DD'))
+                  }
+              </Col>
+            </div>
+          )
+        }
+      }
 
       return (
         <Form>
@@ -443,14 +454,14 @@ export default class AddUpKeepPlanForm extends React.Component {
                       }
                   </Col>
                   <Col span={0} >
-                        <FormItem>
-                            {getFieldDecorator(`assetsRecordGuid`,{initialValue:data.assetsRecordGuid})(
-                              <Input placeholder="AS171218000002"/>
-                            )}
-                        </FormItem>
+                      <FormItem>
+                          {getFieldDecorator(`assetsRecordGuid`,{initialValue:data.assetsRecordGuid})(
+                            <Input placeholder="AS171218000002"/>
+                          )}
+                      </FormItem>
                   </Col>
                   <Col span={8}>
-                        {UnStateText('资产名称',data.equipmentStandardName)}
+                      {UnStateText('资产名称',data.equipmentStandardName)}
                   </Col>
               </Row>    
               <Row>
@@ -503,7 +514,9 @@ export default class AddUpKeepPlanForm extends React.Component {
                   :UnStateText('保养类型','内保')
                 }
                 </Col>
-                
+                <FormItem>
+                 {getFieldDecorator(`maintainPlanId`,{initialValue:data.maintainPlanId})(<span>&nbsp;</span>)}
+                </FormItem>
                 <Col span={8}>
                   {editState ? 
                     <FormItem label='临床风险等级' {...formItemLayout}>
@@ -520,82 +533,36 @@ export default class AddUpKeepPlanForm extends React.Component {
                   }
                 </Col>
               </Row>
-                  <Row>
-                    <Col span={8}>
-                      {editState ? 
-                        <FormItem label='循环方式' {...formItemLayout}>
-                        {getFieldDecorator(`loopFlag`,{initialValue:data.loopFlag})(
-                          <Select placeholder='请选择'>
-                            <Option value="01">循环</Option>
-                            <Option value="00">单次</Option>
-                          </Select>
-                        )}
-                        </FormItem>
-                        :UnStateText('循环方式',upkeepPlanLoopFlag[data.loopFlag].text)
-                      }
-                    </Col>
-                    <Col span={8}>
-                      {editState ? 
-                        <FormItem label='循环周期' {...formItemLayout}>
-                        {getFieldDecorator(`tfCycle`,{initialValue:data.tfCycle})(
-                          <Input placeholder="3月"/>
-                        )}
-                        </FormItem>
-                        :UnStateText('循环方式',data.tfCycle)
-                      }
-                    </Col>
-                  </Row>
-
-              
               <Row>
                 <Col span={8}>
-                {editState ? 
-                    <FormItem label='保养时间' {...formItemLayout}>
-                      {getFieldDecorator(`maintainDate`,{initialValue:data.maintainDate})(
-                        <DatePicker
-                          showTime
-                          format={"YYYY-MM-DD"}
-                          placeholder="请选择保养时间"
-                        /> 
+                  {editState ? 
+                    <FormItem label='循环方式' {...formItemLayout}>
+                      {getFieldDecorator(`loopFlag`, {
+                        initialValue: '00',
+                        rules:[
+                          {required:true,message: '请选择循环方式',}
+                        ]
+                      })(
+                        <RadioGroup onChange={(e)=>{this.setState({'cycleModule':e.target.value}) } }>
+                          <RadioButton value="00">单次</RadioButton>
+                          <RadioButton value="01">循环</RadioButton>
+                        </RadioGroup>
                       )}
                     </FormItem>
-                    : UnStateText('保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
-                  }
-                     
-                </Col>
-                <Col span={8}>
-                  {editState ?
-                    <FormItem label='保养失效时间' {...formItemLayout}>
-                    {getFieldDecorator(`endMaintainDate`,{initialValue:data.endMaintainDate})(
-                      <DatePicker
-                        showTime
-                        format={"YYYY-MM-DD"}
-                        placeholder="请选择结束保养时间"
-                      /> 
-                    )}
-                    </FormItem>
-                    : UnStateText('保养失效时间',moment(data.endMaintainDate).format('YYYY-MM-DD'))                  
+                    :UnStateText('循环方式',data.loopFlag)
                   }
                 </Col>
-                <Col span={8}>
-                {editState ?
-                  <FormItem label='提前生成保单' {...formItemLayout}>
-                    {getFieldDecorator(`advancePlan`,{initialValue:data.advancePlan})(
-                      <Input placeholder="12天"/>
-                    )}
-                    </FormItem>
-                    :UnStateText('提前生成保单',data.advancePlan)
-                }
-                </Col>
+                {cycleModuleFn(cycleModule)}
               </Row>
           </Card>
           
           <Card title="项目信息" bordered={false} style={{marginTop:30}}>
              <Row><Button type="buttom" onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
              <Row>
-              <Table ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
-              </Table>
+                <Table ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
+                </Table>
              </Row>
+
              <Modal
               visible={visible}
               title="选择项目"
@@ -619,8 +586,10 @@ export default class AddUpKeepPlanForm extends React.Component {
                     <Table 
                       rowKey={'templateDetailGuid'}
                       rowSelection={{
+                        selectedRowKeys:selKey,
                         onChange: (selectedRowKeys, selectedRows) => {
                           this.setState({
+                            'selKey':selectedRowKeys,
                             'checkedKeys':selectedRows
                           })
                           console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);

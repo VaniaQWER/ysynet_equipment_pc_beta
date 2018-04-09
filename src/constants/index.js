@@ -236,16 +236,18 @@ export const upkeepDetailsTable = {
   "00":{ text: '合格' },
   "01":{ text: '不合格' },
   "02":{ text: '保养后合格' },
-  null:{text: '请选择结果'}
+  null:{text: ''}
 }
 
 export const upkeepPlanStateSel =[
+  { text: '草稿', value: '00' },
   { text: '待执行', value: '20' },
   { text: '执行中', value: '30' },
   { text: '已执行', value: '40' },
   { text: '已关闭', value: '80' },
 ] 
 export const upkeepPlanState = {
+  "00": { text: '草稿'},
   "20": { text: '待执行'},
   "30": { text: '执行中'},
   "40": { text: '已执行'},
