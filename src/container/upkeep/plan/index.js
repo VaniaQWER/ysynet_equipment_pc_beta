@@ -1,6 +1,6 @@
 /**保养登记--列表*/
 import React from 'react';
-import { message , Row, Col, Input, Layout , Popover} from 'antd';
+import { Modal ,message , Row, Col, Input, Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import upkeep from '../../../api/upkeep';
 import querystring from 'querystring';
@@ -18,6 +18,10 @@ class MaintainPlan extends React.Component{
 
     state = {
       query:'',
+      visible: false ,
+      modalContent:'',
+      record:{},
+      isDelete:false
     };
     sortTime = (a,b,key) =>{
       if(a[key] && b[key]){
@@ -37,7 +41,7 @@ class MaintainPlan extends React.Component{
         },
         success: data => {
           if(data.status){
-            message.success( '操作成功')
+            message.success( '删除成功')
             this.refs.table.fetch();
           }else{
             message.error(data.msg)
@@ -55,7 +59,7 @@ class MaintainPlan extends React.Component{
         },
         success: data => {
           if(data.status){
-            message.success( '操作成功')
+            message.success( '执行计划成功，已生成保养工单。')
             this.refs.table.fetch();
           }else{
             message.error(data.msg)
@@ -67,7 +71,41 @@ class MaintainPlan extends React.Component{
 
       
     }
+
+    showConfirm = (isDelete,record)=>{
+      let modalContent = '';
+      if(isDelete){
+        //做删除
+        modalContent='删除后不可恢复是否继续删除？';
+      }else{
+        //点击执行的操作
+        modalContent='确定执行此操作？';
+      }
+      this.setState({
+        isDelete,
+        modalContent,
+        record,
+        visible: true,
+      });
+    }
+    handleOk = (e) => {
+      if(this.state.isDelete){
+        this.deletePlanDetails(this.state.record)
+      }else{
+        this.doPlanDetails(this.state.record)
+      }
+      this.setState({
+        visible: false,
+      });
+    }
+    handleCancel = (e) => {
+      this.setState({
+        visible: false,
+      });
+    }
+
     render(){
+      const { modalContent }= this.state;
       const columns=[
         { title: '操作', 
         dataIndex: 'maintainPlanDetailId', 
@@ -77,7 +115,7 @@ class MaintainPlan extends React.Component{
           <span>
             { (record.fstate==="20") ? 
               <span title='编辑'><Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>编辑</Link>&nbsp;&nbsp;
-              <a  title='删除' onClick={()=>this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
+              <a  title='删除' onClick={()=> this.showConfirm(true,record)}>删除</a>&nbsp;&nbsp;
               <a title='执行' onClick={()=>this.doPlanDetails(record)}>执行</a></span>
               :<span><Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link></span>
             }
@@ -168,7 +206,7 @@ class MaintainPlan extends React.Component{
         }
       ]
         return(
-            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20,backgroundColor:'none'}}>
               <Row>
                   <Col span={12}>
                   <Search
@@ -191,6 +229,14 @@ class MaintainPlan extends React.Component{
                   size="small"
                   onChange={this.handleChange}
               /> 
+              <Modal
+                title="警告"
+                visible={this.state.visible}
+                onOk={this.handleOk}
+                onCancel={this.handleCancel}
+              >
+                <p>{modalContent}</p>
+              </Modal>
             </Content>
         )
     }

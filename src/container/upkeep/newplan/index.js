@@ -529,7 +529,7 @@ class MaintainPlan extends PureComponent {
       }
     }
     return (
-      <Content className='ysynet-content'>
+      <Content className='ysynet-content' style={{background:'none'}}>
       <Affix>
         <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
           <Button type="default" onClick={()=>this.handleSubmit('02')}>保存</Button>
@@ -599,7 +599,7 @@ class MaintainPlan extends PureComponent {
           </Form>
         </Card>
 
-        <Card title='资产信息' bordered={false} style={{marginTop: 4}} className='min_card'>
+        <Card title='资产信息' bordered={false} style={{marginTop: 20}} className='min_card'>
           <Button type='primary' style={{marginBottom: 2}} onClick={()=>this.showModal('productVisible')}>添加产品</Button>
           {/*资产信息表格*/}
           <Table columns={columns} 
