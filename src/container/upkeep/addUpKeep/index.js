@@ -1,11 +1,13 @@
 /**保养登记--添加*/
 import React from 'react';
+import './style.css';
 import AddUpKeepForm from './addForm.js';
 import { Form, Button ,Layout,Affix ,message} from 'antd';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import request from '../../../utils/request';
 import upkeep from '../../../api/upkeep';
+
 const { Content } = Layout; 
 
 const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);

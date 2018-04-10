@@ -1,5 +1,6 @@
 import React from 'react'
 import moment from 'moment';
+import { cutFtpUrl } from '../../../utils/tools';
 import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button , Radio ,Select ,DatePicker ,Upload ,Modal} from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import request from '../../../utils/request';
@@ -10,6 +11,7 @@ import basicdata from '../../../api/basicdata';
 import _ from 'lodash';
 import { FTP } from '../../../api/local';
 import { upkeepDetailsTable } from '../../../constants';
+import './style.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
 function UnStateText(label,data){
@@ -140,8 +142,17 @@ export default class AddUpKeepForm extends React.Component {
     handleChange = ({fileList}) => {
       if(this.state.editState){
         if(this.state.fileUploadState){
-          let options = {
-            tfAccessoryList:fileList
+          let fileString ='';
+          for(let i =0;i<fileList.length;i++){
+            if( fileList[i].url){
+              fileString+= (cutFtpUrl(fileList[i].url)+';')
+              // fileList.splice(i,1);
+            }
+          }
+          console.log(fileList)
+         let options = {
+            tfAccessoryList:fileList,
+            tfAccessory:fileString,
           }
           this.setState({ 
             data:Object.assign(this.state.data,options)
@@ -650,6 +661,7 @@ export default class AddUpKeepForm extends React.Component {
                     <FormItem label='上传附件' {...formItemRowLayout}>
                       {getFieldDecorator(`tfAccessoryList`,{initialValue:data.tfAccessoryList})(//
                           <Upload
+                            className={editState? '':'hide-delete'}
                             action={assets.picUploadUrl}
                             listType="picture-card"
                             fileList={data.tfAccessoryList}

@@ -8,7 +8,7 @@ import moment from 'moment';
 import {withRouter  } from 'react-router-dom';
 import upkeep from '../../../api/upkeep';
 import request from '../../../utils/request';
-
+import { cutFtpUrl } from '../../../utils/tools';
 const { Content } = Layout; 
 
 const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
@@ -54,13 +54,22 @@ class UpKeepFinish extends React.Component{
             values.maintainGuid = this.state.maintainGuid;
             values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 						//更改附件格式
-						let thumburl = []
+            let thumburl = []
+            let fileString ='';
 						if(values.tfAccessoryList){
 							for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-								thumburl.push(values.tfAccessoryList.fileList[i].thumbUrl)
+                let file = values.tfAccessoryList.fileList[i] ;
+                if(file.thumbUrl){
+                  thumburl.push(file.thumbUrl)
+                }else{
+                  fileString+= (cutFtpUrl(file.url)+';')
+                  thumburl.push('')
+                }
 							}
 						}	
-						values.tfAccessoryList = thumburl;
+            values.tfAccessoryList = thumburl;
+            values.tfAccessory = fileString;
+            debugger
 						this.sendAjax(values)
 				}
 			});
