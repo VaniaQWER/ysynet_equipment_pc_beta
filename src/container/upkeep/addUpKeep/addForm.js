@@ -1,6 +1,5 @@
 import React from 'react'
 import moment from 'moment';
-import { cutFtpUrl } from '../../../utils/tools';
 import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button , Radio ,Select ,DatePicker ,Upload ,Modal} from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import request from '../../../utils/request';
@@ -142,17 +141,8 @@ export default class AddUpKeepForm extends React.Component {
     handleChange = ({fileList}) => {
       if(this.state.editState){
         if(this.state.fileUploadState){
-          let fileString ='';
-          for(let i =0;i<fileList.length;i++){
-            if( fileList[i].url){
-              fileString+= (cutFtpUrl(fileList[i].url)+';')
-              // fileList.splice(i,1);
-            }
-          }
-          console.log(fileList)
          let options = {
             tfAccessoryList:fileList,
-            tfAccessory:fileString,
           }
           this.setState({ 
             data:Object.assign(this.state.data,options)
@@ -681,7 +671,7 @@ export default class AddUpKeepForm extends React.Component {
           </Card>
           
           <Card title="项目信息" bordered={false} style={{marginTop:30}}>
-             <Row><Button type="buttom" onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
+             <Row><Button type="primary"  onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
              <Row>
               <Table  ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
               </Table>

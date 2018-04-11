@@ -198,7 +198,7 @@ class MaintainTmpTransfer extends React.Component{
             <Col span={2} >
               <div style={{textAlign:'center',paddingTop:250}}>
                 <Button type='primary'  disabled={disabled} style={{marginBottom:10}}  icon="left" onClick={(status)=>this.changeTmp('01')}></Button><br/>
-                <Button type='primary' icon="right" disabled={disabled} onClick={(status)=>this.changeTmp('00')}></Button>
+                <Button icon="right" disabled={disabled} onClick={(status)=>this.changeTmp('00')}></Button>
               </div>
             </Col>
             <Col span={11} style={{border:'1px solid #d9d9d9',padding:15,borderRadius:5}}>

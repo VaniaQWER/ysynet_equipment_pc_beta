@@ -69,7 +69,6 @@ class UpKeepFinish extends React.Component{
 						}	
             values.tfAccessoryList = thumburl;
             values.tfAccessory = fileString;
-            debugger
 						this.sendAjax(values)
 				}
 			});

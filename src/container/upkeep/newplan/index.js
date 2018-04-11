@@ -532,7 +532,7 @@ class MaintainPlan extends PureComponent {
       <Content className='ysynet-content' style={{background:'none'}}>
       <Affix>
         <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-          <Button type="default" onClick={()=>this.handleSubmit('02')}>保存</Button>
+          <Button type="primary" onClick={()=>this.handleSubmit('02')}>保存</Button>
         </div>
       </Affix>
 
