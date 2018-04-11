@@ -125,9 +125,9 @@ class MaintainPlan extends PureComponent {
     let a = _.cloneDeep(mock);
     _.forEach(a,function(item,index){
       let parentId = item.assetsRecord;
-      item.children = item.subList;
-      delete item.subList;
-      _.forEach(item.children,function(subItem,index){
+      // item.children = item.subList;
+      // delete item.subList;
+      _.forEach(item.subList,function(subItem,index){
         subItem.parentKey = parentId;
         subItem.assetsRecordGuid = parentId.toString() + subItem.templateDetailGuid;
       })
@@ -135,7 +135,7 @@ class MaintainPlan extends PureComponent {
    
     a = _.assign(a,this.state.CacheProductTabledata);
     _.forEach(a,function(item,index){
-      _.uniqBy(item.children,'maintainTypeId')
+      _.uniqBy(item.subList,'maintainTypeId')
     })
     return a
   }
@@ -216,7 +216,7 @@ class MaintainPlan extends PureComponent {
     let pushData = _.cloneDeep(this.state.projecrModalCallBack);
     let ind = _.findIndex(a,{assetsRecord:parentKey})
 
-    console.log('原有的children',a[ind].children)
+    console.log('原有的children',a[ind].subList)
     if(ind !==-1){
       let children = [];
       _.forEach(pushData,function(item){
@@ -224,7 +224,7 @@ class MaintainPlan extends PureComponent {
         item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
         children.push(item)
       })
-      a[ind].children = _.uniqBy( a[ind].children.concat(children) ,'maintainTypeId' )
+      a[ind].subList = _.uniqBy( a[ind].subList.concat(children) ,'maintainTypeId' )
       
     }
     this.setState({
@@ -414,7 +414,7 @@ class MaintainPlan extends PureComponent {
       let parentKey = record.parentKey;
       let ind = _.findIndex(a,{'assetsRecord':parentKey});
       if(ind!==-1){
-        _.remove(a[ind].children,function(item){
+        _.remove(a[ind].subList,function(item){
           return item.templateDetailGuid===record.templateDetailGuid
        })
       }
@@ -568,6 +568,34 @@ class MaintainPlan extends PureComponent {
       }
     }
 
+    const subColumnsData = [
+      {
+        title: '序号',
+        dataIndex: 'index',
+        key: 'index',
+        width: 50,
+        render:(text,record,index)=>{return `${index+1}`}
+      },
+      {
+        title: '操作',
+        dataIndex: 'action',
+        width: 50,
+        render:(text,record,index)=>{
+          return (
+            <span>
+              <a onClick={()=>this.deleteProRow(false,record)}>删除</a>
+            </span>
+          )
+        }
+      },
+      {
+        title: '项目名称',
+        dataIndex: 'templateTypeName',
+        key: 'name',
+        width: 150,
+        render: text => <a href="#">{text}</a>,
+      },
+    ]
     return (
       <Content className='ysynet-content' style={{background:'none'}}>
       <Affix>
@@ -645,9 +673,22 @@ class MaintainPlan extends PureComponent {
           <Table columns={columns} 
             scroll={{x: '130%' }}
             rowKey={'assetsRecordGuid'}
-            
             onExpand={(expanded, record) => console.log(expanded, record)}
             dataSource={ProductTabledata } 
+            expandedRowRender={(record)=>{
+              if(record.subList.length!==0){
+                return(
+                  <Table
+                    rowKey='maintainTypeId'
+                    columns = {subColumnsData}
+                    dataSource={record.subList}
+                  ></Table>
+                )
+              }else{
+                return(<p>暂无数据</p>)
+              }
+              
+            }}
            />
         </Card>
 
