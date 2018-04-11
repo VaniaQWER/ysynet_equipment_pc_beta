@@ -101,6 +101,7 @@ class MaintainPlan extends PureComponent {
     ProductModalCallBackKeys:[],//选中保存数据的key
     ProductModalCallBack:[],//选择保养资产返回的数据
     ProductTabledata:[],//选择保养资产返回的数据
+    CacheProductTabledata:[],//缓存
     projecrModalCallBack:[],//选择项目返回的数据
     treeData:[],//选择项目的树状结构
     prjCheckedKeys:[],//被选择的项目
@@ -110,6 +111,7 @@ class MaintainPlan extends PureComponent {
     autoExpandParent: true,
     ProductType:'',//资产搜索条件
     useDeptGuid:'',//资产搜索条件
+    useDeptGuidStr:'',
     mobile:'',
     PopconfirmVisible:false,//删除的确认窗
   }
@@ -122,13 +124,18 @@ class MaintainPlan extends PureComponent {
   changeTreeData =(mock)=>{
     let a = _.cloneDeep(mock);
     _.forEach(a,function(item,index){
-      let parentId = item.assetsRecordGuid;
+      let parentId = item.assetsRecord;
       item.children = item.subList;
       delete item.subList;
       _.forEach(item.children,function(subItem,index){
         subItem.parentKey = parentId;
         subItem.assetsRecordGuid = parentId.toString() + subItem.templateDetailGuid;
       })
+    })
+   
+    a = _.assign(a,this.state.CacheProductTabledata);
+    _.forEach(a,function(item,index){
+      _.uniqBy(item.children,'maintainTypeId')
     })
     return a
   }
@@ -169,6 +176,7 @@ class MaintainPlan extends PureComponent {
         ProductType:'',//资产搜索条件
         useDeptGuid:'',//资产搜索条件
         mobile:'',
+        useDeptGuidStr:'',
         ProductModalCallBack:[],
         ProductModalCallBackKeys:[],
       });
@@ -191,7 +199,7 @@ class MaintainPlan extends PureComponent {
           this.setState({
             'ProductTabledata':this.changeTreeData(data.result),
             ProductModalCallBack:[],
-            ProductModalCallBackKeys:[],
+            // ProductModalCallBackKeys:[],
           })
         }else{
           message.error(data.msg)
@@ -207,6 +215,8 @@ class MaintainPlan extends PureComponent {
     let parentKey = this.state.selctParentKey.assetsRecord;
     let pushData = _.cloneDeep(this.state.projecrModalCallBack);
     let ind = _.findIndex(a,{assetsRecord:parentKey})
+
+    console.log('原有的children',a[ind].children)
     if(ind !==-1){
       let children = [];
       _.forEach(pushData,function(item){
@@ -214,12 +224,13 @@ class MaintainPlan extends PureComponent {
         item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
         children.push(item)
       })
-      a[ind].children = _.uniqBy(children,'maintainTypeId')
+      a[ind].children = _.uniqBy( a[ind].children.concat(children) ,'maintainTypeId' )
       
     }
     this.setState({
       ProductTabledata:a,
-      projecrModalCallBackKeys:[]
+      CacheProductTabledata:a//保存此次操作
+      // projecrModalCallBackKeys:[]
     })
 
   }
@@ -258,26 +269,6 @@ class MaintainPlan extends PureComponent {
     }
     request(basicdata.queryOneModule,options)
   }
-  //获取资产下拉框数据
-  getDetpSelect = ()=>{
-    let options = {
-      body:querystring.stringify({'deptType':'00'}),
-				headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: data => {
-        if(data.status){
-          this.setState({
-            'detpSel':data.result
-          })
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
-    }
-    request(upkeep.selectUseDeptList,options)
-  }
   //获取添加项目的一级下拉框 带出的二级数据
   changeOneModule =(value)=>{
     let o =this.state.selectDropData.filter(item=>{
@@ -308,6 +299,33 @@ class MaintainPlan extends PureComponent {
     }
     request(basicdata.queryTwoModule,options)
 
+  }
+  //获取资产下拉框数据
+  getDetpSelect = ()=>{
+    let options = {
+      body:querystring.stringify({'deptType':'00'}),
+				headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({
+            'detpSel':data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(upkeep.selectUseDeptList,options)
+  }
+  setQuery = (value) =>{
+    let o = this.state.detpSel.filter(item=>{
+      return item.text ===value
+    })[0];
+    let v  = o ? o.value:'' ;
+    this.setState({'useDeptGuid' :v,'useDeptGuidStr':value})
   }
   //此处为保存所有的新增计划表单
   handleSubmit =(status)=>{
@@ -394,7 +412,7 @@ class MaintainPlan extends PureComponent {
       })
     }else{//如果删除子集
       let parentKey = record.parentKey;
-      let ind = _.findIndex(a,{'assetsRecordGuid':parentKey});
+      let ind = _.findIndex(a,{'assetsRecord':parentKey});
       if(ind!==-1){
         _.remove(a[ind].children,function(item){
           return item.templateDetailGuid===record.templateDetailGuid
@@ -403,6 +421,7 @@ class MaintainPlan extends PureComponent {
     }
     this.setState({
       ProductTabledata:a,
+      CacheProductTabledata:a
     })
   }
 
@@ -477,16 +496,14 @@ class MaintainPlan extends PureComponent {
         width: 100
       }
     ];
-    const { ProductModalCallBackKeys , projecrModalCallBackKeys , useDeptGuid ,ProductType ,mobile , detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,ProductTabledata} =this.state;
+    const { ProductModalCallBackKeys , projecrModalCallBackKeys ,ProductType ,useDeptGuidStr ,mobile , detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,ProductTabledata} =this.state;
     const { getFieldDecorator } = this.props.form;
     //选择项目中的下拉框
     const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
     
     //选择资产弹窗中的科室sel
-    const deptSelFn = detpSel =>detpSel.map((item)=>{
-        return <Option key={item.value} value={item.value}>{item.text}</Option>
-    })
-    
+    const deptSelFn =detpSel.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
+      
     const cycleModuleFn =(val)=>{
       if(val==='00'){
         return(
@@ -550,6 +567,7 @@ class MaintainPlan extends PureComponent {
         )
       }
     }
+
     return (
       <Content className='ysynet-content' style={{background:'none'}}>
       <Affix>
@@ -627,7 +645,10 @@ class MaintainPlan extends PureComponent {
           <Table columns={columns} 
             scroll={{x: '130%' }}
             rowKey={'assetsRecordGuid'}
-            dataSource={ProductTabledata } />
+            
+            onExpand={(expanded, record) => console.log(expanded, record)}
+            dataSource={ProductTabledata } 
+           />
         </Card>
 
         {/*选择资产弹窗*/}
@@ -650,9 +671,20 @@ class MaintainPlan extends PureComponent {
                 <Option value="05">专业设备</Option>
                 <Option value="06">其他</Option>
               </Select>
-              <Select name="useDeptGuid" value={useDeptGuid} onChange={(v)=>{this.setState({useDeptGuid:v})}} style={{ width: 150 }} className={styles.mrLarge}>
-                <Option value="">选择使用科室</Option>
-                {deptSelFn(detpSel)}
+              
+              <Select
+                mode="combobox"
+                placeholder="选择使用科室"
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                onSearch={this.getDetpSelect}
+                onSelect={this.setQuery}
+                value={useDeptGuidStr}
+                style={{ width: 150,marginRight:15 }} 
+              >
+                <Option key='' value=''> &nbsp;</Option>
+                {deptSelFn}
               </Select>
               <Search
                 placeholder="请输入设备编号/名称"

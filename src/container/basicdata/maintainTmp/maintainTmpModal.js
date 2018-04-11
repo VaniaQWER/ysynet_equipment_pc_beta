@@ -182,7 +182,7 @@ class MaintainTmpQuoteModal extends React.Component{
     this.refs.form.resetFields();
   }
   render(){
-    const { visible, loading ,selectRow ,modalState ,selectDropData } = this.props;
+    const { visible, loading ,selectRow ,modalState } = this.props;
     const { data } = this.state;
     return(
       <Modal
