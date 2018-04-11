@@ -227,7 +227,6 @@ class MaintainPlan extends React.Component{
                   showHeader={true}
                   style={{marginTop: 10}}
                   size="small"
-                  onChange={this.handleChange}
               /> 
               <Modal
                 title="警告"

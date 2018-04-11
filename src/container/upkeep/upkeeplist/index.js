@@ -134,6 +134,9 @@ class UpKeepList extends React.Component{
       this.refs.table.fetch(query);
       this.setState({ query })
     }
+    handleChange = (pagination, filters, sorter)=>{
+      debugger
+    }
     render(){
         
         return(
@@ -158,7 +161,6 @@ class UpKeepList extends React.Component{
                   showHeader={true}
                   style={{marginTop: 10}}
                   size="small"
-                  onChange={this.handleChange}
               /> 
             </Content>
         )

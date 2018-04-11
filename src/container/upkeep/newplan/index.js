@@ -224,13 +224,31 @@ class MaintainPlan extends PureComponent {
 
   }
   //获取添加项目的一级下拉框
-  getOneModule = () =>{
+  getOneModule = (value) =>{
+    let o;
+      if(value){
+        o={maintainTemplateName:value}
+      }else{
+        o=''
+      }
     let options = {
-      body:'',
+      body:querystring.stringify(o),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
       success: data => {
         if(data.status){
+          let ret = []
+          data.result.forEach(item => {
+            let i ={
+              value:item.maintainTemplateId,
+              text:item.maintainTemplateName,
+              key:item.detailNum
+            }
+            ret.push(i);
+          });
           this.setState({
-            'selectDropData':data.result
+            'selectDropData':ret
           })
         }else{
           message.error(data.msg)
@@ -262,9 +280,14 @@ class MaintainPlan extends PureComponent {
   }
   //获取添加项目的一级下拉框 带出的二级数据
   changeOneModule =(value)=>{
-    console.log(value)
-    let json ={
-      'maintainTemplateId':value
+    let o =this.state.selectDropData.filter(item=>{
+      return item.text===value
+    })[0];
+    let json='';
+    if(o){
+      json ={
+        'maintainTemplateId':o.value
+      }
     }
     //发出请求获取对应二级项目内容 并给弹窗中的table
     let options = {
@@ -457,9 +480,8 @@ class MaintainPlan extends PureComponent {
     const { ProductModalCallBackKeys , projecrModalCallBackKeys , useDeptGuid ,ProductType ,mobile , detpSel ,cycleModule , prjTableData , selectDropData , productVisible , prjVisible , loading ,ProductTabledata} =this.state;
     const { getFieldDecorator } = this.props.form;
     //选择项目中的下拉框
-    const mapOption = data => data.map((item)=>{
-      return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
-    })
+    const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
+    
     //选择资产弹窗中的科室sel
     const deptSelFn = detpSel =>detpSel.map((item)=>{
         return <Option key={item.value} value={item.value}>{item.text}</Option>
@@ -682,10 +704,17 @@ class MaintainPlan extends PureComponent {
           >
           <Row>
             <Col className={styles.mbLarge}>
-              <Select name="fenlei" style={{ width: 250 }} className={styles.mrLarge}
-                onChange={(value)=>this.changeOneModule(value)} defaultValue="">
-                <Option value=''>请选择模板添加项目</Option>
-                {mapOption(selectDropData)}
+              <Select
+                mode="combobox"
+                className={styles.mrLarge}
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                onSearch={this.getOneModule}
+                onSelect={this.changeOneModule}
+                style={{ width: 250,marginBottom:15 }} 
+              >
+                {options}
               </Select>
               <Button key="submit" type="primary" loading={loading} onClick={()=>this.handleOk('prjVisible')}>
                 添加

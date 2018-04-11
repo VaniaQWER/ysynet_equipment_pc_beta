@@ -313,14 +313,31 @@ export default class AddUpKeepForm extends React.Component {
       this.setState({ visible: false ,checkedKeys:[],checkedKeyArray:[]});
     }
     //获取添加项目的一级下拉框
-    getOneModule = () =>{
+    getOneModule = (value) =>{
+      let o;
+      if(value){
+        o={maintainTemplateName:value}
+      }else{
+        o=''
+      }
       let options = {
-        body:'',
+        body:querystring.stringify(o),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
         success: data => {
           if(data.status){
-            
+            let ret = []
+            data.result.forEach(item => {
+              let i ={
+                value:item.maintainTemplateId,
+                text:item.maintainTemplateName,
+                key:item.detailNum
+              }
+              ret.push(i);
+            });
             this.setState({
-              'selectDropData':data.result
+              'selectDropData':ret
             })
           }else{
             message.error(data.msg)
@@ -331,9 +348,15 @@ export default class AddUpKeepForm extends React.Component {
       request(basicdata.queryOneModule,options)
     }
     //获取添加项目的一级下拉框 带出的二级数据
-    changeOneModule =(value)=>{
-      let json ={
-        'maintainTemplateId':value
+    changeOneModule =(value,key)=>{
+      let o =this.state.selectDropData.filter(item=>{
+        return item.text===value
+      })[0];
+      let json='';
+      if(o){
+        json ={
+          'maintainTemplateId':o.value
+        }
       }
       //发出请求获取对应二级项目内容 并给弹窗中的table
       let options = {
@@ -389,9 +412,7 @@ export default class AddUpKeepForm extends React.Component {
       const { getFieldDecorator } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
       const { previewVisible, previewImage } = this.state;
-      const mapOption = data => data.map((item)=>{
-        return <Option value={item.maintainTemplateId} key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>
-      })
+      const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
       const columns = [
         {
           title: '序号',
@@ -447,7 +468,6 @@ export default class AddUpKeepForm extends React.Component {
           }
         },
       ]
-     
       const uploadButton = (
         <div>
           <Icon type="plus" />
@@ -476,7 +496,7 @@ export default class AddUpKeepForm extends React.Component {
           },
         };
 
-      return (
+        return (
         <Form>
           <Card title="资产信息" bordered={false} >
               <Row>
@@ -689,10 +709,16 @@ export default class AddUpKeepForm extends React.Component {
               ]}>
                     <Row>
                       <Col>
-                        <Select name="fenlei" style={{ width: 250,marginBottom:15 }} 
-                          onChange={(value)=>this.changeOneModule(value)} defaultValue="">
-                          <Option value=''>请选择模板添加项目</Option>
-                          {mapOption(selectDropData)}
+                        <Select
+                          mode="combobox"
+                          defaultActiveFirstOption={false}
+                          showArrow={false}
+                          filterOption={false}
+                          onSearch={this.getOneModule}
+                          onSelect={this.changeOneModule}
+                          style={{ width: 250,marginBottom:15 }} 
+                        >
+                          {options}
                         </Select>
                       </Col>
                     </Row>

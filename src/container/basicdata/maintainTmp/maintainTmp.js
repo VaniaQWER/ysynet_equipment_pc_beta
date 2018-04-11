@@ -292,8 +292,17 @@ class maintainTmpEdit extends React.Component{
         success: data => {
           if(data.status){
 						this.formatOneData(data.result)
+						let ret = []
+						data.result.forEach(item => {
+							let i ={
+								value:item.maintainTemplateId,
+								text:item.maintainTemplateName,
+								key:item.detailNum
+							}
+							ret.push(i);
+						});
 						this.setState({
-							'selectDropData':data.result
+							'selectDropData':  ret
 						})
           }else{
             message.error(data.msg)

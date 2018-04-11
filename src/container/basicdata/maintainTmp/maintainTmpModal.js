@@ -1,6 +1,9 @@
 /**保养登记--列表*/
 import React from 'react';
-import { Form , Input,  Button,Modal ,Icon, Select , Tooltip} from 'antd';
+import { Form , Input,  Button,Modal ,Icon, Select , Tooltip, message } from 'antd';
+import basicdata from '../../../api/basicdata';
+import request from '../../../utils/request';
+import querystring from 'querystring';
 const FormItem = Form.Item;
 const Option = Select.Option;
 class ModalFormAdd extends React.Component{
@@ -8,7 +11,8 @@ class ModalFormAdd extends React.Component{
   state={
     data:{
       templateName:''
-    }
+    },
+    selectDropData:[]
   }
   componentWillMount =()=>{
     this.setState({
@@ -31,17 +35,53 @@ class ModalFormAdd extends React.Component{
     }
     
   }
+  componentWillMount = ()=>{
+    this.fetch();
+  }
   componentWillReceiveProps =(nextProps)=>{
     this.setState({
       data:this.formTData(nextProps.editModalData)
     })
   }
- 
+
+  handleChange = (value)=>{
+    this.fetch(value);
+  }
+  fetch =(value)=>{
+    let o;
+    if(value){
+      o={maintainTemplateName:value}
+    }else{
+      o=''
+    }
+    let options = {
+      body:querystring.stringify(o),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          let ret = []
+          data.result.forEach(item => {
+            let i ={
+              value:item.maintainTemplateId,
+              text:item.maintainTemplateName,
+              key:item.detailNum
+            }
+            ret.push(i);
+          });
+          this.setState({
+            'selectDropData':  ret
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(basicdata.queryOneModule,options)
+  }
   render(){
-    //生成option内容
-    const loop = data => data.map((item) => {
-        return <Option key={item.maintainTemplateId}>{item.maintainTemplateName}</Option>;
-    });
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -54,7 +94,8 @@ class ModalFormAdd extends React.Component{
     };
     const { getFieldDecorator } = this.props.form;
     const { data } =this.state;
-    const { selectDropData } =this.props;
+    const { selectDropData } = this.state;
+    const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
     return (
       <Form className="login-form">
         <FormItem
@@ -68,9 +109,16 @@ class ModalFormAdd extends React.Component{
           </span>
         )}>
           {getFieldDecorator('maintainTemplateId', {initialValue:data.maintainTemplateId,})(
-            <Select>
-              {loop(selectDropData)}
-            </Select>
+              <Select
+                mode="combobox"
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                onSearch={this.handleChange}
+              >
+                <Option key='null' value='' >无分类</Option>
+                {options}
+              </Select>
           )}
         </FormItem>
         <FormItem>
@@ -108,6 +156,10 @@ class MaintainTmpQuoteModal extends React.Component{
   handleOk = () =>{
     this.refs.form.validateFields((err, values) => {
       if (!err) {
+        let sigleData = this.props.selectDropData.filter(item =>{
+          return item.text===values.maintainTemplateId
+        })[0];
+        values.maintainTemplateId = sigleData ?  sigleData.value:''
         this.props.callback(values,this.props.modalState)
       }
     });
@@ -125,6 +177,10 @@ class MaintainTmpQuoteModal extends React.Component{
     
   }
   
+  cancel =()=>{
+    this.props.handleCancel();
+    this.refs.form.resetFields();
+  }
   render(){
     const { visible, loading ,selectRow ,modalState ,selectDropData } = this.props;
     const { data } = this.state;
@@ -133,15 +189,15 @@ class MaintainTmpQuoteModal extends React.Component{
         visible={visible}
         title={modalState}
         onOk={this.props.handleOk}
-        onCancel={this.props.handleCancel}
+        onCancel={this.cancel}
         footer={[
-          <Button key="back" onClick={this.props.handleCancel}>取消</Button>,
+          <Button key="back" onClick={this.cancel}>取消</Button>,
           <Button key="submit" type="primary" loading={loading} onClick={this.handleOk}>
             确定
           </Button>,
         ]}
       >
-        <ModalForm ref='form' selectRow={selectRow} selectDropData={selectDropData} editModalData={data}></ModalForm>
+        <ModalForm ref='form' selectRow={selectRow} editModalData={data}></ModalForm>
       </Modal>
     )
   }
