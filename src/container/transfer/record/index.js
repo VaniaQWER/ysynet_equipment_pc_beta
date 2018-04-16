@@ -90,7 +90,7 @@ const formItemLayout = {
 };
 class SearchFormWrapper extends PureComponent {
   state={
-    display: 'block',
+    display: 'none',
     dataOut: [],
     dataInto: [],
     deptName: '',
