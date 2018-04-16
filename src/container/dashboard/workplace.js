@@ -15,7 +15,6 @@ const gridStyle = {
 class Workplace extends Component {
   
   render() {
-    console.log(this.props)
     const { orgName,userName } = this.props.user
     return (
      <div className='ysynet-content ysynet-common-bgColor'>

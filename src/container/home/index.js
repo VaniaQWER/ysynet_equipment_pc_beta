@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Icon, message,Spin } from 'antd'; //message
 import { connect } from 'react-redux';
-import { user as userService, menu as menuService  } from '../../service';
+import { user as userService, menu as menuService, search  } from '../../service';
 import { withRouter, Switch, Redirect } from 'react-router-dom';
 import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import BasicLayout from '../common/basicLayout';
@@ -41,12 +41,22 @@ class Home extends React.Component {
         if(!checkPath(menu,1)){
           // alert('路径错误')
         }
-       
     } else {
       message.error('会话失效, 请重新登录！');
       history.push({pathname: '/login'})
     }
   }
+  // 校验路径, 清除查询回填
+  componentWillReceiveProps(nextProps) {
+    const search = nextProps.search;
+    const pathname = nextProps.location.pathname;
+    if (Object.keys(search).length ) {
+      if (!pathname.startsWith(Object.keys(search)[0])) {
+        nextProps.clearSearch();
+      }
+    }
+  }
+  
   render () {
   
     const { routes, menu, user } = this.props;
@@ -104,5 +114,6 @@ class Home extends React.Component {
 export default withRouter(connect(state => state, dispatch => ({
   setUser: user => dispatch(userService.setUserInfo(user)),
   getUser: () => dispatch(userService.fetchUserInfo()),
-  getMenu: () => dispatch(menuService.fetchMenu())
+  getMenu: () => dispatch(menuService.fetchMenu()),
+  clearSearch: () => dispatch(search.clearSearch())
 }))(Home));

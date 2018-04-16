@@ -1,44 +1,15 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Upload, message,Modal } from 'antd';
-import UploadButton from './uploadButton'
-import assets from './../../api/assets'
-
-class PicWall extends PureComponent {
-  static defaultProps = {
-    action: assets.picUploadUrl,
-    max: 3
+import React  from 'react';
+import { Upload, Icon, Modal } from 'antd';
+import assets from '../../api/assets';
+class PicturesWall extends React.Component {
+  state = {
+    previewVisible: false,
+    previewImage: '',
+    fileList: this.props.fileList || []
   };
-  static propTypes = {
-    action: PropTypes.string,
-    max: PropTypes.number
-  };
-   constructor(props) {
-     super(props);
-     this.state = {
-      previewVisible: false,
-      previewImage: '',
-      fileList: []
-     }
-   }
-   beforeUpload = (file) => {
-    const type = file.type === 'image/jpeg'|| file.type === 'image/png'|| file.type === 'image/bmp';
-    if (!type) {
-      message.error('您只能上传image/jpeg、png、bmp!');
-    }
-    const isLt5M = file.size / 1024 / 1024  < 5;
-    if (!isLt5M) {
-      message.error('图片不能大于 5MB!');
-    }
-    return type && isLt5M;
-  }
 
-  handleChange = ({ fileList }) => {
-    console.log(fileList,'fileList')
-    this.setState({ fileList })
-    this.props.file(fileList)
-  }
   handleCancel = () => this.setState({ previewVisible: false })
+
   handlePreview = (file) => {
     this.setState({
       previewImage: file.url || file.thumbUrl,
@@ -46,22 +17,33 @@ class PicWall extends PureComponent {
     });
   }
 
+  handleChange = ({ fileList }) => {
+    this.setState({ fileList })
+    this.props.file(fileList)
+  }
+
   render() {
-    const { action, max } = this.props;
-    const { fileList,previewVisible,previewImage } = this.state;
-    return (
+    const { previewVisible, previewImage, fileList } = this.state;
+    let { isAdd } = this.props;
+    if (typeof isAdd === 'undefined') { isAdd = true };
+    const uploadButton = (
       <div>
-      <Upload
-        action={ action }
-        listType="picture-card"
-        fileList={ fileList }
-        onPreview={this.handlePreview}
-        onChange={this.handleChange}
-        beforeUpload={this.beforeUpload}
-      >
-        { fileList.length >= max ? null : <UploadButton/>}
-      </Upload>
-      <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+        <Icon type="plus" />
+        <div className="ant-upload-text">上传图片</div>
+      </div>
+    );
+    return (
+      <div className="clearfix">
+        <Upload
+          action={assets.picUploadUrl}
+          listType="picture-card"
+          fileList={fileList}
+          onPreview={this.handlePreview}
+          onChange={this.handleChange}
+        >
+          { (isAdd && fileList.length < 3) ? uploadButton : null}
+        </Upload>
+        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal>
       </div>
@@ -69,4 +51,4 @@ class PicWall extends PureComponent {
   }
 }
 
-export default PicWall;
+export default PicturesWall;

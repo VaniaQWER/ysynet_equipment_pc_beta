@@ -43,7 +43,7 @@ class Login extends Component {
       if(data.status){
         this.setState({loading: false})
         setUser(data.result);
-        console.log(data.result)
+        // console.log(data.result)
         if (!data.result.userInfo) {
           message.error(data.result.loginResult)
         }else{

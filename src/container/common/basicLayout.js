@@ -48,7 +48,7 @@ class BasicLayout extends Component {
     const keys = pathname.split('/');
     let selectedKeys = '', newOpenKeys = [];
     if (keys.length > 3) {
-      selectedKeys = keys.slice(0, 4).join('/');
+      selectedKeys = keys.slice(0, 3).join('/');
       newOpenKeys = [ keys.slice(0, 2).join('/'), keys.slice(0, 3).join('/') ]; 
     } else { 
       selectedKeys = pathname;
@@ -90,7 +90,7 @@ class BasicLayout extends Component {
     const { selectedKeys, openKeys } = this.state;
     return (
       <Sider
-        width={'256'}      
+        width={'200'}      
         collapsed={collapsed}
       >
         <div className='logoWrapper'>

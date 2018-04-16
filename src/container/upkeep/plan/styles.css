@@ -8,7 +8,7 @@
 }
 
 .normal {
-    composes: width50;
+    /* composes: width50; */
     color: #333;
 }
 :global(.col05) {
