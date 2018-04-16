@@ -106,7 +106,7 @@ class SearchFormWrapper extends PureComponent {
   toggle = () => {
     const { display, expand } = this.state;
     this.setState({
-      display: display === 'block' ? 'none' : 'block',
+      display: display === 'none' ? 'block' : 'none',
       expand: !expand
     })
   }
@@ -149,7 +149,7 @@ class SearchFormWrapper extends PureComponent {
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
             <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
-              {this.state.expand ? '展开' : '收起'} <Icon type={this.state.expand ? 'down' : 'up'} />
+              {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
             </a>
           </Col>
         </Row>
@@ -218,15 +218,9 @@ class TransferRecord extends PureComponent {
   render() {
     const columns = [
       {
-        title: '序号',
-        dataIndex: 'index',
-        width: 50,
-        render: (text, record, index) => <span>{index+1}</span>
-      },
-      {
         title: '操作',
         dataIndex: 'transferGuid',
-        width: 80,
+        width: 50,
         render: (text, record, index) => {
           return (
             <span>
@@ -238,14 +232,14 @@ class TransferRecord extends PureComponent {
       {
         title: '转科单号',
         dataIndex: 'transferNo',
-        width: 100,
+        width: 110,
         sorter: true
       },
       {
         // 一共有三种状态 1.待转科 2.已转科 3.已关闭
         title: '单据状态',
         dataIndex: 'fstate',
-        width: 100,
+        width: 80,
         render: (text, record, index) => {
           if (record.fstate === "00") {
             return <span>待转科</span>;
@@ -259,22 +253,22 @@ class TransferRecord extends PureComponent {
       {
         title: '申请时间',
         dataIndex: 'createDate',
-        width: 150
+        width: 130
       },
       {
         title: '申请人',
         dataIndex: 'createUserName',
-        width: 100
+        width: 80
       },
       {
         title: '转出科室',
         dataIndex: 'outDeptName',
-        width: 100
+        width: 130
       },
       {
         title: '转入科室',
         dataIndex: 'inDeptName',
-        width: 100
+        width: 200
       },
       {
         title: '转科日期',

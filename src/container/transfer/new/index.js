@@ -492,7 +492,7 @@ class NewTransfer extends PureComponent {
         </Card>
         {/* 资产信息部分 */}
         <Card title="资产信息" bordered={false} style={{marginTop: 4}} className="min_card">
-          <Button type="default" style={{marginBottom: 10}} onClick={() => this.showModal('productVisible')}>选择产品</Button>
+          <Button type="primary" style={{marginBottom: 10}} onClick={() => this.showModal('productVisible')}>选择产品</Button>
           <Table
           columns={columns}
           scroll={{x: '100%'}}
@@ -531,7 +531,7 @@ class NewTransfer extends PureComponent {
               />
             </Col>
             <Col span={4} style={{textAlign: 'right'}}>
-              <Button key="submit" type="default" onClick={()=>this.handleOk('productVisible')}>添加</Button>
+              <Button key="submit" type="primary" onClick={()=>this.handleOk('productVisible')}>添加</Button>
             </Col>
           </Row>
           {/* RemoteTable-->远程连接,需要一个url接口,因此假数据对他不起作用 */}
@@ -542,7 +542,7 @@ class NewTransfer extends PureComponent {
           url={assets.selectAssetsList}
           rowKey={'assetsRecordGuid'}
           columns={productColumns}
-          scroll={{x: '100%' }}
+          scroll={{x: '100%', y: document.body.clientHeight - 110 }}
           size="small"
           rowSelection={{
             // 选中项发生变化的时的回调
