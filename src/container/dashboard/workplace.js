@@ -18,7 +18,7 @@ class Workplace extends Component {
     const { orgName,userName } = this.props.user
     return (
      <div className='ysynet-content ysynet-common-bgColor'>
-        <Row>
+        {/* <Row>
           <Col span={2}>
             <Avatar 
             style={{width:72,height:72,borderRadius: 72}}
@@ -44,7 +44,8 @@ class Workplace extends Component {
               <Card.Grid style={gridStyle}>维修记录</Card.Grid>
             </Card>
           </Col>
-        </Row>
+        </Row> */}
+        <Card hoverable cover={<img alt="example" src={require('./index.jpg')} />} />
       </div>
     )
   }
