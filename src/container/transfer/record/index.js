@@ -288,7 +288,7 @@ class TransferRecord extends PureComponent {
         <Card bordered={false} className="min_card">
           <SearchForm query={this.queryHandle} activeKey={this.state.activeKey}/>
         </Card>
-        <Card>
+        <Card style={{marginTop: 4}}>
           <Tabs defaultActiveKey="1" onChange={(activeKey) =>{this.setState({activeKey: activeKey})}} animated={false}>
             <TabPane tab="转出科室" key="1">
               <RemoteTable

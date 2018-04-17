@@ -162,12 +162,6 @@ class TransferRecordEdit extends PureComponent {
     // 资产列表渲染
     const columns = [
       {
-        title: '序号',
-        dataIndex: 'index',
-        width: 50,
-        render: (text, record, index) => <span>{index+1}</span>
-      },
-      {
         title: '资产编号',
         dataIndex: 'assetsRecord',
         width: 100,
@@ -202,12 +196,11 @@ class TransferRecordEdit extends PureComponent {
     );
     const { previewVisible, previewImage, data, fileList } = this.state;
     const { getFieldDecorator } = this.props.form;
-    // const { getFieldValue } = this.props.form;
     return(
       <Content>
         {/* 保存申请信息按钮部分 */}
         <Affix>
-          <div style={{background: '#fff', padding: '10px 20px', marginBottom: 10, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
+          <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
             <Button type="default" onClick={()=>this.handleSubmit('07')}>关闭</Button>
             <Button type="primary" style={{marginLeft: 22}} onClick={()=>this.handleSubmit('03')}>完成</Button>
           </div>
@@ -266,12 +259,12 @@ class TransferRecordEdit extends PureComponent {
               showHeader={true}
               columns={columns} 
               rowKey={'transferDetailGuid'}
-              scroll={{x: '100%', y : document.body.clientHeight - 110 }}
               style={{marginTop: 10}} 
+              scroll={{x: '100%', y : document.body.clientHeight - 110 }}
               size="small"
               url={transfer.getSelectTransferDetailList}
               query={{transferGuid:this.props.match.params.id||this.props.id}}
-              />
+            />
           </Card>
           <Card title="转科意见" bordered={false} style={{marginTop: 4}} className="min_card">
             <Row>

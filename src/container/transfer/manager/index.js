@@ -292,7 +292,7 @@ class TransferManager extends PureComponent {
         <Card bordered={false} className="min_card" >
           <SearchForm query={this.queryHandle} />
         </Card>
-        <Card>
+        <Card style={{marginTop: 4}} >
           <RemoteTable
           query={query}
           showHeader={true}
