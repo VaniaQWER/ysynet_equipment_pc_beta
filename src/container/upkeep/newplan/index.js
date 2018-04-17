@@ -361,7 +361,7 @@ class MaintainPlan extends PureComponent {
       let j ={}
       j.assetsRecordGuid = item.assetsRecordGuid;
       j.maintainTypes=[];
-      _.forEach(item.children,function(subItem,index){
+      _.forEach(item.subList,function(subItem,index){
         j.maintainTypes.push(subItem.maintainTypeId)
       })
       ret.push(j);
@@ -593,7 +593,7 @@ class MaintainPlan extends PureComponent {
         dataIndex: 'templateTypeName',
         key: 'name',
         width: 150,
-        render: text => <a href="#">{text}</a>,
+        render: text => <span title={text}>{text}</span>,
       },
     ]
     return (
@@ -670,7 +670,8 @@ class MaintainPlan extends PureComponent {
         <Card title='资产信息' bordered={false} style={{marginTop: 20}} className='min_card'>
           <Button type='primary' style={{marginBottom: 2}} onClick={()=>this.showModal('productVisible')}>添加产品</Button>
           {/*资产信息表格*/}
-          <Table columns={columns} 
+          <Table 
+            columns={columns} 
             scroll={{x: '130%' }}
             rowKey={'assetsRecordGuid'}
             onExpand={(expanded, record) => console.log(expanded, record)}

@@ -9,6 +9,7 @@ import './styles.css';
 import { upkeepPlanLoopFlag , upkeepPlanStateSel ,upkeepPlanState , upkeepMainTainType } from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
+const confirm = Modal.confirm;
 const Search = Input.Search;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
@@ -33,75 +34,59 @@ class MaintainPlan extends React.Component{
       this.setState({ query })
     }
     deletePlanDetails = (record)=>{//删除
-      console.log(record.maintainPlanDetailId);
-      let options = {
-        body:querystring.stringify({maintainPlanDetailId:record.maintainPlanDetailId}),
-        headers:{
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        success: data => {
-          if(data.status){
-            message.success( '删除成功')
-            this.refs.table.fetch();
-          }else{
-            message.error(data.msg)
+      confirm({
+        title: '是否确认删除？',
+        content: `删除后不可恢复是否继续删除？`,
+        onOk: async () => {
+          console.log(record.maintainPlanDetailId);
+          let options = {
+            body:querystring.stringify({maintainPlanDetailId:record.maintainPlanDetailId}),
+            headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: data => {
+              if(data.status){
+                message.success( '删除成功')
+                this.refs.table.fetch();
+              }else{
+                message.error(data.msg)
+              }
+            },
+            error: err => {console.log(err)}
           }
-        },
-        error: err => {console.log(err)}
-      }
-      request(upkeep.deletePlanDetails, options)
-    }
-    doPlanDetails = (record)=>{//执行
-      let options = {
-        body:querystring.stringify({maintainPlanDetailId:record.maintainPlanDetailId}),
-        headers:{
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        success: data => {
-          if(data.status){
-            message.success( '执行计划成功，已生成保养工单。')
-            this.refs.table.fetch();
-          }else{
-            message.error(data.msg)
-          }
-        },
-        error: err => {console.log(err)}
-      }
-      request(upkeep.doPlanDetails, options)
+          request(upkeep.deletePlanDetails, options)
 
+        },
+        onCancel: () => this.setState({visible: false})
+      })
       
     }
-
-    showConfirm = (isDelete,record)=>{
-      let modalContent = '';
-      if(isDelete){
-        //做删除
-        modalContent='删除后不可恢复是否继续删除？';
-      }else{
-        //点击执行的操作
-        modalContent='确定执行此操作？';
-      }
-      this.setState({
-        isDelete,
-        modalContent,
-        record,
-        visible: true,
-      });
-    }
-    handleOk = (e) => {
-      if(this.state.isDelete){
-        this.deletePlanDetails(this.state.record)
-      }else{
-        this.doPlanDetails(this.state.record)
-      }
-      this.setState({
-        visible: false,
-      });
-    }
-    handleCancel = (e) => {
-      this.setState({
-        visible: false,
-      });
+    doPlanDetails = (record)=>{//执行
+      confirm({
+        title: '是否确认执行？',
+        content: `确定执行此操作？`,
+        onOk: async () => {
+          let options = {
+            body:querystring.stringify({maintainPlanDetailId:record.maintainPlanDetailId}),
+            headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: data => {
+              if(data.status){
+                message.success( '执行计划成功，已生成保养工单。')
+                this.refs.table.fetch();
+                this.setState({visible: false,});
+              }else{
+                message.error(data.msg)
+              }
+            },
+            error: err => {console.log(err)}
+          }
+          request(upkeep.doPlanDetails, options)
+        },
+        onCancel: () => this.setState({visible: false})
+      })
+      
     }
 
     render(){
@@ -115,7 +100,7 @@ class MaintainPlan extends React.Component{
           <span>
             { (record.fstate==="20") ? 
               <span title='编辑'><Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>编辑</Link>&nbsp;&nbsp;
-              <a  title='删除' onClick={()=> this.showConfirm(true,record)}>删除</a>&nbsp;&nbsp;
+              <a  title='删除' onClick={()=> this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
               <a title='执行' onClick={()=>this.doPlanDetails(record)}>执行</a></span>
               :<span><Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link></span>
             }
