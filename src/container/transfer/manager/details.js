@@ -100,39 +100,33 @@ class TransferManagerDetails extends PureComponent {
     // 资产列表渲染
     const columns = [
       {
-         title: '序号',
-          dataIndex: 'index',
-          width: 50,
-          render: (text, record, index) => <span>{index+1}</span>
+        title: '资产编号',
+        dataIndex: 'assetsRecord',
+        width: 100,
+        sorter: true
       },
-        {
-          title: '资产编号',
-          dataIndex: 'assetsRecord',
-          width: 100,
-          sorter: true
-        },
-        {
-          title: '资产名称',
-          dataIndex: 'equipmentStandardName',
-          width: 100
-        },
-        {
-          title: '型号',
-          dataIndex: 'fmodel',
-          width: 100
-        },
-        {
-          title: '规格',
-          dataIndex: 'spec',
-          width: 100
-        },
-        {
-          title: '使用科室',
-          dataIndex: 'useDeptName',
-          width: 100
-        }
-      ]
-    const { previewVisible, previewImage, fileList, data } = this.state;
+      {
+        title: '资产名称',
+        dataIndex: 'equipmentStandardName',
+        width: 100
+      },
+      {
+        title: '型号',
+        dataIndex: 'fmodel',
+        width: 100
+      },
+      {
+        title: '规格',
+        dataIndex: 'spec',
+        width: 100
+      },
+      {
+        title: '使用科室',
+        dataIndex: 'useDeptName',
+        width: 100
+      }
+    ]
+    const { previewVisible, previewImage, data } = this.state;
     const { getFieldDecorator } = this.props.form;
     return(
       <Content>

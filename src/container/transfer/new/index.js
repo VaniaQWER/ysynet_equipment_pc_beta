@@ -40,33 +40,40 @@ const productColumns = [
   {
     title: '序号',
     dataIndex: 'index',
-    render: (text, record, index) => <span>{`${index+1}`}</span>
+    render: (text, record, index) => <span>{`${index+1}`}</span>,
+    width: 50
   },
   {
     title: '资产编号',
     dataIndex: 'assetsRecord',
-    sorter: true
+    sorter: true,
+    width: 150
   },
   {
     title: '资产名称',
     dataIndex: 'equipmentStandardName',
+    width: 150
   },
   {
     title: '型号',
     dataIndex: 'fmodel',
+    width: 100
   },
   {
     title: '规格',
     dataIndex: 'spec',
+    width: 100
   },
   {
     title: '设备分类',
     dataIndex: 'productType',
-    render: (text, record) => text ? productTypeData[text].text : null
+    render: (text, record) => text ? productTypeData[text].text : null,
+    width: 150
   },
   {
     title: '使用科室',
     dataIndex: 'useDept',
+    width: 150
   }
 ]
 
@@ -232,6 +239,7 @@ class NewTransfer extends PureComponent {
   }
   sendEndAjax =(json)=>{
     const values = this.props.form.getFieldsValue();
+    
     const data = {
       fstate: '00',
       useDeptGuid: values.outDeptguid,
@@ -317,9 +325,12 @@ class NewTransfer extends PureComponent {
   }
   //保存
   save = () =>{
-    this.sendEndAjax(this.state.ProductModalCallBackKeys);
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        this.sendEndAjax(this.state.ProductModalCallBackKeys);
+      }
+    })
   }
-
   deleteProRow =(isParent,record)=>{
     let a =_.cloneDeep(this.state.ProductTabledata);
     if(isParent){//如果是删除父级
@@ -333,16 +344,10 @@ class NewTransfer extends PureComponent {
     })
   }
   render() {
-    const { productVisible, loading, ProductType, mobile, ProductModalCallBackKeys, ProductTabledata, data } = this.state;
+    const { productVisible, ProductType, mobile, ProductModalCallBackKeys, ProductTabledata, data } = this.state;
     const { getFieldDecorator } = this.props.form;
     // 资产列表渲染
     const columns = [
-      {
-        title: '序号',
-        dataIndex: 'index',
-        width: 100,
-        render: (text, record, index) => { return `${index+1}`}
-      },
       {
         title: '操作',
         dataIndex: 'transferGuid',
@@ -382,7 +387,7 @@ class NewTransfer extends PureComponent {
       <Content className='ysynet-content'>
         {/* 保存申请信息按钮部分 */}
         <Affix>
-          <div style={{background: '#fff', padding: '10px 20px', marginBottom: 10, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
+          <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
             <Button type="primary" onClick={this.save}>保存</Button>
           </div>
         </Affix>
@@ -504,7 +509,7 @@ class NewTransfer extends PureComponent {
         {/* 选择资产弹窗 */}
         <Modal
         visible={productVisible}
-        title={`选择要保养的资产`}
+        title={`选择要转科的资产`}
         width='900px'
         onOk={()=>this.handleOk('productVisible')}
         onCancel={()=>this.handleCancel('productVisible')}

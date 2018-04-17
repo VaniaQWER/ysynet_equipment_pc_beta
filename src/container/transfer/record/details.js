@@ -108,12 +108,6 @@ class TransferRecordDetails extends PureComponent {
     // 资产列表渲染
     const columns = [
       {
-        title: '序号',
-        dataIndex: 'index',
-        width: 50,
-        render: (text, record, index) => <span>{index+1}</span>
-      },
-      {
         title: '资产编号',
         dataIndex: 'assetsRecord',
         width: 100,
@@ -140,7 +134,7 @@ class TransferRecordDetails extends PureComponent {
         width: 100
       }
     ]
-    const { previewVisible, previewImage, fileList, data } = this.state;
+    const { previewVisible, previewImage, data } = this.state;
     const { getFieldDecorator } = this.props.form;
     return(
       <Content>
