@@ -77,7 +77,7 @@ const productColumns = [
   }
 ]
 
-// 新保养人模糊搜索
+// 新保管人模糊搜索
 function fetchMaintainUsername(userName, callback) {
   if (timeout) {
     clearTimeout(timeout);
@@ -167,8 +167,8 @@ function fetchIntoDeptname(deptName, callback) {
 class NewTransfer extends PureComponent {
   state={
     loading: false,
-    userNameData: [],// 新保养人保存数据
-    userName: '',// 新保养人
+    userNameData: [],// 新保管人保存数据
+    userName: '',// 新保管人
     deptNameData: [],// 转出科室保存数据
     IntodeptNameData: [],// 转入科室保存数据
     deptName: '',// 转入转出科室
@@ -185,7 +185,7 @@ class NewTransfer extends PureComponent {
     data: {},
     newAddressEdit: false
   }
-  // 新保养人
+  // 新保管人
   handleChange = (userName) => {
     this.setState({ userName });
     fetchMaintainUsername(userName, userNameData => this.setState({ userNameData }));
@@ -463,7 +463,7 @@ class NewTransfer extends PureComponent {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label={`新保养人`} {...formItemLayout}>
+                <FormItem label={`新保管人`} {...formItemLayout}>
                 {getFieldDecorator('maintainUserid',{})(
                   <Select
                   showSearch
@@ -474,7 +474,7 @@ class NewTransfer extends PureComponent {
                   filterOption={false}
                   style={{width: 200}}
                   onSelect={(val,option) => this.setState({ maintainUsername:option.props.children })}
-                  placeholder={`请搜索选择新保养人`}
+                  placeholder={`请搜索选择新保管人`}
                 >
                   {this.state.userNameData.map(d => {
                     return <Option value={d.value} key={d.value}>{d.userName+'-'+d.deptName}</Option>

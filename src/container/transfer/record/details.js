@@ -179,7 +179,7 @@ class TransferRecordDetails extends PureComponent {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label={`新保养人`} {...formItemLayout}>
+                <FormItem label={`新保管人`} {...formItemLayout}>
                 {getFieldDecorator('maintainUserName', {
                   initialValue: data.maintainUserName
                 })(
