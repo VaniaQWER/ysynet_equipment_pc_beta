@@ -1,23 +1,26 @@
 /**清查记录--列表*/
 import React from 'react';
-import { Row, Col, Input, Layout ,Button , Popover ,DatePicker ,Modal ,Form ,TreeSelect} from 'antd';
+import { message , Row, Col, Input, Layout ,Button , Popover ,DatePicker ,Modal ,Form ,TreeSelect} from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
+import inventory from '../../../api/inventory';
+import request from '../../../utils/request';
 import { upkeepState ,upkeepStateSel } from '../../../constants';
 import { Link } from 'react-router-dom';
-import { timeToStamp } from '../../../utils/tools';
+// import { timeToStamp } from '../../../utils/tools';
+import moment from 'moment';
 const Search = Input.Search;
 const { Content } = Layout;
 const FormItem = Form.Item;
 const { RemoteTable } = TableGrid;
 const { RangePicker } = DatePicker;
 const SHOW_PARENT = TreeSelect.SHOW_PARENT;
-const sortTime = (a,b,key) =>{
-  if(a[key] && b[key]){
-    return timeToStamp(a[key]) - timeToStamp(b[key])
-  }
-}
+// const sortTime = (a,b,key) =>{
+//   if(a[key] && b[key]){
+//     return timeToStamp(a[key]) - timeToStamp(b[key])
+//   }
+// }
 const columns=[
   { title: '操作', 
   dataIndex: 'maintainGuid', 
@@ -47,20 +50,18 @@ const columns=[
     onFilter: (value, record) => (record && record.fstate===value),
     render: text => 
       <div><span style={{marginRight:5,backgroundColor:upkeepState[text].color ,width:10,height:10,borderRadius:'50%',display:'inline-block'}}></span>
-      { upkeepState[text].text }
+        { upkeepState[text].text }
       </div>
-      
   },
   {
     title: '创建时间',
     width:'8%',
     dataIndex: 'maintainDate',
-    sorter: (a, b) => sortTime(a,b,'maintainDate'),
+    // sorter: (a, b) => sortTime(a,b,'maintainDate'),
     render(text, record) {
       return <span title={text}>{text}</span>
     }
   },
- 
   {
     title: '制单人',
     dataIndex: 'modifyUserName',
@@ -231,7 +232,7 @@ class ModalForm extends React.Component{
 				<FormItem label='备注（可选）' {...formItemLayout}>
 					{getFieldDecorator(`remark`,{
 						rules:[
-							{validator: this.checkTextLength}
+							{/*validator: this.checkTextLength*/}
 						]
 					})(
 						<TextArea placeholder='请输入至少五个字符' style={{resize:'none',height:120}} maxLength={500}></TextArea>
@@ -254,10 +255,10 @@ class inventoryRecord extends React.Component{
     };
     queryHandler = (query) => {
         debugger
-        console.log(this.state.query)
+      console.log(this.state.query)
       this.refs.table.fetch(this.state.query);
     }
-     onChange = (date, dateString) => {
+    onChange = (date, dateString) => {
         console.log(date, dateString);
         let options ={
             time:dateString
@@ -270,22 +271,45 @@ class inventoryRecord extends React.Component{
 			console.log(e);
 			this.refs.form.validateFields((err, values) => {
 				if (!err) {
-					console.log('Received values of form: ', values);
-					this.setState({
-						visible: false,
-					});
+          if(values.date){
+            values.startTime= moment(values.date[0]).format('YYYY-MM-DD');
+            values.endTime= moment(values.date[1]).format('YYYY-MM-DD');
+          }
+          console.log('Received values of form: ', values);
+          this.sendSubmitAjax(values)
+					
 				}
 			})
-			
 		}
 		handleCancel = (e) => {
-			console.log(e);
+      console.log(e);
+      this.refs.form.resetFields();
 			this.setState({
 				visible: false,
 			});
-		}
+    }
+    sendSubmitAjax = (value) =>{
+      let options = {
+        body:JSON.stringify(value),
+        success: data => {
+          if(data.status){
+            setTimeout(()=>{
+              message.success( '操作成功')
+              this.setState({
+                visible: false,
+              });
+              this.refs.form.resetFields();
+              this.refs.table.fetch();
+            },300)
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(inventory.submitInventoryOrders, options)
+    }
     render(){
-				
         const { query , visible , multiSelect } = this.state;
         return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
@@ -296,7 +320,7 @@ class inventoryRecord extends React.Component{
                         onChange={(e) =>{  this.setState({'query':Object.assign(query,{'maintainNo':e.target.value}) })   }}
                         style={{ width: 200 ,marginRight:15}}
                     />
-                    <RangePicker onChange={this.onChange}  style={{ marginRight:15}}/>
+                    <RangePicker onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM-DD'/>
                     <Button type='primary' size='default' onClick={this.queryHandler}>查询</Button>
                   </Col> 
                   <Col span={12} style={{textAlign:'right'}}>
@@ -313,7 +337,6 @@ class inventoryRecord extends React.Component{
                   showHeader={true}
                   style={{marginTop: 10}}
                   size="small"
-                  onChange={this.handleChange}
               /> 
 
               <Modal

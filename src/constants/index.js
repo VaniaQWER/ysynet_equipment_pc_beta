@@ -215,6 +215,19 @@ export const depreciationTypeData = {
   "04": { text: '年数总和法'},
 }
 
+//折旧计提
+export const depreciationStateSel =[
+  { text: '未计提', value: '00' },
+  { text: '已计提', value: '01' },
+] 
+export const depreciationState = {
+  "00": { text: '未计提'},
+  "01": { text: '已计提'},
+  "02": { text: '已计提'},
+  null :{text: ""}
+}
+
+
 //保养登记
 export const upkeepStateSel =[
   { text: '待完成', value: '00' },

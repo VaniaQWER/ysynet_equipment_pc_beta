@@ -92,22 +92,7 @@ class AssetInfo extends Component {
         <Col span={8} className={styles['table-span']}><InputWrapper text={ AssetInfoData.meteringType } onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'METERING_TYPE')} /></Col>
         <Col span={4} className={styles['table-span']}>保养周期</Col>
         <Col span={8} className={styles['table-span']}><InputWrapper text={ AssetInfoData.maintainDay } onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'MAINTAIN_DAY')} /></Col>
-        <Col span={4} className={styles['table-span']}>下次保养</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.nextMaintainDate ? AssetInfoData.nextMaintainDate.split(' ')[0]:'' }</Col>
-        <Col span={4} className={styles['table-span']}>保修截止期</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.inDate ? AssetInfoData.inDate.split(' ')[0]:'' }</Col>
-        <Col span={4} className={styles['table-span']}>折旧方式</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.depreciationType ? depreciationTypeData[AssetInfoData.depreciationType].text : null }</Col>
-        <Col span={4} className={styles['table-span']}>原值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.originalValue }</Col>
-        <Col span={4} className={styles['table-span']}>净值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.carryingAmount }</Col>
-        <Col span={4} className={styles['table-span']}>残值率</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.qalevel }</Col>
-        <Col span={4} className={styles['table-span']}>残值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.residualValue }</Col>
-        <Col span={4} className={styles['table-span']}>预计使用年限</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.useLimit }</Col>
+       
         <Col span={4} className={styles['table-span']}>有无备用</Col>
         <Col span={8} className={styles['table-span']}><InputWrapper text={ AssetInfoData.spare } onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'SPARE')} /></Col>
       </Row>
