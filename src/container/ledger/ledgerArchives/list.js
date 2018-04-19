@@ -96,7 +96,7 @@ class LedgerArchivesList extends Component {
                 enterButton="搜索"
               />
             </Col>
-            <Col span={12} className={styles['text-align-right']}>
+            <Col span={8} className={styles['text-align-right']}>
               <Upload
                 action={assets.importEquipments}
                 showUploadList={false}
@@ -126,10 +126,15 @@ class LedgerArchivesList extends Component {
                 <Button style={{ marginRight: 8 }}>
                   <Icon type='export'/> 导入
                 </Button>
+                <a href={assets.importAssetsTemplate} style={{ marginLeft: 8 }} target="_self">
+                  <Icon type='cloud-download'/> 下载模板
+                </a>
               </Upload>
-              <a  href={assets.importAssetsTemplate} style={{ marginLeft: 8 }} target="_self">
-                <Icon type='cloud-download'/> 下载模板
-              </a>
+            </Col>
+            <Col span={4}>
+              <Button type='primary' style={{ marginRight: 8 }}>
+                <Link to={{pathname:`/ledger/ledgerArchives/add/item`}}>新增档案</Link>
+              </Button>
             </Col>
           </Row>
           <RemoteTable
