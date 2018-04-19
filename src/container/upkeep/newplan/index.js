@@ -707,7 +707,8 @@ class MaintainPlan extends PureComponent {
             onExpand={(expanded, record) => console.log(expanded, record)}
             dataSource={ProductTabledata } 
             expandedRowRender={(record)=>{
-              if(record.subList.length!==0){
+
+              if(record.subList && record.subList.length!==0){
                 return(
                   <Table
                     rowKey='maintainTypeId'
