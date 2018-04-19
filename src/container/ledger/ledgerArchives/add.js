@@ -106,7 +106,7 @@ class NewAddDictionary extends PureComponent {
     return(
       <Form onSubmit={this.handleSubmit}>
         <FormItem label="证件号" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-          {(<Input style={{width: 250}} />)}
+          {(<Input style={{width: 250}} placeholder={`无注册证号填无`} />)}
         </FormItem>
         <FormItem label="品牌" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
           {(<Select style={{width: 250}}>
