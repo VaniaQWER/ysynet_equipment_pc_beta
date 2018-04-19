@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Row, Col, Form } from 'antd';
 const FormItem = Form.Item;
 const formItemLayout = {

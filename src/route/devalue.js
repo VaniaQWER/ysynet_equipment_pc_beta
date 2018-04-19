@@ -3,7 +3,7 @@ import asyncComponent from './asyncComponent';
 
 export default { 
   path: '/devalue', 
-  name: '资产盘点', 
+  name: '资产折旧', 
   component: asyncComponent(() => import("../container/devalue")),
   routes: [
     { exact:true, path: '/devalue/withdraw', name: '折旧计提', component: asyncComponent(() => import("../container/devalue/withdraw"))},

@@ -11,7 +11,7 @@ import { ledger as ledgerService } from '../../../service';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
 import moment, { isMoment } from 'moment';
-import { ledgerData, productTypeData, certSourceFunds,depreciationTypeData } from '../../../constants';
+import { depreciationTypeData } from '../../../constants';
 const { MonthPicker} = DatePicker;
 
 class DepreInfo extends Component {

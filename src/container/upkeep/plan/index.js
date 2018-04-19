@@ -190,39 +190,39 @@ class MaintainPlan extends React.Component{
           render: text => <span title={text}>{text}</span>
         }
       ]
-        return(
-            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20,backgroundColor:'none'}}>
-              <Row>
-                  <Col span={12}>
-                  <Search
-                      placeholder="请输入计划单号/资产名称/资产编码"
-                      onSearch={value =>  {this.queryHandler({'maintainPlanNo':value})}}
-                      style={{ width: 400 }}
-                      enterButton="搜索"
-                  />
-                  </Col>
-              </Row>
-              <RemoteTable
-                  ref='table'
-                  query={this.state.query}
-                  url={upkeep.planList}
-                  scroll={{x: '140%', y : document.body.clientHeight - 110 }}
-                  columns={columns}
-                  rowKey={'maintainPlanDetailId'}
-                  showHeader={true}
-                  style={{marginTop: 10}}
-                  size="small"
-              /> 
-              <Modal
-                title="警告"
-                visible={this.state.visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
-              >
-                <p>{modalContent}</p>
-              </Modal>
-            </Content>
-        )
+      return(
+          <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20,backgroundColor:'none'}}>
+            <Row>
+                <Col span={12}>
+                <Search
+                    placeholder="请输入计划单号/资产名称/资产编码"
+                    onSearch={value =>  {this.queryHandler({'maintainPlanNo':value})}}
+                    style={{ width: 400 }}
+                    enterButton="搜索"
+                />
+                </Col>
+            </Row>
+            <RemoteTable
+                ref='table'
+                query={this.state.query}
+                url={upkeep.planList}
+                scroll={{x: '140%', y : document.body.clientHeight - 110 }}
+                columns={columns}
+                rowKey={'maintainPlanDetailId'}
+                showHeader={true}
+                style={{marginTop: 10}}
+                size="small"
+            /> 
+            <Modal
+              title="警告"
+              visible={this.state.visible}
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+            >
+              <p>{modalContent}</p>
+            </Modal>
+          </Content>
+      )
     }
 }
 

@@ -2,20 +2,15 @@
  * @file 工作台
  */
 import React, { Component } from 'react';
-import { Row, Col, Card, Avatar } from 'antd';
-
+import { Card } from 'antd';
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
 
-const gridStyle = {
-  width: '25%',
-  textAlign: 'center',
-};
+
 
 class Workplace extends Component {
   
   render() {
-    const { orgName,userName } = this.props.user
     return (
      <div className='ysynet-content ysynet-common-bgColor'>
         {/* <Row>

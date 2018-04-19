@@ -1,17 +1,15 @@
 /**折旧计提--列表*/
 import React from 'react';
-import { message , Row, Col, Layout ,Button ,DatePicker , Modal ,Spin ,Alert} from 'antd';
+import { message , Row, Col, Layout ,Button ,DatePicker , Modal ,Spin} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
-import inventory from '../../../api/inventory';
-import request from '../../../utils/request';
-import { upkeepState ,upkeepStateSel , depreciationState ,depreciationStateSel} from '../../../constants';
+import { depreciationState ,depreciationStateSel} from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
-import moment from 'moment';
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 const { RangePicker } = DatePicker;
+
 const sortTime = (a,b,key) =>{
   if(a[key] && b[key]){
     return timeToStamp(a[key]) - timeToStamp(b[key])
@@ -54,7 +52,7 @@ class WithDraw extends React.Component{
 					setTimeout(()=>{
 						this.setState({'loading':false})
 						message.success('操作成功')
-				},2000)
+				  },2000)
 				
 				},
 				onCancel:()=>{
@@ -133,7 +131,7 @@ class WithDraw extends React.Component{
               </Row>
               <RemoteTable
                   ref='table'
-                  query={this.state.query}
+                  query={query}
                   url={assets.selectMaintainOrderList}
                   scroll={{x: '100%', y : document.body.clientHeight - 110 }}
                   columns={columns}

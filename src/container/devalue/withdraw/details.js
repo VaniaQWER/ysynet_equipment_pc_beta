@@ -1,6 +1,6 @@
 /**折旧计提 --详情 */
 import React, { Component } from 'react';
-import {message , Alert , Row, Col, Input, Icon ,Card ,Form, Button ,Select } from 'antd'
+import {message ,Row, Col, Input, Icon ,Card ,Form, Button ,Select } from 'antd'
 
 import TableGrid from '../../../component/tableGrid';
 import querystring from 'querystring';
