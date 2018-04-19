@@ -7,7 +7,7 @@ const transfer = {
 	 * @param userName 用户名（模糊匹配）
 	 * @return value 用户id   deptName 科室名称  userName用户名称
    */
-  getSelectUserNameList: `${_local}/user/selectUserNameList`,// 新保养人模糊搜索框
+  getSelectUserNameList: `${_local}/user/selectUserNameList`,// 新保管人模糊搜索框
   /**
    * 查询机构所有的使用科室，管理科室
     * @param orgId 机构id（可为空，为空则查询当前登录用户）
