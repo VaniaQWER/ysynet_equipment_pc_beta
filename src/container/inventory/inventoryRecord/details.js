@@ -251,6 +251,7 @@ class inventoryDetails extends Component {
 		const props = {
 			showUploadList:false,
 			name:'uploadFile',
+			withCredentials:true,
 			action: inventory.importQrcodeIn,
 			data:{
 				'stockCountId':detailsId
