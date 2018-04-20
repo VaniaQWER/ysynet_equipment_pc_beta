@@ -1,40 +1,35 @@
 /**清查记录--列表*/
 import React from 'react';
-import { message , Row, Col, Input, Layout ,Button ,Select, Popover ,DatePicker ,Modal ,Form } from 'antd';
+import { message , Row, Col, Input, Layout ,Button ,Select, DatePicker ,Modal ,Form } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import TableGrid from '../../../component/tableGrid';
 import inventory from '../../../api/inventory';
 import request from '../../../utils/request';
-import { upkeepState ,upkeepStateSel } from '../../../constants';
+import { checkState ,checkStateSel , checkType } from '../../../constants';
 import { Link } from 'react-router-dom';
 import querystring from 'querystring';
-// import { timeToStamp } from '../../../utils/tools';
 const Option = Select.Option;
 const Search = Input.Search;
 const { Content } = Layout;
 const FormItem = Form.Item;
 const { RemoteTable } = TableGrid;
 const { RangePicker } = DatePicker;
-// const sortTime = (a,b,key) =>{
-//   if(a[key] && b[key]){
-//     return timeToStamp(a[key]) - timeToStamp(b[key])
-//   }
-// }
+
 const columns=[
   { title: '操作', 
   dataIndex: 'maintainGuid', 
   width:'5%',
   render: (text,record) =>
     <span>
-      { (record.fstate==="00") ? 
-        <span><Link to={{pathname:`/inventory/inventoryRecord/details/${record.maintainGuid}`}}>清查</Link></span>
-        :<span><Link to={{pathname:`/inventory/inventoryRecord/details/${record.maintainGuid}`}}>详情</Link></span>
+      { (record.fState==="0") ? 
+        <span><Link to={{pathname:`/inventory/inventoryRecord/details/${record.stockCountId}`}}>清查</Link></span>
+        :<span><Link to={{pathname:`/inventory/inventoryRecord/details/${record.stockCountId}`}}>详情</Link></span>
       }
     </span>
   },
   {
     title: '清查单号',
-    dataIndex: 'maintainNo',
+    dataIndex: 'stockCountNo',
     width:'10%',
     render(text, record) {
       return <span title={text}>{text}</span>
@@ -42,21 +37,21 @@ const columns=[
   },
   {
     title: '清查单状态',
-    dataIndex: 'fstate',
-    key: 'fstate',
+    dataIndex: 'fState',
+    key: 'fState',
     width:'5%',
-    filters: upkeepStateSel,
-    onFilter: (value, record) => (record && record.fstate===value),
+    filters: checkStateSel,
+    onFilter: (value, record) => (record && record.fState===value),
     render: text => 
-      <div><span style={{marginRight:5,backgroundColor:upkeepState[text].color ,width:10,height:10,borderRadius:'50%',display:'inline-block'}}></span>
-        { upkeepState[text].text }
+      <div>
+      <span style={{marginRight:5,backgroundColor:checkState[text].color ,width:10,height:10,borderRadius:'50%',display:'inline-block'}}></span>
+        { checkState[text].text }
       </div>
   },
   {
     title: '创建时间',
     width:'8%',
-    dataIndex: 'maintainDate',
-    // sorter: (a, b) => sortTime(a,b,'maintainDate'),
+    dataIndex: 'stockCountDate',
     render(text, record) {
       return <span title={text}>{text}</span>
     }
@@ -71,27 +66,17 @@ const columns=[
   },
   {
     title: '清查方式',
-    dataIndex: 'modifyUserNameha',
+    dataIndex: 'stockCountType',
     width:'8%',
     render(text, record) {
-      return <span title={text}>{text}</span>
+      return <span title={checkType[text].text}> { checkType[text].text }</span>
     }
   },
   {
     title: '备注',
-    dataIndex: 'equipmentName',
-    width:'20%',
-    render:(text,record) =>
-      <Popover  content={
-        <div style={{padding:20}}>
-          <p>设备名称：{record.equipmentName}</p>
-          <p>操作员：{record.modifyUserName}</p>
-          <p>保养单状态：{upkeepState[record.fstate].text}</p>
-        </div>
-      }>
-        {text}
-      </Popover>
-  },
+    dataIndex: 'remark',
+    width:'20%'
+  }
 ]
 const formItemLayout = {
 	labelCol: {
@@ -111,16 +96,9 @@ class ModalForm extends React.Component{
   }
   componentWillMount =()=>{
 		this.getUseDepart();
-	}
-	onChange =(value)=>{
-		console.log('onChange ', value, arguments);
-		// this.props.callback(value);
-	}
-
-	handleChange = (value) => {
-		console.log(`selected ${value}`);
-	}
-	checkTextLength = (rule, value, callback) => {//备注的验证规则	
+  }
+  //备注的验证规则	
+	checkTextLength = (rule, value, callback) => {
 		const { getFieldValue } = this.props.form;
 		const mentions = getFieldValue('remark');
 		if (!mentions || mentions.length < 5) {
@@ -129,7 +107,7 @@ class ModalForm extends React.Component{
 			callback();
 		}
   }
-  //获取科室下拉框
+
 	getUseDepart = (value) =>{
 		let o;
 		if(value){
@@ -173,7 +151,6 @@ class ModalForm extends React.Component{
 			callbackData:Object.assign(this.state.callbackData,{[keyName]:ret})
     })
     this.props.callback(this.state.callbackData)
-		console.log(this.state.callbackData)
   }
   
 	render(){
@@ -220,7 +197,7 @@ class ModalForm extends React.Component{
 				<FormItem label='备注' {...formItemLayout}>
 					{getFieldDecorator(`remark`,{
 						rules:[
-							{/*validator: this.checkTextLength*/}
+							{validator: this.checkTextLength}
 						]
 					})(
 						<TextArea placeholder='请输入至少五个字符' style={{resize:'none',height:120}} maxLength={500}></TextArea>
@@ -234,14 +211,13 @@ const ModalFormWapper = Form.create()(ModalForm);
 
 
 class inventoryRecord extends React.Component{
-
+    
     state = {
       query:{},
 			visible:false,
 			modalFormData:{}
     };
     queryHandler = (query) => {
-      console.log(this.state.query)
       this.refs.table.fetch(this.state.query);
     }
     onChange = (date, dateString) => {
@@ -254,20 +230,15 @@ class inventoryRecord extends React.Component{
         })
     }
 		handleOk = (e) => {
-      console.log(e);
-      console.log(this.state.modalFormData)
       let modalFormData = this.state.modalFormData
 			this.refs.form.validateFields((err, values) => {
 				if (!err) {
           values= Object.assign(values,modalFormData)
-          console.log('Received values of form: ', values);
           this.sendSubmitAjax(values)
-					
 				}
 			})
 		}
 		handleCancel = (e) => {
-      console.log(e);
       this.refs.form.resetFields();
 			this.setState({
 				visible: false,
@@ -313,7 +284,6 @@ class inventoryRecord extends React.Component{
                   </Col> 
                   <Col span={12} style={{textAlign:'right'}}>
                     <Button type='primary' size='default' onClick={()=>{this.setState({visible:true})}}>新增清查 </Button>
-                   
                   </Col>
               </Row>
               <RemoteTable
@@ -322,7 +292,7 @@ class inventoryRecord extends React.Component{
                   url={inventory.queryStockCountList}
                   scroll={{x: '100%', y : document.body.clientHeight - 110 }}
                   columns={columns}
-                  rowKey={'maintainGuid'}
+                  rowKey={'stockCountId'}
                   showHeader={true}
                   style={{marginTop: 10}}
                   size="small"

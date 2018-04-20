@@ -215,6 +215,32 @@ export const depreciationTypeData = {
   "04": { text: '年数总和法'},
 }
 
+//清查记录状态
+export const checkStateSel = [
+  { text: '清查中', value: '0' },
+  { text: '已清查', value: '1' },
+] 
+//清查记录状态
+export const checkState = {
+  "0": { text: '清查中',color: 'darkgray'},
+  "1": { text: '已清查',color: 'limegreen'},
+  null :{text: "",color: 'transparent'}
+}
+//清查记录方式
+export const checkType = {
+  "0": { text: '管理科室',color: 'darkgray'},
+  "1": { text: '使用科室',color: 'limegreen'},
+  null :{text: "asd",color: 'transparent'}
+}
+
+
+//清查详情 - 清查结果类型
+export const checkDetailType = {
+  "00": { text: '未清查',color: 'darkgray'},
+  "01": { text: '已清查',color: 'limegreen'},
+  "02": { text: '富余',color: 'limegreen'},
+  null :{text: "",color: 'transparent'}
+}
 //折旧计提
 export const depreciationStateSel =[
   { text: '未计提', value: '00' },
@@ -223,7 +249,16 @@ export const depreciationStateSel =[
 export const depreciationState = {
   "00": { text: '未计提'},
   "01": { text: '已计提'},
-  "02": { text: '已计提'},
+  null :{text: ""}
+}
+//资金来源
+export const payType = {
+  "01": { text: '自筹资金'},
+  "02": { text: '财政拨款'},
+  "03": { text: '科研经费'},
+  "04": { text: '教学资金'},
+  "05": { text: '接收捐赠'},
+  "06": { text: '其他'},
   null :{text: ""}
 }
 
