@@ -3,17 +3,18 @@
  * @since 2018-04-18
  */
 import React, { PureComponent } from 'react';
-import { Layout, Card, Affix, Button, Row, Col, Form, Input, Radio, Select, DatePicker, message, Modal, Table } from 'antd';
+import { Layout, Card, Affix, Button, Row, Col, Form, Input, Radio, Select, DatePicker, message, Modal } from 'antd';
 import request from '../../../utils/request';
 import querystring from 'querystring';
+import ledger from '../../../api/ledger';
 import transfer from '../../../api/transfer';
-// import tableGrid from '../../../component/tableGrid';
+import tableGrid from '../../../component/tableGrid';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 const { MonthPicker } = DatePicker;
-// const { RemoteTable } = tableGrid
+const { RemoteTable } = tableGrid
 // 表单布局样式
 const formItemLayout = {
   labelCol: {
@@ -38,21 +39,25 @@ class SelectEquipment extends PureComponent {
     this.props.form.resetFields();
   }
   render() {
-    // const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     return (
       // 转科记录查询部分
       <Form onSubmit={this.handleSearch}>
         <Row>
           <Col span={12}>
             <FormItem label={`证件号`} {...formItemLayout}>
-              {(
-                <Input placeholder="请输入证件号" style={{width: 220}} />
+              {getFieldDecorator('registerNo', {
+                rules: [{required: true, message: '请输入证件号，如没有填无'}]
+              })(
+                <Input placeholder="无注册证号填无" style={{width: 220}} />
               )}
             </FormItem>
           </Col>
           <Col span={12}>
             <FormItem label={`品牌`} {...formItemLayout}>
-              {(
+              {getFieldDecorator('tfBrand', {
+                rules: [{required: true, message: '请输入证件号'}]
+              })(
                 <Input placeholder="请输入品牌" style={{width: 220}} />
               )}
             </FormItem>
@@ -61,15 +66,19 @@ class SelectEquipment extends PureComponent {
         <Row>
           <Col span={12}>
             <FormItem label={`设备名称`} {...formItemLayout}>
-              {(
+              {getFieldDecorator('equipmentName', {
+                rules: [{required: true, message: '请输入设备名称'}]
+              })(
                 <Input placeholder="请输入设备名称" style={{width: 220}} />
               )}
             </FormItem>
           </Col>
           <Col span={12}>
-            <FormItem label={`转入科室`} {...formItemLayout}>
-              {(
-                <Input placeholder="请输入设备名称" style={{width: 220}} />
+            <FormItem label={`型号`} {...formItemLayout}>
+              {getFieldDecorator('fmodel', {
+                rules: [{required: true, message: '请输入型号'}]
+              })(
+                <Input placeholder="请输入型号" style={{width: 220}} />
               )}
             </FormItem>
           </Col>
@@ -77,7 +86,9 @@ class SelectEquipment extends PureComponent {
         <Row>
           <Col span={12}>
             <FormItem label={`规格`} {...formItemLayout}>
-              {(
+              {getFieldDecorator('spec', {
+                rules: [{required: true, message: '请输入规格'}]
+              })(
                 <Input placeholder="请输入规格" style={{width: 220}} />
               )}
             </FormItem>
@@ -143,10 +154,17 @@ class LedgerArchivesAdd extends PureComponent {
     managementData: [],//管理科室
     deptNameData: [],//使用科室
     userNameData: [],//保管人
+    orgIdData: [],//供应商
+    registerNoData: [], //注册证号
     loading: false,
     equipmentVisible: false, //选择设备弹框
     dictionaryVisible: false, //新增字典弹框
     query: '',//选择设备弹框查询
+    registerNo: '',
+    tfBrand: '',
+    dataTfBrand: '',
+    data: [],
+
   }
   //管理科室模糊搜索
   handleChangeManagement = (value) =>{
@@ -174,7 +192,7 @@ class LedgerArchivesAdd extends PureComponent {
       },
       error: err => {console.log(err)}
     }
-    request(transfer.getSelectUseDeptList,options)
+    request(transfer.getSelectUseDeptList,options);
   }
    //使用科室模糊搜索
    handleChangeRollOut = (value) =>{
@@ -202,7 +220,7 @@ class LedgerArchivesAdd extends PureComponent {
       },
       error: err => {console.log(err)}
     }
-    request(transfer.getSelectUseDeptList,options)
+    request(transfer.getSelectUseDeptList,options);
   }
   //保管人模糊搜索
   handleChangeMaintainUserid = (value) =>{
@@ -231,7 +249,7 @@ class LedgerArchivesAdd extends PureComponent {
       },
       error: err => {console.log(err)}
     }
-    request(transfer.getSelectUserNameList,options)
+    request(transfer.getSelectUserNameList,options);
   }
   /**---------------弹框Start------------------------- */
   showModal = (modalName) => {
@@ -243,13 +261,102 @@ class LedgerArchivesAdd extends PureComponent {
       this.setState({ loading: false, [modalName]: false });
     }, 3000);
   }
-  handleCancel = (modalName) => {
-    this.setState({ [modalName]: false });
-  }
+  handleCancel = (modalName) => { this.setState({ [modalName]: false }); }
   /**---------------弹框End------------------------- */
   queryHandle = (query) => {
     this.refs.table.fetch(query);
     this.setState({query});
+  }
+  getOrgIdVal = (value) =>{
+    console.log(value);
+  }
+  componentWillMount =() => {
+    // this.getRegisterNoList();//注册证号下拉数据
+    this.getOrgIdList();//供应商下拉数据
+  }
+  // 供应商列表
+  getOrgIdList = (value) => {
+    console.log(value)
+    let options = {
+      body:querystring.stringify({orgId: value}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          let ret = []
+          data.result.forEach(item => {
+            ret.push({
+              value: item.orgId,
+              name: item.orgName
+            })
+          });
+          this.setState({
+            'orgIdData': ret
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(ledger.getSelectFOrgList, options);
+  }
+  // 通过使用科室接口带出存放地址数据
+  getNewAddessInfo = (value,option) => {
+    console.log(value, option);
+    this.setState({inDeptguid: value,inDeptname:option.props.children});
+    let options = {
+      body:querystring.stringify({'deptId': value}),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        console.log(data);
+        // const values = this.props.form.getFieldsValue();
+        // if (data.result.length === 0) {
+        //   values.newAdd = '';
+        //   this.setState({newAddressEdit: false});
+        // } else {
+        //   const result = data.result[0].address;
+        //   values.newAdd = result;
+        //   this.setState({newAddressEdit: true});
+        // }
+        // this.setState({data: values});
+      }
+    }
+    request(transfer.getSelectDeptAddress, options);
+  }
+  getRegisterNoList = (value, registerNo, tfBrand) => {
+    console.log(value);
+    let options = {
+      body:querystring.stringify({certGuid: value, registerNo: registerNo, tfBrand: tfBrand}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          let ret = []
+          data.result.forEach(item => {
+            const values = this.props.form.getFieldsValue();
+            values.tfBrand = item.tfBrand;
+            this.setState({data: values});
+            ret.push({
+              value: item.certGuid,
+              registerNo: item.registerNo,
+              tfBrand: item.tfBrand
+            })
+          });
+          this.setState({
+            'registerNoData': ret,
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(ledger.getSelectCertList, options);
   }
   render() {
     const columns = [
@@ -261,41 +368,43 @@ class LedgerArchivesAdd extends PureComponent {
       },
       {
         title: '操作',
-        dataIndex: 'transferGuid',
+        dataIndex: 'equipmentCode',
         width: 80,
         render: (text, record, index) => {
-          // <span>添加</span>
+          return(
+            <Button type="primary" key="submit">添加</Button>
+          )
         }
       },
       {
         title: '证件号',
-        dataIndex: 'zhengjianhao',
+        dataIndex: 'registerNo',
         width: 80,
       },
       {
         title: '品牌',
-        dataIndex: 'pingpai',
+        dataIndex: 'tfBrand',
         width: 80,
       },
       {
         title: '设备名称',
-        dataIndex: 'shebeimingcheng',
+        dataIndex: 'equipmentName',
         width: 80,
       },
       {
         title: '型号',
-        dataIndex: 'xinghao',
+        dataIndex: 'fmodel',
         width: 80,
       },
       {
         title: '规格',
-        dataIndex: 'guige',
+        dataIndex: 'spec',
         width: 80,
       },
     ]
     const { getFieldDecorator } = this.props.form;
-    const { equipmentVisible, dictionaryVisible, loading } = this.state;
-    // const query = this.state.query;
+    const { equipmentVisible, dictionaryVisible, loading, data } = this.state;
+    const query = this.state.query;
     return (
       <Content>
         <Affix>
@@ -312,14 +421,14 @@ class LedgerArchivesAdd extends PureComponent {
         onCancel={()=>this.handleCancel('equipmentVisible')}
         footer={null}
         >
-          {/* <SelectEquipmentModal query={this.queryHandle} /> */}
-          <SelectEquipmentModal />
-          <Table
-          ref='proTable' // 根据搜索后进行刷新列表
+          <SelectEquipmentModal query={this.queryHandle} />
+          <RemoteTable
+          ref='table' // 根据搜索后进行刷新列表
           showHeader={true}
-          query={{useDeptGuid: this.state.outDeptguid}}
-          // url={assets.selectAssetsList}
+          query={query}
+          url={ledger.getSelectEquipmentList}
           columns={columns}
+          rowKey={'equipmentCode'}
           scroll={{x: '100%', y: document.body.clientHeight - 110 }}
           size="small"
           />
@@ -349,7 +458,14 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="注册证号" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('certGuid')(
+                  <Select
+                    onChange={this.getRegisterNoList}
+                    style={{ width: 200 }} 
+                  >
+                    {this.state.registerNoData.map(d=><Option value={d.value} key={d.registerNo}>{d.registerNo}</Option>)}
+                  </Select>
+                )}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -376,7 +492,9 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="品牌" {...formItemLayout}>
-                {(<Input style={{width: 200}} placeholder={`显示`} />)}
+                {getFieldDecorator('tfBrand', {
+                  initialValue: data.tfBrand
+                })(<Input style={{width: 200}}/>)}
               </FormItem>
             </Col>
           </Row>
@@ -407,11 +525,12 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label={`管理科室`} {...formItemLayout}>
-              {getFieldDecorator('orgId ')(
+              {getFieldDecorator('bDeptCode', {
+                rules: [{required: true, message: '请选择管理科室'}]
+              })(
                   <Select
                     showSearch
                     onSearch={this.handleChangeManagement}
-                    onSelect={(value)=>{this.setState({orgId: value})}}
                     style={{ width: 200 }} 
                     defaultActiveFirstOption={false}
                     showArrow={false}
@@ -420,7 +539,7 @@ class LedgerArchivesAdd extends PureComponent {
                     placeholder={`请搜索`}
                   >
                     {this.state.managementData.map(d => {
-                    return <Option value={d.value} key={d.value}>{d.text}</Option>
+                    return <Option value={d.value} key={d.text}>{d.text}</Option>
                   })}
                   </Select>
                 )}
@@ -428,11 +547,13 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label={`使用科室`} {...formItemLayout}>
-                {getFieldDecorator('outDeptguid')(
+                {getFieldDecorator('outDeptguid', {
+                  rules: [{required: true, message: '请选择使用科室'}]
+                })(
                   <Select
                     showSearch
                     onSearch={this.handleChangeRollOut}
-                    onSelect={(value, option)=>{this.setState({outDeptguid: value, outDeptname: option.props.children})}}
+                    onSelect={this.getNewAddessInfo}
                     style={{ width: 200 }} 
                     defaultActiveFirstOption={false}
                     showArrow={false}
@@ -449,7 +570,9 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="存放地址" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('deposit',{
+                  // initialValue: data.deposit
+                })(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
@@ -477,11 +600,16 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label={`供应商`} {...formItemLayout}>
-              {(<Select style={{width: 200}}>
-                <Option value="1">请选择</Option>
-                <Option value="2">无</Option>
-                <Option value="3">医商云机构字典</Option>
-              </Select>)}
+                {getFieldDecorator('orgName')(
+                  <Select
+                    onChange={this.getOrgIdList}
+                    style={{ width: 200 }} 
+                  >
+                    {this.state.orgIdData.map(d=>{
+                      return <Option value={d.value} key={d.name}>{d.name}</Option>
+                    })}
+                  </Select>
+                )}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -561,12 +689,12 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="月折旧率" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('monthDepreciationV')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="开始计提时间" {...formItemLayout}>
-                {(<MonthPicker style={{width: 200}} />)}
+                {getFieldDecorator('depreciationBeginDate')(<MonthPicker style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
