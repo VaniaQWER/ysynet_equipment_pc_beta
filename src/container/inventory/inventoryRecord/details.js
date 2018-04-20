@@ -303,8 +303,8 @@ class inventoryDetails extends Component {
 			render:(text)=><span title={text}>{text}</span>
 		},{
 			title: '资产名称',
-			key: 'equipmetdName',
-			dataIndex: 'equipmetdName',
+			key: 'equipmentName',
+			dataIndex: 'equipmentName',
 			width:200,
 			render:(text)=><span title={text}>{text}</span>
 		},{
