@@ -1,6 +1,6 @@
 /**
  * @file 资产档案 - 新增档案详情
- * @since 2018-04-18
+ * @since 2018-04-19
  */
 import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, Row, Col, Form, Input, Radio, Select, DatePicker, message, Modal } from 'antd';
@@ -8,6 +8,7 @@ import request from '../../../utils/request';
 import querystring from 'querystring';
 import ledger from '../../../api/ledger';
 import transfer from '../../../api/transfer';
+import { selectStaticDataListMeteringUnit } from '../../../api/ledger';
 import tableGrid from '../../../component/tableGrid';
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -46,18 +47,14 @@ class SelectEquipment extends PureComponent {
         <Row>
           <Col span={12}>
             <FormItem label={`证件号`} {...formItemLayout}>
-              {getFieldDecorator('registerNo', {
-                rules: [{required: true, message: '请输入证件号，如没有填无'}]
-              })(
-                <Input placeholder="无注册证号填无" style={{width: 220}} />
+              {getFieldDecorator('registerNo')(
+                <Input placeholder="请输入证件号" style={{width: 220}} />
               )}
             </FormItem>
           </Col>
           <Col span={12}>
             <FormItem label={`品牌`} {...formItemLayout}>
-              {getFieldDecorator('tfBrand', {
-                rules: [{required: true, message: '请输入证件号'}]
-              })(
+              {getFieldDecorator('tfBrand')(
                 <Input placeholder="请输入品牌" style={{width: 220}} />
               )}
             </FormItem>
@@ -66,18 +63,14 @@ class SelectEquipment extends PureComponent {
         <Row>
           <Col span={12}>
             <FormItem label={`设备名称`} {...formItemLayout}>
-              {getFieldDecorator('equipmentName', {
-                rules: [{required: true, message: '请输入设备名称'}]
-              })(
+              {getFieldDecorator('equipmentName')(
                 <Input placeholder="请输入设备名称" style={{width: 220}} />
               )}
             </FormItem>
           </Col>
           <Col span={12}>
             <FormItem label={`型号`} {...formItemLayout}>
-              {getFieldDecorator('fmodel', {
-                rules: [{required: true, message: '请输入型号'}]
-              })(
+              {getFieldDecorator('fmodel')(
                 <Input placeholder="请输入型号" style={{width: 220}} />
               )}
             </FormItem>
@@ -86,9 +79,7 @@ class SelectEquipment extends PureComponent {
         <Row>
           <Col span={12}>
             <FormItem label={`规格`} {...formItemLayout}>
-              {getFieldDecorator('spec', {
-                rules: [{required: true, message: '请输入规格'}]
-              })(
+              {getFieldDecorator('spec')(
                 <Input placeholder="请输入规格" style={{width: 220}} />
               )}
             </FormItem>
@@ -105,41 +96,94 @@ class SelectEquipment extends PureComponent {
 const SelectEquipmentModal = Form.create()(SelectEquipment);
 // 新增字典弹框新增表单
 class NewAddDictionary extends PureComponent {
-  handleSubmit = (e) => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
-    });
+  state={
+    optionsTfBrand: [],//品牌
+    optionsMeteringUnit: [],//计量单位
+    callbackData: {}
+  }
+  async componentDidMount() {
+    // 计量单位
+    const dataMeteringUnitList = await selectStaticDataListMeteringUnit();
+    if (dataMeteringUnitList.status && dataMeteringUnitList.result) {
+      this.setState({ optionsMeteringUnit: dataMeteringUnitList.result.rows })
+    }
+  }
+  componentWillMount =()=>{
+		this.gettfBrandVal();
+  }
+  // 品牌
+  gettfBrandVal = (value) => {
+    let o;
+		if(value){
+			o={name: value, code: 'TF_BRAND'}
+		}else{
+			o={code:'TF_BRAND'}
+		}
+		let options = {
+			body:querystring.stringify(o),
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			success: data => {
+				if(data.status){
+					this.setState({
+						'optionsTfBrand': data.result.rows
+					})
+				}else{
+					message.error(data.msg)
+				}
+			},
+			error: err => {console.log(err)}
+		}
+		request(ledger.selectStaticDataListTfBrand,options)
   }
   render() {
+    const { getFieldDecorator } = this.props.form;
     return(
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         <FormItem label="证件号" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-          {(<Input style={{width: 250}} placeholder={`无注册证号填无`} />)}
+          {getFieldDecorator('registerNo', {
+            initialValue: '',
+            rules: [{required: true, message:'请输入证件号若无注册证号填无'}]
+          })(<Input style={{width: 250}} placeholder={`请输入证件号若无注册证号填无`} />)}
         </FormItem>
         <FormItem label="品牌" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-          {(<Select style={{width: 250}}>
-              <Option value="00">请选择</Option>
-              <Option value="01">无</Option>
-              <Option value="03">医商云品牌库</Option>
+          {getFieldDecorator('tfBrand', {
+            initialValue: '',
+            rules: [{required: true, message:'请选择品牌'}]
+          })(<Select 
+            style={{width: 250}}
+            placeholder="请选择品牌"
+            showSearch
+            onSearch={this.gettfBrandVal}
+            >
+              {this.state.optionsTfBrand.map((item, index)=><Option value={item.TF_CLO_CODE} key={item.TF_CLO_NAME}>{item.TF_CLO_NAME}</Option>)}
             </Select>)}
         </FormItem>
         <FormItem label="设备名称" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-          {(<Input style={{width: 250}} />)}
+          {getFieldDecorator('equipmentName', {
+            initialValue: '',
+            rules: [{required: true, message:'请输入设备名称'}]
+          })(<Input style={{width: 250}} placeholder={`请输入设备名称`} />)}
         </FormItem>
         <FormItem label="型号" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-          {(<Input style={{width: 250}} />)}
+          {getFieldDecorator('fmodel', {
+            initialValue: '',
+            rules: [{required: true, message:'请输入型号'}]
+          })(<Input style={{width: 250}} placeholder={`请输入型号`} />)}
         </FormItem>
         <FormItem label="规格" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-          {(<Input style={{width: 250}} />)}
+          {getFieldDecorator('spec', {
+            initialValue: '',
+            rules: [{required: true, message:'请输入规格'}]
+          })(<Input style={{width: 250}} placeholder={`请输入规格`} />)}
         </FormItem>
         <FormItem label="计量单位" labelCol={{ span: 7 }} wrapperCol={{ span: 12 }}>
-            {(<Select style={{width: 250}}>
-              <Option value="00">医商云单位字典库</Option>
-              <Option value="00">医商云单位字典库</Option>
-              <Option value="00">医商云单位字典库</Option>
+            {getFieldDecorator('meteringUnit', {
+              initialValue: '',
+              rules: [{required: true, message:'请选择计量单位'}]
+            })(<Select style={{width: 250}}>
+            {this.state.optionsMeteringUnit.map((item, index) => <Option value={item.TF_CLO_CODE} key={item.TF_CLO_NAME}>{item.TF_CLO_NAME}</Option>)}
             </Select>)}
         </FormItem>
       </Form>
@@ -149,22 +193,19 @@ class NewAddDictionary extends PureComponent {
 const NewAddDictionaryModal = Form.create()(NewAddDictionary);
 class LedgerArchivesAdd extends PureComponent {
   state={
-    value: '00',
+    value: '01',
     deptName: '',//模糊搜索参数
     managementData: [],//管理科室
     deptNameData: [],//使用科室
     userNameData: [],//保管人
     orgIdData: [],//供应商
-    registerNoData: [], //注册证号
     loading: false,
     equipmentVisible: false, //选择设备弹框
     dictionaryVisible: false, //新增字典弹框
     query: '',//选择设备弹框查询
-    registerNo: '',
-    tfBrand: '',
-    dataTfBrand: '',
-    data: [],
-
+    res: [],//详情数据
+    record: {},//新增字典数据
+    certGuid: '',
   }
   //管理科室模糊搜索
   handleChangeManagement = (value) =>{
@@ -256,10 +297,35 @@ class LedgerArchivesAdd extends PureComponent {
     this.setState({ [modalName]: true });
   }
   handleOk = (modalName) => {
-    this.setState({ loading: true });
-    setTimeout(() => {
-      this.setState({ loading: false, [modalName]: false });
-    }, 3000);
+    if (modalName === 'dictionaryVisible') {
+      this.refs.formDictionary.validateFields((err, values) => {
+        if (!err) {
+          this.sendSubmitAjax(values);
+          this.setState({ loading: true });
+        }
+      })
+    }
+  }
+  // 新增字典弹框 - 增加
+  sendSubmitAjax = (value) =>{
+    let options = {
+      body: JSON.stringify(value),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      success: data => {
+        this.setState({ loading: false, dictionaryVisible: false });
+        if (data.status) {
+          message.success( '新增成功');
+          this.refs.formDictionary.resetFields();
+          // this.refs.table.fetch();
+        } else {
+          message.error(data.msg);
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(ledger.getInsertEquipment,options)
   }
   handleCancel = (modalName) => { this.setState({ [modalName]: false }); }
   /**---------------弹框End------------------------- */
@@ -271,12 +337,11 @@ class LedgerArchivesAdd extends PureComponent {
     console.log(value);
   }
   componentWillMount =() => {
-    // this.getRegisterNoList();//注册证号下拉数据
     this.getOrgIdList();//供应商下拉数据
+    this.getBasicInformationDetail();
   }
   // 供应商列表
   getOrgIdList = (value) => {
-    console.log(value)
     let options = {
       body:querystring.stringify({orgId: value}),
       headers: {
@@ -288,7 +353,7 @@ class LedgerArchivesAdd extends PureComponent {
           data.result.forEach(item => {
             ret.push({
               value: item.orgId,
-              name: item.orgName
+              text: item.orgName
             })
           });
           this.setState({
@@ -327,52 +392,47 @@ class LedgerArchivesAdd extends PureComponent {
     }
     request(transfer.getSelectDeptAddress, options);
   }
-  getRegisterNoList = (value, registerNo, tfBrand) => {
-    console.log(value);
+  // 1/2行数据回填
+  getBasicInformationDetail = () => {
     let options = {
-      body:querystring.stringify({certGuid: value, registerNo: registerNo, tfBrand: tfBrand}),
+      body:querystring.stringify(),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
-        if(data.status){
-          let ret = []
-          data.result.forEach(item => {
+        if (data.status) {
+          const results = data.result.rows[0];
+          if (results) {
             const values = this.props.form.getFieldsValue();
-            values.tfBrand = item.tfBrand;
-            this.setState({data: values});
-            ret.push({
-              value: item.certGuid,
-              registerNo: item.registerNo,
-              tfBrand: item.tfBrand
-            })
-          });
-          this.setState({
-            'registerNoData': ret,
-          })
-        }else{
-          message.error(data.msg)
+            values.registerNo = results.results;
+            values.equipmentStandardName = results.equipmentStandardName;
+            values.fmodel = results.fmodel;
+            values.spec = results.spec;
+            values.tfBrand = results.tfBrand;
+            values.meteringUnit = request.meteringUnit;
+            this.setState({res: values});
+          }
+        } else {
+          message.error(data.msg);
         }
       },
       error: err => {console.log(err)}
     }
-    request(ledger.getSelectCertList, options);
+    request(ledger.getSelectEquipmentList, options);
+  }
+  // 选择设备弹框 - 添加按钮
+  addEquipmentTable = () => {
+    console.log('选择设备添加');
   }
   render() {
     const columns = [
-      {
-        title: '序号',
-        dataIndex: 'index',
-        render: (text, record, index) => <span>{`${index+1}`}</span>,
-        width: 50
-      },
       {
         title: '操作',
         dataIndex: 'equipmentCode',
         width: 80,
         render: (text, record, index) => {
           return(
-            <Button type="primary" key="submit">添加</Button>
+            <a onClick={this.addEquipmentTable}>添加</a>
           )
         }
       },
@@ -402,8 +462,8 @@ class LedgerArchivesAdd extends PureComponent {
         width: 80,
       },
     ]
+    const { equipmentVisible, dictionaryVisible, loading, res } = this.state;
     const { getFieldDecorator } = this.props.form;
-    const { equipmentVisible, dictionaryVisible, loading, data } = this.state;
     const query = this.state.query;
     return (
       <Content>
@@ -446,7 +506,7 @@ class LedgerArchivesAdd extends PureComponent {
           <Button key="back" onClick={()=>this.handleCancel('dictionaryVisible')}>取消</Button>
         ]}
         >
-          <NewAddDictionaryModal />
+          <NewAddDictionaryModal ref='formDictionary' data={{record: this.state.record}} />
         </Modal>
         <Card title={`基础信息`}  bordered={false} className="min_card">
           <Row>
@@ -458,42 +518,45 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="注册证号" {...formItemLayout}>
-                {getFieldDecorator('certGuid')(
-                  <Select
-                    onChange={this.getRegisterNoList}
-                    style={{ width: 200 }} 
-                  >
-                    {this.state.registerNoData.map(d=><Option value={d.value} key={d.registerNo}>{d.registerNo}</Option>)}
-                  </Select>
-                )}
+                {getFieldDecorator('registerNo', {
+                  initialValue: res.registerNo
+                })(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="资产名称" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('equipmentStandardName', {
+                  initialValue: res.equipmentStandardName
+                })(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="型号" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('fmodel', {
+                  initialValue: res.fmodel
+                })(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="规格" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('spec', {
+                  initialValue: res.spec
+                })(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="计量单位" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('meteringUnit', {
+                  initialValue: res.meteringUnit
+                })(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="品牌" {...formItemLayout}>
                 {getFieldDecorator('tfBrand', {
-                  initialValue: data.tfBrand
+                  initialValue: res.tfBrand
                 })(<Input style={{width: 200}}/>)}
               </FormItem>
             </Col>
@@ -507,7 +570,7 @@ class LedgerArchivesAdd extends PureComponent {
             <Col span={8}>
               <FormItem label={`复用原码`} {...formItemLayout}>
                 {getFieldDecorator(`reuse`, {
-                    initialValue: '00',
+                    initialValue: '01',
                   })(
                   <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}}>
                     <Radio value={`00`}>是</Radio>
@@ -518,7 +581,9 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="原码" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+              {getFieldDecorator('assetsRecord')(
+                <Input placeholder="请输入原码" style={{ width: 200 }} />
+              )}
               </FormItem>
             </Col>
           </Row>
@@ -528,26 +593,26 @@ class LedgerArchivesAdd extends PureComponent {
               {getFieldDecorator('bDeptCode', {
                 rules: [{required: true, message: '请选择管理科室'}]
               })(
-                  <Select
-                    showSearch
-                    onSearch={this.handleChangeManagement}
-                    style={{ width: 200 }} 
-                    defaultActiveFirstOption={false}
-                    showArrow={false}
-                    allowClear={true}
-                    filterOption={false}
-                    placeholder={`请搜索`}
-                  >
-                    {this.state.managementData.map(d => {
-                    return <Option value={d.value} key={d.text}>{d.text}</Option>
-                  })}
-                  </Select>
+                <Select
+                showSearch
+                onSearch={this.handleChangeManagement}
+                style={{ width: 200 }} 
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                allowClear={true}
+                filterOption={false}
+                placeholder={`请搜索`}
+              >
+                {this.state.managementData.map(d => {
+                return <Option value={d.value} key={d.text}>{d.text}</Option>
+              })}
+              </Select>
                 )}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label={`使用科室`} {...formItemLayout}>
-                {getFieldDecorator('outDeptguid', {
+                {getFieldDecorator('useDeptCode', {
                   rules: [{required: true, message: '请选择使用科室'}]
                 })(
                   <Select
@@ -570,9 +635,7 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="存放地址" {...formItemLayout}>
-                {getFieldDecorator('deposit',{
-                  // initialValue: data.deposit
-                })(<Input style={{width: 200}} />)}
+                {getFieldDecorator('deposit')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
@@ -600,13 +663,13 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label={`供应商`} {...formItemLayout}>
-                {getFieldDecorator('orgName')(
+                {getFieldDecorator('fOrgId')(
                   <Select
                     onChange={this.getOrgIdList}
                     style={{ width: 200 }} 
                   >
                     {this.state.orgIdData.map(d=>{
-                      return <Option value={d.value} key={d.name}>{d.name}</Option>
+                      return <Option value={d.value} key={d.text}>{d.text}</Option>
                     })}
                   </Select>
                 )}
@@ -614,41 +677,41 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="合同编号" {...formItemLayout}>
-                {(<Input style={{width: 200}} placeholder={`请输入采购合同号`} />)}
+                {getFieldDecorator('contractNo')(<Input style={{width: 200}} placeholder={`请输入采购合同号`} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label={`出厂日期`} {...formItemLayout}>
-                {(<DatePicker style={{width: 200}} />)}
+                {getFieldDecorator('productionDate')(<DatePicker style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label={`购买金额`} {...formItemLayout}>
-              {(<Input style={{width: 200}} />)}
+              {getFieldDecorator('buyPrice')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="安装费用" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('installPrice')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label={`购置日期`} {...formItemLayout}>
-                {(<DatePicker style={{width: 200}} />)}
+                {getFieldDecorator('buyDate')(<DatePicker style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label={`生产商`} {...formItemLayout}>
-              {(<Input style={{width: 200}}placeholder={`请输入生产商`} />)}
+              {getFieldDecorator('product')(<Input style={{width: 200}}placeholder={`请输入生产商`} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="生产国家" {...formItemLayout}>
-                {(<Select style={{width: 200}}>
+                {getFieldDecorator('productCountry')(<Select style={{width: 200}}>
                   <Option value="1">请选择</Option>
                   <Option value="2">国产</Option>
                   <Option value="3">进口</Option>
@@ -661,15 +724,14 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="折旧方式" {...formItemLayout}>
-              {getFieldDecorator(`depreciationWay`, {
+              {getFieldDecorator(`depreciationType`, {
                     initialValue: '00',
                   })(
                   <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}}>
                     <Radio value={`01`}>否</Radio>
                     <Radio value={`00`}>是</Radio>
                     <Select style={{width: 92}}>
-                      <Option value={`1`}>平均年限法</Option>
-                      <Option value={`2`}>平均年限法</Option>
+                      <Option value={`00`}>平均年限法</Option>
                     </Select>
                   </RadioGroup>
                 )}
@@ -677,14 +739,14 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="净残值率" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('residualValueV')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="预计使用年限" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('useLimit')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -703,19 +765,19 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="有无备用" {...formItemLayout}>
-              {getFieldDecorator(`standby`, {
+              {getFieldDecorator(`spare`, {
                     initialValue: '00',
                   })(
                   <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}}>
-                    <Radio value={`00`}>有</Radio>
-                    <Radio value={`01`}>无</Radio>
+                    <Radio value={`00`}>无</Radio>
+                    <Radio value={`01`}>有</Radio>
                   </RadioGroup>
                 )}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="保修截至" {...formItemLayout}>
-                {(<DatePicker style={{width: 200}} />)}
+                {getFieldDecorator('inDate')(<DatePicker style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
@@ -792,7 +854,7 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} placeholder={`计算而得出`} />)}
+                {getFieldDecorator('originalValue')(<Input style={{width: 200}} placeholder={`计算而得出`} />)}
               </FormItem>
             </Col>
           </Row>
