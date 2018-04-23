@@ -265,6 +265,9 @@ class NewTransfer extends PureComponent {
     postData.transferDate = values.transferDate.format('YYYY-MM-DD');
     let options = {
       body:JSON.stringify(postData),
+      headers: {
+        'Content-Type': 'application/json'
+      },
       success: data => {
         if(data.status){
           message.success('新增成功');
@@ -278,7 +281,6 @@ class NewTransfer extends PureComponent {
     request(transfer.getInsertTransfer,options)
   }
   resetAll=(val)=>{
-    //this.props.form.resetFields();
     let { ProductModalCallBack, outDeptname } = this.state;
     ProductModalCallBack.map((item,index)=> {
       item.useDept = outDeptname;
