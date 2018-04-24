@@ -8,13 +8,13 @@ import request from '../../../utils/request';
 import querystring from 'querystring';
 import ledger from '../../../api/ledger';
 import transfer from '../../../api/transfer';
-import { selectStaticDataListMeteringUnit } from '../../../api/ledger';
+import { selectStaticDataListMeteringUnit, saveLedger } from '../../../api/ledger';
 import tableGrid from '../../../component/tableGrid';
+import { depreciationTypeData } from '../../../constants';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
-const { MonthPicker } = DatePicker;
 const { RemoteTable } = tableGrid
 // 表单布局样式
 const formItemLayout = {
@@ -192,8 +192,12 @@ class NewAddDictionary extends PureComponent {
 }
 const NewAddDictionaryModal = Form.create()(NewAddDictionary);
 class LedgerArchivesAdd extends PureComponent {
+  constructor(props) {
+    super();
+    this.sendEndAjax = this.sendEndAjax.bind(this)
+  }
   state={
-    value: '01',
+    // value: '00',
     deptName: '',//模糊搜索参数
     managementData: [],//管理科室
     deptNameData: [],//使用科室
@@ -205,7 +209,15 @@ class LedgerArchivesAdd extends PureComponent {
     query: '',//选择设备弹框查询
     res: [],//详情数据
     record: {},//新增字典数据
-    certGuid: '',
+    equipmentBackData: [],//设备弹框收集的数据
+    equipmentCode: null, //设备id
+    assetsRecordGuid: null,
+    assetsRecord: null,
+    productType: null,
+    data: {},
+    isEdit: false,
+    disabled: false,
+    prompt: '请输入原码',
   }
   //管理科室模糊搜索
   handleChangeManagement = (value) =>{
@@ -218,7 +230,6 @@ class LedgerArchivesAdd extends PureComponent {
         if(data.status){
           let ret = []
           data.result.forEach(item => {
-            console.log(item)
             ret.push({
               value:item.value,
               text: item.text,
@@ -236,7 +247,7 @@ class LedgerArchivesAdd extends PureComponent {
     request(transfer.getSelectUseDeptList,options);
   }
    //使用科室模糊搜索
-   handleChangeRollOut = (value) =>{
+  handleChangeRollOut = (value) =>{
     let options = {
       body:querystring.stringify({deptName: value, deptType: '00'}),
       headers: {
@@ -246,7 +257,6 @@ class LedgerArchivesAdd extends PureComponent {
         if(data.status){
           let ret = []
           data.result.forEach(item => {
-            console.log(item)
             ret.push({
               value:item.value,
               text: item.text,
@@ -274,7 +284,6 @@ class LedgerArchivesAdd extends PureComponent {
         if(data.status){
           let ret = []
           data.result.forEach(item => {
-            console.log(item)
             ret.push({
               value: item.value,
               userName: item.userName,
@@ -325,7 +334,7 @@ class LedgerArchivesAdd extends PureComponent {
       },
       error: err => {console.log(err)}
     }
-    request(ledger.getInsertEquipment,options)
+    request(ledger.getInsertEquipment,options);
   }
   handleCancel = (modalName) => { this.setState({ [modalName]: false }); }
   /**---------------弹框End------------------------- */
@@ -338,7 +347,7 @@ class LedgerArchivesAdd extends PureComponent {
   }
   componentWillMount =() => {
     this.getOrgIdList();//供应商下拉数据
-    this.getBasicInformationDetail();
+    this.setState({isEdit: this.state.isEdit});
   }
   // 供应商列表
   getOrgIdList = (value) => {
@@ -369,7 +378,6 @@ class LedgerArchivesAdd extends PureComponent {
   }
   // 通过使用科室接口带出存放地址数据
   getNewAddessInfo = (value,option) => {
-    console.log(value, option);
     this.setState({inDeptguid: value,inDeptname:option.props.children});
     let options = {
       body:querystring.stringify({'deptId': value}),
@@ -377,7 +385,7 @@ class LedgerArchivesAdd extends PureComponent {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
-        console.log(data);
+        // console.log(data);
         // const values = this.props.form.getFieldsValue();
         // if (data.result.length === 0) {
         //   values.newAdd = '';
@@ -392,37 +400,151 @@ class LedgerArchivesAdd extends PureComponent {
     }
     request(transfer.getSelectDeptAddress, options);
   }
-  // 1/2行数据回填
-  getBasicInformationDetail = () => {
+  // 保存按钮
+  save = () => {
+    this.props.form.validateFields((err, values) => {
+      console.log(values)
+      if (!err) {
+        this.sendEndAjax();
+      }
+    })
+  }
+  // 保存逻辑
+  async sendEndAjax () {
+    console.log('我是保存逻辑交互');
+    const values = this.props.form.getFieldsValue();
+    let poatData = {};
+    // 基本数据
+    // const { assetsRecord, contractNo } = values; 
+    poatData.assetsRecord = {
+      
+    };
+    poatData.assetsRecord.assetsRecordGuid = this.state.assetsRecordGuid;
+    poatData.assetsRecord.productType = this.state.productType;
+    poatData.assetsRecord.assetsRecord = this.state.assetsRecord;
+    poatData.assetsRecord.contractNo = values.contractNo;
+    poatData.assetsRecord.equipmentCode = this.state.equipmentCode;
+    poatData.assetsRecord.productCountry = values.productCountry;
+    poatData.assetsRecord.product = values.product;
+    poatData.assetsRecord.bDeptCode = values.bDeptCode;
+    poatData.assetsRecord.deposit = values.deposit;
+    poatData.assetsRecord.productionDate = values.productionDate;
+    poatData.assetsRecord.useLimit = values.useLimit;
+    poatData.assetsRecord.buyDate = values.buyDate;
+    poatData.assetsRecord.depreciationType = values.depreciationType;
+    poatData.assetsRecord.residualValueV = values.residualValueV;
+    poatData.assetsRecord.custodian = values.custodian;
+    poatData.assetsRecord.installPrice = values.installPrice;
+    poatData.assetsRecord.useDeptCode = values.useDeptCode;
+    poatData.assetsRecord.buyPrice = values.buyPrice;
+    poatData.assetsRecord.inDate = values.inDate;
+    poatData.assetsRecord.spare = values.spare;
+    poatData.assetsRecord.fOrgId = values.fOrgId;
+    poatData.assetsRecord.tfBrand = values.tfBrand;
+    poatData.assetsRecord.monthDepreciationV = values.monthDepreciationV;
+    poatData.assetsRecord.depreciationBeginDate = values.depreciationBeginDate;
+    // list集合list集合
+    poatData.equipmentPayList = [];
+    //payType
+    poatData.equipmentPayList.push({
+      payType: '01',
+      buyPrice: values.name1,
+      originalValue: values.name4
+    })
+    poatData.equipmentPayList.push({
+      payType: '02',
+      buyPrice: values.name2,
+      originalValue: values.name5
+    })
+    poatData.equipmentPayList.push({
+      payType: '03',
+      buyPrice: values.name3,
+      originalValue: values.name6
+    })
+    poatData.equipmentPayList.push({
+      payType: '04',
+      buyPrice: values.name7,
+      originalValue: values.name10
+    })
+    poatData.equipmentPayList.push({
+      payType: '05',
+      buyPrice: values.name8,
+      originalValue: values.name11
+    })
+    poatData.equipmentPayList.push({
+      payType: '06',
+      buyPrice: values.name9,
+      originalValue: values.name12
+    });
+    console.log(poatData,'你就说你是来干啥的')
+    
     let options = {
-      body:querystring.stringify(),
-      headers: {
+      body: JSON.stringify(poatData)
+    }
+    const data = await saveLedger(options);
+    console.log(data)
+  }
+  // 选择设备弹框 - 添加按钮
+  addEquipmentTable = (value, modalName) => {
+    this.setState({[modalName]: false, equipmentCode: value.equipmentCode});
+    this.props.form.setFieldsValue({
+      'registerNo': value.registerNo,
+      'equipmentStandardName':value.equipmentStandardName,
+      'fmodel': value.fmodel,
+      'spec': value.spec,
+      'meteringUnit': value.meteringUnit,
+      'tfBrand':value.tfBrand
+    });
+  }
+  //原码-资产编号搜索带值
+  getAssetInfoAjax = (value) =>{
+    let options = {
+      body:querystring.stringify({ assetsRecord:value }),
+      headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
-        if (data.status) {
-          const results = data.result.rows[0];
-          if (results) {
-            const values = this.props.form.getFieldsValue();
-            values.registerNo = results.results;
-            values.equipmentStandardName = results.equipmentStandardName;
-            values.fmodel = results.fmodel;
-            values.spec = results.spec;
-            values.tfBrand = results.tfBrand;
-            values.meteringUnit = request.meteringUnit;
-            this.setState({res: values});
-          }
-        } else {
-          message.error(data.msg);
+        if(data.status){
+          console.log(data.result, 'result');
+          const getData = data.result;
+          console.log(getData);
+          const setFields = [
+            'bDeptCode', 'useDeptCode', 'deposit', 'custodian', 'fOrgId', 'contractNo', 'productionDate', 'buyPrice',
+            'installPrice', 'product',  'productCountry', 'depreciationType', 'residualValueV', 'useLimit',
+            'monthDepreciationV', 'spare', 'inDate', 
+            // 'buyDate', 'depreciationBeginDate'
+          ];
+          let Fieds = {};
+          setFields.map((item, index) => {
+            console.log(item)
+            console.log(Fieds[item], getData[item]);
+            return Fieds[item] = getData[item];
+          })
+          this.props.form.setFieldsValue(Fieds);
+          this.setState({
+            assetsRecordGuid: data.result.assetsRecordGuid,
+            assetsRecord: data.result.assetsRecord,
+            productType: data.result.productType
+          });
+        }else{
+          message.error(data.msg)
         }
       },
       error: err => {console.log(err)}
     }
-    request(ledger.getSelectEquipmentList, options);
+    request(ledger.getSelectAssetsRecordDetail, options)
   }
-  // 选择设备弹框 - 添加按钮
-  addEquipmentTable = () => {
-    console.log('选择设备添加');
+  doSerach = (e) =>{
+    this.getAssetInfoAjax(e.target.value)
+  }
+  // 对原码切换进行判断
+  radioTab = (e) => {
+    this.setState({value: e.target.value});
+    if (e.target.value === '00') {
+      this.setState({disabled: true, prompt: '请输入后点击回车'});
+    } else {
+      this.setState({disabled: false, prompt: '请输入原码'});
+    }
   }
   render() {
     const columns = [
@@ -432,7 +554,7 @@ class LedgerArchivesAdd extends PureComponent {
         width: 80,
         render: (text, record, index) => {
           return(
-            <a onClick={this.addEquipmentTable}>添加</a>
+            <a onClick={()=>this.addEquipmentTable(record, 'equipmentVisible')}>添加</a>
           )
         }
       },
@@ -462,14 +584,14 @@ class LedgerArchivesAdd extends PureComponent {
         width: 80,
       },
     ]
-    const { equipmentVisible, dictionaryVisible, loading, res } = this.state;
+    const { equipmentVisible, dictionaryVisible, loading, res, disabled, prompt } = this.state;
     const { getFieldDecorator } = this.props.form;
     const query = this.state.query;
     return (
       <Content>
         <Affix>
           <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
-            <Button type="primary">保存</Button>
+            <Button type="primary" onClick={this.save} >保存</Button>
           </div>
         </Affix>
         {/* 选择设备弹框 */}
@@ -520,21 +642,21 @@ class LedgerArchivesAdd extends PureComponent {
               <FormItem label="注册证号" {...formItemLayout}>
                 {getFieldDecorator('registerNo', {
                   initialValue: res.registerNo
-                })(<Input style={{width: 200}} />)}
+                })(<Input style={{width: 200}} disabled={true} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="资产名称" {...formItemLayout}>
                 {getFieldDecorator('equipmentStandardName', {
                   initialValue: res.equipmentStandardName
-                })(<Input style={{width: 200}} />)}
+                })(<Input style={{width: 200}} disabled={true} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="型号" {...formItemLayout}>
                 {getFieldDecorator('fmodel', {
                   initialValue: res.fmodel
-                })(<Input style={{width: 200}} />)}
+                })(<Input style={{width: 200}} disabled={true} />)}
               </FormItem>
             </Col>
           </Row>
@@ -543,36 +665,32 @@ class LedgerArchivesAdd extends PureComponent {
               <FormItem label="规格" {...formItemLayout}>
                 {getFieldDecorator('spec', {
                   initialValue: res.spec
-                })(<Input style={{width: 200}} />)}
+                })(<Input style={{width: 200}} disabled={true} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="计量单位" {...formItemLayout}>
                 {getFieldDecorator('meteringUnit', {
                   initialValue: res.meteringUnit
-                })(<Input style={{width: 200}} />)}
+                })(<Input style={{width: 200}} disabled={true} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="品牌" {...formItemLayout}>
                 {getFieldDecorator('tfBrand', {
                   initialValue: res.tfBrand
-                })(<Input style={{width: 200}}/>)}
+                })(<Input style={{width: 200}} disabled={true} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
-              <FormItem label="资产编号" {...formItemLayout}>
-                {(<Input style={{width: 200}} placeholder={`自动生成`} />)}
-              </FormItem>
-            </Col>
-            <Col span={8}>
               <FormItem label={`复用原码`} {...formItemLayout}>
                 {getFieldDecorator(`reuse`, {
                     initialValue: '01',
+                    rules: [{required: true, message: '请选择复用原码'}]
                   })(
-                  <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}}>
+                  <RadioGroup onChange={this.radioTab}>
                     <Radio value={`00`}>是</Radio>
                     <Radio value={`01`}>否</Radio>
                   </RadioGroup>
@@ -581,18 +699,16 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="原码" {...formItemLayout}>
-              {getFieldDecorator('assetsRecord')(
-                <Input placeholder="请输入原码" style={{ width: 200 }} />
-              )}
+                {getFieldDecorator('assetsRecord')(
+                  <Input style={{ width: 200 }} placeholder={prompt} onPressEnter={this.doSerach} />
+                )}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label={`管理科室`} {...formItemLayout}>
-              {getFieldDecorator('bDeptCode', {
-                rules: [{required: true, message: '请选择管理科室'}]
-              })(
+              {getFieldDecorator('bDeptCode')(
                 <Select
                 showSearch
                 onSearch={this.handleChangeManagement}
@@ -602,6 +718,7 @@ class LedgerArchivesAdd extends PureComponent {
                 allowClear={true}
                 filterOption={false}
                 placeholder={`请搜索`}
+                disabled={disabled}
               >
                 {this.state.managementData.map(d => {
                 return <Option value={d.value} key={d.text}>{d.text}</Option>
@@ -612,9 +729,7 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label={`使用科室`} {...formItemLayout}>
-                {getFieldDecorator('useDeptCode', {
-                  rules: [{required: true, message: '请选择使用科室'}]
-                })(
+                {getFieldDecorator('useDeptCode')(
                   <Select
                     showSearch
                     onSearch={this.handleChangeRollOut}
@@ -625,6 +740,7 @@ class LedgerArchivesAdd extends PureComponent {
                     allowClear={true}
                     filterOption={false}
                     placeholder={`请搜索`}
+                    disabled={disabled}
                   >
                     {this.state.deptNameData.map(d => {
                     return <Option value={d.value} key={d.value}>{d.text}</Option>
@@ -635,14 +751,14 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="存放地址" {...formItemLayout}>
-                {getFieldDecorator('deposit')(<Input style={{width: 200}} />)}
+                {getFieldDecorator('deposit')(<Input style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label={`保管人`} {...formItemLayout}>
-              {getFieldDecorator('maintainUserid')(
+              {getFieldDecorator('custodian')(
                   <Select
                     showSearch
                     onSearch={this.handleChangeMaintainUserid}
@@ -653,6 +769,7 @@ class LedgerArchivesAdd extends PureComponent {
                     allowClear={true}
                     filterOption={false}
                     placeholder={`请搜索`}
+                    disabled={disabled}
                   >
                     {this.state.userNameData.map(d => {
                     return <Option value={d.value} key={d.value}>{d.userName}{`+`}{d.deptName}</Option>
@@ -667,6 +784,7 @@ class LedgerArchivesAdd extends PureComponent {
                   <Select
                     onChange={this.getOrgIdList}
                     style={{ width: 200 }} 
+                    disabled={disabled}
                   >
                     {this.state.orgIdData.map(d=>{
                       return <Option value={d.value} key={d.text}>{d.text}</Option>
@@ -677,44 +795,46 @@ class LedgerArchivesAdd extends PureComponent {
             </Col>
             <Col span={8}>
               <FormItem label="合同编号" {...formItemLayout}>
-                {getFieldDecorator('contractNo')(<Input style={{width: 200}} placeholder={`请输入采购合同号`} />)}
+                {getFieldDecorator('contractNo')(<Input style={{width: 200}} disabled={disabled} placeholder={`请输入采购合同号`} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label={`出厂日期`} {...formItemLayout}>
-                {getFieldDecorator('productionDate')(<DatePicker style={{width: 200}} />)}
+                {getFieldDecorator('productionDate')(<DatePicker style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label={`购买金额`} {...formItemLayout}>
-              {getFieldDecorator('buyPrice')(<Input style={{width: 200}} />)}
+              {getFieldDecorator('buyPrice')(<Input style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="安装费用" {...formItemLayout}>
-                {getFieldDecorator('installPrice')(<Input style={{width: 200}} />)}
+                {getFieldDecorator('installPrice')(<Input style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label={`购置日期`} {...formItemLayout}>
-                {getFieldDecorator('buyDate')(<DatePicker style={{width: 200}} />)}
+                {getFieldDecorator('buyDate', {
+                  initialValue: null
+                })(<DatePicker style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label={`生产商`} {...formItemLayout}>
-              {getFieldDecorator('product')(<Input style={{width: 200}}placeholder={`请输入生产商`} />)}
+              {getFieldDecorator('product')(<Input style={{width: 200}} disabled={disabled} placeholder={`请输入生产商`} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="生产国家" {...formItemLayout}>
-                {getFieldDecorator('productCountry')(<Select style={{width: 200}}>
-                  <Option value="1">请选择</Option>
-                  <Option value="2">国产</Option>
-                  <Option value="3">进口</Option>
+                {getFieldDecorator('productCountry')(
+                <Select placeholder={`请选择生产国家`} style={{width: 200}} disabled={disabled} onChange={(value)=>{this.setState({productCountry: value})}}>
+                  <Option value={`01`}>国产</Option>
+                  <Option value={`02`}>进口</Option>
                 </Select>)}
               </FormItem>
             </Col>
@@ -724,39 +844,36 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="折旧方式" {...formItemLayout}>
-              {getFieldDecorator(`depreciationType`, {
-                    initialValue: '00',
-                  })(
-                  <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}}>
-                    <Radio value={`01`}>否</Radio>
-                    <Radio value={`00`}>是</Radio>
-                    <Select style={{width: 92}}>
-                      <Option value={`00`}>平均年限法</Option>
-                    </Select>
-                  </RadioGroup>
+              {getFieldDecorator(`depreciationType`)(
+                  <Select placeholder={`请选择折旧方式`} style={{width: 200}} disabled={disabled} onChange={(value)=>{this.setState({depreciationType: value})}}>
+                    <Option value={`01`}>{depreciationTypeData[`01`].text}</Option>
+                    <Option value={`02`}>{depreciationTypeData[`02`].text}</Option>
+                    <Option value={`03`}>{depreciationTypeData[`03`].text}</Option>
+                    <Option value={`04`}>{depreciationTypeData[`04`].text}</Option>
+                  </Select>
                 )}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="净残值率" {...formItemLayout}>
-                {getFieldDecorator('residualValueV')(<Input style={{width: 200}} />)}
+                {getFieldDecorator('residualValueV')(<Input style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="预计使用年限" {...formItemLayout}>
-                {getFieldDecorator('useLimit')(<Input style={{width: 200}} />)}
+                {getFieldDecorator('useLimit')(<Input style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="月折旧率" {...formItemLayout}>
-                {getFieldDecorator('monthDepreciationV')(<Input style={{width: 200}} />)}
+                {getFieldDecorator('monthDepreciationV')(<Input style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="开始计提时间" {...formItemLayout}>
-                {getFieldDecorator('depreciationBeginDate')(<MonthPicker style={{width: 200}} />)}
+                {getFieldDecorator('depreciationBeginDate')(<DatePicker style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
           </Row>
@@ -768,16 +885,16 @@ class LedgerArchivesAdd extends PureComponent {
               {getFieldDecorator(`spare`, {
                     initialValue: '00',
                   })(
-                  <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}}>
-                    <Radio value={`00`}>无</Radio>
-                    <Radio value={`01`}>有</Radio>
+                  <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}} disabled={disabled}>
+                    <Radio value={`00`}>有</Radio>
+                    <Radio value={`01`}>无</Radio>
                   </RadioGroup>
                 )}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="保修截至" {...formItemLayout}>
-                {getFieldDecorator('inDate')(<DatePicker style={{width: 200}} />)}
+                {getFieldDecorator('inDate')(<DatePicker style={{width: 200}} disabled={disabled} />)}
               </FormItem>
             </Col>
           </Row>
@@ -786,75 +903,75 @@ class LedgerArchivesAdd extends PureComponent {
           <Row>
             <Col span={8}>
               <FormItem label="自筹资金" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name1')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="财政拨款" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name2')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="科研经费" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name3')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="自筹资金原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name4')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="财政拨款原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name5')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="科研经费原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name6')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="教学资金" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name7')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="接收捐赠" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name8')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="其他" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name9')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="教学资金原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name10')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="接收捐赠原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name11')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem label="其他原值" {...formItemLayout}>
-                {(<Input style={{width: 200}} />)}
+                {getFieldDecorator('name12')(<Input style={{width: 200}} />)}
               </FormItem>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <FormItem label="原值" {...formItemLayout}>
-                {getFieldDecorator('originalValue')(<Input style={{width: 200}} placeholder={`计算而得出`} />)}
+                {getFieldDecorator('original')(<Input style={{width: 200}} placeholder={`计算而得出`} />)}
               </FormItem>
             </Col>
           </Row>

@@ -177,8 +177,8 @@ class NewTransfer extends PureComponent {
     ProductType:'',//资产搜索条件
     mobile: '', //资产搜索value
     ProductModalCallBackKeys: [],//资产弹框选中保存数据的key
-    ProductModalCallBack:[],//选择保养资产返回的数据
-    ProductTabledata:[],//选择保养资产返回的数据(重新赋值给这个)
+    ProductModalCallBack:[],//选择保管资产返回的数据
+    ProductTabledata:[],//选择保管资产返回的数据(重新赋值给这个)
     CacheProductTabledata:[],//缓存
     fstate: '', //转出科室 00已转出
     useDeptGuid:'',
@@ -239,7 +239,6 @@ class NewTransfer extends PureComponent {
   }
   sendEndAjax =(json)=>{
     const values = this.props.form.getFieldsValue();
-    
     const data = {
       fstate: '00',
       useDeptGuid: values.outDeptguid,
@@ -247,6 +246,7 @@ class NewTransfer extends PureComponent {
     }
     let transferDetails = [],postData = {};
     json.map((item,index)=>{
+      console.log(item);
       return transferDetails.push({
         assetsRecordGuid: item,
         useDeptGuid: data.useDeptGuid,
@@ -271,7 +271,6 @@ class NewTransfer extends PureComponent {
       success: data => {
         if(data.status){
           message.success('新增成功');
-          //this.resetAll(postData.outDeptguid);
         }else{
           message.error(data.msg)
         }
@@ -333,6 +332,7 @@ class NewTransfer extends PureComponent {
       }
     })
   }
+  // 假删除
   deleteProRow =(isParent,record)=>{
     let a =_.cloneDeep(this.state.ProductTabledata);
     if(isParent){//如果是删除父级

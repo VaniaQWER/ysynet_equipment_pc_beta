@@ -133,7 +133,7 @@ class LedgerArchivesList extends Component {
             </Col>
             <Col span={4} style={{textAlign:'right'}}>
               <Button type='primary' style={{ marginRight: 16 }}>
-                <Link to={{pathname:`/ledger/ledgerArchives/add/item`}}>新增档案</Link>
+                <Link to={{pathname:`/ledger/ledgerArchives/add/id`}}>新增档案</Link>
               </Button>
             </Col>
           </Row>
