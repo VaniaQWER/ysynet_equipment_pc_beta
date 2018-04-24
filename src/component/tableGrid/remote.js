@@ -56,6 +56,17 @@ class RemoteTable extends Component {
           if(!params.page) {
             pagination.current = 1;
           }
+
+          if(data.result.rows && this.props.subrowKey){
+            data.result.rows.forEach(element => {
+              if(element.children){
+                element.children.forEach(subItem =>{
+                  subItem.subKey = subItem[this.props.rowKey];
+                  subItem[this.props.rowKey] = subItem[this.props.rowKey] + subItem[this.props.subrowKey] || '';
+                })
+              }
+            });
+          }
           this.setState({
             loading: false,
             data: data.result.rows || data.result,

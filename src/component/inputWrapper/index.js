@@ -42,9 +42,9 @@ class InputWrapper extends PureComponent {
   componentDidUpdate() {
     const input = document.querySelector(`#input`);
     if (input) {
-      const len = input.value.length;
-      input.focus();
-      input.setSelectionRange(len, len);
+      // const len = input.value.length;
+        input.focus();
+        // input.setSelectionRange(len, len);
     }
   }
   componentWillReceiveProps = nextProps => {

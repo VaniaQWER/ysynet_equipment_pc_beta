@@ -16,8 +16,9 @@ export default {
  deleteAssetsFile: `${_local}/assetsRecordController/deleteAssetsFile`, // 删除资产附件信息
  printEquipmentQrcode: `${_local}/equipmentAdd/printEquipmentQrcode`, // 打码
  importAssetsTemplate: `${FTP}/meqmFile/importAssetsTemplate.xlsx`, // 下载模板
-
- //报修登记
+getDepreciateDetails:`${_local}/equipmentDepreciation/selectEquipmentPayList`,//获取资产档案-这就信息
+submitEquipmentPay:`${_local}/equipmentDepreciation/insertEquipmentPay`,//提交资产档案的资金结构 
+//报修登记
  insertOrUpdateRrpair: `${_local}/rrpairOrderController/insertOrUpdateRrpair`,
  selectRrpairFittingList: `${_local}/rrpairOrderController/selectRrpairFittingList`, //查询维修配件使用列表
  insertRrpairFitting: `${_local}/rrpairOrderController/insertRrpairFitting`, //资产列表添加维修附件信息

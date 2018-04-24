@@ -20,11 +20,15 @@ class LedgerArchivesDetail extends Component {
     super(props);
     this.state = {
       AssetInfoData: {},
+      DevalueInfoData:{}
     }
   }
   //获取id 根据id号查详情
   componentWillMount = () =>{
-    debugger
+    this.getDetails()
+  }
+
+  getDetails = ()=>{
     const assetsRecordGuid = this.props.match.params.id;
     const { getSelectAssetsRecordDetail } = this.props;
     const params = { assetsRecordGuid: assetsRecordGuid };
@@ -45,7 +49,7 @@ class LedgerArchivesDetail extends Component {
           :
           <Tabs defaultActiveKey="1">
             <TabPane tab="基本信息" key="1">
-              <BaseInfo AssetInfoData={this.state.AssetInfoData}/> 
+              <BaseInfo AssetInfoData={this.state.AssetInfoData} freshDetail={this.getDetails}/> 
             </TabPane>
             <TabPane tab="证件信息" key="2">
              

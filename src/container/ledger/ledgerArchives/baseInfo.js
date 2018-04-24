@@ -11,7 +11,7 @@ const Panel = Collapse.Panel;
 
 class BaseInfo extends Component {
   render () {
-    const { AssetInfoData } = this.props;
+    const { AssetInfoData ,freshDetail} = this.props;
     return (
       <div>
         <Collapse defaultActiveKey={['1','2','4']}>
@@ -22,7 +22,7 @@ class BaseInfo extends Component {
             <AssetInfo AssetInfoData={AssetInfoData}/>
           </Panel>
           <Panel header="折旧信息" key="4">
-            <DepreInfo AssetInfoData={AssetInfoData}/>
+            <DepreInfo  AssetInfoData={AssetInfoData} freshDetail={freshDetail}/>
           </Panel>
           <Panel header="资产配件" key="3">
             {

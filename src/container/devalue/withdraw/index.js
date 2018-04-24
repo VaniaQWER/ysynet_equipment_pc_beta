@@ -1,8 +1,10 @@
 /**折旧计提--列表*/
 import React from 'react';
 import { message , Row, Col, Layout ,Button ,DatePicker , Modal ,Spin} from 'antd';
+import querystring from 'querystring';
 import TableGrid from '../../../component/tableGrid';
-import assets from '../../../api/assets';
+import devalue from '../../../api/devalue';
+import request from '../../../utils/request';
 import { depreciationState ,depreciationStateSel} from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
@@ -25,43 +27,63 @@ class WithDraw extends React.Component{
 				loading:false
     };
     queryHandler = (query) => {
-      console.log(this.state.query)
       this.refs.table.fetch(this.state.query);
     }
     onChange = (date, dateString) => {
-        console.log(date, dateString);
         let options ={
-            time:dateString
+          startCreateDate:dateString[0],
+          endCreateDate:dateString[1],
         }
         this.setState({
             query:Object.assign(this.state.query,options)
         })
 		}
-		
+    
+    sendWithDraw = (record) =>{
+
+      let json ={
+        depreciationDate:record.depreciationDate,
+        equipmentDepreciationGuid:record.equipmentDepreciationGuid,
+      }
+      let options = {
+        body:querystring.stringify(json),
+        headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: data => {
+          if(data.status){
+
+            setTimeout(()=>{
+              this.setState({'loading':false})
+              message.success('操作成功')
+              this.refs.table.fetch(this.state.query);
+            },2000)
+
+          }else{
+            message.error(data.msg)
+            setTimeout(()=>{
+              this.setState({'loading':false})
+            },1000)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(devalue.subWithDraw, options);
+    }
 		doWithDraw = (record)=>{
 
 			Modal.confirm({
 				title:'是否确认计提',
 				content:'确认计提后可能需要等待一段时间，您确定要操作吗？',
 				onOk:()=>{
-					console.log('OK')
 					this.setState({
 						'loading':true
 					})
-
-					setTimeout(()=>{
-						this.setState({'loading':false})
-						message.success('操作成功')
-				  },2000)
-				
+          this.sendWithDraw(record)
 				},
 				onCancel:()=>{
-					console.log('onCancel')
 				}
 			})
-		}
-		onClose = ()=>{
-			console.log('close')
 		}
     render(){
         const columns=[
@@ -72,19 +94,19 @@ class WithDraw extends React.Component{
 							render : (text,record,index)=> index+1
 					},
           { title: '操作', 
-          dataIndex: 'maintainGuid', 
+          dataIndex: 'equipmentDepreciationGuid', 
           width:'5%',
           render: (text,record) =>
             <span>
               { (record.fstate==="00") ? 
                 <span><a  onClick={()=>this.doWithDraw(record)}> 计提</a></span>
-                :<span><Link to={{pathname:`/devalue/withdraw/details/${record.maintainGuid}`}}>详情</Link></span>
+                :<span><Link to={{pathname:`/devalue/withdraw/details/${record.equipmentDepreciationGuid}`}}>详情</Link></span>
               }
             </span>
           },
           {
             title: '折旧月份',
-            dataIndex: 'maintainNo',
+            dataIndex: 'depreciationDate',
             width:'10%',
             render(text, record) {
               return <span title={text}>{text}</span>
@@ -105,15 +127,15 @@ class WithDraw extends React.Component{
           {
             title: '计提时间',
             width:'8%',
-            dataIndex: 'maintainDate',
-            sorter: (a, b) => sortTime(a,b,'maintainDate'),
+            dataIndex: 'createTime',
+            sorter: (a, b) => sortTime(a,b,'createTime'),
             render(text, record) {
               return <span title={text}>{text}</span>
             }
           },
           {
             title: '操作员',
-            dataIndex: 'modifyUserName',
+            dataIndex: 'createUserName',
             width:'8%',
             render(text, record) {
               return <span title={text}>{text}</span>
@@ -125,17 +147,17 @@ class WithDraw extends React.Component{
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
               <Row>
                   <Col span={12}>
-                    折旧月份：<RangePicker onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM-DD'/>
+                    折旧月份：<RangePicker onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM'/>
                     <Button type='primary' size='default' onClick={this.queryHandler}>查询</Button>
                   </Col>
               </Row>
               <RemoteTable
                   ref='table'
                   query={query}
-                  url={assets.selectMaintainOrderList}
+                  url={devalue.getDevalueList}
                   scroll={{x: '100%', y : document.body.clientHeight - 110 }}
                   columns={columns}
-                  rowKey={'maintainGuid'}
+                  rowKey={'equipmentDepreciationGuid'}
                   showHeader={true}
                   style={{marginTop: 10}}
                   size="small"
@@ -145,9 +167,7 @@ class WithDraw extends React.Component{
 								footer={null}
 								closable={false}
 								style={{textAlign:'center'}}>
-								<Spin tip="正在处理中...">
-								
-							</Spin>
+								<Spin tip="正在处理中..."></Spin>
 							</Modal>
 							
             </Content>

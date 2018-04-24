@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import NotFound from '../common/404';
-class basicdata extends Component {
+class devalue extends Component {
   render() {
     const { routes } = this.props;
     return (
@@ -21,4 +21,4 @@ class basicdata extends Component {
     )
   }
 }
-export default basicdata;
+export default devalue;
