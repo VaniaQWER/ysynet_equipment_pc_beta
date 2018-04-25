@@ -29,11 +29,11 @@ const RangePicker = DatePicker.RangePicker;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 10 },
+    sm: { span: 12 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 14 },
+    sm: { span: 12 },
   },
 };
 /** 表头 */
@@ -235,7 +235,9 @@ class MaintainPlan extends PureComponent {
         item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
         children.push(item)
       })
-      a[ind].subList = _.uniqBy( a[ind].subList.concat(children) ,'maintainTypeId' )
+      if(a[ind].subList){
+        a[ind].subList = _.uniqBy( a[ind].subList.concat(children) ,'maintainTypeId' )
+      }
       
     }
     this.setState({
@@ -317,9 +319,16 @@ class MaintainPlan extends PureComponent {
 
   }
   //获取资产下拉框数据
-  getDetpSelect = ()=>{
+  getDetpSelect = (value)=>{
+    let o = '';
+    if(value){
+      o={deptName:value}
+    }else{
+      o=''
+    }
+    this.setState({'useDeptGuidStr':value})
     let options = {
-      body:querystring.stringify({'deptType':'00'}),
+      body:querystring.stringify(Object.assign({'deptType':'00'},o)),
 				headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -589,7 +598,7 @@ class MaintainPlan extends PureComponent {
                     required:true,message:'请填写保养计划有效期！'
                   }]
                 })(
-                  <RangePicker />
+                  <RangePicker style={{width:250}}/>
                 )}
               </FormItem>
             </Col>
