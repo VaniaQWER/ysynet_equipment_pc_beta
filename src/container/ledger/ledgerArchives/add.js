@@ -194,12 +194,7 @@ class NewAddDictionary extends PureComponent {
 }
 const NewAddDictionaryModal = Form.create()(NewAddDictionary);
 class LedgerArchivesAdd extends PureComponent {
-  constructor(props) {
-    super();
-    this.sendEndAjax = this.sendEndAjax.bind(this)
-  }
   state={
-    // value: '00',
     deptName: '',//模糊搜索参数
     managementData: [],//管理科室
     deptNameData: [],//使用科室
@@ -217,7 +212,6 @@ class LedgerArchivesAdd extends PureComponent {
     assetsRecord: null,
     productType: null,
     data: {},
-    isEdit: false,
     disabled: false,
     prompt: '请输入原码',
     submitList:[],
@@ -303,7 +297,6 @@ class LedgerArchivesAdd extends PureComponent {
         if (data.status) {
           message.success( '新增成功');
           this.refs.formDictionary.resetFields();
-          // this.refs.table.fetch();
         } else {
           message.error(data.msg);
         }
@@ -426,7 +419,7 @@ class LedgerArchivesAdd extends PureComponent {
           message.success('保存成功！');
           setTimeout(()=>{
             this.props.history.push('/ledger/ledgerArchives');
-          }, 1000)
+          }, 1000);
         } else {
           message.error(data.msg);
         }
@@ -572,7 +565,7 @@ class LedgerArchivesAdd extends PureComponent {
       <Content>
         <Affix>
           <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
-            <Button type="primary" onClick={this.save} >保存</Button>
+            <Button type="primary" onClick={() => {this.save()}} >保存</Button>
           </div>
         </Affix>
         {/* 选择设备弹框 */}
