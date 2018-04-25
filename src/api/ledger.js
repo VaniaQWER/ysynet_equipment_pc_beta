@@ -15,6 +15,7 @@ const ledger = {
   getInsertAssetsRecord: `${_local}/assetsRecordController/insertAssetsRecord`, //新增/编辑资产档案 - 保存按钮
   selectStaticDataListTfBrand: `${_local}/StaticDataController/selectStaticDataList`,
   getSelectAssetsRecordDetail: `${_local}/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情
+  getSelectEquipmentPayList: `${_local}/equipmentDepreciation/selectEquipmentPayList`,// 查询资金结构的值
 }
 export default ledger;
 // 品牌
@@ -24,8 +25,4 @@ export default ledger;
 // 计量单位
 export async function selectStaticDataListMeteringUnit(options) {
   return promiseRequest(`${_local}/StaticDataController/selectStaticDataList?code=UNIT`, options);
-}
-
-export async function saveLedger(options) {
-  return promiseRequest(`${_local}/assetsRecordController/insertAssetsRecord`, options);
 }
