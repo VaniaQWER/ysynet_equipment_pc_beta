@@ -565,7 +565,7 @@ class LedgerArchivesAdd extends PureComponent {
       <Content>
         <Affix>
           <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
-            <Button type="primary" onClick={() => {this.save()}} >保存</Button>
+            <Button type="primary" onClick={this.save} loading={loading} >保存</Button>
           </div>
         </Affix>
         {/* 选择设备弹框 */}
