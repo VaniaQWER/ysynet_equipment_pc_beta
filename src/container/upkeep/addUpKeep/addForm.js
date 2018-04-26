@@ -180,8 +180,8 @@ export default class AddUpKeepForm extends React.Component {
           if(data.status){
             let retData = data.result;
             //拿到回显数据--处理时间格式
-            retData.maintainDate=moment(retData.maintainDate ,'YYYY-MM-DD HH:mm') 
-            retData.endMaintainDate=moment(retData.endMaintainDate,'YYYY-MM-DD HH:mm')
+            retData.maintainDate=retData.maintainDate ? moment(retData.maintainDate ,'YYYY-MM-DD HH:mm') :null
+            retData.endMaintainDate=retData.maintainDate ?  moment(retData.endMaintainDate,'YYYY-MM-DD HH:mm'):null
             if(retData.nextMaintainDate){
               retData.nextMaintainDate=moment(retData.nextMaintainDate,'YYYY-MM-DD')
             }
@@ -602,7 +602,7 @@ export default class AddUpKeepForm extends React.Component {
                 {editState ? 
                     <FormItem label='开始保养时间' {...formItemLayout}>
                       {getFieldDecorator(`maintainDate`,{
-                        initialValue:data.maintainDate,
+                        initialValue:data.maintainDate || null,
                         rules:[
                           {required:true,message:'请选择开始保养时间'}
                         ]
@@ -623,7 +623,7 @@ export default class AddUpKeepForm extends React.Component {
                   {editState ?
                     <FormItem label='结束保养时间' {...formItemLayout}>
                     {getFieldDecorator(`endMaintainDate`,{
-                      initialValue:data.endMaintainDate,
+                      initialValue:data.endMaintainDate  || null,
                       rules:[
                         {required:true,message:'请选择开始保养时间'}
                       ]})(
