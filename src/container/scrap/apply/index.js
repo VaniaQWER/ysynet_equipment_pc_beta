@@ -198,7 +198,7 @@ class ScrapApply extends PureComponent {
                     >
                       {
                         deptOption.map((item, index) => (
-                          <Option value={item.value}>{ item.text }</Option>
+                          <Option value={item.value} key={item.text}>{ item.text }</Option>
                         ))
                       }
                     </Select>
