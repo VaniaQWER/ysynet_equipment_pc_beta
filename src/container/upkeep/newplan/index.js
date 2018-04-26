@@ -235,16 +235,21 @@ class MaintainPlan extends PureComponent {
         item.assetsRecordGuid = parentKey.toString()+item.templateDetailGuid;
         children.push(item)
       })
+
       if(a[ind].subList){
         a[ind].subList = _.uniqBy( a[ind].subList.concat(children) ,'maintainTypeId' )
+      }else{
+        a[ind].subList = _.uniq(children)
       }
+
       
     }
     this.setState({
       ProductTabledata:a,
       CacheProductTabledata:a,//保存此次操作
       prjSelect:'',
-      prjTableData:[]
+      prjTableData:[],
+      projecrModalCallBack:[]
       // projecrModalCallBackKeys:[]
     })
 
