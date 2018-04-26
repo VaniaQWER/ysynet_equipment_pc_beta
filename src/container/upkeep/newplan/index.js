@@ -419,7 +419,10 @@ class MaintainPlan extends PureComponent {
     this.props.form.resetFields();
     this.setState({
       ProductTabledata:[],
-      cycleModule:'00'
+      cycleModule:'00',
+      ProductModalCallBackKeys:[],
+      projecrModalCallBackKeys:[],
+      prjCheckedKeys:[],
     })
   }
   
