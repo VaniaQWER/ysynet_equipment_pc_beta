@@ -12,6 +12,8 @@ import request from '../../../utils/request';
 import transfer from '../../../api/transfer';
 import assets from '../../../api/assets';
 import _ from 'lodash';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -228,9 +230,7 @@ class NewTransfer extends PureComponent {
     } else {
       message.warning('请选择项目之后再添加！')
     }
-  }
-
-  
+  }  
   handleCancel = (modalName) => {
     if (modalName === 'productVisible') {
       this.setState({
@@ -409,7 +409,7 @@ class NewTransfer extends PureComponent {
             <Row>
               <Col span={8}>
                 <FormItem label={`申请人`} {...formItemLayout}>
-                  {getFieldDecorator('createUserName', {})(<Input style={{width: 200}} placeholder={`请输入当前用户名`} />)}
+                  {getFieldDecorator('createUserName', {initialValue: this.props.user.userName})(<Input style={{width: 200}} disabled={true} placeholder={`请输入当前用户名`} />)}
                 </FormItem>
               </Col>
               <Col span={8}>
@@ -585,4 +585,4 @@ class NewTransfer extends PureComponent {
     )
   }
 }
-export default Form.create()(NewTransfer);
+export default withRouter(connect(state => state)(Form.create()(NewTransfer)));
