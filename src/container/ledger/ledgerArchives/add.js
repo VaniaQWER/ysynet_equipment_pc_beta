@@ -808,7 +808,7 @@ class LedgerArchivesAdd extends PureComponent {
               <FormItem label="存放地址" {...formItemLayout}>
                 {getFieldDecorator('deposit', {
                   initialValue: data.deposit
-                })(<Input style={{width: 200}} placeholder="请输入存放地址" disabled={disabled} disabledAdd={disabledAdd} />)}
+                })(<Input style={{width: 200}} placeholder="请输入存放地址" disabled={disabled ? disabled: disabledAdd}/>)}
               </FormItem>
             </Col>
           </Row>
