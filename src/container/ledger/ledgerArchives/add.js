@@ -512,7 +512,6 @@ class LedgerArchivesAdd extends PureComponent {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			},
 			success: data => {
-        console.log(data);
 				if(data.status){
 					this.setState({
             deptNameData: data.result,
@@ -588,14 +587,12 @@ class LedgerArchivesAdd extends PureComponent {
   }
   // 通过使用科室接口带出存放地址数据
   getNewAddessInfo = (value) => {
-    console.log(value, '让我看下这个值是什么？')
     let options = {
       body:querystring.stringify(value),
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
-        console.log(data);
         this.props.form.setFieldsValue({'deposit': data.result.length ? data.result[0].address : '' });
         this.setState({ disabledAdd: data.result.length ? true : false });
       }
