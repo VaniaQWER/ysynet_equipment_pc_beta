@@ -21,7 +21,13 @@ class PicturesWall extends React.Component {
     this.setState({ fileList })
     this.props.file(fileList)
   }
-
+  
+  componentWillReceiveProps(nextProps) {
+    if (this.props.fileList !== nextProps.fileList) {
+      this.setState({ fileList: nextProps.fileList})
+    }
+  }
+  
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
     let { isAdd } = this.props;

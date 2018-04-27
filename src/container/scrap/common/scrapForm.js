@@ -32,7 +32,8 @@ class ScrapForm extends PureComponent {
     super(props)
     this.state = {
       isShow: false, // 控制展开以及显示
-      deptOption: []
+      deptOption: [], 
+      query: {}
     }
   }
   async componentDidMount() {
@@ -50,6 +51,7 @@ class ScrapForm extends PureComponent {
       })
     }
   }
+  
   /** 查询方法  并往redux中插入查询参数 */
   onSubmit = e => {
     e.preventDefault();
@@ -70,10 +72,12 @@ class ScrapForm extends PureComponent {
       })
     });
   }
+  
   render() {
     const { getFieldDecorator } = this.props.form;
     const { isShow, deptOption } = this.state;
-    const { columns, defaultParams } = this.props;  
+    const { columns, defaultParams, search, history } = this.props; 
+    const pathname = history.location.pathname;
     return (
       <Content className='ysynet-content'>
         <Form style={{padding: 8, background: '#fff'}} onSubmit={this.onSubmit}>
@@ -136,6 +140,7 @@ class ScrapForm extends PureComponent {
         </Form>
         <Row style={{padding: 8, background: '#fff', marginTop: 4}}>
           <RemoteTable
+            query={{...search[pathname]}}  
             url={this.props.defaultParams ? `${scrapListUrl}?${defaultParams}` : scrapListUrl}
             columns={columns}
             rowKey={'scrapGuid'}

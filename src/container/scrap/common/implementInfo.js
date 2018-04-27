@@ -4,6 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Form } from 'antd';
 import PicWall from '../../../component/picWall'
+import { _local } from '../../../api/local'
 const FormItem = Form.Item;
 const formItemLayoutForOne = {
   labelCol: {
@@ -19,11 +20,12 @@ class ImplementInfo extends PureComponent {
   getFileList = () => {
     const { data } = this.props;
     const fileList = [];
-    if (data.scrapAccessorys) {
-      data.scrapAccessorys.map((item, index) => fileList.push({
-        uid: index,
-        url: item
+    if (data.spAccessory) {
+      data.spAccessory.split(';').map((item, index) => fileList.push({
+        uid: index + 1,
+        url: `${_local}ftp${item}`
       }))
+      fileList.pop();
     }
     return fileList;
   }

@@ -34,14 +34,14 @@ class ScrapManagerDetail extends PureComponent {
     })
     if (data.status && data.result) {
       const { assetsRecord, equipmentStandardName, fmodel, spec, userName, identifyDate, 
-        scrapCause, useSituation, scrapAccessorys, identifyOpinion, identifyName, executeScrapOpinion,
+        scrapCause, useSituation, scrapAccessory, identifyOpinion, identifyName, executeScrapOpinion,
         spAccessory, useDept, custodian, bDept, originalValue, productType } = data.result;
       const assetsData = {
         assetsRecord, equipmentStandardName, fmodel, spec, useDept, custodian, bDept, originalValue,
         productType: productTypeData[productType],
       }
       const scrapData = {
-        scrapCause, useSituation, scrapAccessorys
+        scrapCause, useSituation, scrapAccessory
       }
       const appraisalData = {
         userName, identifyDate, identifyOpinion, identifyName

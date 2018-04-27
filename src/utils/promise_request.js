@@ -33,9 +33,9 @@ export default function promiseRequest(url, options) {
       'Content-Type': 'application/json; charset=utf-8',
       ...newOptions.headers,
     };
-    newOptions.body = JSON.stringify(newOptions.body);
+    // newOptions.body = JSON.stringify(newOptions.body);
   }
-
+  console.log(newOptions)
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => response.json())

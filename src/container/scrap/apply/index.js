@@ -100,8 +100,9 @@ class ScrapApply extends PureComponent {
               }
             })
             if (data.status) {
-              this.setState({ isLoading: false, postFile: [], })
-              message.success('报废申请成功!')
+              message.success('报废申请成功!', 1, () => {
+                window.location.reload();
+              })
             }
           },
           onCancel: () => this.setState({ isLoading: false })
@@ -183,11 +184,13 @@ class ScrapApply extends PureComponent {
                   })(
                     <Select
                       onChange={val => {
-                        this.refs.table.fetch({
-                          productType: productType,
-                          mobile: this.state.mobile,
-                          useDeptGuid: val,
-                        })
+                        if (this.refs.table) {
+                          this.refs.table.fetch({
+                            productType: productType,
+                            mobile: this.state.mobile,
+                            useDeptGuid: val,
+                          })
+                        }
                         this.setState({ useDeptGuid: val ,dataSource: [], selectedRows: [],selectedRowKeys: []})
                       }}
                       showSearch
@@ -278,6 +281,7 @@ class ScrapApply extends PureComponent {
           </Col>
         </Row>
         <RemoteTable
+          query={{useDeptGuid: this.state.useDeptGuid}}
           ref='table'
           url={assets.selectAssetsList}
           columns={columns}

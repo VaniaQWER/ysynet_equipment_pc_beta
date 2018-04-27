@@ -135,7 +135,6 @@ class UpKeepList extends React.Component{
       this.setState({ query })
     }
     handleChange = (pagination, filters, sorter)=>{
-      debugger
     }
     render(){
         

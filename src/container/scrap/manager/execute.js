@@ -49,14 +49,14 @@ class ScrapManagerExecute extends PureComponent {
     })
     if (data.status && data.result) {
       const { assetsRecord, equipmentStandardName, fmodel, spec, userName, identifyDate, 
-        scrapCause, useSituation, scrapAccessorys, identifyOpinion, scrapGuid,
+        scrapCause, useSituation, scrapAccessory, identifyOpinion, scrapGuid,
         identifyName, useDept, custodian, bDept, originalValue, productType } = data.result;
       const assetsData = {
         assetsRecord, equipmentStandardName, fmodel, spec, useDept, custodian, bDept, originalValue,
         productType: productTypeData[productType],
       }
       const scrapData = {
-        scrapCause, useSituation, scrapAccessorys
+        scrapCause, useSituation, scrapAccessory
       }
       const appraisalData = {
         userName, identifyDate, identifyOpinion, identifyName
@@ -78,11 +78,11 @@ class ScrapManagerExecute extends PureComponent {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         })
-        message.success(`${title}成功, 即将跳回至报废管理`, 1, () => {
-          this.props.history.push({pathname: 'scrap/scrapManager'})
-        })
+
         if (data.status) {
-          this.props.history.push({pathname: 'scrap/scrapManager'});
+          message.success(`${title}成功, 即将跳回至报废管理`, 1, () => {
+            this.props.history.push({pathname: '/scrap/scrapManager'})
+          })
         }
         this.setState({ isLoading: false })
       },
@@ -141,7 +141,7 @@ class ScrapManagerExecute extends PureComponent {
                   {getFieldDecorator(`executeScrapOpinion`, {
                     rules: [{ required: true, message: '鉴定意见不允许为空' }],
                   })(
-                    <TextArea rows={4} placeholder='请输入沈朴意见'/>
+                    <TextArea rows={4} placeholder='请输入审批意见'/>
                   )}
                 </FormItem>
               </Col>

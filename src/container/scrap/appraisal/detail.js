@@ -66,14 +66,14 @@ class AppraisalDetail extends PureComponent {
     })
     if (listData.status && listData.result) {
       const { assetsRecord, equipmentStandardName, fmodel, spec, 
-        scrapCause, useSituation, scrapAccessorys, scrapGuid,
+        scrapCause, useSituation, scrapAccessory, scrapGuid,
         useDept, custodian, bDept, originalValue, productType } = listData.result;
       const assetsData = {
         assetsRecord, equipmentStandardName, fmodel, spec, useDept, custodian, bDept, originalValue,
         productType: productTypeData[productType],
       }
       const scrapData = {
-        scrapCause, useSituation, scrapAccessorys
+        scrapCause, useSituation, scrapAccessory
       }
       this.setState({ assetsData, scrapData, scrapGuid })
     }
@@ -96,11 +96,10 @@ class AppraisalDetail extends PureComponent {
                 'Content-Type': 'application/x-www-form-urlencoded'
               }
             })
-            message.success('鉴定完成, 即将跳回至鉴定选择页面', 1, () => {
-              this.props.history.push({pathname: '/scrap/scrapAppraisal'})
-            })
             if (data.status) {
-              this.props.history.push({pathname: '/scrap/scrapAppraisal'});
+              message.success('鉴定完成, 即将跳回至鉴定选择页面', 1, () => {
+                this.props.history.push({pathname: '/scrap/scrapAppraisal'})
+              })
             }
             this.setState({ isLoading: false })
           },
@@ -132,7 +131,7 @@ class AppraisalDetail extends PureComponent {
               <Row>
                 <Col>
                   <FormItem label={`鉴定参数`} {...formItemLayoutForOne}>
-                    {getFieldDecorator(`identifyFlag`, {
+                    {getFieldDecorator(`identifyFlags`, {
                       rules: [{ required: true, message: '至少选择一项参数!' }],
                     })(
                       <Checkbox.Group>
