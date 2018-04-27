@@ -200,6 +200,14 @@ class NewTransfer extends PureComponent {
     this.setState({ deptName });
     fetchIntoDeptname(deptName, IntodeptNameData => this.setState({ IntodeptNameData }));
   }
+  showModalIs = () => {
+    const values = this.props.form.getFieldsValue();
+    if (values.outDeptguid) {
+      this.showModal('productVisible');
+    } else {
+      message.warning('请选择转出科室之后再选择资产！');
+    }
+  }
   // 资产弹窗
   showModal = (modalName) => {
     if(this.refs.proTable){
@@ -221,6 +229,7 @@ class NewTransfer extends PureComponent {
       message.warning('请选择项目之后再添加！')
     }
   }
+
   
   handleCancel = (modalName) => {
     if (modalName === 'productVisible') {
@@ -246,7 +255,6 @@ class NewTransfer extends PureComponent {
     }
     let transferDetails = [],postData = {};
     json.map((item,index)=>{
-      console.log(item);
       return transferDetails.push({
         assetsRecordGuid: item,
         useDeptGuid: data.useDeptGuid,
@@ -271,6 +279,8 @@ class NewTransfer extends PureComponent {
       success: data => {
         if(data.status){
           message.success('新增成功');
+          this.props.form.resetFields();
+          this.setState({ProductTabledata: []});
         }else{
           message.error(data.msg)
         }
@@ -285,7 +295,7 @@ class NewTransfer extends PureComponent {
       item.useDept = outDeptname;
       item.useDeptGuid = val;
       return null;
-    })
+    });
     this.setState({
       ProductTabledata:this.state.ProductModalCallBack,
     })
@@ -499,7 +509,7 @@ class NewTransfer extends PureComponent {
         </Card>
         {/* 资产信息部分 */}
         <Card title="资产信息" bordered={false} style={{marginTop: 4}} className="min_card">
-          <Button type="primary" style={{marginBottom: 10}} onClick={() => this.showModal('productVisible')}>选择产品</Button>
+          <Button type="primary" style={{marginBottom: 10}} onClick={() => this.showModalIs()}>选择资产</Button>
           <Table
           columns={columns}
           scroll={{x: '100%'}}
