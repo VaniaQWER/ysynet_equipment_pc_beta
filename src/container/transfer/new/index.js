@@ -336,6 +336,10 @@ class NewTransfer extends PureComponent {
   }
   //保存
   save = () =>{
+    const { ProductModalCallBackKeys } = this.state;
+    if (!ProductModalCallBackKeys.length) {
+      return message.warning("请至少选择一条资产！");
+    }
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.sendEndAjax(this.state.ProductModalCallBackKeys);
