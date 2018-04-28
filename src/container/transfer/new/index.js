@@ -174,7 +174,6 @@ class NewTransfer extends PureComponent {
     deptNameData: [],// 转出科室保存数据
     IntodeptNameData: [],// 转入科室保存数据
     deptName: '',// 转入转出科室
-
     productVisible: false,// 选择产品弹窗可视内容
     ProductType:'',//资产搜索条件
     mobile: '', //资产搜索value
@@ -185,7 +184,8 @@ class NewTransfer extends PureComponent {
     fstate: '', //转出科室 00已转出
     useDeptGuid:'',
     data: {},
-    newAddressEdit: false
+    newAddressEdit: false,
+    callBack: {}
   }
   // 新保管人
   handleChange = (userName) => {
@@ -205,46 +205,44 @@ class NewTransfer extends PureComponent {
   showModalIs = () => {
     const values = this.props.form.getFieldsValue();
     if (values.outDeptguid) {
-      this.showModal('productVisible');
+      this.showModal();
     } else {
       message.warning('请选择转出科室之后再选择资产！');
     }
   }
   // 资产弹窗
-  showModal = (modalName) => {
+  showModal = () => {
     if(this.refs.proTable){
       this.refs.proTable.fetch({useDeptGuid: this.state.outDeptguid});
     }
-    this.setState({[modalName]: true});
+    this.setState({productVisible: true});
   }
-  handleOk = (modalName) => {
-    const { ProductModalCallBackKeys } = this.state;
-    if (ProductModalCallBackKeys.length !== 0) {
-      this.setState({loading: true});
-      setTimeout(() => {
-        if (modalName==='productVisible') {
-          this.add();
+  handleOk = () => {
+    this.setState({loading: true});
+    let newData = this.state.ProductModalCallBack;
+    setTimeout(() => {
+      let outDeptguid = this.state.outDeptguid;
+      this.resetAll(outDeptguid);
+      this.setState((prevState)=>{
+        // 去重: 后面的参数是根据什么去重,一定要加上
+        let uniqTableData = _.uniqBy(prevState.ProductTabledata.concat(newData), 'assetsRecordGuid');
+        return{
+          loading: false, 
+          productVisible: false ,
+          ProductModalCallBack: [],
+          ProductTabledata: uniqTableData
         }
-        this.setState({loading: false, [modalName]: false});
-      }, 1000)
-    } else {
-      message.warning('请选择项目之后再添加！')
-    }
-  }  
-  handleCancel = (modalName) => {
-    if (modalName === 'productVisible') {
-      this.setState({
-        ProductType: '',//资产搜索条件
-        mobile: '', //资产搜索value
-        ProductModalCallBackKeys: [],//资产弹框选中保存数据的key
-        ProductModalCallBack:[], //资产弹框选中保存数据的返回的数据
       });
-    }
-    this.setState({[modalName]: false});
-  }
-  add = () =>{
-    let outDeptguid = this.state.outDeptguid;
-    this.resetAll(outDeptguid);
+    }, 1000);
+  }  
+  handleCancel = () => {
+    this.setState({
+      productVisible: false,
+      ProductType: '',//资产搜索条件
+      mobile: '', //资产搜索value
+      ProductModalCallBackKeys: [],//资产弹框选中保存数据的key
+      ProductModalCallBack: [], //资产弹框选中保存数据的返回的数据
+    });
   }
   sendEndAjax =(json)=>{
     const values = this.props.form.getFieldsValue();
@@ -296,9 +294,6 @@ class NewTransfer extends PureComponent {
       item.useDeptGuid = val;
       return null;
     });
-    this.setState({
-      ProductTabledata:this.state.ProductModalCallBack,
-    })
   }
   // 资产弹框搜索框
   productQueryHandler = (value) => {
@@ -355,8 +350,8 @@ class NewTransfer extends PureComponent {
       })
     }
     this.setState({
-      ProductTabledata:a,
-      CacheProductTabledata:a
+      ProductTabledata: a,
+      CacheProductTabledata: a
     })
   }
   render() {
@@ -527,8 +522,8 @@ class NewTransfer extends PureComponent {
         visible={productVisible}
         title={`选择要转科的资产`}
         width='900px'
-        onOk={()=>this.handleOk('productVisible')}
-        onCancel={()=>this.handleCancel('productVisible')}
+        onOk={()=>this.handleOk()}
+        onCancel={()=>this.handleCancel()}
         footer={null}
         >
           <Row>
@@ -552,7 +547,7 @@ class NewTransfer extends PureComponent {
               />
             </Col>
             <Col span={4} style={{textAlign: 'right'}}>
-              <Button key="submit" type="primary" onClick={()=>this.handleOk('productVisible')}>添加</Button>
+              <Button key="submit" type="primary" onClick={()=>this.handleOk()}>添加</Button>
             </Col>
           </Row>
           {/* RemoteTable-->远程连接,需要一个url接口,因此假数据对他不起作用 */}
