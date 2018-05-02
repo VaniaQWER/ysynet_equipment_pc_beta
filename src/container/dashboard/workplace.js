@@ -2,49 +2,84 @@
  * @file 工作台
  */
 import React, { Component } from 'react';
-import { Card } from 'antd';
-import { withRouter } from 'react-router'
-import { connect } from 'react-redux';
+import { Layout, Card, Avatar } from 'antd';
+// import { withRouter } from 'react-router'
+// import { connect } from 'react-redux';
+import assets from '../../api/assets';
+import request from '../../utils/request';
+import querystring from 'querystring';
 
+const { Meta } = Card;
 
+const { Content } = Layout;
 
 class Workplace extends Component {
+
+  componentWillMount = () => {
+    this.getTodoInfo();
+  }
   
+  getTodoInfo = () => {
+    let options = {
+      body:querystring.stringify(),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        console.log(data);
+        if (data.status) {
+          
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(assets.getSelectOrderNumber, options);
+  }
+
   render() {
     return (
-     <div className='ysynet-content ysynet-common-bgColor'>
-        {/* <Row>
-          <Col span={2}>
-            <Avatar 
-            style={{width:72,height:72,borderRadius: 72}}
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
-          </Col>
-          <Col span={10}>
-              <h2 style={{lineHeight:'36px',color:"#666"}}>{orgName}==>{userName}</h2>
-              专业的医用设备管理服务平台,提供一站式物资解决方案
-          </Col>
-          <Col span={12}>
-          </Col>
-        </Row>
-        <Row style={{marginTop:16}}>
-          <Col span={24}>
-            <Card title="平台模块">
-              <Card.Grid style={gridStyle}>资产登记</Card.Grid>
-              <Card.Grid style={gridStyle}>资产档案</Card.Grid>
-              <Card.Grid style={gridStyle}>报修登记</Card.Grid>
-              <Card.Grid style={gridStyle}>报修记录</Card.Grid>
-              <Card.Grid style={gridStyle}>我的指派</Card.Grid>
-              <Card.Grid style={gridStyle}>我的维修单</Card.Grid>
-              <Card.Grid style={gridStyle}>我的验收单</Card.Grid>
-              <Card.Grid style={gridStyle}>维修记录</Card.Grid>
-            </Card>
-          </Col>
-        </Row> */}
-        <Card hoverable cover={<img alt="example" src={require('./index.jpg')} />} />
-      </div>
+     <Content>
+       <Card title={`代办事项`} extra={<a>设置</a>} style={{margin: 10}}>
+        <Card style={{width: '19%' , float: 'left', border: '1px solid red', borderRadius: '2%', marginLeft: '0.5%'}}>
+          <Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Card title"
+            description="维修派工"
+          />
+        </Card>
+        <Card style={{width: '19%', float: 'left', border: '1px solid red', borderRadius: '2%', marginLeft: '1%'}}>
+          <Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Card title"
+            description="维修处理"
+          />
+        </Card>
+        <Card style={{width: '19%', float: 'left', border: '1px solid red', borderRadius: '2%', marginLeft: '1%'}}>
+          <Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Card title"
+            description="转科审批"
+          />
+        </Card>
+        <Card style={{width: '19%', float: 'left', border: '1px solid red', borderRadius: '2%', marginLeft: '1%'}}>
+          <Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Card title"
+            description="保养实施"
+          />
+        </Card>
+        <Card style={{width: '19%', float: 'left', border: '1px solid red', borderRadius: '2%', marginLeft: '1%'}}>
+          <Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Card title"
+            description="设备计量"
+          />
+        </Card>
+       </Card>
+     </Content>
     )
   }
 }
-
-//export default Workplace;
-export default withRouter(connect(state => state)(Workplace));
+// <Card hoverable cover={<img alt="example" src={require('./index.jpg')} />} />
+export default Workplace;
+// export default withRouter(connect(state => state)(Workplace));

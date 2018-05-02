@@ -35,7 +35,6 @@ export default function promiseRequest(url, options) {
     };
     // newOptions.body = JSON.stringify(newOptions.body);
   }
-  console.log(newOptions)
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => response.json())
