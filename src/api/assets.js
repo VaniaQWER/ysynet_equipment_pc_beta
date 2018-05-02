@@ -40,7 +40,7 @@ submitEquipmentPay:`${_local}/equipmentDepreciation/insertEquipmentPay`,//提交
 //保养工单
 selectMaintainOrderList:`${_local}/maintainOrderController/selectMaintainOrderList`, //查询保养工单列表
 
-// 工作台
-getSelectOrderNumber: `${_local}/StaticDataController/selectOrderNumber`,//代办事项查询
+//工作台
+getSelectOrderNumber: `${_local}/StaticDataController/selectOrderNumber`,//待办事项
 
 };
