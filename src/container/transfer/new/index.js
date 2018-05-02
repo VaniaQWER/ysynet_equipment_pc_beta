@@ -20,6 +20,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const Search = Input.Search;
 const { RemoteTable } = tableGrid
+const { TextArea } = Input;
 
 let timeout;
 let currentValue;
@@ -34,6 +35,16 @@ const formItemLayout = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 16 },
+  },
+};
+const formStyleLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 20 },
   },
 };
 
@@ -267,7 +278,9 @@ class NewTransfer extends PureComponent {
     postData.inDeptname = this.state.inDeptname;
     postData.newAdd = values.newAdd;
     postData.maintainUserid = values.maintainUserid;
-    postData.maintainUsername = this.state.maintainUsername.split('-')[0];
+    if (this.state.maintainUsername) {
+      postData.maintainUsername = this.state.maintainUsername.split('-')[0];
+    }
     postData.transferDate = values.transferDate.format('YYYY-MM-DD');
     let options = {
       body:JSON.stringify(postData),
@@ -501,6 +514,15 @@ class NewTransfer extends PureComponent {
                       {required: true, message: '请选择计划转科时间'}
                     ]
                   })(<DatePicker style={{width: 200}} />)}
+                </FormItem>
+              </Col>
+              <Col span={16}>
+                <FormItem label={`转科原因`} {...formStyleLayout}>
+                  {getFieldDecorator('transferCause', {
+                    rules: [{max: 250}]
+                  })(
+                    <TextArea  style={{width: 608}} placeholder={`请输入转科原因`} maxLength="250" />
+                  )}
                 </FormItem>
               </Col>
             </Row>
