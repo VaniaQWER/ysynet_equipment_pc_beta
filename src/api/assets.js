@@ -43,4 +43,8 @@ selectMaintainOrderList:`${_local}/maintainOrderController/selectMaintainOrderLi
 //工作台
 getSelectOrderNumber: `${_local}/StaticDataController/selectOrderNumber`,//待办事项
 
+//获取效益分析页面数据
+getBenefitAnalysis :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/benefitAnalysis',
+getDataAnalysis  :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/dataAnalysis ',
+
 };

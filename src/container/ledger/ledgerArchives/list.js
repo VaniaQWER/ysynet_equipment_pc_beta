@@ -13,11 +13,12 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'RN',
-    width: 120,
+    width: 200,
     render: (text, record) => 
       <span>
         <Link to={{pathname: `/ledger/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
         <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+querystring.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a> 
+        <Link className={styles['ml10']}  to={{pathname: `/ledger/benefitAnalysis/${record.assetsRecordGuid}`}}><Icon type="profile" />效益分析</Link>
       </span>  
   },
   {
