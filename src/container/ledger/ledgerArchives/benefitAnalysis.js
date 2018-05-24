@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 import React, { Component } from 'react';
-import {  Card,Avatar,Modal,Row,Col,Select } from 'antd';
+import {  DatePicker,Card,Avatar,Modal,Row,Col } from 'antd';
 import { Chart, Geom, Axis, Coord,Guide } from 'bizcharts';
 import { withRouter } from 'react-router';
 import DataAnalysis from './dataAnalysis';//数据分析
@@ -14,25 +14,45 @@ import { DataSet } from '@antv/data-set';
 import { ledger as ledgerService } from '../../../service';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
-
+const { MonthPicker } = DatePicker;
 const { Meta } = Card;
-const Option = Select.Option;
 
 //饼图1数据
 const { Html } = Guide;
+const { Text } = Guide;
 const { DataView } = DataSet;
-const data = [
-  { item:'1',count: 40 },
-  { item:'2',count: 21 }
+const data1 = [
+  { item:'1',count: Math.random() },
+  { item:'2',count: Math.random() }
   ];
-  const dv = new DataView();
-  dv.source(data).transform({
+  const dv1 = new DataView();
+  dv1.source(data1).transform({
   type: 'percent',
   field: 'count',
   dimension: 'item',
   as: 'percent'
   });
-  const cols = {
+  const cols1 = {
+  percent: {
+    formatter: val => {
+      val = (val * 100) + '%';
+      return val;
+    }
+  }  
+}
+
+const data2 = [
+  { item:'1',count: Math.random() },
+  { item:'2',count: Math.random() }
+  ];
+  const dv2 = new DataView();
+  dv2.source(data2).transform({
+  type: 'percent',
+  field: 'count',
+  dimension: 'item',
+  as: 'percent'
+  });
+  const cols2 = {
   percent: {
     formatter: val => {
       val = (val * 100) + '%';
@@ -46,9 +66,60 @@ class LedgerArchivesDetail extends Component {
     super(props);
     this.state = {
       AssetInfoData: {},
-      yxcsData :[],
-      xyfxData: [],
-      type:'',//区别模块
+      yxcsData :[{
+          "description": "开机总时长",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_computer_a.png",
+          "type": "kjzscData"
+        },
+        {
+          "description": "故障时长",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_fault_a.png",
+          "type": "gzzscData"
+        },
+        {
+          "description": "工作时长",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_time_a.png",
+        },
+        {
+          "description": "使用次数",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_frequency_a.png",
+        }
+      ],
+      xyfxData1 : [{
+        "description": "总收入",
+        "title": Math.floor(Math.random()*(1000000-0+1)+0),
+        "img": "icon_income_a.png",
+        "imgHover": "icon_income_b.png",
+        "type": "zsrData"
+        },
+        {
+          "description": "总支出",
+          "title": Math.floor(Math.random()*(1000000-0+1)+0),
+          "img": "icon_expenditure_a.png",
+          "imgHover": "icon_expenditure_b.png",
+          "type": "zzcData"
+        }
+      ],
+      xyfxData2 : [
+      {
+        "description": "月保本量",
+        "title": Math.floor(Math.random()*(600-0+1)+0),
+        "img": "icon_month_a.png",
+        "imgHover": "icon_month_b.png"
+      },
+      {
+        "description": "投资收益率",
+        "title": Math.floor(Math.random()*(100-0+1)+0)+"%",
+        "img": "icon_data_a.png",
+        "imgHover": "icon_data_b.png"
+      }],
+      item:'',//区别模块
+      tzlyl:Math.floor(Math.random()*(100-0+1)+0),
+      lrl: Math.floor(Math.random()*(100-0+1)+0),
       visible: false
     }
   }
@@ -67,34 +138,104 @@ class LedgerArchivesDetail extends Component {
       Accept: 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
+  }
+  //选择月份
+  handleChangeMonth = () =>{
+    const  yxcsData  = [{
+          "description": "开机总时长",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_computer_a.png",
+          "type": "kjzscData"
+        },
+        {
+          "description": "故障时长",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_fault_a.png",
+          "type": "gzzscData"
+        },
+        {
+          "description": "工作时长",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_time_a.png",
+          "type": "gzscData"
+        },
+        {
+          "description": "使用次数",
+          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "img": "icon_frequency_a.png",
+          "type": "sycsData"
+        }
+      ],
+    xyfxData1 = [{
+          "description": "总收入",
+          "title": Math.floor(Math.random()*(1000000-0+1)+0),
+          "img": "icon_income_a.png",
+          "imgHover": "icon_income_b.png",
+          "type": "zsrData"
+        },
+        {
+          "description": "总支出",
+          "title": Math.floor(Math.random()*(1000000-0+1)+0),
+          "img": "icon_expenditure_a.png",
+          "imgHover": "icon_expenditure_b.png",
+          "type": "zzcData"
+        }
+      ],
+    xyfxData2 = [
+      {
+        "description": "月保本量",
+        "title": Math.floor(Math.random()*(600-0+1)+0),
+        "img": "icon_month_a.png",
+        "imgHover": "icon_month_b.png"
+      },
+      {
+        "description": "投资收益率",
+        "title": Math.floor(Math.random()*(100-0+1)+0)+"%",
+        "img": "icon_data_a.png",
+        "imgHover": "icon_data_b.png"
+      }
+      ],
+      tzlyl = Math.floor(Math.random()*(100-0+1)+0),
+      lrl =  Math.floor(Math.random()*(100-0+1)+0);
 
-    //获取运行数据和效益分析数据
-    getSelectAssetsRecordDetail(assets.getBenefitAnalysis ,{} ,(data) => {
-      this.setState( { yxcsData : data.result.yxcsData, xyfxData: data.result.xyfxData })
-    },{
-      Accept: 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    this.setState({
+      yxcsData: yxcsData,
+      xyfxData1: xyfxData1,
+      xyfxData2: xyfxData2,
+      tzlyl: tzlyl,
+      lrl: lrl
     })
-
   }
   //关闭弹出框
   handleCancel = (e) => {
     this.setState({
+      item:[],
       visible: false,
     });
   }
   //显示弹出框
-  handleDataAnalysis = (type) => {
-    alert(type)
+  handleDataAnalysis = (item) => {
     this.setState({
-      type: type,
+      item: item,
       visible: true,
-   
     });
   }
 
+  //鼠标悬停事件
+  handleOnMouseOver = (img) =>{
+    img.target.src = require('../../../assets/icon/'+ img.target.alt);
+  }
+  handleOnMouseOut = (img) =>{
+    const str = img.target.alt;
+    const strs = str.split('_');
+    const newImg = strs[0]+'_'+strs[1]+'_'+'a.png';
+    img.target.src = require('../../../assets/icon/'+ newImg);
+  }
+
+
+
   render() {
-    const { yxcsData ,xyfxData,type } = this.state;
+    const { yxcsData ,xyfxData1,xyfxData2,item,tzlyl,lrl } = this.state;
     return (
       <div>
          {
@@ -103,13 +244,7 @@ class LedgerArchivesDetail extends Component {
           <div>
             <Card title="资产信息" 
               extra={<div >月份:
-              <Select placeholder="请选择" style={{width:'200px'}}>
-                <Option value="1" key="1">一月份</Option>
-                <Option value="2" key="2">二月份</Option>
-                <Option value="3" key="3">三月份</Option>
-                <Option value="4" key="4">四月份</Option>
-                <Option value="5" key="5">五月份</Option>
-              </Select>
+              <MonthPicker onChange={this.handleChangeMonth} placeholder="请选择" />
               </div>}>
               <Row type="flex" style={{marginTop: 16}}>
                 <Col span={3}>资产编号</Col>
@@ -133,7 +268,7 @@ class LedgerArchivesDetail extends Component {
                                 avatar={<Avatar  style={{width:62,height:55,backgroundColor:'#fff',borderRadius:0}} src={require('../../../assets/icon/'+item.img)} />}
                                 title={item.title}
                                 description={item.description}
-                                onClick={this.handleDataAnalysis.bind(this,item.type)}
+                                onClick={this.handleDataAnalysis.bind(this,item)}
                               />
                             </Col>
                    })
@@ -145,14 +280,27 @@ class LedgerArchivesDetail extends Component {
                 <Col span={16} style={{borderRight:'2px dashed #eee'}}>
                   <Row>
                     {
-                    xyfxData.map((item,index) => { 
+                    xyfxData1.map((item,index) => { 
                       return  <Col span={12} key={index}>
                                 <Card bordered={false}>
                                   <Meta
-                                  avatar={<Avatar  style={{width:62,height:55,backgroundColor:'#fff',borderRadius:0}} src={require('../../../assets/icon/'+item.img)} />}
+                                  avatar={<img onMouseMove={this.handleOnMouseOver.bind(this)} onMouseOut={this.handleOnMouseOut.bind(this)} alt={item.imgHover}  style={{width:62,height:55}} src={require('../../../assets/icon/'+item.img)} />}
                                   title={item.title}
                                   description={item.description}
-                                  onClick={this.handleDataAnalysis}
+                                  onClick={this.handleDataAnalysis.bind(this,item)}
+                                  />
+                                </Card>
+                              </Col>
+                            })
+                    }
+                   {
+                    xyfxData2.map((item,index) => { 
+                      return  <Col span={12} key={index} style={{marginTop:'50px'}}>
+                                <Card bordered={false}>
+                                  <Meta
+                                  avatar={<img onMouseMove={this.handleOnMouseOver.bind(this)} onMouseOut={this.handleOnMouseOut.bind(this)} alt={item.imgHover}  style={{width:62,height:55}} src={require('../../../assets/icon/'+item.img)} />}
+                                  title={item.title}
+                                  description={item.description}
                                   />
                                 </Card>
                               </Col>
@@ -162,11 +310,12 @@ class LedgerArchivesDetail extends Component {
                 </Col>
                 <Col span={8}>
                   <Col span={24}>
-                    <Chart height={300} off data={dv} scale={cols} >
+                    <Chart height={300} off data={dv1} scale={cols1} style={{marginTop:'-24px',marginLeft:"-50px"}}>
                       <Coord type={'theta'} radius={0.75} innerRadius={0.6} />
                       <Axis name="percent" />
                       <Guide >
-                        <Html position ={[ '50%', '50%' ]} html='<div style="color:#8c8c8c;font-size:1.5em;text-align: center;width: 10em;">28%<br><span style="color:#262626;font-size:12px">投资收益率</span></div>' alignX='middle' alignY='middle'/>
+                        <Html position ={[ '50%', '62%' ]} html='<div style="color:#8c8c8c;font-size:12px;text-align: center;width: 10em;">投资收益率</div>' alignX='middle' alignY='middle'/>
+                        <Text content={tzlyl+"%"} top= {true} position ={[ '45%', '50%' ]} style={{fontSize:18}}/>
                       </Guide>
                       <Geom
                       type="intervalStack"
@@ -179,11 +328,12 @@ class LedgerArchivesDetail extends Component {
                     </Chart>
                   </Col>
                   <Col span={24}>
-                     <Chart height={300}  data={dv} scale={cols} >
+                     <Chart height={300}  data={dv2} scale={cols2} style={{marginTop:'-150px',marginLeft:"-50px"}}>
                       <Coord type={'theta'} radius={0.75} innerRadius={0.6} />
                       <Axis name="percent" />
                       <Guide >
-                        <Html position ={[ '50%', '50%' ]} html='<div style="color:#8c8c8c;font-size:1.5em;text-align: center;width: 10em;">22%<br><span style="color:#262626;font-size:12px">利润率</span></div>' alignX='middle' alignY='middle'/>
+                         <Html position ={[ '50%', '62%' ]} html='<div style="color:#8c8c8c;font-size:12px;text-align: center;width: 10em;">利润率</div>' alignX='middle' alignY='middle'/>
+                         <Text content={lrl+"%"} top= {true} position ={[ '45%', '50%' ]} style={{fontSize:18}}/>
                       </Guide>
                       <Geom
                       type="intervalStack"
@@ -206,8 +356,9 @@ class LedgerArchivesDetail extends Component {
               width='640px'
               footer={null}
               onCancel={ this.handleCancel}
+              destroyOnClose={true}
             >
-              <DataAnalysis type={type}/>
+              <DataAnalysis item={item}/>
             </Modal>
       </div>
     )
