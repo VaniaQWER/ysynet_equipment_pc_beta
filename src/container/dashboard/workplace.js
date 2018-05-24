@@ -8,7 +8,6 @@ import { Layout, Card, Button, Select } from 'antd';
 import assets from '../../api/assets';
 import querystring from 'querystring';
 import request from '../../utils/request';
-import './workplaceStyle.css';
 import { Chart, Axis, Geom, Tooltip, Legend } from 'bizcharts';
 import { DataSet } from '@antv/data-set';
 const { Content } = Layout;
