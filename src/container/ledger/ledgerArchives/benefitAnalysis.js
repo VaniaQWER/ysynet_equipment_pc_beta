@@ -228,7 +228,7 @@ class LedgerArchivesDetail extends Component {
   handleOnMouseOut = (img) =>{
     const str = img.target.alt;
     const strs = str.split('_');
-    const newImg = strs[0]+'_'+strs[1]+'_'+'a.png';
+    const newImg = `${strs[0]}_${strs[1]}_a.png`;
     img.target.src = require('../../../assets/icon/'+ newImg);
   }
 
