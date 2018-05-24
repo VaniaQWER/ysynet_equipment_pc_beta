@@ -112,8 +112,8 @@ class LedgerArchivesDetail extends Component {
         "imgHover": "icon_month_b.png"
       },
       {
-        "description": "投资收益率",
-        "title": Math.floor(Math.random()*(100-0+1)+0)+"%",
+        "description": "投资回收期",
+        "title": "3.8年",
         "img": "icon_data_a.png",
         "imgHover": "icon_data_b.png"
       }],
