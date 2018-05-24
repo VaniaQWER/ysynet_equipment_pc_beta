@@ -209,8 +209,8 @@ class WithDrawDetails extends Component {
 		},
 		{
 			title: '资产编号',
-			key: 'maintainNo',
-			dataIndex: 'maintainNo',
+			key: 'assetsRecord',
+			dataIndex: 'assetsRecord',
 			width:100,
 			render: (text,record,index) => <span>{text}</span>
 		},{
