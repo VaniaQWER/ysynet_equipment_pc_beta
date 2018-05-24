@@ -16,18 +16,21 @@ class DataAnalysis extends Component {
     super(props);
     this.state = {
       data: [
-        { year: "6月1", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
-        { year: "6月2", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
-        { year: "6月3", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月4", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月5", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月6", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月7", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月8", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
-        { year: "6月9", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) }
+        { year: "6月1日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
+        { year: "6月2日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
+        { year: "6月3日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
+        { year: "6月4日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
+        { year: "6月5日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
+        { year: "6月6日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
+        { year: "6月7日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
+        { year: "6月8日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
+        { year: "6月9日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) }
       ],// 数据源
       cols : {
-        'value': { min: 0 }
+        value: {
+          min: 0 ,
+          alias: '值' // 为属性定义别名
+        },
       } ,//定义度量,
       type: this.props.item.type
     }
@@ -57,7 +60,7 @@ class DataAnalysis extends Component {
     const cols2 = {
       percent: {
         formatter: val => {
-          val = Math.round(val * 100) + '%';
+          val = (val * 100).toFixed(2) + '%';
           return val;
         }
       }
@@ -80,7 +83,7 @@ class DataAnalysis extends Component {
               position="percent"
               color='item'
               tooltip={['item*percent',(item, percent) => {
-                percent = percent * 100 + '%';
+                percent =  (percent * 100).toFixed(2) + '%';
                 return {
                   name: item,
                   value: percent
@@ -93,7 +96,7 @@ class DataAnalysis extends Component {
             </Geom>
           </Chart>
           :
-          <Chart forceFit={true} height={400} data={data} scale={cols} style={{marginTop: 30}}>
+          <Chart forceFit={true} height={400} data={data} scale={cols}  style={{marginTop: 30}}>
             <Axis name="year" />
             <Axis name="value" />
             <Tooltip crosshairs={{type : "y"}}/>

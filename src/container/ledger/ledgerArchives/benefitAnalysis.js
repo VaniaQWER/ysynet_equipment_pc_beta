@@ -35,7 +35,7 @@ const data1 = [
   const cols1 = {
   percent: {
     formatter: val => {
-      val = (val * 100) + '%';
+      val = (val * 100).toFixed(2) + '%';
       return val;
     }
   }  
@@ -55,7 +55,7 @@ const data2 = [
   const cols2 = {
   percent: {
     formatter: val => {
-      val = (val * 100) + '%';
+      val = (val * 100).toFixed(2) + '%';
       return val;
     }
   }  
@@ -354,6 +354,7 @@ class LedgerArchivesDetail extends Component {
           <Modal
               visible={this.state.visible}
               width='640px'
+              title={item.description}
               footer={null}
               onCancel={ this.handleCancel}
               destroyOnClose={true}
