@@ -38,14 +38,14 @@ class DataAnalysis extends Component {
   render() {
     const { data,cols,type } = this.state ;
     const data2 =type==="zsrData" ? [
-      { item: '医疗收入', count: Math.floor(Math.random()*(100-0+1)+0)} ,
-      { item: '其他收入', count: Math.floor(Math.random()*(100-0+1)+0)} 
+      { item: '医疗收入', count: Math.random()} ,
+      { item: '其他收入', count: Math.random()} 
     ]:
     [
-      { item: '人工成本', count: Math.floor(Math.random()*(100-0+1)+0)} ,
-      { item: '维修费用', count: Math.floor(Math.random()*(100-0+1)+0)} ,
-      { item: '材料费', count: Math.floor(Math.random()*(100-0+1)+0)} ,
-      { item: '其他', count: Math.floor(Math.random()*(100-0+1)+0)} 
+      { item: '人工成本', count: Math.random()} ,
+      { item: '维修费用', count: Math.random()} ,
+      { item: '材料费', count: Math.random()} ,
+      { item: '其他', count: Math.random()} 
     ];
     const dv = new DataView();
     dv.source(data2).transform({
@@ -57,7 +57,7 @@ class DataAnalysis extends Component {
     const cols2 = {
       percent: {
         formatter: val => {
-          val = (val * 100) + '%';
+          val = Math.round(val * 100) + '%';
           return val;
         }
       }
