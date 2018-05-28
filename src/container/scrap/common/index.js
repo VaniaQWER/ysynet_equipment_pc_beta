@@ -1,6 +1,12 @@
 import React from 'react';
 import { Tooltip, Badge } from 'antd';
 import moment from 'moment';
+export const checkStateSel = [
+  { text: '已鉴定', value: '01' },
+  { text: '已完成', value: '07' },
+  { text: '已关闭', value: '08' },
+  { text: '待鉴定', value: '00' },
+] 
 const getStatus = text => {
   switch (text) {
     case '01':
@@ -15,9 +21,12 @@ const getStatus = text => {
 }
 export const scrapColumns = [
   { title: '报废单号', width: 200, dataIndex: 'scrapNo' },
-  { title: '单据状态', width: 100, dataIndex: 'fstate', render: text => {
+  { title: '单据状态', width: 100, dataIndex: 'fstate', 
+  filters: checkStateSel,
+  onFilter: (value, record) => (record && record.fstate===value),
+  render: text => {
     const status = getStatus(text);
-    return (
+    return(
       <Badge status={status.value} text={status.text} />
     )
   }},

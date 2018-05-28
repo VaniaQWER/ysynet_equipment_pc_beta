@@ -61,7 +61,8 @@ class ScrapForm extends PureComponent {
       const postData = {
         equipmentStandardName: values.equipmentStandardName,
         useDeptGuid: values.useDeptGuid,
-        assetsRecord: values.assetsRecord
+        assetsRecord: values.assetsRecord,
+        scrapNo:values.scrapNo
       }
       if (values.date && values.date.length) {
         postData.startDate = moment(values.date[0]).format('YYYY-MM-DD');
@@ -110,6 +111,13 @@ class ScrapForm extends PureComponent {
           </Row>
           <Row style={{display: isShow ? 'block' : 'none'}}>  
             <Col span={8}>
+              <FormItem label={`单号查询`} {...formItemLayout}>
+                {getFieldDecorator(`scrapNo`)(
+                  <Input placeholder='请输入单号' style={{width: 250}}/>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
               <FormItem label={`使用科室`} {...formItemLayout}>
                 {getFieldDecorator(`useDeptGuid`)(
                     <Select
@@ -122,7 +130,7 @@ class ScrapForm extends PureComponent {
                     >
                     {
                       deptOption.map((item, index) => (
-                        <Option value={item.value}>{ item.text }</Option>
+                        <Option value={item.value} key={index}>{ item.text }</Option>
                       ))
                     }
                   </Select>

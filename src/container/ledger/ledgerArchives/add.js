@@ -6,9 +6,8 @@ import React, { PureComponent } from 'react';
 import { Layout, Card, Affix, Button, Row, Col, Form, Input, Radio, Select, DatePicker, message, Modal } from 'antd';
 import request from '../../../utils/request';
 import querystring from 'querystring';
-import ledger from '../../../api/ledger';
 import transfer from '../../../api/transfer';
-import { selectStaticDataListMeteringUnit } from '../../../api/ledger';
+import ledger ,{ selectStaticDataListMeteringUnit } from '../../../api/ledger';
 import tableGrid from '../../../component/tableGrid';
 import { depreciationTypeData } from '../../../constants';
 import moment from 'moment';
@@ -143,22 +142,12 @@ class NewAddDictionary extends PureComponent {
   getOptions = (selData)=>{
 		if(selData){
 			return(
-				selData.map(d => <Option value={d.TF_CLO_NAME} key={d.TF_CLO_CODE}>{d.TF_CLO_NAME}</Option>)
+				selData.map((d,index) => <Option value={d.TF_CLO_CODE} key={index}>{d.TF_CLO_NAME}</Option>)
 			)
 		}
   }
-  // 3.给值
-  setTfBrand = (value, keyName, filterData)=>{
-		let o = filterData.filter(item=>{
-			return item.TF_CLO_NAME === value
-		})[0];
-		let ret = o ? o.value :'';
-		this.setState({
-			callbackData: Object.assign(this.state.callbackData, {[keyName]: ret})
-		})
-  }
   render() {
-    const { optionsTfBrand } = this.state;
+    const { optionsTfBrand ,optionsMeteringUnit} = this.state;
     const { getFieldDecorator } = this.props.form;
     return(
       <Form>
@@ -174,15 +163,11 @@ class NewAddDictionary extends PureComponent {
             rules: [{required: true, message:'请选择品牌'}]
           })(
             <Select
-              mode="combobox"
-              onSearch={this.getTfBrand}
-              onSelect={(v)=>this.setTfBrand(v, 'tfBrand', optionsTfBrand)}
-              defaultActiveFirstOption={false}
-              showArrow={false}
-              allowClear={true}
-              filterOption={false}
-              placeholder={`请搜索`}
+              showSearch
               style={{ width: 250 }}
+              placeholder="请搜索"
+              optionFilterProp="children"
+              filterOption={(input, option) =>  option.props.children?option.props.children.indexOf(input)>=0:'' }
             >
               {this.getOptions(optionsTfBrand)}
             </Select>
@@ -210,9 +195,17 @@ class NewAddDictionary extends PureComponent {
             {getFieldDecorator('meteringUnit', {
               initialValue: '',
               rules: [{required: true, message:'请选择计量单位'}]
-            })(<Select style={{width: 250}} placeholder={`请选择`}>
-            {this.state.optionsMeteringUnit.map((item, index) => <Option value={item.TF_CLO_CODE} key={item.TF_CLO_NAME}>{item.TF_CLO_NAME}</Option>)}
-            </Select>)}
+            })(
+              <Select
+                showSearch
+                style={{ width: 250 }}
+                placeholder="请输入计量单位"
+                optionFilterProp="children"
+                filterOption={(input, option) =>  option.props.children?option.props.children.indexOf(input)>=0:'' }
+              >
+                {optionsMeteringUnit.map((item, index) => <Option value={item.TF_CLO_CODE} key={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>)}
+              </Select>
+          )}
         </FormItem>
       </Form>
     )
@@ -286,30 +279,32 @@ class LedgerArchivesAdd extends PureComponent {
     this.setState({query});
   }
   componentWillMount =() => {
-    this.getOrgIdList();//供应商下拉数据
-    this.getUseDepart();//使用科室下拉数据
-    this.getManagementDepart();//管理科室下拉数据
-    this.getUserName();//保管人下拉数据
+    this.getAllSelectList();
   }
-  // 供应商列表
-  getOrgIdList = (value) => {
+  //获取所有的下拉框
+  getAllSelectList = ()=>{
     let options = {
-      body:querystring.stringify({orgId: value}),
+      body:querystring.stringify({}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
-          let ret = []
-          data.result.forEach(item => {
-            ret.push({
-              value: item.orgId,
-              text: item.orgName
-            })
-            this.setState({fOrgId: item.orgId});
-          });
+          let orgListRet = [] ;
+          let {dDeptList,orgList,useDeptList,userList} = data.result;
+          if(orgList){
+            orgList.forEach(item => {
+              orgListRet.push({
+                value: item.orgId,
+                text: item.orgName
+              })
+            });
+          }
           this.setState({
-            'orgIdData': ret
+            'orgIdData': orgListRet,
+            'deptNameData':dDeptList,
+            'managementData':useDeptList,
+            'userNameData':userList
           })
         }else{
           message.error(data.msg)
@@ -317,7 +312,7 @@ class LedgerArchivesAdd extends PureComponent {
       },
       error: err => {console.log(err)}
     }
-    request(ledger.getSelectFOrgList, options);
+    request(ledger.getAllSelectList, options);
   }
   // 保存按钮
   save = () => {
@@ -356,7 +351,7 @@ class LedgerArchivesAdd extends PureComponent {
       buyPrice: buyPrice,
       inDate: inDate,
       spare: spare,
-      fOrgId: this.state.fOrgId,
+      fOrgId: this.state.fOrgId-0,
       tfBrand: tfBrand,
       monthDepreciationV: monthDepreciationV,
       depreciationBeginDate: depreciationBeginDate,
@@ -472,63 +467,11 @@ class LedgerArchivesAdd extends PureComponent {
       return ''
     }
   }
-  // 1.管理科室掉接口并且赋值
-  getManagementDepart = (value) =>{
-		let o;
-		if(value){
-			o={deptName:value, deptType:'01'}
-		}else{
-			o={deptType:'01'}
-		}
-		let options = {
-			body:querystring.stringify(o),
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			},
-			success: data => {
-				if(data.status){
-					this.setState({
-						managementData: data.result
-					})
-				}else{
-					message.error(data.msg)
-				}
-			},
-			error: err => {console.log(err)}
-		}
-		request(transfer.getSelectUseDeptList,options)
-  }
-  // 1.使用科室掉接口并且赋值
-  getUseDepart = (value) =>{
-		let o;
-		if(value){
-			o={deptName:value, deptType:'00'}
-		}else{
-			o={deptType:'00'}
-		}
-		let options = {
-			body:querystring.stringify(o),
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			},
-			success: data => {
-				if(data.status){
-					this.setState({
-            deptNameData: data.result,
-          });
-				}else{
-					message.error(data.msg)
-        }
-			},
-			error: err => {console.log(err)}
-		}
-		request(transfer.getSelectUseDeptList,options)
-  }
   // 2.使用科室/管理科室 给数据下拉框
 	getOptions = (selData)=>{
 		if(selData){
 			return(
-				selData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>)
+				selData.map(d => <Option key={d.value} value={d.value}>{d.text}</Option>)
 			)
 		}
   }
@@ -543,47 +486,13 @@ class LedgerArchivesAdd extends PureComponent {
       callbackData:Object.assign(this.state.callbackData, {[keyName]: ret}),
     })
   }
-  // 1.保管人调接口并且给数据
-  getUserName = (value) =>{
-		let o;
-		if(value){
-			o={userName: value}
-    }
-		let options = {
-			body:querystring.stringify(o),
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			},
-			success: data => {
-				if(data.status){
-					this.setState({
-						userNameData: data.result
-					})
-				}else{
-					message.error(data.msg)
-				}
-			},
-			error: err => {console.log(err)}
-		}
-		request(transfer.getSelectUserNameList,options)
-  }
   // 2.保管人下拉数据
   getOption = (selData)=>{
 		if(selData){
 			return(
-				selData.map(d =><Option value={d.userName+'-'+d.deptName} key={d.value}>{d.userName+'-'+d.deptName}</Option>)
+				selData.map(d =><Option value={d.value} key={d.value}>{d.userName+'-'+d.deptName}</Option>)
 			)
 		}
-  }
-  // 3.保管人赋值value
-  setUserName = (value, keyName, filterData)=>{
-		let o = filterData.filter(item=>{
-			return item.userName+'-'+item.deptName === value
-		})[0];
-		let ret = o ? o.value :'';
-		this.setState({
-			callbackData: Object.assign(this.state.callbackData, {[keyName]: ret})
-		})
   }
   // 通过使用科室接口带出存放地址数据
   getNewAddessInfo = (value) => {
@@ -637,7 +546,7 @@ class LedgerArchivesAdd extends PureComponent {
         width: 80,
       },
     ]
-    const { equipmentVisible, dictionaryVisible, loading, res, disabled, disabledAss, data, deptNameData, managementData, userNameData, disabledAdd } = this.state;
+    const { orgIdData , equipmentVisible, dictionaryVisible, loading, res, disabled, disabledAss, data, deptNameData, managementData, userNameData, disabledAdd } = this.state;
     const { getFieldDecorator } = this.props.form;
     const query = this.state.query;
     return (
@@ -763,18 +672,13 @@ class LedgerArchivesAdd extends PureComponent {
                   initialValue: data.bDept
                 })(
                   <Select
-                    mode="combobox"
-                    onSearch={this.getManagementDepart}
-                    onSelect={(v)=>this.setStateValue(v, 'bDeptCode', managementData)}
-                    defaultActiveFirstOption={false}
-                    showArrow={false}
-                    allowClear={true}
-                    filterOption={false}
-                    placeholder={`请搜索`}
-                    disabled={disabled}
+                    showSearch
                     style={{ width: 200 }}
+                    placeholder="请选择管理科室"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>  option.props.children?option.props.children.indexOf(input)>=0:'' }
                   >
-                    {this.getOptions(managementData)}
+                  {this.getOptions(managementData)}
                   </Select>
                 )}
               </FormItem>
@@ -784,17 +688,13 @@ class LedgerArchivesAdd extends PureComponent {
                 {getFieldDecorator('useDeptCode', {
                   initialValue: data.useDept
                 })(
+
                   <Select
-                    mode="combobox"
-                    onSearch={this.getUseDepart}
-										onSelect={(v, option)=>{this.setStateValue(v, 'useDeptCode', deptNameData)}}
-                    defaultActiveFirstOption={false}
-                    showArrow={false}
-                    allowClear={true}
-                    filterOption={false}
-                    placeholder={`请搜索`}
-                    disabled={disabled}
-										style={{ width: 200 }} 
+                    showSearch
+                    style={{ width: 200 }}
+                    placeholder="请选择使用科室"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>  option.props.children?option.props.children.indexOf(input)>=0:'' }
                   >
                     {this.getOptions(deptNameData)}
                   </Select>
@@ -816,16 +716,11 @@ class LedgerArchivesAdd extends PureComponent {
                 initialValue: data.custodian
               })(
                 <Select
-                  mode="combobox"
-                  onSearch={this.getUserName}
-                  onSelect={(v)=>{this.setUserName(v, 'maintainUserid', userNameData)}}
-                  defaultActiveFirstOption={false}
-                  showArrow={false}
-                  allowClear={true}
-                  filterOption={false}
-                  placeholder={`请搜索`}
-                  disabled={disabled}
-                  style={{ width: 200 }} 
+                  showSearch
+                  style={{ width: 200 }}
+                  placeholder="请选择保管员"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>  option.props.children?option.props.children.indexOf(input)>=0:'' }
                 >
                   {this.getOption(userNameData)}
                 </Select>
@@ -835,18 +730,18 @@ class LedgerArchivesAdd extends PureComponent {
             <Col span={8}>
               <FormItem label={`供应商`} {...formItemLayout}>
                 {getFieldDecorator('fOrgId', {
-                  initialValue: data.fOrgName
                 })(
                   <Select
-                    onChange={this.getOrgIdList}
-                    style={{ width: 200 }} 
-                    disabled={disabled}
-                    placeholder="请选择供应商"
-                  >
-                    {this.state.orgIdData.map(d=>{
-                      return <Option value={d.value} key={d.value}>{d.text}</Option>
-                    })}
-                  </Select>
+                  showSearch
+                  style={{ width: 200 }}
+                  placeholder="请选择供应商"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>  option.props.children?option.props.children.indexOf(input)>=0:'' }
+                >
+                  {orgIdData.map( (d,index)=>{
+                    return <Option value={d.value?d.value.toString():''} key={index}>{d.text}</Option>
+                  })}
+                </Select>
                 )}
               </FormItem>
             </Col>

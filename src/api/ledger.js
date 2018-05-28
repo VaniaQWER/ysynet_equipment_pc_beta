@@ -5,6 +5,7 @@
 import promiseRequest from '../utils/promise_request';
 import {_local} from './local';
 const ledger = {
+  getAllSelectList:`${_local}/dept/selectInsertAssert`,//获取所有下拉框数据列表
   getSelectEquipmentList: `${_local}/assetsRecordController/selectEquipmentList`,// 选择设弹框-设备列表查询
   getSelectFOrgList: `${_local}/StaticDataController/selectFOrgList`,// 查询供应商列表
   getSelectCertList: `${_local}/assetsRecordController/selectCertList`,// 查询注册证列表
@@ -16,6 +17,7 @@ const ledger = {
   selectStaticDataListTfBrand: `${_local}/StaticDataController/selectStaticDataList`,//新增设备-品牌模糊搜索
   getSelectAssetsRecordDetail: `${_local}/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情
   getSelectEquipmentPayList: `${_local}/equipmentDepreciation/selectEquipmentPayList`,// 查询资金结构的值
+  selectStaticDataListMeteringUnit:`${_local}/StaticDataController/selectStaticDataList`//计量单位
 }
 export default ledger;
 // 计量单位
