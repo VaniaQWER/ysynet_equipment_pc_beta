@@ -27,6 +27,15 @@ class PicturesWall extends React.Component {
       this.setState({ fileList: nextProps.fileList})
     }
   }
+  judgeIMGorAcc =  (src)=>{
+    let arrStr = src.split(",");
+    let type = arrStr[arrStr.length-1];
+    if(type==='jpg'||type==='png'||type==='jpeg'||type==='gif'){
+      return src
+    }else{
+      return ''
+    }
+  }
   
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
@@ -46,11 +55,14 @@ class PicturesWall extends React.Component {
           fileList={fileList}
           onPreview={this.handlePreview}
           onChange={this.handleChange}
+          showUploadList={ isAdd ? true : {showRemoveIcon:false}}
         >
           { (isAdd && fileList.length < 3) ? uploadButton : null}
         </Upload>
-        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-          <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} maskClosable={false}
+          style={{wordBreak: 'break-all',padding:5}}>
+          <img alt="" style={{ width: '100%' }} src={this.judgeIMGorAcc(previewImage)} />
+          {this.judgeIMGorAcc(previewImage) ==='' ? `复制地址到地址栏查看附件：\n${previewImage}`:''}
         </Modal>
       </div>
     );

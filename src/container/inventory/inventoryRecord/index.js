@@ -273,7 +273,7 @@ class inventoryRecord extends React.Component{
         return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
               <Row>
-                  <Col span={12}>
+                  <Col span={18}>
                     <Search
                         placeholder="请输入清查单号"
                         onChange={(e) =>{  this.setState({'query':Object.assign(query,{'stockCountNo':e.target.value}) })   }}
@@ -282,7 +282,7 @@ class inventoryRecord extends React.Component{
                     <RangePicker onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM-DD'/>
                     <Button type='primary' size='default' onClick={this.queryHandler}>查询</Button>
                   </Col> 
-                  <Col span={12} style={{textAlign:'right'}}>
+                  <Col span={6} style={{textAlign:'right'}}>
                     <Button type='primary' size='default' onClick={()=>{this.setState({visible:true})}}>新增清查 </Button>
                   </Col>
               </Row>
