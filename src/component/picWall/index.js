@@ -24,7 +24,7 @@ class PicturesWall extends React.Component {
   
   componentWillReceiveProps(nextProps) {
     if (this.props.fileList !== nextProps.fileList) {
-      this.setState({ fileList: nextProps.fileList})
+      this.setState({ fileList: nextProps.fileList.map((item)=>{item.thumbUrl = item.thumbUrl? item.thumbUrl: require('../../assets/fujian.png'); return item})})
     }
   }
   judgeIMGorAcc =  (src)=>{
