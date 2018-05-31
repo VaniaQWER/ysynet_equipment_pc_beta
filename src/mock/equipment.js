@@ -79,7 +79,7 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
                 "item":[0,0,0,0,0,0,0]
@@ -148,7 +148,7 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
                 "item":[0,0,0,0,0,0,0]
@@ -286,7 +286,7 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
                 "item":[0,0,0,0,0,0,0]
@@ -355,7 +355,7 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
                 "item":[0,0,0,0,0,0,0]
@@ -424,7 +424,7 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
                 "item":[0,0,0,0,0,0,0]
@@ -493,7 +493,7 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
                 "item":[0,0,0,0,0,0,0]
@@ -564,10 +564,10 @@ const equipmentMock={
               },
               {
                 "description": "故障时长",
-                "title": 0,
+                "title": "0",
                 "img": "icon_fault_a.png",
                 "type": "gzzscData",
-                "item":[0,0,2,0,0,0,0]
+                "item":[0,0,0,0,0,0,0]
               },
               {
                 "description": "工作时长",
