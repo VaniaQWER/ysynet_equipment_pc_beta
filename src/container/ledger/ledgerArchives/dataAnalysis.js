@@ -10,22 +10,40 @@ import { DataSet } from '@antv/data-set';
 const Text = Guide.Text;
 
 const { DataView } = DataSet;
-
+const getWeek = function(){
+  var oneDay = 24 * 3600 * 1000; 
+  var date = []; 
+  var now = new Date(); 
+  function addData() { 
+    now = [ now.getMonth() + 1, now.getDate()].join('-'); 
+    date.unshift(now); 
+    now = new Date(+new Date(now) - oneDay); 
+  } 
+  for (var i = 1; i < 8; i++) { 
+    addData(); 
+  } 
+  return date; 
+}
 class DataAnalysis extends Component {
   constructor(props) {
     super(props);
+    let DateArr = getWeek();
+    let arr =[];
+    if(this.props.item.description==="总收入" || this.props.item.description==="总支出"){
+      arr = this.props.item.item
+    }else{
+      if(this.props.item.item){
+        arr = this.props.item.item.map((item,index)=>{
+          return {year:DateArr[index],value:item}
+        })
+      }else{
+        arr = DateArr.map((item,index)=>{
+          return {year:item,value:0}
+        })
+      }
+    }
     this.state = {
-      data: [
-        { year: "6月1日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
-        { year: "6月2日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
-        { year: "6月3日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月4日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月5日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月6日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月7日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) },
-        { year: "6月8日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0)},
-        { year: "6月9日", value: Math.floor(Math.random()*(Number(this.props.item.title)-0+1)+0) }
-      ],// 数据源
+      data: arr || [],// 数据源
       cols : {
         value: {
           min: 0 ,
@@ -40,16 +58,14 @@ class DataAnalysis extends Component {
 
   render() {
     const { data,cols,type } = this.state ;
-    const data2 =type==="zsrData" ? [
-      { item: '医疗收入', count: Math.random()} ,
-      { item: '其他收入', count: Math.random()} 
-    ]:
-    [
-      { item: '人工成本', count: Math.random()} ,
-      { item: '维修费用', count: Math.random()} ,
-      { item: '材料费', count: Math.random()} ,
-      { item: '其他', count: Math.random()} 
-    ];
+    // const data2 = type==="zsrData" ? data:
+    // [
+    //   { item: '人工成本', count: Math.random()} ,
+    //   { item: '维修费用', count: Math.random()} ,
+    //   { item: '材料费', count: Math.random()} ,
+    //   { item: '其他', count: Math.random()} 
+    // ];
+    const data2 = data;
     const dv = new DataView();
     dv.source(data2).transform({
       type: 'percent',

@@ -14,6 +14,7 @@ import { DataSet } from '@antv/data-set';
 import { ledger as ledgerService } from '../../../service';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
+import equipmentMock from '../../../mock/equipment';
 const { MonthPicker } = DatePicker;
 const { Meta } = Card;
 
@@ -66,9 +67,10 @@ class LedgerArchivesDetail extends Component {
     super(props);
     this.state = {
       AssetInfoData: {},
-      yxcsData :[{
+      yxcsData :[
+        {
           "description": "开机总时长",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "title":12313 ,
           "img": "icon_computer_a.png",
           "type": "kjzscData"
         },
@@ -134,14 +136,25 @@ class LedgerArchivesDetail extends Component {
     const params = { assetsRecordGuid: assetsRecordGuid };
     getSelectAssetsRecordDetail(assets.selectAssetsRecordDetail , querystring.stringify(params),(data) => {
       this.setState( { AssetInfoData : data.result })
+      if(data.result.equipmentStandardName){
+        let index = data.result.equipmentCode.charAt(data.result.equipmentCode.legnth-1)-2;
+        index = index >=0 ? index: 0;
+        console.log(data.result.equipmentStandardName)
+        console.log(data.result.equipmentCode)
+        this.setState(Object.assign(this.state,equipmentMock[data.result.equipmentStandardName][index]))
+        console.log('equipmentMock',JSON.stringify(equipmentMock[data.result.equipmentStandardName][index]))
+      }
+      
     },{
       Accept: 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
   //选择月份
-  handleChangeMonth = () =>{
-    const  yxcsData  = [{
+  handleChangeMonth = (e,monthStr) =>{
+    console.log('在此处更换月份')
+    console.log(monthStr)
+   /* const  yxcsData  = [{
           "description": "开机总时长",
           "title": Math.floor(Math.random()*(700-0+1)+0),
           "img": "icon_computer_a.png",
@@ -205,7 +218,10 @@ class LedgerArchivesDetail extends Component {
       tzlyl: tzlyl,
       lrl: lrl
     })
-  }
+  
+  
+  */
+ }
   //关闭弹出框
   handleCancel = (e) => {
     this.setState({
@@ -231,8 +247,6 @@ class LedgerArchivesDetail extends Component {
     const newImg = `${strs[0]}_${strs[1]}_a.png`;
     img.target.src = require('../../../assets/icon/'+ newImg);
   }
-
-
 
   render() {
     const { yxcsData ,xyfxData1,xyfxData2,item,tzlyl,lrl } = this.state;
