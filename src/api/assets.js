@@ -46,5 +46,5 @@ getSelectOrderNumber: `${_local}/StaticDataController/selectOrderNumber`,//待�
 //获取效益分析页面数据
 // getBenefitAnalysis :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/benefitAnalysis',
 // getDataAnalysis  :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/dataAnalysis ',
-
+selectAssetsBenefitMap:`${_local}/benefitController/selectAssetsBenefitMap`,//查询资产档案单机效益
 };

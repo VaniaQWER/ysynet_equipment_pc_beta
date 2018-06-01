@@ -5,16 +5,18 @@
  * @version 1.0.0
  */
 import React, { Component } from 'react';
-import {  DatePicker,Card,Avatar,Modal,Row,Col } from 'antd';
+import {  DatePicker,Card,Avatar,Modal,Row,Col,message} from 'antd';
 import { Chart, Geom, Axis, Coord,Guide } from 'bizcharts';
 import { withRouter } from 'react-router';
 import DataAnalysis from './dataAnalysis';//数据分析
 import { connect } from 'react-redux';
 import { DataSet } from '@antv/data-set';
 import { ledger as ledgerService } from '../../../service';
+import request from '../../../utils/request';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
 import equipmentMock from '../../../mock/equipment';
+import moment from 'moment';
 const { MonthPicker } = DatePicker;
 const { Meta } = Card;
 
@@ -70,37 +72,37 @@ class LedgerArchivesDetail extends Component {
       yxcsData :[
         {
           "description": "开机总时长",
-          "title":12313 ,
+          "title":"0" ,
           "img": "icon_computer_a.png",
           "type": "kjzscData"
         },
         {
           "description": "故障时长",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "title":"0" ,
           "img": "icon_fault_a.png",
           "type": "gzzscData"
         },
         {
           "description": "工作时长",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "title":"0" ,
           "img": "icon_time_a.png",
         },
         {
           "description": "使用次数",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
+          "title": "0",
           "img": "icon_frequency_a.png",
         }
       ],
       xyfxData1 : [{
         "description": "总收入",
-        "title": Math.floor(Math.random()*(1000000-0+1)+0),
+        "title": "0",
         "img": "icon_income_a.png",
         "imgHover": "icon_income_b.png",
         "type": "zsrData"
         },
         {
           "description": "总支出",
-          "title": Math.floor(Math.random()*(1000000-0+1)+0),
+          "title":"0",
           "img": "icon_expenditure_a.png",
           "imgHover": "icon_expenditure_b.png",
           "type": "zzcData"
@@ -109,118 +111,91 @@ class LedgerArchivesDetail extends Component {
       xyfxData2 : [
       {
         "description": "月保本量",
-        "title": Math.floor(Math.random()*(600-0+1)+0),
+        "title": "0",
         "img": "icon_month_a.png",
         "imgHover": "icon_month_b.png"
       },
       {
-        "description": "投资回收期",
-        "title": "3.8年",
+        "description": "投资回收期(年)",
+        "title": "0",
         "img": "icon_data_a.png",
         "imgHover": "icon_data_b.png"
       }],
       item:'',//区别模块
-      tzlyl:Math.floor(Math.random()*(100-0+1)+0),
-      lrl: Math.floor(Math.random()*(100-0+1)+0),
+      tzlyl:0,
+      lrl: 0,
       visible: false
     }
   }
   //获取id 根据id号查详情
   componentWillMount = () =>{
-    this.getDetails()
+    this.getDetails();
+    this.getData();
   }
+  getData = (dataTime)=>{
+    const assetsRecordGuid = this.props.match.params.id;
+    const params = { assetsRecordGuid: assetsRecordGuid , dataTime :(dataTime || this.getNowTime()) };
+    console.log(params)
+    let options = {
+      body:querystring.stringify(params),
+				headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+         //在这里对数据做处理
+          const {benefitRunResult,benefitIncomeResult,benefitProfitsResult,tzsyl,lrl} =  data.result;
 
+          this.setState({
+            "yxcsData":benefitRunResult,
+            "xyfxData1":benefitIncomeResult,
+            "xyfxData2":benefitProfitsResult,
+            "tzlyl":tzsyl,
+            "lrl": lrl
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(assets.selectAssetsBenefitMap,options)
+  }
   getDetails = ()=>{
     const assetsRecordGuid = this.props.match.params.id;
     const { getSelectAssetsRecordDetail } = this.props;
     const params = { assetsRecordGuid: assetsRecordGuid };
     getSelectAssetsRecordDetail(assets.selectAssetsRecordDetail , querystring.stringify(params),(data) => {
       this.setState( { AssetInfoData : data.result })
-      if(data.result.equipmentStandardName){
-        let index = data.result.equipmentCode.charAt(data.result.equipmentCode.legnth-1)-2;
-        index = index >=0 ? index: 0;
-        console.log(data.result.equipmentStandardName)
-        console.log(data.result.equipmentCode)
-        this.setState(Object.assign(this.state,equipmentMock[data.result.equipmentStandardName][index]))
-        console.log('equipmentMock',JSON.stringify(equipmentMock[data.result.equipmentStandardName][index]))
-      }
+
+
+      //此处为getData的成功后执行的操作
+      // if(data.result.equipmentStandardName ==="口腔综合治疗台"){
+      //   let index = data.result.equipmentCode.charAt(data.result.equipmentCode.legnth-1)-2;
+      //   index = index >=0 ? index: 0;
+      //   console.log(data.result.equipmentStandardName)
+      //   console.log(data.result.equipmentCode)
+      //   this.setState(Object.assign(this.state,equipmentMock[data.result.equipmentStandardName][index]))
+      //   console.log('equipmentMock',JSON.stringify(equipmentMock[data.result.equipmentStandardName][index]))
+      // }else{
+      //   this.setState(Object.assign(this.state,equipmentMock["超声波清洗器"][0]))
+      // }
       
     },{
       Accept: 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     })
   }
+  getNowTime = ()=>{
+    let date = new Date();
+    let y = date.getFullYear();
+    let m = date.getMonth()+1 >10 ? date.getMonth()+1 : '0'+ (date.getMonth()+1);
+    return `${y}-${m}`;
+  }
   //选择月份
-  handleChangeMonth = (e,monthStr) =>{
-    console.log('在此处更换月份')
-    console.log(monthStr)
-   /* const  yxcsData  = [{
-          "description": "开机总时长",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
-          "img": "icon_computer_a.png",
-          "type": "kjzscData"
-        },
-        {
-          "description": "故障时长",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
-          "img": "icon_fault_a.png",
-          "type": "gzzscData"
-        },
-        {
-          "description": "工作时长",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
-          "img": "icon_time_a.png",
-          "type": "gzscData"
-        },
-        {
-          "description": "使用次数",
-          "title": Math.floor(Math.random()*(700-0+1)+0),
-          "img": "icon_frequency_a.png",
-          "type": "sycsData"
-        }
-      ],
-    xyfxData1 = [{
-          "description": "总收入",
-          "title": Math.floor(Math.random()*(1000000-0+1)+0),
-          "img": "icon_income_a.png",
-          "imgHover": "icon_income_b.png",
-          "type": "zsrData"
-        },
-        {
-          "description": "总支出",
-          "title": Math.floor(Math.random()*(1000000-0+1)+0),
-          "img": "icon_expenditure_a.png",
-          "imgHover": "icon_expenditure_b.png",
-          "type": "zzcData"
-        }
-      ],
-    xyfxData2 = [
-      {
-        "description": "月保本量",
-        "title": Math.floor(Math.random()*(600-0+1)+0),
-        "img": "icon_month_a.png",
-        "imgHover": "icon_month_b.png"
-      },
-      {
-        "description": "投资收益率",
-        "title": Math.floor(Math.random()*(100-0+1)+0)+"%",
-        "img": "icon_data_a.png",
-        "imgHover": "icon_data_b.png"
-      }
-      ],
-      tzlyl = Math.floor(Math.random()*(100-0+1)+0),
-      lrl =  Math.floor(Math.random()*(100-0+1)+0);
-
-    this.setState({
-      yxcsData: yxcsData,
-      xyfxData1: xyfxData1,
-      xyfxData2: xyfxData2,
-      tzlyl: tzlyl,
-      lrl: lrl
-    })
-  
-  
-  */
+  handleChangeMonth = (e,dataTime) =>{
+    this.setState({dataTime})//2018-06
+    this.getData(dataTime)
  }
   //关闭弹出框
   handleCancel = (e) => {
@@ -258,7 +233,7 @@ class LedgerArchivesDetail extends Component {
           <div>
             <Card title="资产信息" 
               extra={<div >月份:
-              <MonthPicker onChange={this.handleChangeMonth} placeholder="请选择" />
+              <MonthPicker  defaultValue={ moment(this.getNowTime(),'YYYY-MM')} onChange={this.handleChangeMonth} placeholder="请选择" />
               </div>}>
               <Row type="flex" style={{marginTop: 16}}>
                 <Col span={3}>资产编号</Col>
