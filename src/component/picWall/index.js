@@ -24,11 +24,20 @@ class PicturesWall extends React.Component {
   
   componentWillReceiveProps(nextProps) {
     if (this.props.fileList !== nextProps.fileList) {
-      this.setState({ fileList: nextProps.fileList.map((item)=>{item.thumbUrl = item.thumbUrl? item.thumbUrl: require('../../assets/fujian.png'); return item})})
+      this.setState({ fileList: nextProps.fileList.map((item)=>{
+        let suffixArr = item.url.split('.');
+        let suffix = suffixArr[suffixArr.length-1];
+        if(suffix==="jpg" || suffix==="jpeg"  || suffix==="png" || suffix==="gif"){
+          return item
+        }else{
+          item.thumbUrl = item.thumbUrl? item.thumbUrl: require('../../assets/fujian.png'); 
+          return item
+        }
+      })})
     }
   }
   judgeIMGorAcc =  (src)=>{
-    let arrStr = src.split(",");
+    let arrStr = src.split(".");//split(",")
     let type = arrStr[arrStr.length-1];
     if(type==='jpg'||type==='png'||type==='jpeg'||type==='gif'){
       return src

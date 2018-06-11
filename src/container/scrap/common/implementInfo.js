@@ -4,7 +4,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Form } from 'antd';
 import PicWall from '../../../component/picWall'
-import { _local } from '../../../api/local'
+import { FTP } from '../../../api/local'
 const FormItem = Form.Item;
 const formItemLayoutForOne = {
   labelCol: {
@@ -23,7 +23,7 @@ class ImplementInfo extends PureComponent {
     if (data.spAccessory) {
       data.spAccessory.split(';').map((item, index) => fileList.push({
         uid: index + 1,
-        url: `${_local}ftp${item}`
+        url: `${FTP}${item}`
       }))
       fileList.pop();
     }

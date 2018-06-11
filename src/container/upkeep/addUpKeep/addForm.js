@@ -610,7 +610,6 @@ export default class AddUpKeepForm extends React.Component {
                         <DatePicker
                           disabledDate={this.disabledStartDate}
                           onChange={this.onStartChange}
-                          showTime
                           format={"YYYY-MM-DD"}
                           placeholder="请选择开始保养时间"
                         /> 
@@ -630,7 +629,6 @@ export default class AddUpKeepForm extends React.Component {
                       <DatePicker
                         disabledDate={this.disabledEndDate}
                         onChange={this.onEndChange}
-                        showTime
                         format={"YYYY-MM-DD"}
                         placeholder="请选择结束保养时间"
                       /> 
@@ -644,7 +642,6 @@ export default class AddUpKeepForm extends React.Component {
                     <FormItem label='下次保养时间' {...formItemLayout}>
                     {getFieldDecorator(`nextMaintainDate`,{initialValue:data.nextMaintainDate})(
                       <DatePicker
-                        showTime
                         format={"YYYY-MM-DD"}
                         placeholder="请选择下次保养时间"
                       /> 
