@@ -77,6 +77,14 @@ class RepairReg extends Component {
         };
         console.log(params,"无资产报修...使用科室")
       }
+    }else{
+      params= {
+        assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
+        equipmentCode:this.assetsInfo.state.data.equipmentCode,
+        isRepairs:true,
+        orderFstate:'10',
+        ...this.repairInfo.postData()
+      };
     }
     console.log("报修登记接口数据",params)
     insertOrRrpair(assets.insertOrUpdateRrpair,JSON.stringify(params),(data) => {
