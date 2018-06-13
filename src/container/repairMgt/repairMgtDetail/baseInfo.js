@@ -81,7 +81,7 @@ class BaseInfo extends Component {
          <Col span={4} className={styles['table-span']}>保管员</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.custodian }</Col>
          <Col span={4} className={styles['table-span']}>管理科室</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.bDept }</Col>
+         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.mDeptName }</Col>
          <Col span={4} className={styles['table-span']}>存放地址</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.deposit }</Col>
          <Col span={4} className={styles['table-span']}>报修来源</Col>

@@ -97,8 +97,8 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>资产名称：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('equipmetStandardName')(
-            <span>{ data.equipmetStandardName }</span>
+          getFieldDecorator('equipmentStandardName')(
+            <span>{ data.equipmentStandardName }</span>
           )
         }
         </Col>
