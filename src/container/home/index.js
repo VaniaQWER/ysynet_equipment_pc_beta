@@ -7,7 +7,8 @@ import RouteWithSubRoutes from '../../route/routeWithSubRoutes';
 import BasicLayout from '../common/basicLayout';
 import BreadcrumbGroup from '../../component/breadcrumbGroup';
 import Profile from '../../component/profile';
-import Notice from '../../component/notice';
+import _ from 'lodash';
+// import Notice from '../../component/notice';
 const { Header, Footer } = Layout;
 
 const checkPath = (ownList, index) => {
@@ -37,7 +38,7 @@ class Home extends React.Component {
         this.setState({
           isLoading: false
         })
-        const menu = await getMenu();
+        const menu =this.sortMenu( await getMenu());
         if(!checkPath(menu,1)){
           // alert('路径错误')
         }
@@ -56,15 +57,25 @@ class Home extends React.Component {
       }
     }
   }
-  
+
+  sortMenu = (menu) =>{
+    let a = _.sortBy(menu,function(o) { 
+      let subMenus = o.subMenus;
+       _.sortBy(subMenus,function(subO) {return subO.fsort});
+      return o.fsort; 
+    });
+    return a
+  }
+
   render () {
   
     const { routes, menu, user } = this.props;
     //menu.menuList
+    const sortMenu = this.sortMenu(menu.menuList);
     return (
       <Spin spinning={this.state.isLoading} size="large">
       <Layout style={{minHeight: '100vh'}}>
-        <BasicLayout menuList={menu.menuList} collapsed={this.state.collapsed}/>
+        <BasicLayout menuList={sortMenu} collapsed={this.state.collapsed}/>
         <Layout>
           <Header style={{ background: '#fff', padding: '0 20px 0 0' }} className='ysynet-header'>
             <Icon 
@@ -78,7 +89,7 @@ class Home extends React.Component {
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} 
             />
             <div style={{display: 'flex'}}>
-              <Notice/>
+             {/* <Notice/>*/}
               <Profile userName={user.userInfo.userName || user.userName }/>
             </div>  
           </Header>
