@@ -61,7 +61,7 @@ class Home extends React.Component {
   sortMenu = (menu) =>{
     let a = _.sortBy(menu,function(o) { 
       let subMenus = o.subMenus;
-       _.sortBy(subMenus,function(subO) {return subO.fsort});
+      o.subMenus = _.sortBy(subMenus,function(subO) {return subO.fsort});
       return o.fsort; 
     });
     return a
