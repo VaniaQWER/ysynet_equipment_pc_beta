@@ -108,7 +108,7 @@ class SearchForm extends Component {
           </Col>
           <Col span={8} key={3} style={{textAlign:'right'}}>
             <Button type='primary'  style={styles.fillRight}  onClick={()=>this.props.submit()}>确认退库</Button>
-            <Button type='primary' ><Link to={{pathname:`/storage/wareHouseMgt`}}>取消</Link></Button>
+            <Button type='primary' ><Link to={{pathname:`/storage/outMgt`}}>取消</Link></Button>
           </Col>
         </Row>
       </Form>
@@ -158,7 +158,13 @@ class Refund extends Component {
   setDateSource = (arr) =>{
     //arr是由资产编码获取返回的数据。
     let dataSource = this.state.dataSource;
-    let newArr = dataSource.concat(arr)
+    for(let i = 0;i<dataSource.length;i++){
+      if(dataSource[i].assetsRecord === arr.assetsRecord){
+        message.warn('当前资产已添加')
+        return 
+      }
+    }
+    let newArr = dataSource.concat(arr);
     this.setState({dataSource:newArr})
   }
   //删除产品
