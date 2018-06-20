@@ -15,11 +15,14 @@ import transfer from './transfer';
 import inventory from './inventory';
 import scrap from './scrap';
 import devalue from './devalue';
+import metermgt from './metermgt';
+import deptwork from './deptwork';
+import storage from './storage';
 const routes = [
   { path: '/login', exact: true, component: Login },
   { path: '/register', exact: true, component: () =>  <div>register</div> },
   { path: '/', component: Home, routes: [
-    system, ledger, operation, dashboard , upkeep ,basicdata, transfer , inventory, scrap ,devalue
+    system, ledger, operation, dashboard , upkeep ,basicdata, transfer , inventory, scrap ,devalue , metermgt , deptwork ,storage
   ]}
 ]
 
