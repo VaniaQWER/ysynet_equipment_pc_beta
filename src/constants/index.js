@@ -48,6 +48,14 @@ export const repairCommonDataSource = [
     width: 130
   }
 ]
+export const useFstateSel =[
+  { text: '正常', value: '01' },
+  { text: '故障', value: '02' },
+  { text: '报废', value: '03' },
+  { text: '借出', value: '04' },
+  { text: '闲置', value: '05' },
+];
+
 export const ledgerData = {
   "01": {
     text: "正常",

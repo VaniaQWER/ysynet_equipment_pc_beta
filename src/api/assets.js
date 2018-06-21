@@ -3,6 +3,7 @@ export default {
  userLogin: `${_local}/login/userLogin`,//登录
  picUploadUrl: `${_local}/ftp/post`,//图片上传
  YSYPATH:`${_local}/ftp`,//项目地址
+ selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
  selectAssetsList: `${_local}/assetsRecordController/selectAssetsList`, //查询资产列表
  selectAssetsRecordDetail: `${_local}/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
  updateAssetsRecordInfo: `${_local}/assetsRecordController/updateAssetsRecordInfo`, // 修改资产档案信息 
@@ -46,5 +47,7 @@ getSelectOrderNumber: `${_local}/StaticDataController/selectOrderNumber`,//待�
 //获取效益分析页面数据
 // getBenefitAnalysis :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/benefitAnalysis',
 // getDataAnalysis  :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/dataAnalysis ',
-selectAssetsBenefitMap:`${_local}/benefitController/selectAssetsBenefitMap`,//查询资产档案单机效益
+selectAssetsBenefitMap:`${_local}/benefitController/selectAssetsBenefitMap`,
+
+
 };

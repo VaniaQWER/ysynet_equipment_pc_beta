@@ -1,9 +1,6 @@
 /*库房管理 */
 import {_local} from './local';
 const storage = {
-  //测试使用的列表
-  testList:`${_local}/rrpairOrderController/selectRrpairList`,
-  testList2:`${_local}/transferController/selectTransferList`,
   //公共接口
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
   selectDeliveryForgList:`${_local}/delivery/selectDeliveryForgList`,//供应商下拉框
