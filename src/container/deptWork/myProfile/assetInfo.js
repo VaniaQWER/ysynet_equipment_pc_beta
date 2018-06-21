@@ -49,9 +49,9 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>状态</Col>
         <Col span={8} className={styles['table-span']}>{  AssetInfoData.useFstate ? ledgerData[AssetInfoData.useFstate].text :null }</Col>
         <Col span={4} className={styles['table-span']}>型号</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.spec }</Col>
-        <Col span={4} className={styles['table-span']}>规格</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.fmodel }</Col>
+        <Col span={4} className={styles['table-span']}>规格</Col>
+        <Col span={8} className={styles['table-span']}>{ AssetInfoData.spec }</Col>
         <Col span={4} className={styles['table-span']}>资产分类</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.productType ? productTypeData[AssetInfoData.productType].text : null }</Col>
         <Col span={4} className={styles['table-span']}>使用科室</Col>
