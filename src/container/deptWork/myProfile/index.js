@@ -170,7 +170,7 @@ class SearchFormWrapper extends Component {
           <Col span={6}>
             <FormItem label={`资产编码`} {...formItemLayout}>
               {getFieldDecorator('assetCode', {})(
-                <Input placeholder="请输入资产名称" style={{width: 200}} />
+                <Input placeholder="请输入资产编码" style={{width: 200}} />
               )}
             </FormItem>
           </Col>
