@@ -359,7 +359,7 @@ class LedgerArchivesList extends Component {
               </Upload>
               <Dropdown overlay={
                 <Menu  onClick={()=>this.printAll()}>
-                  <Menu.Item key="1"> 批量打印</Menu.Item>
+                  <Menu.Item key="1"> 全部打印</Menu.Item>
                 </Menu>
               } >
                 <Button onClick={()=>this.printSelect()}>

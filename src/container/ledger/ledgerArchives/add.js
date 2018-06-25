@@ -669,7 +669,8 @@ class LedgerArchivesAdd extends PureComponent {
             <Col span={8}>
               <FormItem label={`管理科室`} {...formItemLayout}>
                 {getFieldDecorator('bDeptCode', {
-                  initialValue: data.bDept
+                  initialValue: data.bDept,
+                  rules:[{required:true,message:'请选择'}]
                 })(
                   <Select
                     showSearch
@@ -686,7 +687,8 @@ class LedgerArchivesAdd extends PureComponent {
             <Col span={8}>
               <FormItem label={`使用科室`} {...formItemLayout}>
                 {getFieldDecorator('useDeptCode', {
-                  initialValue: data.useDept
+                  initialValue: data.useDept,
+                  rules:[{required:true,message:'请选择'}]
                 })(
 
                   <Select
