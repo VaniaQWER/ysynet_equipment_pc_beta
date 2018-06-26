@@ -276,7 +276,8 @@ class LedgerArchivesList extends Component {
       loading: false,
       query:{"deptType":"MANAGEMENT"},
       messageError:"",
-      selectedRowKeys:[]
+      selectedRowKeys:[],
+      tableRecords:0
     }
   }
   queryHandler = (query) => {
@@ -289,8 +290,12 @@ class LedgerArchivesList extends Component {
   }
   //打印所有
   printAll = () =>{
-    let v = this.refs.form.getFieldsValue();
-    this.sendPrintAjax(v)
+    if(this.state.tableRecords<=100){
+      let v = this.refs.form.getFieldsValue();
+      this.sendPrintAjax(v)
+    }else{
+      message.warn('为了提高效率，打印数量请保持在100以内');
+    }
   }
   //选择资产打印
   printSelect = ()=>{
@@ -390,6 +395,11 @@ class LedgerArchivesList extends Component {
                 this.setState({selectedRowKeys})
               }
             }}
+            callback={
+              (data)=>{
+                this.setState({tableRecords:data.result.records})
+              }
+            }
           /> 
         </Content>
     )

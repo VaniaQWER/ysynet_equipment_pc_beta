@@ -72,6 +72,9 @@ class RemoteTable extends Component {
             data: data.result.rows || data.result,
             pagination
           });
+          if(this.props.callback){
+            this.props.callback(data)
+          }
         },
         error: () => (
           this.setState({
