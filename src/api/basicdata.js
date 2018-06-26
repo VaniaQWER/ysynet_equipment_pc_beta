@@ -12,6 +12,16 @@ const basicdata = {
   deleteOne:`${_local}/maintainOrderController/deleteMaintainTemplate`,//删除一级tree-------------
   deleteTwo:`${_local}/maintainOrderController/deleteMaintainTemplateDetail`,//删除二级tree-------------
   editModuleName:`${_local}/maintainOrderController/updateMaintainTemplateName`,//编辑名称-------------
-
+  //物资分类
+  queryStaticZcByCode:`${_local}/staticInfoZcController/queryStaticZcByCode`,//获取顶层分类的staticId
+  searchStaticZc:`${_local}/staticInfoZcController/searchStaticZc`,//获取资产分类__列表
+  insertStaticInfoZc:`${_local}/staticInfoZcController/insertStaticInfoZc`,//添加资产分类
+  updateStaticInfoZc:`${_local}/staticInfoZcController/updateStaticInfoZc`,//编辑资产分类
+  deleteStaticInfoZc:`${_local}/staticInfoZcController/deleteStaticInfoZc`,//删除资产分类
+  selectAssets:`${_local}/assetsTypeController/selectAssets`,//资产列表
+  insertAssetsType:`${_local}/assetsTypeController/insertAssetsType`,//分类关联资产
+  queryAssetsTypeList:`${_local}/assetsTypeController/queryAssetsTypeList`,//查询分类关联资产
+  deleteAssetsTypeList:`${_local}/assetsTypeController/deleteAssetsTypeList`,//移出分类
+  queryStaticZcByName: `${_local}/staticInfoZcController/queryStaticZcByName`,//搜索框
 }
 export default basicdata;
