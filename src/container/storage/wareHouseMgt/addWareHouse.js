@@ -108,7 +108,7 @@ class AddWareHouse extends Component {
           success: data => {
             if(data.status){
                 message.success('入库成功')
-                this.props.form.resetFields();
+                this.refs.searchForm.resetFields();
                 this.setState({
                   baseInfo:{},
                   dataSource:[]
@@ -234,6 +234,7 @@ class AddWareHouse extends Component {
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
         <SearchFormWapper 
+        ref='searchForm'
         query={values=>this.query(values)}
         submit={(values)=>this.submit(values)}
         />
