@@ -195,7 +195,11 @@ class DepreciateClassify extends Component {
       tfClo: selectedKeys.length ? info.node.props.tfClo : '',
       query:{type:'02',staticId:info.node.props.guId}
     })
-    if(!info.selected){
+    if(info.selected){
+      if(this.refs.table){
+        this.refs.table.fetch({type:'02',staticId:info.node.props.guId})
+      }
+    }else{
       this.setState({query:{},selectedKeyInfo:{}})
     }
   }
@@ -370,6 +374,7 @@ class DepreciateClassify extends Component {
               this.props.form.resetFields();
             } else {
               message.error(data.msg);
+		 this.setState({isEdit:true})
             }
           },
           error: err => {console.log(err)}
@@ -494,7 +499,7 @@ class DepreciateClassify extends Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { visible , visibleSupplies, isLoading ,  selectedKeys, treeData, expandKeys, isEdit } = this.state;
+    const { visible , visibleSupplies, query , isLoading ,  selectedKeys, treeData, expandKeys, isEdit } = this.state;
     const productModalHeader = (
       <Row>
         <Col span={12}>未选资产</Col>
@@ -630,7 +635,7 @@ class DepreciateClassify extends Component {
                 <RemoteTable
                   url={basicdata.queryAssetsTypeList}
                   ref='table'
-                  query={this.state.query}
+                  query={query}
                   scroll={{x: '180%'}}
                   columns={[...columns]}
                   rowKey={'assetsRecordGuid'}

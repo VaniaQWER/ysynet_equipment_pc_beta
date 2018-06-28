@@ -195,7 +195,11 @@ class SuppliesClassify extends Component {
       tfClo: selectedKeys.length ? info.node.props.tfClo : '',
       query:{type:'01',staticId:info.node.props.guId}
     })
-    if(!info.selected){
+    if(info.selected){
+      if(this.refs.table){
+        this.refs.table.fetch({type:'01',staticId:info.node.props.guId})
+      }
+    }else{
       this.setState({query:{},selectedKeyInfo:{}})
     }
   }
@@ -337,7 +341,7 @@ class SuppliesClassify extends Component {
     }
   }
  
-  // 3 新增物资分类
+  // 3 新增/修改物资分类
   addStyleItem = e => {
     e.preventDefault();
       this.props.form.validateFieldsAndScroll((err, values) => {
@@ -370,6 +374,7 @@ class SuppliesClassify extends Component {
                 this.props.form.resetFields();
               } else {
                 message.error(data.msg);
+                this.setState({isEdit:true})
               }
             },
             error: err => {console.log(err)}
@@ -494,7 +499,7 @@ class SuppliesClassify extends Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { visible , visibleSupplies, isLoading ,  selectedKeys, treeData, expandKeys, isEdit } = this.state;
+    const { visible , visibleSupplies, query , isLoading ,  selectedKeys, treeData, expandKeys, isEdit } = this.state;
     const productModalHeader = (
       <Row>
         <Col span={12}>未选资产</Col>
@@ -504,7 +509,6 @@ class SuppliesClassify extends Component {
         </Col>
       </Row>
     )
-    
     return (
       <Layout style={{background: '#fff'}} className='classifyModule'>
         {/* 大的物资库房下拉框 */}
@@ -630,7 +634,7 @@ class SuppliesClassify extends Component {
                 <RemoteTable
                   url={basicdata.queryAssetsTypeList}
                   ref='table'
-                  query={this.state.query}
+                  query={query}
                   scroll={{x: '180%'}}
                   columns={[...columns]}
                   rowKey={'assetsRecordGuid'}
