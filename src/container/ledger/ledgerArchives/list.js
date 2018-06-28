@@ -274,17 +274,17 @@ class LedgerArchivesList extends Component {
     super(props);
     this.state = {
       loading: false,
-      query:{"deptType":"MANAGEMENT"},
+      query:{},//"deptType":"MANAGEMENT"
       messageError:"",
       selectedRowKeys:[],
       tableRecords:0
     }
   }
-  queryHandler = (query) => {
-    let q = Object.assign({"deptType":"MANAGEMENT"},query);
-    this.refs.table.fetch(q);
-    this.setState({ q })
-  }
+  // queryHandler = (query) => {
+  //   let q = Object.assign({},query);//"deptType":"MANAGEMENT"
+  //   this.refs.table.fetch(q);
+  //   this.setState({ q })
+  // }
   query = (val) => {
     this.refs.table.fetch(val)
   }
