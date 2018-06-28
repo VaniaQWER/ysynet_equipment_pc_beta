@@ -172,12 +172,12 @@ class SearchForm extends Component {
                 optionFilterProp="children"
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
-                    <Option value="" key={-1}>全部</Option>
-                    {
-                        this.state.outDeptOptions.map((item,index) => {
-                        return <Option key={index} value={item.value.toString()}>{item.text}</Option>
-                        })
-                    }
+                  <Option value="" key={-1}>全部</Option>
+                  {
+                    this.state.outDeptOptions.map((item,index) => {
+                    return <Option key={index} value={item.value.toString()}>{item.text}</Option>
+                    })
+                  }
                 </Select>
               )}
             </FormItem>
@@ -188,7 +188,6 @@ class SearchForm extends Component {
   }
 }
 const SearchFormWapper = Form.create()(SearchForm);
-
 
 class Income extends Component {
   constructor(props) {
@@ -219,6 +218,7 @@ class Income extends Component {
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10,textAlign:'right'}}>
             <Col span={24} >
+              <a target='_blank' href={require('../../../assets/income.xlsx')} style={{marginRight:15}} >下载导入模板</a>
               <Upload
                 action={benefitAnalysis.importBenefitIncomeList}
                 showUploadList={false}

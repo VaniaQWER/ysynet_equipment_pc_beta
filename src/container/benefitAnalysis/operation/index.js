@@ -224,6 +224,7 @@ class OperationData extends Component {
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10,textAlign:'right'}}>
             <Col span={24} >
+              <a target='_blank' href={require('../../../assets/operation.xlsx')} style={{marginRight:15}} >下载导入模板</a>
               <Upload
                 action={benefitAnalysis.importBenefitRunList}
                 showUploadList={false}
@@ -276,7 +277,7 @@ class OperationData extends Component {
         </Content>
     )
   }
-} 
+}
 
 export default OperationData ;
  
