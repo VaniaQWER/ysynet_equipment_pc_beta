@@ -374,7 +374,9 @@ class SuppliesClassify extends Component {
                 this.props.form.resetFields();
               } else {
                 message.error(data.msg);
-                this.setState({isEdit:true})
+                if(isEdit){
+                  this.setState({isEdit:true})
+                }
               }
             },
             error: err => {console.log(err)}

@@ -374,7 +374,9 @@ class FinanceClassify extends Component {
               this.props.form.resetFields();
             } else {
               message.error(data.msg);
-		this.setState({isEdit:true})
+              if(isEdit){
+                this.setState({isEdit:true})
+              }
             }
           },
           error: err => {console.log(err)}
@@ -665,14 +667,14 @@ class FinanceClassify extends Component {
           <Form>
             <Row>
               <Col span={24}>
-                <FormItem label={`类别名称`} {...formItemLayoutModal}>
+                <FormItem label={`类别名称`}{...formItemLayoutModal}>
                   {getFieldDecorator('tfComment', {
-                    rules: [{required: true, message: '请输入最大类别名称!'}, { max: 15, message: '长度不能超过15'}]
+                    rules: [{required: true, message: '请输入最大类别名称!'},{max: 15, message: '长度不能超过15'}]
                   })(<Input />)}
                 </FormItem>
               </Col>
               <Col span={24}>
-                <FormItem label={`类别编码`} {...formItemLayoutModal}>
+                <FormItem label={`类别编码`}{...formItemLayoutModal}>
                   {getFieldDecorator('tfClo', {
                     rules: [{required: true, message: '请输入类别编码!'}]
                   })(<Input disabled={isEdit} />)}
