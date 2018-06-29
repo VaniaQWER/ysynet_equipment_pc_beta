@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Table, message } from 'antd';
 import querystring from 'querystring';
 import request from '../../utils/request'
+import {sortUpByKey , sortDownByKey } from '../../utils/tools';
 class RemoteTable extends Component {
   constructor(props) {
     super(props)
@@ -72,8 +73,16 @@ class RemoteTable extends Component {
             data: data.result.rows || data.result,
             pagination
           });
-          if(this.props.callback){
+          if(this.props.callback){//获取请求回来的数据
             this.props.callback(data)
+          }
+          if(this.props.sortByTime){//根据时间排序
+            const { method , key } = this.props.sortByTime;
+            let arr = sortDownByKey(data.result.rows || data.result,key);//默认降序
+            if(method==='up'){//升序
+              arr = sortUpByKey(data.result.rows || data.result,key);
+            }
+            this.setState({data:arr})
           }
         },
         error: () => (

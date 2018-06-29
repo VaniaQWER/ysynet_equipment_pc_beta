@@ -167,6 +167,7 @@ class WithDraw extends React.Component{
                 columns={columns}
                 rowKey={'equipmentDepreciationGuid'}
                 showHeader={true}
+                // sortByTime={{method:'down',key:'depreciationDate'}}
                 style={{marginTop: 10}}
                 size="small"
             /> 

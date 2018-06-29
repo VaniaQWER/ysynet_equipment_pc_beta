@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip , } from 'antd';//message
 import { FTP } from '../api/local';
 export default function textTips(width,text) {
   return <Tooltip placement="topLeft" title={text}>
@@ -22,4 +22,25 @@ export function cutFtpUrl(fullUrl){
 		}else{
       return fullUrl;
     }
+}
+function compareUp(property){
+  return function(a,b){
+      var value1 = timeToStamp(a[property]);
+      var value2 = timeToStamp(b[property]);
+      return  value1  - value2 ;
+  }
+}
+function compareDown(property){
+  return function(a,b){
+      var value1 = timeToStamp(a[property]);
+      var value2 = timeToStamp(b[property]);
+      return  value2 - value1;
+  }
+}
+export function sortUpByKey(arr,key){
+  return  arr.sort(compareUp(key))
+}
+
+export function sortDownByKey(arr,key){
+  return  arr.sort(compareDown(key))
 }
