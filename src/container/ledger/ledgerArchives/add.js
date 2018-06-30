@@ -329,7 +329,8 @@ class LedgerArchivesAdd extends PureComponent {
     // list集合(资金结构)
     poatData.equipmentPayList = this.state.submitList;
     // 基本数据
-    const { contractNo, productCountry, product, bDeptCode, deposit, productionDate, useLimit, buyDate, depreciationType, residualValueV, custodian, installPrice, useDeptCode, buyPrice, inDate, spare, tfBrand, monthDepreciationV, depreciationBeginDate } = values; 
+    const { publicEquipment , rentingPrice , contractNo, productCountry, product, bDeptCode, deposit, productionDate, useLimit, buyDate, depreciationType, residualValueV,
+       custodian, installPrice, useDeptCode, buyPrice, inDate, spare, tfBrand, monthDepreciationV, depreciationBeginDate } = values; 
     poatData.assetsRecord = {
       assetsRecordGuid: this.state.assetsRecordGuid,
       assetsRecord: this.state.assetsRecord,
@@ -355,6 +356,7 @@ class LedgerArchivesAdd extends PureComponent {
       tfBrand: tfBrand,
       monthDepreciationV: monthDepreciationV,
       depreciationBeginDate: depreciationBeginDate,
+      publicEquipment , rentingPrice 
     };
     let options = {
       body: JSON.stringify(poatData),
@@ -866,6 +868,27 @@ class LedgerArchivesAdd extends PureComponent {
                 {getFieldDecorator('inDate', {
                   initialValue: data.inDate ? moment(data.inDate) : null
                 })(<DatePicker format="YYYY-MM-DD" style={{width: 200}} disabled={disabled} />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={8}>
+              <FormItem label="公用设备" {...formItemLayout}>
+              {getFieldDecorator(`publicEquipment`, {
+                    initialValue: '01',
+                  })(
+                  <RadioGroup onChange={(e) => {this.setState({value: e.target.value})}} disabled={disabled}>
+                    <Radio value={`01`}>是</Radio>
+                    <Radio value={`00`}>否</Radio>
+                  </RadioGroup>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label="租赁单价" {...formItemLayout}>
+                {getFieldDecorator('rentingPrice', {
+                  initialValue:''
+                })(<Input style={{width: 200}} disabled={disabled} placeholder="请输入租赁单价" />)}
               </FormItem>
             </Col>
           </Row>
