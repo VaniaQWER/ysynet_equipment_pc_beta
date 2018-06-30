@@ -218,7 +218,7 @@ class Income extends Component {
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10,textAlign:'right'}}>
             <Col span={24} >
-              <a target='_blank' href={require('../../../assets/income.xlsx')} style={{marginRight:15}} >下载导入模板</a>
+              <a target='_blank' href={benefitAnalysis.incomeFile} style={{marginRight:15}} >下载导入模板</a>
               <Upload
                 action={benefitAnalysis.importBenefitIncomeList}
                 showUploadList={false}

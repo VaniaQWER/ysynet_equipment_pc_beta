@@ -249,7 +249,7 @@ class Expenses extends Component {
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10,textAlign:'right'}}>
             <Col span={24} >
-              <a target='_blank' href={require('../../../assets/expenses.xlsx')} style={{marginRight:15}} >下载导入模板</a>
+              <a target='_blank' href={benefitAnalysis.expensesFile} style={{marginRight:15}} >下载导入模板</a>
               <Upload
                 action={benefitAnalysis.importBenefitPayList}
                 showUploadList={false}
