@@ -19,13 +19,15 @@ import metermgt from './metermgt';
 import deptwork from './deptwork';
 import storage from './storage';
 import benefitAnalysis from './benefitAnalysis';
+import ledgerBorrow from './ledgerBorrow';
 const routes = [
   { path: '/login', exact: true, component: Login },
   { path: '/register', exact: true, component: () =>  <div>register</div> },
   { path: '/', component: Home, routes: [
     system, ledger, operation, dashboard , upkeep ,basicdata, transfer , inventory, scrap ,devalue , metermgt , deptwork ,
     storage,
-    benefitAnalysis
+    benefitAnalysis,
+    ledgerBorrow
   ]}
 ]
 
