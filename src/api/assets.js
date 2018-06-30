@@ -17,6 +17,7 @@ export default {
  deleteAssetsFile: `${_local}/assetsRecordController/deleteAssetsFile`, // 删除资产附件信息
  printEquipmentQrcode: `${_local}/equipmentAdd/printEquipmentQrcode`, // 打码
  importAssetsTemplate: `${FTP}/meqmFile/importAssetsTemplate.xlsx`, // 下载模板
+ importModalTemplate: `${FTP}/meqmFile/importModalTemplate.xls`, // 下载资产模板
 getDepreciateDetails:`${_local}/equipmentDepreciation/selectEquipmentPayList`,//获取资产档案-这就信息
 submitEquipmentPay:`${_local}/equipmentDepreciation/insertEquipmentPay`,//提交资产档案的资金结构 
 //报修登记
@@ -48,6 +49,9 @@ getSelectOrderNumber: `${_local}/StaticDataController/selectOrderNumber`,//待�
 // getBenefitAnalysis :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/benefitAnalysis',
 // getDataAnalysis  :'https://www.easy-mock.com/mock/5a572f501288172a545ad02f/equipment_pc/get/dataAnalysis ',
 selectAssetsBenefitMap:`${_local}/benefitController/selectAssetsBenefitMap`,
-
-
+//资产档案=导出
+exportApplyList:`${_local}/assetsRecordController/exportApplyList`,//资产导出
+//资产档案-详情配件
+insertAssetsExtend:`${_local}/assetsRecordController/insertAssetsExtend`,// 新增配件
+printAssetsExtendQrcode:`${_local}/equipmentAdd/printAssetsExtendQrcode`,//资产打印
 };
