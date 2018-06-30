@@ -40,7 +40,7 @@ class PhoneLoginForm extends PureComponent {
               {getFieldDecorator('identifyingCode', {
                 rules: [{ required: true, message: '请输入您的验证码!' }],
               })(
-                <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="验证码" size="large"/>
+                <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="验证码" size="large" onPressEnter={()=>this.props.login()}/>
               )}
             </Col>
             <Col span={6} push={3}>

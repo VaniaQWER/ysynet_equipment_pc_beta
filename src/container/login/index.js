@@ -92,10 +92,10 @@ class Login extends Component {
         <div className={styles['middle']}>
           <Tabs defaultActiveKey="1" animated={false} style={{width: 400}} onChange={index => this.setState({tabIndex: index})}>
             <TabPane style={{padding: 8}} tab={<span style={{fontSize: 16}}><Icon type="solution" />账户密码登录</span>} key="1">
-              <WrappedNormalLoginForm wrappedComponentRef={(inst) => this.normalForm = inst}/>
+              <WrappedNormalLoginForm wrappedComponentRef={(inst) => this.normalForm = inst} login={this.login}/>
             </TabPane>
             <TabPane style={{padding: 8}}  tab={<span style={{fontSize: 16}}><Icon type="mobile" />手机号码登录</span>} key="2">
-              <WrappedPhoneLoginForm wrappedComponentRef={(inst) => this.phoneForm = inst}/>
+              <WrappedPhoneLoginForm wrappedComponentRef={(inst) => this.phoneForm = inst} login={this.login}/>
             </TabPane>
           </Tabs>
         </div>

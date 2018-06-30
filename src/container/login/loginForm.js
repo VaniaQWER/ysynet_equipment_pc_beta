@@ -17,7 +17,7 @@ class LoginForm extends PureComponent {
           {getFieldDecorator('password', {
             rules: [{ required: true, message: '请输入您的密码!' }],
           })(
-            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="密码" size="large"/>
+            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="密码" size="large" onPressEnter={()=>this.props.login()}/>
           )}
         </FormItem>
       </Form>
