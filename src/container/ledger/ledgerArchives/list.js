@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout,Upload,Button,Tag,message,Menu,Dropdown,Alert, Form,Select} from 'antd';
+import { Row,Col,Input,Icon, Layout,Upload,Button,Table,Tag,message,Radio,Menu,Dropdown,Alert, Form,Select, Modal,Progress} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom'
 import assets from '../../../api/assets';
@@ -138,7 +138,6 @@ class SearchForm extends Component {
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      console.log(values)
       this.props.query(values);
     });
   }
@@ -269,22 +268,218 @@ class SearchForm extends Component {
 }
 const SearchFormWapper = Form.create()(SearchForm);
 
+const importModalColumns =[
+  {
+    title:'校验结果',
+    dataIndex:'remark',
+    width:200
+  },
+  {
+    title:'行数',
+    dataIndex:'index',
+    width:100,
+    render:(text,record,index)=>`第${index+1}行`
+  },
+  {
+    title:'资产编码',
+    dataIndex:'assetsRecord',
+    width:100
+  },
+  {
+    title:'二维码',
+    dataIndex:'qrcode',
+    width:100
+  },
+  {
+    title:'资产名称',
+    dataIndex:'equipmentStandardName',
+    width:100
+  },
+  {
+    title:'注册证号',
+    dataIndex:'registerNo',
+    width:100
+  },
+  {
+    title:'品牌',
+    dataIndex:'brand',
+    width:100
+  },
+  {
+    title:'通用名称',
+    dataIndex:'equipmentName',
+    width:100
+  },
+  {
+    title:'型号',
+    dataIndex:'fmodel',
+    width:100
+  },
+  {
+    title:'规格',
+    dataIndex:'spec',
+    width:100
+  },
+  {
+    title:'计量单位',
+    dataIndex:'meteringUnit',
+    width:100
+  },
+  {
+    title:'购买金额',
+    dataIndex:'buyPrice',
+    width:100
+  },
+  {
+    title:'使用科室',
+    dataIndex:'useDeptName',
+    width:100
+  },
+  {
+    title:'保管员',
+    dataIndex:'custodian',
+    width:100
+  },
+  {
+    title:'存放地址',
+    dataIndex:'deposit',
+    width:100
+  },
+  {
+    title:'管理科室',
+    dataIndex:'manageDeptName',
+    width:100
+  },
+  {
+    title:'生产商',
+    dataIndex:'product',
+    width:100
+  },
+  {
+    title:'生产商国家',
+    dataIndex:'productCountry',
+    width:120
+  },
+  {
+    title:'出厂日期',
+    dataIndex:'productionDate',
+    width:100
+  },
+  {
+    title:'供应商',
+    dataIndex:'fOrgName',
+    width:100
+  },
+  {
+    title:'购买日期',
+    dataIndex:'buyDate',
+    width:100
+  },
+  {
+    title:'合同编号',
+    dataIndex:'contractNo',
+    width:100
+  },
+  {
+    title:'保修截止日期',
+    dataIndex:'inDate',
+    width:120
+  },
+  {
+    title:'折旧方式',
+    dataIndex:'depreciationType',
+    width:100
+  },
+  {
+    title:'预计使用年限（年）',
+    dataIndex:'useLimit',
+    width:180
+  },
+  {
+    title:'出厂编号',
+    dataIndex:'eqProductNo',
+    width:100
+  },
+  {
+    title:'公用设备',
+    dataIndex:'publicEquipment',
+    width:100
+  }
+]
+const accessoriesModalColumns = [
+  {
+    title:'校验结果',
+    dataIndex:'remark',
+    width:200
+  },
+  {
+    title:'行数',
+    dataIndex:'index',
+    width:100,
+    render:(text,record,index)=>`第${index+1}行`
+  },
+  {
+    title:'资产编码',
+    dataIndex:'assetsRecord',
+    width:100
+  },
+  {
+    title:'配件编码',
+    dataIndex:'partsCode',
+    width:100
+  },
+  {
+    title:'证件号',
+    dataIndex:'registerNo',
+    width:100
+  },
+  {
+    title:'品牌',
+    dataIndex:'brand',
+    width:100
+  },
+  {
+    title:'配件名称',
+    dataIndex:'partsName',
+    width:100
+  },
+  {
+    title:'型号',
+    dataIndex:'fmodel',
+    width:100
+  },
+  {
+    title:'规格',
+    dataIndex:'spec',
+    width:100
+  },
+  {
+    title:'单位',
+    dataIndex:'meteringUnit',
+    width:100
+  },
+  {
+    title:'单价',
+    dataIndex:'price',
+    width:100,
+    render:(text)=> text ? (text-0).toFixed(2) :''
+  },
+]
 class LedgerArchivesList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
+      showProgress:false,//导入模态框的
+      importModalType:"01",//导入模态框选择的导入类型
+      progressPercent:0,
+      importDataSource:[],//导入数据的table数据
       query:{},//"deptType":"MANAGEMENT"
       messageError:"",
       selectedRowKeys:[],
       tableRecords:0
     }
   }
-  // queryHandler = (query) => {
-  //   let q = Object.assign({},query);//"deptType":"MANAGEMENT"
-  //   this.refs.table.fetch(q);
-  //   this.setState({ q })
-  // }
   query = (val) => {
     this.refs.table.fetch(val)
   }
@@ -310,63 +505,58 @@ class LedgerArchivesList extends Component {
   }
 
   sendPrintAjax = (json) => {
-    console.log('发出的数据内容',JSON.stringify(json))
+    // console.log('发出的数据内容',JSON.stringify(json))
     window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(json))
+    this.setState({selectedRowKeys:[]})
+  }
+  //导出资产
+  exportAssets = () => {
+    let json = this.refs.form.getFieldsValue();
+    window.open(assets.exportApplyList+'?'+queryString.stringify(json))
+  }
+  //保存
+  onSubmitImport = () => {
+    let arr = this.state.importDataSource;
+    let filed =  this.state.importModalType ==="01" ?  "assetsRecordImportList":"partsDtoList";
+    // console.log(JSON.stringify({[filed]:arr,}))
+    if(arr.length){
+      request(assets.addAssets+'?'+queryString.stringify({importType:this.state.importModalType}),{
+        body:JSON.stringify({[filed]:arr}),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: data => {
+          if(data.status){
+             message.success('保存成功')
+             this.setState({visibleImportModal:false,importDataSource:[],importModalType:"01"})
+             this.refs.table.fetch();
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      })
+    }else{
+      message.warn('请先导入模板！')
+    }
   }
   render() {
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys , importDataSource } = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
-         {
-            this.state.messageError === "" ? null
-            :
-            <Alert style={{marginTop : 10}} message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
-          }
+         
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10}}>
             <Col span={12}></Col>
             <Col span={8} className={styles['text-align-right']}>
-              <Upload
-                action={assets.importEquipments}
-                showUploadList={false}
-                withCredentials={true}
-                beforeUpload={()=>this.setState({loading: true})}
-                onError={(error)=>{
-                    this.setState({loading: false})
-                    console.log(error)
-                }}
-                onSuccess={(result)=>{
-                  console.log(result,'result')
-                    this.setState({loading: false})
-                    if(result.status){
-                        this.refs.table.fetch();
-                        this.setState({
-                            messageError:""
-                        })
-                        message.success("导入成功")
-                    }
-                    else{
-                        this.setState({
-                            messageError:result.msg
-                        })
-                    }
-                }}
-                >
-                <Button style={{ marginRight: 8 }}>
-                  <Icon type='export'/> 导入
-                </Button>
-                
-                
-                {/*<a href={assets.importAssetsTemplate} style={{ marginLeft: 8 }} target="_self">
-                  <Icon type='cloud-download'/> 下载模板
-                </a>*/}
-              </Upload>
+              <Button type='primary' style={{marginRight:15}} onClick={()=>this.setState({visibleImportModal:true})}>导入</Button>
+              <Button type='primary' style={{marginRight:15}} onClick={()=>this.exportAssets()}>导出</Button>
               <Dropdown overlay={
                 <Menu  onClick={()=>this.printAll()}>
                   <Menu.Item key="1"> 全部打印</Menu.Item>
                 </Menu>
-              } >
+                }>
                 <Button onClick={()=>this.printSelect()}>
                   打印 <Icon type="ellipsis" />
                 </Button>
@@ -401,6 +591,97 @@ class LedgerArchivesList extends Component {
               }
             }
           /> 
+          <Modal 
+            title='导入数据'
+            width={980}
+            visible={this.state.visibleImportModal}
+            onOk={()=>this.setState({visibleImportModal:false,importDataSource:[],importModalType:"01"})}
+            onCancel={()=>this.setState({visibleImportModal:false,importDataSource:[],importModalType:"01"})}
+            footer={null}
+          >
+            {
+              this.state.messageError === "" ? null
+              :
+              <Alert style={{marginTop : 10}} message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
+            }
+            {
+              this.state.showProgress ? <Progress percent={this.state.progressPercent} status="active" />
+              : null
+            }
+            <Row style={{marginTop:10}}>
+              <Col span={12}>
+                <div className="ant-row ant-form-item">
+                  <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-4">
+                    <label>导入类型</label>
+                  </div>
+                  <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
+                    <div className="ant-form-item-control">
+                      <Radio.Group value={this.state.importModalType} onChange={(e)=>this.setState({importModalType:e.target.value})}>
+                        <Radio value="01">资产</Radio>
+                        <Radio value="02">配件</Radio>
+                      </Radio.Group>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col span={12} style={{textAlign:'right'}}>
+                <span>导入模板：
+                  {
+                    this.state.importModalType==="01" ?
+                    <a href={assets.importModalTemplate} style={{ marginRight: 8 }} target="_blank">资产模板.xls</a>
+                    :<a href={assets.accessoriesModalTemplate} style={{ marginRight: 8 }} target="_blank"> 配件模板.xls</a>
+                  } 
+                
+                </span>
+                <Upload
+                  action={assets.importAssets}
+                  data={{importType:this.state.importModalType}}
+                  showUploadList={false}
+                  withCredentials={true}
+                  beforeUpload={()=>this.setState({loading: true,showProgress:true})}
+                  onError={(error)=>{
+                      this.setState({loading: false,showProgress:false})
+                  }}
+                  onChange={(file)=>{
+                    if(file.event){
+                      this.setState({
+                        progressPercent:file.event.percent
+                      })
+                    }
+                  }}
+                  onSuccess={(result)=>{
+                    this.setState({loading: false})
+                    if(result.status){
+                      this.setState({
+                          importDataSource:result.result,
+                          progressPercent:100,
+                          showProgress:false,
+                          messageError:"",
+                      })
+                      message.success("上传成功")
+                    }else{
+                      this.setState({
+                          messageError:result.msg,showProgress:false
+                      })
+                    }
+                  }}>
+                  <Button style={{ marginRight: 8 }}>
+                    <Icon type='export'/> 上传
+                  </Button>
+                </Upload>
+                <Button type='primary' style={{marginRight:8}} onClick={()=>this.onSubmitImport()}>保存</Button>
+              </Col>
+            </Row>
+            <Table
+              rowKey={'rn'}
+              scroll={{x:'320%'}}
+              columns={this.state.importModalType==="01" ? importModalColumns : accessoriesModalColumns}
+              dataSource={importDataSource}>
+            </Table>
+
+          </Modal>
+
+          
         </Content>
     )
   }
