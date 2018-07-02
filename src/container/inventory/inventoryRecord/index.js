@@ -109,13 +109,12 @@ class ModalForm extends React.Component{
   }
 
 	getUseDepart = (value) =>{
-		let o;
-		if(value){
-			o={deptName:value,deptType:'00'}
-		}else{
-			o={deptType:'00'}
-		}
-    
+		let o ={deptType:'01'};
+    if(value==="0"){
+      o={deptType:'01'}
+    }else if(value==="1"){
+      o={deptType:'00'}
+    }
 		let options = {
 			body:querystring.stringify(o),
 			headers: {
@@ -163,11 +162,12 @@ class ModalForm extends React.Component{
 					label="清查方式"
 				>
 					{getFieldDecorator('type', {
+            initialValue:'0',
 						rules: [{
-							required: true, message: '请选择管理科室！',
+							required: true, message: '请选择清查方式！',
 						}],
 					})(
-            <Select>
+            <Select onSelect={(e)=>this.getUseDepart(e)}>
               <Option value='0'>按管理科室</Option>
               <Option value='1'>按使用科室</Option>
             </Select>
@@ -179,13 +179,10 @@ class ModalForm extends React.Component{
 				>
 					{getFieldDecorator('deptCode')(
             <Select
-                placeholder="请输入资产分类"
-                name='deptCode'
-                mode="combobox"
-                defaultActiveFirstOption={false}
-                showArrow={false}
-                filterOption={false}
-                onSearch={this.getUseDepart}
+                showSearch
+                placeholder="请选择使用科室"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                // onSearch={this.getUseDepart}
                 onSelect={(v)=>this.setStateValue(v,'deptCode',selectUseDepart)}
                 style={{ width: 250,marginBottom:15 }} 
               >
@@ -196,11 +193,11 @@ class ModalForm extends React.Component{
 
 				<FormItem label='备注' {...formItemLayout}>
 					{getFieldDecorator(`remark`,{
-						rules:[
-							{validator: this.checkTextLength}
-						]
+						// rules:[
+						// 	{validator: this.checkTextLength}
+						// ]
 					})(
-						<TextArea placeholder='请输入至少五个字符' style={{resize:'none',height:120}} maxLength={500}></TextArea>
+						<TextArea placeholder='请输入' style={{resize:'none',height:120}} maxLength={500}></TextArea>
 					)}
 				</FormItem>
 		</Form>

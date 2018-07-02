@@ -215,6 +215,14 @@ class TransferManager extends PureComponent {
     this.refs.table.fetch(query);
     this.setState({query});
   }
+  sorterTransferNo = (a,b,key) =>{
+    let reg = /[a-zA-Z]/g;
+    let numberA = a[key].replace(reg,'');
+    let numberB = b[key].replace(reg,'');
+    if(a[key] && b[key]){
+      return numberA - numberB
+    }
+  }
   render() {
     const columns = [
       {
@@ -238,7 +246,7 @@ class TransferManager extends PureComponent {
         title: '转科单号',
         dataIndex: 'transferNo',
         width: 150,
-        sorter: true
+        sorter: (a, b) => this.sorterTransferNo(a, b,'transferNo')
       },
       {
         // --状态 00待转科 03已转科 07已关闭 

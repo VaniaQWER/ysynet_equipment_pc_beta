@@ -215,6 +215,15 @@ class TransferRecord extends PureComponent {
     this.setState({query});
   }
   callback = (e) => {};
+
+  sorterTransferNo = (a,b,key) =>{
+    let reg = /[a-zA-Z]/g;
+    let numberA = a[key].replace(reg,'');
+    let numberB = b[key].replace(reg,'');
+    if(a[key] && b[key]){
+      return numberA - numberB
+    }
+  }
   render() {
     const columns = [
       {
@@ -233,7 +242,7 @@ class TransferRecord extends PureComponent {
         title: '转科单号',
         dataIndex: 'transferNo',
         width: 110,
-        sorter: true
+        sorter: (a, b) => this.sorterTransferNo(a, b,'transferNo')
       },
       {
         // 一共有三种状态 1.待转科 2.已转科 3.已关闭

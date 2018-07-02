@@ -35,7 +35,7 @@ export const scrapColumns = [
   { title: '资产名称', width: 300, dataIndex: 'equipmentStandardName' },
   { title: '型号', width: 200, dataIndex: 'spec' },
   { title: '规格', width: 200, dataIndex: 'fmodel' },
-  { title: '使用科室', width: 200, dataIndex: 'name8' },
+  { title: '使用科室', width: 200, dataIndex: 'useDeptName' },
   { title: '报废原因', width: 300, dataIndex: 'scrapCause', className: 'ant-table-ellipsis', 
     render: text => <Tooltip title={text} placement="topRight">
                 <span>{text}</span>

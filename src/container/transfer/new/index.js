@@ -198,6 +198,12 @@ class NewTransfer extends PureComponent {
     newAddressEdit: false,
     callBack: {}
   }
+
+  componentWillMount (){
+    this.handleChangeRollOut();
+    this.handleChangeInto();
+  }
+
   // 新保管人
   handleChange = (userName) => {
     this.setState({ userName });
@@ -428,16 +434,13 @@ class NewTransfer extends PureComponent {
                 <FormItem label={`转出科室`} {...formItemLayout}>
                 {getFieldDecorator('outDeptguid',{
                   rules:[
-                    {required:true, message: '请搜索选择转出科室',}
+                    {required:true, message: '请搜索选择转出科室'}
                   ]
                 })(
                   <Select
                   showSearch
-                  onSearch={this.handleChangeRollOut}
-                  defaultActiveFirstOption={false}
-                  showArrow={false}
-                  allowClear={true}
-                  filterOption={false}
+                  // onSearch={this.handleChangeRollOut}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   style={{width: 200}}
                   onSelect={(val,option)=>this.setState({ outDeptguid:val, outDeptname: option.props.children })}
                   placeholder={`请搜索选择转出科室`}
@@ -458,11 +461,8 @@ class NewTransfer extends PureComponent {
                 })(
                   <Select
                   showSearch
-                  onSearch={this.handleChangeInto}
-                  defaultActiveFirstOption={false}
-                  showArrow={false}
-                  allowClear={true}
-                  filterOption={false}
+                  // onSearch={this.handleChangeInto}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   style={{width: 200}}
                   placeholder={`请搜索选择转入科室`}
                   onSelect={this.getNewAddessInfo}
