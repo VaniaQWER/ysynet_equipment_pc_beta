@@ -57,4 +57,9 @@ exportApplyList:`${_local}/assetsRecordController/exportApplyList`,//资产导�
 //资产档案-详情配件
 insertAssetsExtend:`${_local}/assetsRecordController/insertAssetsExtend`,// 新增配件
 printAssetsExtendQrcode:`${_local}/equipmentAdd/printAssetsExtendQrcode`,//资产打印
+//资产档案-生命周期
+querySelectRrpairList:`${_local}/rrpairOrderController/selectRrpairList`,//维修
+querySelectMaintainOrderList:`${_local}/maintainOrderController/selectMaintainOrderList`,//保养
+selectTransferDetailList:`${_local}/transferController/selectAssertTransferList`,//转科
+selectEquimentDepreciationPayList:`${_local}/equipmentDepreciation/selectEquimentDepreciationPayList`,//折旧
 };

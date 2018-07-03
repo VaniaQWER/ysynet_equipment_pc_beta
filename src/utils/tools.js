@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tooltip , } from 'antd';//message
-import { FTP } from '../api/local';
+import { _local,FTP } from '../api/local';
+import querystring from 'querystring';
 export default function textTips(width,text) {
   return <Tooltip placement="topLeft" title={text}>
             <div style={{whiteSpace:"nowrap",width:width+"px",textOverflow:"ellipsis",overflow:"hidden"}}>{text}</div>
@@ -40,7 +41,27 @@ function compareDown(property){
 export function sortUpByKey(arr,key){
   return  arr.sort(compareUp(key))
 }
-
 export function sortDownByKey(arr,key){
   return  arr.sort(compareDown(key))
+}
+
+export const CommonData = (type, cb, params={}, url) => {
+  if(localStorage.getItem(type)) {
+    cb(JSON.parse(localStorage.getItem(type)));
+  } else {
+    fetch(url || `${_local}/StaticDataController/selectStaticDataList?code=` + type, {
+      credentials: 'include',
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: querystring.stringify(params)
+    })
+    .then((res) => res.json())
+    .then((json) => {
+      cb(json.result)
+      localStorage.setItem(type, JSON.stringify(json.result));
+    })
+    .catch((err) => cb(err))
+  }
 }

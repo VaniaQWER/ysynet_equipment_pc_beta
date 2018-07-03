@@ -16,10 +16,11 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'RN',
-    width: 200,
+    width: 250,
     render: (text, record) => 
       <span>
         <Link to={{pathname: `/ledger/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
+        <Link className={styles['ml10']}  to={{pathname: `/ledger/lifecycle/${record.assetsRecordGuid}`}}><Icon type="profile" />生命周期</Link>
         <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+queryString.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a> 
         <Link className={styles['ml10']}  to={{pathname: `/ledger/benefitAnalysis/${record.assetsRecordGuid}`}}><Icon type="profile" />效益分析</Link>
       </span>  
