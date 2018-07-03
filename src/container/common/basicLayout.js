@@ -90,7 +90,7 @@ class BasicLayout extends Component {
     const { selectedKeys, openKeys } = this.state;
     return (
       <Sider
-        width={'200'}      
+        width={200}      
         collapsed={collapsed}
       >
         <div className='logoWrapper'>

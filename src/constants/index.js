@@ -324,3 +324,9 @@ export const newPlanProductTypeSel =[
   { text: '专业设备', value: '05' },
   { text: '其他', value: '06' },
 ]
+
+export const transferState ={
+  "00":{text:"待转科"},
+  "03":{text:"已转科"},
+  "07":{text:"已关闭 "},
+}

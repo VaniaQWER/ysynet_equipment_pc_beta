@@ -362,7 +362,7 @@ class DepreciateClassify extends Component {
           url = basicdata.updateStaticInfoZc;
         } else {
           this.setState({isEdit: false});
-          this.props.form.resetFields();
+          // this.props.form.resetFields();
         }
         request(url,{
           body:JSON.stringify(postData),
@@ -438,7 +438,9 @@ class DepreciateClassify extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       const { selectedKeys } = this.state;
-      this.refs.table.fetch({...values,staticId:selectedKeys[0],type: '02'});
+      if(selectedKeys[0]){
+        this.refs.table.fetch({...values,staticId:selectedKeys[0],type: '02'});
+      }
     })
   }
   //选产品变更需求
@@ -457,25 +459,30 @@ class DepreciateClassify extends Component {
   getProductModalData = () => {
     const {selectedKeys , selectedProductRowKeys } = this.state;
     console.log('发出的请求内容',JSON.stringify({type:'02',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}))
-    request(basicdata.insertAssetsType,{
-      body:querystring.stringify({type:'02',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      success: data => { 
-        this.closeProductModal();
-        this.refs.table.fetch({type:'02',staticId:selectedKeys[0]})
-      },
-      error: err => {console.log(err)}
-    })
+    if(selectedProductRowKeys.length>0){
+      request(basicdata.insertAssetsType,{
+        body:querystring.stringify({type:'02',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        success: data => { 
+          this.closeProductModal();
+          this.refs.table.fetch({type:'02',staticId:selectedKeys[0]})
+        },
+        error: err => {console.log(err)}
+      })
+    }else{
+      message.warn('请选择产品后再添加！')
+    }
   }
 
   closeProductModal = ()=>{
+    const { selectedKeys } = this.state;
+    this.refs.tables.fetch({type:'02',staticId:selectedKeys[0]});
     this.refs.productForm.resetFields();
     this.setState({selectedProductRowKeys:[],visible:false})
   }
   //init2 - 搜索资产分类
   searchType = (val) => {
     console.log(val);
-    if(val.trim()!==""){
       let json = {
         searchName:val,
         staticId:this.state.topClassInfo.staticId
@@ -494,9 +501,6 @@ class DepreciateClassify extends Component {
         },
         error: err => {console.log(err)}
       })
-    }else{
-      message.warn('请输入有效类别名称')
-    }
   }
 
   render(){
@@ -608,7 +612,7 @@ class DepreciateClassify extends Component {
                         showSearch
                         placeholder={'请选择'}
                         optionFilterProp="children"
-                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
                         >
                             <Option value="" key={-1}>全部</Option>
                             {
@@ -669,7 +673,7 @@ class DepreciateClassify extends Component {
               <Col span={24}>
                 <FormItem label={`类别名称`} {...formItemLayoutModal}>
                   {getFieldDecorator('tfComment', {
-                    rules: [{required: true, message: '请输入最大类别名称!'}, { max: 15, message: '长度不能超过15'}]
+                    rules: [{required: true, message: '请输入类别名称!'}, { max: 15, message: '长度不能超过15'}]
                   })(<Input />)}
                 </FormItem>
               </Col>
@@ -800,7 +804,7 @@ class ProductForm extends Component {
             </Col>
             <Col span={8} style={{display: this.state.isShow ? 'block' : 'none'}}>
               <FormItem label={`使用科室`} {...formItemLayout}>
-                {getFieldDecorator(`outDeptGuid`,{
+                {getFieldDecorator(`useDeptGuid`,{
                   initialValue:""
                 })(
                   <Select 
