@@ -58,7 +58,7 @@ const columns = [
     title: '注册证号', dataIndex: 'registerNo', 
   },
   {
-    title: '品牌',  dataIndex: 'tfBrand', 
+    title: '品牌',  dataIndex: 'brandName', 
   },
   {
     title: '管理科室', dataIndex: 'manageDeptName', 
@@ -720,7 +720,6 @@ class SuppliesClassify extends Component {
                   selectedProductRowKeys:selectedRowKeys,
                   selectedProductRows:selectedRows}) 
                 }
-              
             }}
             size="small"
             style={{marginTop: 10}}>
@@ -779,7 +778,7 @@ class ProductForm extends Component {
             </Col>
             <Col span={8} style={{display: this.state.isShow ? 'block' : 'none'}}>
               <FormItem label={`品牌`} {...formItemLayout}>
-                {getFieldDecorator(`tfBrand`)(<Input placeholder='请输入品牌'/>)}
+                {getFieldDecorator(`brand`)(<Input placeholder='请输入品牌'/>)}
               </FormItem>
             </Col>
             <Col span={8} style={{display: this.state.isShow ? 'block' : 'none'}}>

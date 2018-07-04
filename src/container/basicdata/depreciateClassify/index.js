@@ -58,7 +58,7 @@ const columns = [
     title: '注册证号', dataIndex: 'registerNo', 
   },
   {
-    title: '品牌',  dataIndex: 'tfBrand', 
+    title: '品牌',  dataIndex: 'brandName', 
   },
   {
     title: '管理科室', dataIndex: 'manageDeptName', 
@@ -440,6 +440,8 @@ class DepreciateClassify extends Component {
       const { selectedKeys } = this.state;
       if(selectedKeys[0]){
         this.refs.table.fetch({...values,staticId:selectedKeys[0],type: '02'});
+      }else{
+        message.warn('请选择分类！')
       }
     })
   }
@@ -778,7 +780,7 @@ class ProductForm extends Component {
             </Col>
             <Col span={8} style={{display: this.state.isShow ? 'block' : 'none'}}>
               <FormItem label={`品牌`} {...formItemLayout}>
-                {getFieldDecorator(`tfBrand`)(<Input placeholder='请输入品牌'/>)}
+                {getFieldDecorator(`brand`)(<Input placeholder='请输入品牌'/>)}
               </FormItem>
             </Col>
             <Col span={8} style={{display: this.state.isShow ? 'block' : 'none'}}>
