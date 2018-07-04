@@ -44,16 +44,19 @@ const columns = [
     title: '医疗收入',
     dataIndex: 'medicalIncome',
     width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '材料收入',
     dataIndex: 'materialIncome',
-    width: 150
+    width: 150,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '收费单价（次）',
     dataIndex: 'chargePrice',
-    width: 100
+    width: 100,
+    render:(text)=>(text-0).toFixed(2)
   }
 ];
 const messageInfo = "添加大量的信息，建议使用导入功能。导入前请先下载Excel格式模版文件。";

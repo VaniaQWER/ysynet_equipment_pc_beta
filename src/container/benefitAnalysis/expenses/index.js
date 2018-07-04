@@ -44,46 +44,55 @@ const columns = [
     title: '人工费',
     dataIndex: 'artificialPrice',
     width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '折旧费',
     dataIndex: 'depreciationPrice',
-    width: 150
+    width: 150,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '维修维护费',
     dataIndex: 'repairPrice',
-    width: 100
+    width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '水电气费',
     dataIndex: 'waterElectrPrice',
-    width: 100
+    width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '房屋占用成本',
     dataIndex: 'houseCost',
-    width: 120
+    width: 120,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '医疗支出',
     dataIndex: 'medicalCost',
-    width: 100
+    width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '材料支出',
     dataIndex: 'materialCost',
-    width: 100
+    width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '资金占用成本',
     dataIndex: 'capitalCost',
-    width: 120
+    width: 120,
+    render:(text)=>(text-0).toFixed(2)
   },
   {
     title: '其他支出',
     dataIndex: 'otherCost',
-    width: 100
+    width: 100,
+    render:(text)=>(text-0).toFixed(2)
   },
 ];
 const messageInfo = "添加大量的信息，建议使用导入功能。导入前请先下载Excel格式模版文件。";
