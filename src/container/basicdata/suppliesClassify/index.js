@@ -350,11 +350,12 @@ class SuppliesClassify extends Component {
           const postData = {
             tfComment: values.tfComment,
             tfClo: values.tfClo,
-            parentStaticId: this.state.topClassInfo.staticId
+            parentStaticId: this.state.topClassInfo.staticId,
+            staticId:this.state.topClassInfo.staticId,
           }
-          if (this.state.selectedKeyInfo.node) {
-            postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
-          }
+          // if (this.state.selectedKeyInfo.node) {
+          //   postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
+          // }
           let url = basicdata.insertStaticInfoZc;//新增状态
           this.setState({isEdit: false});
           if (isEdit) {//编辑状态
