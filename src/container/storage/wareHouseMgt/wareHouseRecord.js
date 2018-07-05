@@ -78,7 +78,7 @@ class SearchForm extends Component{
     render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
-        labelCol: { span: 4 },
+        labelCol: { span: 6 },
         wrapperCol: { span: 18 },
         };
        
@@ -114,7 +114,7 @@ class SearchForm extends Component{
                     </FormItem>
                 </Col>
                  <Col span={8} key={3}>
-                    <FormItem {...formItemLayout} label={'入库分类'}>
+                    <FormItem {...formItemLayout} label={'入库方式'}>
                         {getFieldDecorator('intype',{
                             initialValue:""
                         })(
@@ -179,11 +179,23 @@ class WareHouseRecord extends Component{
                     width: 120,
                 
             },{
+                title : '入库方式',
+                dataIndex : 'intype',
+                width: 120,
+                render:(text)=>{
+                    if(text==="01"){
+                        return '采购入库'
+                    }else{
+                        return text
+                    }
+                }
+            },
+            {
                     title : '送货单',
                     dataIndex : 'sendNo',
                     width: 120,
             },	{
-                    title : '库房',
+                    title : '管理部门',
                     dataIndex : 'bDeptName',
                     width: 150,
             },{

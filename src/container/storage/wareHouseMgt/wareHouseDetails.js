@@ -75,8 +75,8 @@ class SearchForm extends Component{
     render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
-        labelCol: { span: 5 },
-        wrapperCol: { span: 17 },
+        labelCol: { span: 6 },
+        wrapperCol: { span: 18 },
         };
         return (
             <Form  onSubmit={this.handleSearch}>
@@ -155,6 +155,17 @@ class WareHouseDetails extends Component{
             title : '入库单',
             dataIndex : 'inNo',
             width: 180,
+        },{
+            title : '入库方式',
+            dataIndex : 'intype',
+            width: 120,
+            render:(text)=>{
+                if(text==="01"){
+                    return '采购入库'
+                }else{
+                    return text
+                }
+            }
         },{
             title:'产品名称',
             dataIndex: 'materialName',

@@ -75,8 +75,8 @@ class SearchForm extends Component{
     render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
-        labelCol: { span: 5 },
-        wrapperCol: { span: 17 },
+        labelCol: { span: 6 },
+        wrapperCol: { span: 18 },
         };
         return (
             <Form  onSubmit={this.handleSearch}>
@@ -162,6 +162,19 @@ class OutDetails extends Component{
                 dataIndex : 'outNo',
                 width: 120,
             },{
+                title : '出库方式',
+                dataIndex : 'outMode',
+                width: 120,
+                render:(text)=>{
+                    if(text==="02"){
+                        return '科室领用出库'
+                    }else if(text==="05"){
+                        return '退库出库'
+                    }else{
+                        return text
+                    }
+                }
+            },{
                 title:'领用科室',
                 dataIndex: 'outDeptName',
                 width: 120,
@@ -183,8 +196,17 @@ class OutDetails extends Component{
                 width: 120,
             },{
                 title : '数量',
-                dataIndex : 'amount',
+                dataIndex : 'withdrawNumber',
                 width: 120,
+                render:(text,record)=>{
+                    if(record.outMode==="02"){
+                        return record.outNumber;
+                    }else if (record.outMode==="05"){
+                        return record.withdrawNumber;
+                    }else{
+                        return text
+                    }
+                }
             },{
                 title : '采购价',
                 dataIndex : 'purchasePrice',

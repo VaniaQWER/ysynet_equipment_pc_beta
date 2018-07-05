@@ -16,9 +16,9 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const RangePicker = DatePicker.RangePicker;
 const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 18 },
-  };
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 },
+};
 class SearchForm extends Component{
     state={
         manageSelect:[],
@@ -186,7 +186,20 @@ class OutRecord extends Component{
                 width: 120,
                 
             },{
-                title : '库房',
+                title : '出库方式',
+                dataIndex : 'outMode',
+                width: 120,
+                render:(text)=>{
+                    if(text==="02"){
+                        return '科室领用出库'
+                    }else if(text==="05"){
+                        return '退库出库'
+                    }else{
+                        return text
+                    }
+                }
+            },{
+                title : '管理部门',
                 dataIndex : 'manageDeptName',
                 width: 150,
             },{

@@ -34,7 +34,7 @@ class DataAnalysis extends Component {
     }else{
       if(this.props.item.item){
         arr = this.props.item.item.map((item,index)=>{
-          return {year:DateArr[index],value:item}
+          return {year:DateArr[index],value:item.value || 0 }
         })
       }else{
         arr = DateArr.map((item,index)=>{

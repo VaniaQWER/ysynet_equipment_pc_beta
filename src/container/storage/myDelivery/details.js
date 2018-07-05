@@ -138,6 +138,18 @@ class EquipmentDeliveryDetails extends Component {
           <div className="ant-col-8">
             <div className="ant-row ant-form-item">
               <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-6">
+                <label>送货单号</label>
+              </div>
+              <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-18">
+                <div className="ant-form-item-control">
+                  {baseInfo.sendNo}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="ant-col-8">
+            <div className="ant-row ant-form-item">
+              <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-6">
                 <label>医疗机构</label>
               </div>
               <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-18">
@@ -171,8 +183,6 @@ class EquipmentDeliveryDetails extends Component {
               </div>
             </div>
           </div>
-        </Row>
-        <Row>
           <div className="ant-col-8">
             <div className="ant-row ant-form-item">
               <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-6">
@@ -209,8 +219,6 @@ class EquipmentDeliveryDetails extends Component {
               </div>
             </div>
           </div>
-        </Row>
-        <Row>
           <div className="ant-col-8">
             <div className="ant-row ant-form-item">
               <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-6">

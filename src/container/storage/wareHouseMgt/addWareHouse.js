@@ -5,8 +5,9 @@
  */
 
 import React , { Component } from 'react'//message,
-import { Layout , Form, Row, Col,Icon, Input, Button , Table ,Modal ,message} from 'antd';
+import { Layout , Form, Row, Col,Icon, Input, Button , Table ,Modal ,message, Select} from 'antd';
 // import TableGrid from '../../../component/tableGrid';
+import { CommonData } from '../../../utils/tools';
 import storage from '../../../api/storage';
 import request from '../../../utils/request';
 import queryString from 'querystring';
@@ -14,6 +15,7 @@ import { Link } from 'react-router-dom';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const confirm = Modal.confirm;
+const {Option} = Select;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -213,6 +215,7 @@ class AddWareHouse extends Component {
         render: (text, record) => (
           <EditableCell
             value={text}
+            useDic={true}
             onChange={this.onCellChange(record.key, 'purchaseUnit')}
           />
         ),
@@ -314,9 +317,15 @@ class EditableCell extends Component {
   state = {
     value: this.props.value,
     editable: false,
+    unitList:[]
+  }
+  componentWillMount (){
+    CommonData('UNIT', (data) => {
+      this.setState({unitList:data})
+    })
   }
   handleChange = (e) => {
-    const value = e.target.value;
+    const value = e;
     this.setState({ value });
   }
   check = () => {
@@ -329,24 +338,46 @@ class EditableCell extends Component {
     this.setState({ editable: true });
   }
   render() {
-    const { value, editable } = this.state;
+    const { value, editable , unitList } = this.state;
+    const { useDic } = this.props;//TF_CLO_CODE
+    const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_NAME} value={item.TF_CLO_NAME}>{item.TF_CLO_NAME}</Option>))
     return (
       <div className="editable-cell">
         {
-          editable ? (
-            <Input
-              value={value}
-              onChange={this.handleChange}
-              onPressEnter={this.check}
-              suffix={
+          editable ? 
+            useDic ? (
+              <span>
+                <Select 
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                  value={value} 
+                  style={{width:80}} 
+                  onChange={this.handleChange}
+                  >
+                  {unitOption}
+                </Select>
                 <Icon
                   type="check"
                   className="editable-cell-icon-check"
                   onClick={this.check}
                 />
-              }
-            />
-          ) : (
+              </span>
+            ) : (
+              <Input
+                value={value}
+                onChange={(e)=>this.handleChange(e.target.value)}
+                onPressEnter={this.check}
+                suffix={
+                  <Icon
+                    type="check"
+                    className="editable-cell-icon-check"
+                    onClick={this.check}
+                  />
+                }
+              />
+            ) 
+          : (
             <div style={{ paddingRight: 24 }}>
               {value || ' '}
               <Icon

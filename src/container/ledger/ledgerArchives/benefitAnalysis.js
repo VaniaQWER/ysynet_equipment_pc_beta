@@ -15,7 +15,6 @@ import { ledger as ledgerService } from '../../../service';
 import request from '../../../utils/request';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
-import equipmentMock from '../../../mock/equipment';
 import moment from 'moment';
 const { MonthPicker } = DatePicker;
 const { Meta } = Card;
@@ -254,7 +253,7 @@ class LedgerArchivesDetail extends Component {
                    yxcsData.map((item,index) => { 
                     return  <Col span={6} key={index}>
                               <Meta
-                                avatar={<Avatar  style={{width:62,height:55,backgroundColor:'#fff',borderRadius:0}} src={require('../../../assets/icon/'+item.img)} />}
+                                avatar={<Avatar  style={{width:62,height:55,backgroundColor:'#fff',borderRadius:0,cursor:'pointer'}} src={require('../../../assets/icon/'+item.img)} />}
                                 title={item.title}
                                 description={item.description}
                                 onClick={this.handleDataAnalysis.bind(this,item)}
@@ -273,7 +272,7 @@ class LedgerArchivesDetail extends Component {
                       return  <Col span={12} key={index}>
                                 <Card bordered={false}>
                                   <Meta
-                                  avatar={<img onMouseMove={this.handleOnMouseOver.bind(this)} onMouseOut={this.handleOnMouseOut.bind(this)} alt={item.imgHover}  style={{width:62,height:55}} src={require('../../../assets/icon/'+item.img)} />}
+                                  avatar={<img onMouseMove={this.handleOnMouseOver.bind(this)} onMouseOut={this.handleOnMouseOut.bind(this)} alt={item.imgHover}  style={{width:90,height:90,cursor:'pointer'}} src={require('../../../assets/icon/'+item.img)} />}
                                   title={item.title}
                                   description={item.description}
                                   onClick={this.handleDataAnalysis.bind(this,item)}
@@ -287,7 +286,7 @@ class LedgerArchivesDetail extends Component {
                       return  <Col span={12} key={index} style={{marginTop:'50px'}}>
                                 <Card bordered={false}>
                                   <Meta
-                                  avatar={<img onMouseMove={this.handleOnMouseOver.bind(this)} onMouseOut={this.handleOnMouseOut.bind(this)} alt={item.imgHover}  style={{width:62,height:55}} src={require('../../../assets/icon/'+item.img)} />}
+                                  avatar={<img onMouseMove={this.handleOnMouseOver.bind(this)} onMouseOut={this.handleOnMouseOut.bind(this)} alt={item.imgHover}  style={{width:90,height:90,cursor:'pointer'}} src={require('../../../assets/icon/'+item.img)} />}
                                   title={item.title}
                                   description={item.description}
                                   />
