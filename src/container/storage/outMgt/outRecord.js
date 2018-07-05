@@ -208,7 +208,8 @@ class OutRecord extends Component{
             },{
                 title : '出库时间',
                 dataIndex : 'outDate',
-                width: 140
+                width: 140,
+                render:(text)=>text?text.substr(0,10):""
             },{
                 title : '备注',
                 dataIndex : 'remark',

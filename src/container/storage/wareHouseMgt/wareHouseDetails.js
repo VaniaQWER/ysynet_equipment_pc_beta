@@ -199,6 +199,7 @@ class WareHouseDetails extends Component{
             title : '入库时间',
             dataIndex : 'inDate',
             width: 120,
+            render:(text)=>text?text.substr(0,10):""
         }
         ];
         // const query = this.state.query;

@@ -65,7 +65,8 @@ const columns = [
   {
     title:"出厂日期",
     dataIndex: 'downlineDate',
-    width:120
+    width:120,
+    render:(text)=>text?text.substr(0,10):""
   },
   {
     title:"国别",
@@ -85,7 +86,8 @@ const columns = [
   {
     title:"保修截至日期",
     dataIndex: 'inDate',
-    width:120
+    width:120,
+    render:(text)=>text?text.substr(0,10):""
   },
   {
     title:"售后服务电话",
@@ -178,7 +180,7 @@ class EquipmentDeliveryDetails extends Component {
               </div>
               <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-18">
                 <div className="ant-form-item-control">
-                  {baseInfo.ysr}
+                  {baseInfo.lxr}
                 </div>
               </div>
             </div>

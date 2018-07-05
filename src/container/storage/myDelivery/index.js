@@ -263,6 +263,7 @@ class EquipmentDelivery extends React.Component {
         title:"制单时间",
         dataIndex: 'sendDate',
         width:120,
+        render:(text)=>text?text.substr(0,10):""
       },
       {
         title:"验收人",
@@ -273,6 +274,7 @@ class EquipmentDelivery extends React.Component {
         title:"验收时间",
         dataIndex: 'yssj',
         width:120,
+        render:(text)=>text?text.substr(0,10):""
       }
     ]
 

@@ -198,6 +198,7 @@ class OutDetails extends Component{
                 title : '出库时间',
                 dataIndex : 'outDate',
                 width: 120,
+                render:(text)=>text?text.substr(0,10):""
             },{
                 title : '入库单号',
                 dataIndex : 'inNo',

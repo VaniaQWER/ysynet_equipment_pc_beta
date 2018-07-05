@@ -33,7 +33,15 @@ class AssetInfo extends Component {
     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
    })
   }
-  
+  filterProductCountry = (val) => {
+    if(val.trim()==="00"){
+      return '国产'
+    }else if (val==="01"){
+      return '进口'
+    }else{
+      return val
+    }
+  }
   render () {
     const { AssetInfoData } = this.props;
     return (
@@ -67,7 +75,7 @@ class AssetInfo extends Component {
         <Col span={4} className={styles['table-span']}>生产商</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.product }</Col>
         <Col span={4} className={styles['table-span']}>生产商国家</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.productCountry }</Col>
+        <Col span={8} className={styles['table-span']}>{ this.filterProductCountry(AssetInfoData.productCountry) }</Col>
         <Col span={4} className={styles['table-span']}>出厂日期</Col>
         <Col span={8} className={styles['table-span']}>{ AssetInfoData.productionDate?AssetInfoData.productionDate.split(' ')[0]:'' }</Col>
         <Col span={4} className={styles['table-span']}>供应商</Col>

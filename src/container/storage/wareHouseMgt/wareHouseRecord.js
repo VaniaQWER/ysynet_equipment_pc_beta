@@ -197,7 +197,8 @@ class WareHouseRecord extends Component{
             },{
                     title : '入库时间',
                     dataIndex : 'inDate',
-                    width: 140
+                    width: 140,
+                    render:(text)=>text?text.substr(0,10):""
             },{
                     title : '备注',
                     dataIndex : 'tfRemark',
