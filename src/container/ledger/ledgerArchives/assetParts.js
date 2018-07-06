@@ -77,7 +77,7 @@ class AssetParts extends Component {
 
   componentWillMount (){
     CommonData('UNIT', (data) => {
-      this.setState({unitList:data})
+      this.setState({unitList:data.rows})
     })
     CommonData('TF_BRAND', (data) => {
       this.setState({tfbrandList:data.rows})
@@ -135,6 +135,21 @@ class AssetParts extends Component {
     });
     let CodeName = code.length>0 ? code[0].TF_CLO_NAME :''
     return CodeName
+  }
+
+  validMoney = (rule, value, callback) => {
+    const { getFieldValue } = this.props.form;
+    const mentions = getFieldValue('price');
+    let num = Number(mentions)
+    if (!num || /^\d+$/.test(num) ||  /(\d+\.\d{1}$)/.test(num) || /(\d+\.\d{2}$)/.test(num)) {
+      if (num > 99999999.99) {
+        callback(new Error('输入数值过大, 不能超过100000000'));
+      }else{
+        callback();
+      }
+    } else {
+        callback(new Error('请输入非0正数,最多保留两位小数！'));
+    }
   }
 
   render () {
@@ -276,7 +291,8 @@ class AssetParts extends Component {
                     label="单价"
                   >
                     {getFieldDecorator('price', {
-                      rules: [{ required: true, message: '请选择单价' }],
+                      rules: [{ required: true, message: '请输入单价' },
+                      {validator: this.validMoney}],
                     })(
                     <Input placeholder="请输入" />
                     )}

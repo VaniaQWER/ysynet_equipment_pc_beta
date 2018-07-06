@@ -52,7 +52,16 @@ const columns = [
   {
     title:"出库数量",
     dataIndex: 'outNumber',
-    width:150
+    width:150,
+    render:(text,record)=>{
+      if(record.outMode==="02"){
+          return record.outNumber;
+      }else if (record.outMode==="05"){
+          return record.withdrawNumber;
+      }else{
+          return text
+      }
+    }
   },
   {
     title:"生产商",

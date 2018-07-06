@@ -284,6 +284,7 @@ class NewTransfer extends PureComponent {
     postData.inDeptname = this.state.inDeptname;
     postData.newAdd = values.newAdd;
     postData.maintainUserid = values.maintainUserid;
+    postData.transferOpinion = values.transferOpinion;
     if (this.state.maintainUsername) {
       postData.maintainUsername = this.state.maintainUsername.split('-')[0];
     }
@@ -518,7 +519,7 @@ class NewTransfer extends PureComponent {
               </Col>
               <Col span={16}>
                 <FormItem label={`转科原因`} {...formStyleLayout}>
-                  {getFieldDecorator('transferCause', {
+                  {getFieldDecorator('transferOpinion', {
                     rules: [{max: 250}]
                   })(
                     <TextArea  style={{width: 608}} placeholder={`请输入转科原因`} maxLength="250" />

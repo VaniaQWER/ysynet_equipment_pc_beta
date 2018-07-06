@@ -277,9 +277,9 @@ const importModalColumns =[
   },
   {
     title:'行数',
-    dataIndex:'index',
+    dataIndex:'rn',
     width:100,
-    render:(text,record,index)=>`第${index+1}行`
+    render:(text,record,index)=>`第${record.rn}行`
   },
   {
     title:'资产编码',
@@ -645,9 +645,15 @@ class LedgerArchivesList extends Component {
                   }}
                   onChange={(file)=>{
                     if(file.event){
-                      this.setState({
-                        progressPercent:file.event.percent
-                      })
+                      if(file.event.percent<100){
+                        this.setState({
+                          progressPercent:file.event.percent
+                        })
+                      }else{
+                        this.setState({
+                          progressPercent:99
+                        })
+                      }
                     }
                   }}
                   onSuccess={(result)=>{

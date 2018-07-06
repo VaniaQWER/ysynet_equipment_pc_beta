@@ -33,10 +33,12 @@ class DataAnalysis extends Component {
       arr = this.props.item.item
     }else{
       if(this.props.item.item){
-        arr = this.props.item.item.map((item,index)=>{
-          return {year:DateArr[index],value:item.value || 0 }
-        })
+        arr = this.props.item.item
+        // arr = this.props.item.item.map((item,index)=>{
+        //   return {year:DateArr[index],value:item.value || 0 }
+        // })
       }else{
+        debugger
         arr = DateArr.map((item,index)=>{
           return {year:item,value:0}
         })
@@ -116,15 +118,11 @@ class DataAnalysis extends Component {
             <Axis name="year" />
             <Axis name="value" />
             <Tooltip crosshairs={{type : "y"}}/>
-            <Geom type="line" position="year*value" size={2} />
+            <Geom type="line" position="year*value" size={2} ></Geom>
             <Geom type='point' position="year*value" size={4} shape={'circle'} style={{ stroke: '#fff', lineWidth: 1}} />
             <Guide><Text content={'开机时长趋势'} top={true}/></Guide>
           </Chart>
         }
-       
-
-       
-
       </div>
     )
   }

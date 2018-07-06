@@ -142,7 +142,7 @@ const columns_3 = [
   },
   {
     title: '转科原因',
-    dataIndex: 'transferCause',
+    dataIndex: 'transferOpinion',
     width: 100
   },
 ];
