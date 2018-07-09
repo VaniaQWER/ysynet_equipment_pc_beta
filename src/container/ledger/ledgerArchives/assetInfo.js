@@ -34,7 +34,7 @@ class AssetInfo extends Component {
    })
   }
   filterProductCountry = (val) => {
-    if(val.trim()==="00"){
+    if(val==="00"){
       return '国产'
     }else if (val==="01"){
       return '进口'

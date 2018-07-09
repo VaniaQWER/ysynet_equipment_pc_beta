@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip , } from 'antd';//message
+import { Tooltip } from 'antd';//message
 import { _local,FTP } from '../api/local';
 import querystring from 'querystring';
 export default function textTips(width,text) {
@@ -7,7 +7,7 @@ export default function textTips(width,text) {
             <div style={{whiteSpace:"nowrap",width:width+"px",textOverflow:"ellipsis",overflow:"hidden"}}>{text}</div>
          </Tooltip>
 }
-
+/*时间str转换为时间戳 */
 export function timeToStamp(timeStr){
     if(timeStr){
       return Date.parse(new Date(timeStr)) / 1000 
@@ -15,7 +15,20 @@ export function timeToStamp(timeStr){
       return timeStr
     }
 }
-
+export function moneyValid( val,message="请输入非0正数,最多保留两位小数！",maxmessage="输入数值过大, 不能超过100000000",max=99999999){
+  let num = Number(val)
+  if (/^\d+$/.test(num) ||  /(\d+\.\d{1}$)/.test(num) || /(\d+\.\d{2}$)/.test(num)) {
+    if (num > 99999999.99) {
+      message.warn(maxmessage)
+      return false
+    }else{
+      return true
+    }
+  } else {
+      message.warn(message)
+      return  false
+  }
+}
 export function cutFtpUrl(fullUrl){
 		if(new RegExp( FTP ).test(fullUrl)){
       let s = fullUrl.replace(new RegExp( FTP ), "")
@@ -44,7 +57,7 @@ export function sortUpByKey(arr,key){
 export function sortDownByKey(arr,key){
   return  arr.sort(compareDown(key))
 }
-
+/*查询字典*/
 export const CommonData = (type, cb, params={}, url) => {
   if(localStorage.getItem(type)) {
     cb(JSON.parse(localStorage.getItem(type)));

@@ -330,3 +330,18 @@ export const transferState ={
   "03":{text:"已转科"},
   "07":{text:"已关闭 "},
 }
+
+//发票审核状态
+export const equipmentInvoiceStatus ={
+  "00":{text:"待审核"},
+  "03":{text:"审核通过"},
+  "05":{text:"已结账"},
+  "09":{text:"审核不通过"},
+}
+ //设备发票查询-下拉框
+export const equipmentInvoiceSelect =[
+  {text:"待审核",value:"00"},
+  {text:"审核通过",value:"03"},
+  {text:"已结账",value:"05"},
+  {text:"审核不通过",value:"09"},
+]
