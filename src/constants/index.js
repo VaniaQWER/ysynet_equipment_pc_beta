@@ -345,3 +345,8 @@ export const equipmentInvoiceSelect =[
   {text:"已结账",value:"05"},
   {text:"审核不通过",value:"09"},
 ]
+export const deliveryStatus = {
+  "00":{text:"待验收"},
+  "05":{text:"验收通过"},
+  "09":{text:"交易完成"}
+}

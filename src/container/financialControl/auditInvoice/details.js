@@ -9,7 +9,7 @@ import TableGrid from '../../../component/tableGrid';
 import financialControl from '../../../api/financialControl';
 import request from '../../../utils/request';
 import queryString from 'querystring';
-import { equipmentInvoiceStatus } from '../../../constants';
+import { deliveryStatus } from '../../../constants';
 const {TextArea} = Input;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
@@ -17,21 +17,25 @@ const columns = [
   {
     title:"送货单号",
     dataIndex: 'sendNo',
+    width:200
   },
   {
     title:"已开票金额",
     dataIndex: 'accountPayed',
+    width:200,
     render:(text)=> text?(text-0).toFixed(2):''
   },
   {
     title:"送货单金额",
     dataIndex: 'totalPrice',
+    width:200,
     render:(text)=> text?(text-0).toFixed(2):''
   },
   {
     title:"状态",
     dataIndex: 'fstate',
-    render:(text)=>text ?equipmentInvoiceStatus[text].text:""
+    width:200,
+    render:(text)=>text ?deliveryStatus[text].text:""
   }
 ]
 
@@ -55,7 +59,7 @@ const subColumnsData = [
   {
     title:"单价",
     dataIndex:"purchasePrice",
-    render:(text)=> text?(text-0).toFixed(2):''
+    render:(text)=> text?Number(text).toFixed(2):''
   },
   {
     title:"数量",
@@ -64,7 +68,7 @@ const subColumnsData = [
   {
     title:"金额",
     dataIndex:"amountMoney",
-    render:(text)=> text?(text-0).toFixed(2):''
+    render:(text)=> text?Number(text).toFixed(2):''
   }
 ]
 

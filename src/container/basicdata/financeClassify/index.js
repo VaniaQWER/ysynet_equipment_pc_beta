@@ -353,9 +353,9 @@ class FinanceClassify extends Component {
           parentStaticId: this.state.topClassInfo.staticId,
           staticId:this.state.topClassInfo.staticId,
         }
-        // if (this.state.selectedKeyInfo.node) {
-        //   postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
-        // }
+        if (this.state.selectedKeyInfo.node) {
+          postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
+        }
         let url = basicdata.insertStaticInfoZc;//新增状态
         this.setState({isEdit: false});
         if (isEdit) {//编辑状态
@@ -388,7 +388,7 @@ class FinanceClassify extends Component {
   // 4. 末级标识
   flagHandler = () => {
     const { guId } = this.state.selectedKeyInfo.node.props;
-    const postData = {staticId:guId, styleFlag: 1};
+    const postData = {staticId:guId, styleFlag: 1,parentStaticId: this.state.topClassInfo.staticId};
     request(basicdata.updateStaticInfoZc,{
       body:JSON.stringify(postData),
       success: data => {
@@ -543,7 +543,7 @@ class FinanceClassify extends Component {
                 autoExpandParent={false} 
                 className='bgf5'
                 selectedKeys={selectedKeys}
-                onExpand={expandedKeys => this.setState({expandKeys: expandedKeys})}
+                onExpand={expandedKeys => this.setState({expandKeys: expandedKeys,selectedKeys:[],selectedKeyInfo:{}})}
                 expandedKeys={expandKeys}
                 >
                 {this.genTreeNodeData(treeData)}

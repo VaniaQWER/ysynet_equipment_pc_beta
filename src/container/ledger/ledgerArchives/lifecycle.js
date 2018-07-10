@@ -44,12 +44,13 @@ const columns_1 = [
     title: '报修时间',
     dataIndex: 'createDate',
     width:100,
+    render:(text)=>text?text.substr(0,11):''
   },
   {
     title: '维修时间',
     dataIndex: 'createDate2',
     width:100,
-    render:(text,record)=>record.createDate
+    render:(text,record)=>record.createDate?record.createDate.substr(0,11):''
   }
 ];
 const columns_2 = [
@@ -89,12 +90,15 @@ const columns_2 = [
   {
     title: '保养开始时间',
     dataIndex: 'maintainDate',
-    width: 100
+    width: 100,
+    render:(text)=>text?text.substr(0,11):''
+    
   },
   {
     title: '保养结束时间',
     dataIndex: 'endMaintainDate',
-    width: 100
+    width: 100,
+    render:(text)=>text?text.substr(0,11):''
   }
 ];
 const columns_3 = [
@@ -118,7 +122,8 @@ const columns_3 = [
   {
     title: '申请时间',
     dataIndex: 'createDate',
-    width: 100
+    width: 100,
+    render:(text)=>text?text.substr(0,11):''
   },
   {
     title: '申请人',
@@ -138,7 +143,8 @@ const columns_3 = [
   {
     title: '转科日期',
     dataIndex: 'transferDate',
-    width: 100
+    width: 100,
+    render:(text)=>text?text.substr(0,11):''
   },
   {
     title: '转科原因',
@@ -157,6 +163,7 @@ const columns_4 = [
     title: '折旧月',
     dataIndex: 'depreciationDate',
     width: 200,
+    render:(text)=>text?text.substr(0,11):''
   },
   {
     title: '资产名称',

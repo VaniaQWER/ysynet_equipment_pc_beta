@@ -313,7 +313,7 @@ class AuditInvoice extends Component {
     if(selectedRowKeys.length>0){
       //发出请求
       let json = {
-        invoiceId:this.props.location.state.invoiceId,
+        invoiceId:selectedRowKeys,
         fstate:'03',
       }
       request(financialControl.updateZCInvoiceFstate,{
@@ -324,7 +324,11 @@ class AuditInvoice extends Component {
         success: data => {
           if(data.status){
             message.success('审核状态修改成功！')
-
+            let query = this.refs.form.getFieldsValue();
+            this.refs.table.fetch(query)
+            this.setState({
+              selectedRowKeys:[]
+            })
           }else{
             message.error(data.msg)
           }
@@ -362,7 +366,8 @@ class AuditInvoice extends Component {
       success: data => {
         if(data.status){
           this.setState({visible:false,reason:"",selectedRowKeys:[]})
-          this.refs.table.fetch({})
+          let query = this.refs.form.getFieldsValue();
+          this.refs.table.fetch(query)
           message.success('审核状态修改成功！')
         }else{
           message.error(data.msg)
@@ -375,7 +380,7 @@ class AuditInvoice extends Component {
     const { selectedRowKeys , visible , reason} = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
-        <SearchFormWapper query={(val)=>this.searchTable(val)}></SearchFormWapper>
+        <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
         <Row style={{textAlign:'right'}}>
           <Button type='primary' onClick={()=>this.pass()}>审核通过</Button>
           <Button type='primary' style={{marginLeft:15}} onClick={()=>this.noPass()}>审核不通过</Button>
