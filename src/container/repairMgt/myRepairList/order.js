@@ -29,6 +29,7 @@ class RepairOrder extends PureComponent {
     params.orderFstate = data.rrpairType==='00'?'30':data.rrpairType==='01'?'20':'90';
     console.log({...params,...data},'指派信息');
     params = {...params,...data };
+    console.log(JSON.stringify(params));
     designateInOrOut(assets.designateInOrOut,querystring.stringify(params),(data) => {
       if(data.status){
         message.success("操作成功!");
@@ -59,7 +60,7 @@ class RepairOrder extends PureComponent {
     })
   }
   render() {
-    const { rrpairType } = this.props.location.state;
+    const rrpairType = this.props.location.state.rrpairType || '' ;
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <Card title="报修进度" extra={[

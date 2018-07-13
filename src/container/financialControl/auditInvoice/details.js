@@ -207,11 +207,11 @@ class DetailsAuditInvoice extends Component{
             <div className="ant-col-8">
               <div className="ant-row ant-form-item">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-6">
-                  <label>医疗机构</label>
+                  <label>供应商</label>
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-18">
                   <div className="ant-form-item-control">
-                    {baseInfo.rOrgName}
+                    {baseInfo.fOrgName}
                   </div>
                 </div>
               </div>
@@ -242,12 +242,12 @@ class DetailsAuditInvoice extends Component{
           style={{marginTop: 10}}
           size="small"
           expandedRowRender={(record)=>{
-            if(record.children && record.children.length!==0){
+            if(record.subList && record.subList.length!==0){
               return(
                 <Table
                   rowKey={'sendDetailGuid'}
                   columns={subColumnsData}
-                  dataSource={record.children}
+                  dataSource={record.subList}
                 ></Table>
               )
             }else{

@@ -17,7 +17,9 @@ class MyServiceList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query:{}
+      query:{
+        menuFstate:"myServiceList"
+      }
     }
   }
   queryHandler = (query) => {
@@ -65,7 +67,7 @@ class MyServiceList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
-                onSearch={value =>  {this.queryHandler({'params':value})}}
+                onSearch={value =>  {this.queryHandler({'params':value,menuFstate:"myServiceList"})}}
                 style={{ width: 400 }}
                 enterButton="搜索"
               />

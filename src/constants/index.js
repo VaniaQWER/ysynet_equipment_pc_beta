@@ -29,7 +29,7 @@ export const repairCommonDataSource = [
   },
   {
     title: '使用科室',
-    dataIndex: 'deptName',
+    dataIndex: 'useDeptName',
     width: 100,
   },
   {
@@ -349,4 +349,39 @@ export const deliveryStatus = {
   "00":{text:"待验收"},
   "05":{text:"验收通过"},
   "09":{text:"交易完成"}
+}
+
+//档案管理- 招标管理
+
+export const tenderStatus = {
+  "00":"未发布",
+  "01":"已发布"
+}
+export const tenderSelect = [
+  {text:"未发布",value:"00"},
+  {text:"已发布",value:"01"}
+]
+//档案管理- 合同管理
+export const contractStatus = {
+  "00":"合同草稿",
+  "01":"正式合同"
+}
+export const contractSelect = [
+  {text:"合同草稿",value:"00"},
+  {text:"正式合同",value:"01"}
+]
+export const contractTypeSelect = [
+  {text:"设备",value:"01"}
+]
+export const contractTypeStatus = {
+  "01":"设备"
+}
+
+//科室业务 -  新建申请
+export const equipProcurementStatus={
+  "00":"草稿",
+  "01":"审批中",
+  "02":"审批通过",
+  "03":"审批不通过",
+  "04":"作废",
 }

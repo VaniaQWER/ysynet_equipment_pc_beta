@@ -59,7 +59,7 @@ const columns = [
   },
   {
     title: '入库单号',
-    dataIndex: 'bDept123',
+    dataIndex: 'inNo',
     width:100
   },
   {

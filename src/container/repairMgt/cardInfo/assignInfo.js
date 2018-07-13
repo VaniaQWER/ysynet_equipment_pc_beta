@@ -2,9 +2,12 @@
  * @file 指派信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
+import { Row, Col, Radio, Form, Select, DatePicker, Input , message } from 'antd';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import request from '../../../utils/request';
+import queryString from 'querystring';
+import ledger from '../../../api/ledger';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -21,6 +24,27 @@ const gridStyle = {
 }
 // 内修
 class InsideRepairForm extends PureComponent {
+
+  state ={
+    userNameList:[]
+  }
+  componentWillMount (){
+    request(ledger.selectUserNameList,{
+      body:queryString.stringify({}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({userNameList:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+
   render() {
     const { isEdit, data } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -34,7 +58,7 @@ class InsideRepairForm extends PureComponent {
                 initialValue: isEdit? null : data.callDeptCode
               })(
                 isEdit ? <span> { data.callDeptCode } </span> : 
-                <Select allowClear>
+                <Select allowClear disabled={true}>
                   <Option value={"0"}>维修组1</Option>
                   <Option value={"1"}>维修组2</Option>
                   <Option value={"2"}>维修组3</Option>
@@ -44,18 +68,26 @@ class InsideRepairForm extends PureComponent {
           </Col>
           <Col {...gridStyle.label}>维修人：</Col>
           <Col {...gridStyle.content}>
-            {
-              getFieldDecorator('inRrpairUsername',{
-                initialValue: isEdit? null : data.inRrpairUsername
-              })(
-                isEdit ? <span> { data.inRrpairUsername } </span> : 
-                <Select allowClear>
-                  <Option value={"0"}>狄仁杰</Option>
-                  <Option value={"1"}>韩信</Option>
-                  <Option value={"2"}>鲁班七号</Option>
-                  <Option value={"3"}>甄宓</Option>
+
+                <Select 
+                showSearch
+                placeholder={'请选择'}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                onSelect={(input, option) => {
+                  console.log(option)
+                  this.props.setOtherState({
+                    inRrpairUsername: option.props.children.split('-')[1],
+                    inRrpairUserid:option.props.value,
+                  })
+                }}
+                >
+                  {
+                    this.state.userNameList.map((item,index) => {
+                    return <Option key={index} value={item.value}>{`${item.deptName}-${item.userName}`}</Option>
+                    })
+                  }
                 </Select>
-            )}
           </Col>
           <Col {...gridStyle.label}>预期完成时间：</Col>
           <Col span={20} style={gridStyle.content.style}>
@@ -196,29 +228,60 @@ class AssignInfo extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      rrpairType: this.props.rrpairType || '00'
+      rrpairType: this.props.rrpairType || '00',
+      OtherState:{},
+      FormWrapper: null
     }
   }
-
-  postData = () => {
+  componentDidMount () {
     const { rrpairType } = this.state;
+    if (rrpairType === "00") {
+      this.setState({
+        FormWrapper: Form.create()(InsideRepairForm)
+      })
+    } else {
+      this.setState({
+        FormWrapper: Form.create()(CloseRepairForm)
+      })
+    }
+    //const FormWrapper1 = Form.create()(InsideRepairForm);
+    //} else if (rrpairType === "01") {
+    // const FormWrapper2 = Form.create()(OutsideRepairForm);
+    //} else {
+    //const FormWrapper3 = Form.create()(CloseRepairForm);
+    //}
+  }
+  
+  postData = () => {
+    const { rrpairType , OtherState } = this.state;
     const data = this.wrapperForm.props.form.getFieldsValue();
     if(this.state.rrpairType!=='02'){
       data.completTime =  data.completTime === undefined || data.completTime === null?'':data.completTime.format('YYYY-MM-DD');
     }
-    return {...data, rrpairType: rrpairType}
+    console.log(OtherState);
+    let ret = Object.assign({...data, rrpairType: rrpairType},OtherState);
+    return ret
   }
-  
+  _getForm = type => {
+    switch (type) {
+      case '00':
+        return Form.create()(InsideRepairForm)
+      case '01':
+        return Form.create()(OutsideRepairForm) 
+      default:
+        return Form.create()(CloseRepairForm)
+    }
+  }
   render() {
-    const { rrpairType } = this.state;
+    const { rrpairType, FormWrapper } = this.state;
     const { isEdit, data } = this.props;
-    let Comp = null;
-    if (rrpairType === "00") {
-      Comp = Form.create()(InsideRepairForm);
-    } else if (rrpairType === "01") {
-      Comp = Form.create()(OutsideRepairForm);
-    } else {
-      Comp = Form.create()(CloseRepairForm);
+    const props = {
+      isEdit,
+      data,
+      setOtherState: OtherState=> {
+        console.log(OtherState)
+        this.setState({ OtherState })
+      }
     }
     return (
       <div>
@@ -226,15 +289,21 @@ class AssignInfo extends PureComponent {
           <Col {...gridStyle.label}>维修方式：</Col>
           <Col span={16} style={gridStyle.content.style}>
             {
-              <RadioGroup defaultValue={rrpairType} onChange={e => this.setState({rrpairType: e.target.value})}>
+              <RadioGroup defaultValue={rrpairType} onChange={e => {
+                this.setState({rrpairType: e.target.value, FormWrapper: this._getForm(e.target.value)})
+              }}>
                 <RadioButton value="00" disabled={isEdit && rrpairType !== '00'}>内修</RadioButton>
-                <RadioButton value="01" disabled={isEdit && rrpairType !== '01'}>外修</RadioButton>
+               {/* <RadioButton value="01" disabled={isEdit && rrpairType !== '01'}>外修</RadioButton>*/}
                 <RadioButton value="02" disabled={isEdit && rrpairType !== '02'}>关闭</RadioButton>
               </RadioGroup>
             }
           </Col>
-        </Row>
-        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data}/>
+        </Row> 
+        {
+          FormWrapper ? 
+          <FormWrapper {...props} wrappedComponentRef= {(inst) => this.wrapperForm = inst}/>
+          : null
+        }
       </div>
     )
   }

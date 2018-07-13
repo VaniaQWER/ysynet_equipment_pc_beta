@@ -17,7 +17,7 @@ export function timeToStamp(timeStr){
 }
 export function moneyValid( val,message="请输入非0正数,最多保留两位小数！",maxmessage="输入数值过大, 不能超过100000000",max=99999999){
   let num = Number(val)
-  if (/^\d+$/.test(num) ||  /(\d+\.\d{1}$)/.test(num) || /(\d+\.\d{2}$)/.test(num)) {
+  if (/^\d+$/.test(num) ||  /(^\d+\.\d{1}$)/.test(num) || /(^\d+\.\d{2}$)/.test(num)) {
     if (num > 99999999.99) {
       message.warn(maxmessage)
       return false
@@ -76,5 +76,31 @@ export const CommonData = (type, cb, params={}, url) => {
       localStorage.setItem(type, JSON.stringify(json.result));
     })
     .catch((err) => cb(err))
+  }
+}
+
+export const validMoney = (rule, value, callback) => {
+  let num = Number(value)
+  if (!num || /^\d+$/.test(num) ||  /(^\d+\.\d{1}$)/.test(num) || /(^\d+\.\d{2}$)/.test(num)) {
+    if (num > 99999999.99) {
+      callback(new Error('输入数值过大, 不能超过100000000'));
+    }else{
+      callback();
+    }
+  } else {
+      callback(new Error('请输入非0正数,最多保留两位小数！'));
+  }
+}
+
+export const validAmount = (rule, value, callback) => {
+  let num = Number(value);
+  if (/^\d+$/.test(num)) {
+    if (num > 99999999) {
+      callback(new Error('输入数值过大, 不能超过100000000'));
+    }else{
+      callback();
+    }
+  } else {
+      callback(new Error('请输入非0正数！'));
   }
 }

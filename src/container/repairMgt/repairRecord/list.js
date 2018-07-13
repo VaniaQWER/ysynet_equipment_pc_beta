@@ -60,7 +60,7 @@ class RepairRecordList extends Component {
             <Col span={12}>
               <Search
                 placeholder="请输入维修单号/资产编号/资产名称"
-                onSearch={ value =>  this.queryHandler({params: value}) }
+                onSearch={ value =>  this.queryHandler({params: value,menuFstate:"repairRegList"}) }
                 style={{ width: 400 }}
                 enterButton="搜索"
                 defaultValue={ defaultParams }
@@ -69,7 +69,8 @@ class RepairRecordList extends Component {
           </Row>
           <RemoteTable
             query={{
-              params: defaultParams
+              params: defaultParams,
+              menuFstate:"repairRecord"
             }}
             ref='table'
             showHeader={true}

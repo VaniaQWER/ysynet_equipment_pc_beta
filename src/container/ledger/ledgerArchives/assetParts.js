@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import { Row,Col,Input,Button,message,Form,Select, Modal} from 'antd';
 import assets from '../../../api/assets';
+import { validMoney } from '../../../utils/tools';
 import TableGrid from '../../../component/tableGrid';
 import { CommonData } from '../../../utils/tools';
 import request from '../../../utils/request';
@@ -135,21 +136,6 @@ class AssetParts extends Component {
     });
     let CodeName = code.length>0 ? code[0].TF_CLO_NAME :''
     return CodeName
-  }
-
-  validMoney = (rule, value, callback) => {
-    const { getFieldValue } = this.props.form;
-    const mentions = getFieldValue('price');
-    let num = Number(mentions)
-    if (!num || /^\d+$/.test(num) ||  /(\d+\.\d{1}$)/.test(num) || /(\d+\.\d{2}$)/.test(num)) {
-      if (num > 99999999.99) {
-        callback(new Error('输入数值过大, 不能超过100000000'));
-      }else{
-        callback();
-      }
-    } else {
-        callback(new Error('请输入非0正数,最多保留两位小数！'));
-    }
   }
 
   render () {
@@ -292,7 +278,7 @@ class AssetParts extends Component {
                   >
                     {getFieldDecorator('price', {
                       rules: [{ required: true, message: '请输入单价' },
-                      {validator: this.validMoney}],
+                      {validator: validMoney}],
                     })(
                     <Input placeholder="请输入" />
                     )}
