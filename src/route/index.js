@@ -21,6 +21,7 @@ import storage from './storage';
 import benefitAnalysis from './benefitAnalysis';
 import ledgerBorrow from './ledgerBorrow';
 import financialControl from './financialControl';
+import approval from './approval';
 const routes = [
   { path: '/login', exact: true, component: Login },
   { path: '/register', exact: true, component: () =>  <div>register</div> },
@@ -29,7 +30,8 @@ const routes = [
     storage,
     benefitAnalysis,
     ledgerBorrow,
-    financialControl
+    financialControl,
+    approval
   ]}
 ]
 

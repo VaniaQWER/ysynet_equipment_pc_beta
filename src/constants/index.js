@@ -29,7 +29,7 @@ export const repairCommonDataSource = [
   },
   {
     title: '使用科室',
-    dataIndex: 'useDeptName',
+    dataIndex: 'deptName',
     width: 100,
   },
   {
@@ -380,8 +380,54 @@ export const contractTypeStatus = {
 //科室业务 -  新建申请
 export const equipProcurementStatus={
   "00":"草稿",
-  "01":"审批中",
-  "02":"审批通过",
-  "03":"审批不通过",
-  "04":"作废",
+  "10":"审批中",
+  "20":"审批通过",
+  "80":"审批不通过",
+  "90":"作废",
+}
+//经费来源下拉框
+export const fundsSourceSelect=[
+  {text:"自筹",value:"00"},
+]
+
+export const fundsSourceStatus={
+ "00":"自筹"
+}
+
+// 基础数据 - 审批配置
+export const approvalSelect = [
+  {text:"指定审批人",value:"01"},
+  {text:"固定审批人",value:"02"},
+]
+export const approvalStatus ={
+  "01":"指定审批人",
+  "02":"固定审批人"
+}
+
+//审批管理 - 新品审批
+export const allowTypeSelect = [
+  {text:"新设备采购申请",value:"00"},
+]
+export const allowTypeStatus = {
+  "00":"新设备采购申请"
+}
+export const approvalFstateSelect=[
+  {text:"草稿",value:"00"},
+  {text:"审批中",value:"10"},
+  {text:"审批通过",value:"20"},
+  {text:"审批不通过",value:"80"},
+  {text:"作废",value:"90"},
+]
+export const approvalFstateStatus={
+  "00":"草稿",
+  "10":"审批中",
+  "20":"审批通过",
+  "80":"审批不通过",
+  "90":"作废",
+}
+
+export const approvalOpinionStatus ={
+  "00":"待审批",
+  "01":"已审批",
+  "02":"未通过",
 }
