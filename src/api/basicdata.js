@@ -1,5 +1,6 @@
 import {_local} from './local';
 const basicdata = {
+  selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室
  // getTreeData:`${_local}/maintainOrderController/selectMaintainTemplateEquipment`,//获取树结构的保养模板信息
   addMaintainTmp:`${_local}/maintainOrderController/insertMaintainTemplate`,//添加保养模版（1级）
   addEuoteTmp:`${_local}/maintainOrderController/insertMaintainTemplate`,//添加二级模板（2级）
@@ -23,5 +24,13 @@ const basicdata = {
   queryAssetsTypeList:`${_local}/assetsTypeController/queryAssetsTypeList`,//查询分类关联资产
   deleteAssetsTypeList:`${_local}/assetsTypeController/deleteAssetsTypeList`,//移出分类
   queryStaticZcByName: `${_local}/staticInfoZcController/queryStaticZcByName`,//搜索框
+
+  //审批配置
+  insertZCApproval:`${_local}/approvalController/insertZCApproval`,//新建审批配置
+  selectZCApprovalList:`${_local}/approvalController/selectZCApprovalList`,//审批列表
+  deleteZCApproval:`${_local}/approvalController/deleteZCApproval`,//删除审批配置
+  updateZCApprovalSeqNum:`${_local}/approvalController/updateZCApprovalSeqNum`,//审批上下移动  
+  queryUserListByOrgId:`${_local}/dept/queryUserListByOrgId`,//查询审批人-当前机构所有用户
+  
 }
 export default basicdata;
