@@ -84,7 +84,7 @@ class InsideRepairForm extends PureComponent {
                 >
                   {
                     this.state.userNameList.map((item,index) => {
-                    return <Option key={index} value={item.value}>{`${item.deptName}-${item.userName}`}</Option>
+                    return <Option key={index} value={item.value}>{`${item.deptName?item.deptName:''}-${item.userName?item.userName:''}`}</Option>
                     })
                   }
                 </Select>
