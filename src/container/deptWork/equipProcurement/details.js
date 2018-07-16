@@ -225,8 +225,8 @@ class EquipProcurementDetails extends Component {
             <div className="ant-col-12">推荐厂商 : {baseInfo?baseInfo.recommendProduct:""}</div>
           </div>
         </div>
-          {//fstate  只有通过状态或不通过状态显示一下内容
-            (baseInfo.fstate==="20" ||  baseInfo.fstate==="80") ?
+          {//fstate  只有通过状态或不通过状态显示一下内容 (baseInfo.fstate==="20" ||  baseInfo.fstate==="80") 
+            baseInfo.commentList?
               <Row>
                 <hr className={styleCss.hr}/>
                 <h3 style={{padding:'0 24px'}}>审批意见</h3>
@@ -236,7 +236,7 @@ class EquipProcurementDetails extends Component {
                   baseInfo.commentList.map((item,index)=>(
                     <li className={styleCss.li} key={index}>
                         <h4>
-                          {item.userName} <Tag color="#F5222D">{approvalOpinionStatus[item.fstate]}</Tag>
+                          {item.userName} <Tag color={item.fstate==="01"?"#52C41A":"#F5222D"}>{approvalOpinionStatus[item.fstate]}</Tag>
                           <small  className={styleCss.colorFont+ ' '+styleCss.fr}>{item.approvalTime}</small>
                         </h4>
                         <p className={styleCss.colorFont}>{item.reason}</p>

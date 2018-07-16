@@ -127,9 +127,11 @@ class AddEquipProcurement extends Component {
         delete values.createTime;
         delete values.purchaseName;
         values.fstate="00";
+        values.allowType="00";
       }else{//新增
         values.bDeptName=this.state.bDeptName;
         values.fstate="00";
+        values.allowType="00";
       }
       console.log(JSON.stringify(values))
       request(url,{

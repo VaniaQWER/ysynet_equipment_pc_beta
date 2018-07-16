@@ -131,7 +131,7 @@ class EquipProcurementDetails extends Component {
     const { idea } = this.state;
     let json = {
       approvalRecordDetailGuid:this.props.match.params.id,
-      approvalFstate:"02",
+      approvalFstate:"01",
       reason:idea
     };
     if(bool){
@@ -214,7 +214,7 @@ class EquipProcurementDetails extends Component {
               fillBackData.commentList.map((item,index)=>(
                 <li className={styleCss.li} key={index}>
                     <h4>
-                      {item.userName} <Tag color="#F5222D">{approvalOpinionStatus[item.fstate]}</Tag>
+                      {item.userName} <Tag color={item.fstate==="01"?"#52C41A":"#F5222D"}>{approvalOpinionStatus[item.fstate]}</Tag>
                       <small  className={styleCss.colorFont+ ' '+styleCss.fr}>{item.approvalTime}</small>
                     </h4>
                     <p className={styleCss.colorFont}>{item.reason}</p>

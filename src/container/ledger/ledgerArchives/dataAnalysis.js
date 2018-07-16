@@ -38,7 +38,6 @@ class DataAnalysis extends Component {
         //   return {year:DateArr[index],value:item.value || 0 }
         // })
       }else{
-        debugger
         arr = DateArr.map((item,index)=>{
           return {year:item,value:0}
         })

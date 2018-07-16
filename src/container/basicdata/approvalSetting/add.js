@@ -274,9 +274,10 @@ class AddEquipProcurement extends Component {
                     >
                       <Option value="" key={-1}>全部</Option>
                       {
-                          userList.map((item,index) => {
+                        userList?userList.map((item,index) => {
                           return <Option key={index} value={item.userId}>{item.userName}</Option>
                           })
+                        :""
                       }
                     </Select>
                   )}

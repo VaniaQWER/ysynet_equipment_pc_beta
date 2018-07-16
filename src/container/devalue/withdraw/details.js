@@ -43,7 +43,6 @@ class AdvancedSearchForm extends React.Component {
     this.props.form.validateFields((err, values) => {
 			console.log('Received values of form: ', values);
 			console.log(this.state.callbackData)
-			debugger
 			let querystring = Object.assign(values,this.state.callbackData);
 			this.props.callback(querystring)
     });
