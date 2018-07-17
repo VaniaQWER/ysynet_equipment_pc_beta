@@ -165,6 +165,13 @@ class AddContract extends Component {
     history.push('/ledger/contract');
   }
 
+  filterOption = (input, option) => {
+    if(option.props.children){
+      return option.props.children.indexOf(input) >= 0
+    }
+    return false
+  }
+  
   render() {
     const { getFieldDecorator } = this.props.form;
     const { postFile , editStatusText , fillBackData } = this.state;//editStatus

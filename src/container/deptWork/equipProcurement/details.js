@@ -135,7 +135,7 @@ class EquipProcurementDetails extends Component {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
-        if(data.status){
+        if(data.result.trim()!==""){
           this.setState({
             visible:data.result.trim()!=="",
             validInfo:data.result

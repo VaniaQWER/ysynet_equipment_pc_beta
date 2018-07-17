@@ -10,7 +10,7 @@ import ledger from '../../../api/ledger';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import PicWall from '../../../component/picWall';
-import { contractTypeStatus  } from '../../../constants';
+import { contractTypeStatus , contractStatus  } from '../../../constants';
 const { Content } = Layout;
 const style = {
   mb:{
@@ -92,12 +92,18 @@ class ContractDetails extends Component {
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={style.reference}>
         <h3 style={{padding:'24px'}}>采购合同
-          <Button style={{float:'right'}}><Link to={{pathname:`/ledger/contract/add/${params}`}}>编辑</Link></Button>
-          <Button type='primary' style={{float:'right',marginRight:8}} onClick={()=>this.handleSubmit()}>正式提交</Button>
-        </h3>
+          {
+            baseInfo.fstate==="01"?
+            null:
+            <span>
+              <Button style={{float:'right'}}><Link to={{pathname:`/ledger/contract/add/${params}`}}>编辑</Link></Button>
+              <Button type='primary' style={{float:'right',marginRight:8}} onClick={()=>this.handleSubmit()}>正式提交</Button>
+            </span>
+          }
+         </h3>
         <div style={style.affix}>
           <small>状态</small>
-          <h3>合同草稿</h3>
+          <h3>{baseInfo?contractStatus[baseInfo.fstate]:''}</h3>
         </div>
         <div style={{padding:'0 24px'}}>
           <div className="ant-row" style={style.mb}>

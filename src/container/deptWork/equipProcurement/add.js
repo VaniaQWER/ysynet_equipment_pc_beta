@@ -158,6 +158,13 @@ class AddEquipProcurement extends Component {
     history.push('/deptWork/equipProcurement');
   }
 
+  filterOption = (input, option) => {
+    if(option.props.children){
+      return option.props.children.indexOf(input) >= 0
+    }
+    return false
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const { unitList , editStatusText , fillBackData } = this.state; //  editStatus 编辑状态 true为编辑  false 为新增

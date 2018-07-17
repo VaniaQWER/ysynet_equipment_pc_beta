@@ -85,7 +85,7 @@ class EquipProcurementDetails extends Component {
       },
       success: data => {
         if(data.status){
-          if(data.result){//需要审批
+          if(data.result.trim()!==""){//需要审批
             this.setState({
               visible:data.result.trim()!=="",
               validInfo:data.result
