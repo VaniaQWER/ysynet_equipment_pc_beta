@@ -119,7 +119,7 @@ class OutboundSummary extends Component {
           }
         }
         if(values.acctDate){
-          values.acctDate = moment(values.acctDate).format('YYYY-MM');
+          values.acctDate = moment(values.acctDate).format('YYYYMM');
         }
         console.log(JSON.stringify(values))
         this.setState({ query: values });
@@ -152,7 +152,7 @@ class OutboundSummary extends Component {
   exportReport = () => {
     const values = this.props.form.getFieldsValue();
     if(values.acctDate){
-      values.acctDate =moment(values.acctDate).format('YYYY-MM');
+      values.acctDate =moment(values.acctDate).format('YYYYMM');
     }
     return values;
   }

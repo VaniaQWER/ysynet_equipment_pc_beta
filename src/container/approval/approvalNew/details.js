@@ -189,7 +189,7 @@ class EquipProcurementDetails extends Component {
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">产品名称 :  {fillBackData?fillBackData.materialName:''}</div>
-            <div className="ant-col-12">单位 : {fillBackData?fillBackData.purchaseUnit:''}</div>
+            <div className="ant-col-12">单位 : {fillBackData?fillBackData.purchaseName:''}</div>
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">申购数量 : {fillBackData?fillBackData.amount:''}</div>

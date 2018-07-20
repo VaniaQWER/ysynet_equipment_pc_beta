@@ -156,7 +156,7 @@ class FinancialClosing extends Component{
 			this.props.form.validateFieldsAndScroll((err,value)=>{
 				if(!err){
 					if(value.acctYh){
-						value.acctYh = moment(value.acctYh).format('YYYY-MM');
+						value.acctYh = moment(value.acctYh).format('YYYYMM');
 					}
 					console.log('确认结账的数据',JSON.stringify(value))
 					fetchData(financialControl.invoiceSettleAccount, querystring.stringify(value), data => {

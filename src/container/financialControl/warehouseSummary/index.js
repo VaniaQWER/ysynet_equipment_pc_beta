@@ -125,7 +125,7 @@ class WarehouseSummary extends Component {
           }
         }
         if(values.acctDate){
-          values.acctDate = moment(values.acctDate).format('YYYY-MM');
+          values.acctDate = moment(values.acctDate).format('YYYYMM');
         }
         this.setState({ query: values });
         console.log(JSON.stringify(values))
@@ -158,7 +158,7 @@ class WarehouseSummary extends Component {
   exportReport = () => {
     const values = this.props.form.getFieldsValue();
      if(values.acctDate){
-      values.acctDate = moment(values.acctDate).format('YYYY-MM');
+      values.acctDate = moment(values.acctDate).format('YYYYMM');
     }
     return values;
   }
