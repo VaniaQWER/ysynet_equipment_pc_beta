@@ -1,7 +1,7 @@
 /*
- * @Author: yuwei - 物资分类
- * @Date: 2018-06-22 09:35:41 
-* @Last Modified time: 2018-06-22 09:35:41 
+ * @Author: yuwei - 财务分类 -  后端标识 financial
+ * @Date: 2018-06-22 09:36:49 
+* @Last Modified time: 2018-06-22 09:36:49 
  */
 import React, { Component } from 'react'
 import { Form, Layout, Row, Col, Select, Button, Spin, Tree, Input, Icon, Modal, message, Table } from 'antd';
@@ -68,13 +68,13 @@ const columns = [
   }
 ]
 
-class SuppliesClassify extends Component {
+class ContableClassify extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       topClassInfo:{},
-      modalProductQuery:{type:"01"},//选择产品搜索条件
+      modalProductQuery:{type:"04"},//选择产品搜索条件
       selectedProductRowKeys:[],//选择产品模态框的主键
       selectedProductRows:[],//选择产品模态框的每条信息
       visible:false,//选产品弹窗
@@ -86,7 +86,7 @@ class SuppliesClassify extends Component {
       storageValue: '', // 当前选择的库房
       treeData: [], // 树的信息
       storageOptions: [], // 库房下拉框数据
-      query: {type:'01',staticId:''}, // 查询条件(表格列表查询)
+      query: {type:'04',staticId:''}, // 查询条件(表格列表查询)
       tfClo: '', // 物资ID
       selectedRowKeys: [], // 页面表格选中的key
       selectedRows: [], // 页面表格选中的data
@@ -104,14 +104,14 @@ class SuppliesClassify extends Component {
   componentWillMount () {
     //获取物资分类的statcId
     request(basicdata.queryStaticZcByCode,{
-      body:querystring.stringify({tfClo:'material'}),
+      body:querystring.stringify({tfClo:'financial'}),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       success: data => {  
         this.setState({
           topClassInfo:data.result
         })
         //获取资产分类列表
-        this.getTreeData({tfClo:'material'});
+        this.getTreeData({tfClo:'financial'});
       },
       error: err => {console.log(err)}
     })
@@ -193,11 +193,11 @@ class SuppliesClassify extends Component {
       selectedRowKeysModal: [],
       hasClass: selectedKeys.length ? true : false,
       tfClo: selectedKeys.length ? info.node.props.tfClo : '',
-      query:{type:'01',staticId:info.node.props.guId}
+      query:{type:'04',staticId:info.node.props.guId}
     })
     if(info.selected){
       if(this.refs.table){
-        this.refs.table.fetch({type:'01',staticId:info.node.props.guId})
+        this.refs.table.fetch({type:'04',staticId:info.node.props.guId})
       }
     }else{
       this.setState({query:{},selectedKeyInfo:{}})
@@ -310,7 +310,7 @@ class SuppliesClassify extends Component {
           success: data => {
             if (data.status) {
               message.success("删除成功！");
-              this.getTreeData({tfClo:'material'});
+              this.getTreeData({tfClo:'financial'});
             } else {
               message.error(data.msg);
             }
@@ -340,50 +340,50 @@ class SuppliesClassify extends Component {
       }
     }
   }
- 
-  // 3 新增/修改物资分类
+
+  // 3 新增物资分类
   addStyleItem = e => {
     e.preventDefault();
-      this.props.form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          const { isEdit } = this.state;
-          const postData = {
-            tfComment: values.tfComment,
-            tfClo: values.tfClo,
-            parentStaticId:this.state.topClassInfo.staticId, //     this.state.selectedGuid 
-            staticId:this.state.topClassInfo.staticId,
-          }
-          if (this.state.selectedKeyInfo.node) {
-            postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
-          }
-          let url = basicdata.insertStaticInfoZc;//新增状态
-          this.setState({isEdit: false});
-          if (isEdit) {//编辑状态
-            postData.staticId = this.state.selectedGuid;
-            url = basicdata.updateStaticInfoZc;
-          } else {
-            this.setState({isEdit: false});
-            // this.props.form.resetFields();
-          }
-          request(url,{
-            body:JSON.stringify(postData),
-            success: data => {
-              if (data.status) {
-                message.success('操作成功！');
-                this.setState({visibleSupplies: false});
-                this.getTreeData({tfClo:'material'});
-                this.props.form.resetFields();
-              } else {
-                message.error(data.msg);
-                if(isEdit){
-                  this.setState({isEdit:true})
-                }
-              }
-            },
-            error: err => {console.log(err)}
-          })
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const { isEdit } = this.state;
+        const postData = {
+          tfComment: values.tfComment,
+          tfClo: values.tfClo,
+          parentStaticId: this.state.topClassInfo.staticId,
+          staticId:this.state.topClassInfo.staticId,
         }
-      })
+        if (this.state.selectedKeyInfo.node) {
+          postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
+        }
+        let url = basicdata.insertStaticInfoZc;//新增状态
+        this.setState({isEdit: false});
+        if (isEdit) {//编辑状态
+          postData.staticId = this.state.selectedGuid;
+          url = basicdata.updateStaticInfoZc;
+        } else {
+          this.setState({isEdit: false});
+          // this.props.form.resetFields();
+        }
+        request(url,{
+          body:JSON.stringify(postData),
+          success: data => {
+            if (data.status) {
+              message.success('操作成功！');
+              this.setState({visibleSupplies: false});
+              this.getTreeData({tfClo:'financial'});
+              this.props.form.resetFields();
+            } else {
+              message.error(data.msg);
+              if(isEdit){
+                this.setState({isEdit:true})
+              }
+            }
+          },
+          error: err => {console.log(err)}
+        })
+      }
+    })
   }
   // 4. 末级标识
   flagHandler = () => {
@@ -394,7 +394,7 @@ class SuppliesClassify extends Component {
       success: data => {
         if (data.status) {
           message.success('操作成功！');
-          this.getTreeData({tfClo:'material'});
+          this.getTreeData({tfClo:'financial'});
         } else {
           message.error(data.msg);
         }
@@ -410,14 +410,14 @@ class SuppliesClassify extends Component {
         const { storageValue, tfClo, selectedRowKeys , selectedKeys } = this.state;
         if (selectedRowKeys.length) {
           request(basicdata.deleteAssetsTypeList,{
-            body:querystring.stringify({type:"01",assetsRecordGuids: selectedRowKeys}),
+            body:querystring.stringify({type:"04",assetsRecordGuids: selectedRowKeys}),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             success: data => {
               if (data.status) {
                 message.success("操作成功！");
                 const values = this.props.form.getFieldsValue();
                 this.setState({selectedRows: [], selectedRowKeys: []});
-                this.refs.table.fetch({...values, staticId: selectedKeys[0], type: '01'});
+                this.refs.table.fetch({...values, staticId: selectedKeys[0], type: '04',});
                 if (this.refs.modalTable) {
                   this.refs.modalTable.fetch({tfClo, flag: '00', storageGuid: storageValue});
                 }
@@ -440,7 +440,7 @@ class SuppliesClassify extends Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       const { selectedKeys } = this.state;
       if(selectedKeys[0]){
-        this.refs.table.fetch({...values,staticId:selectedKeys[0],type: '01'});
+        this.refs.table.fetch({...values,staticId:selectedKeys[0],type: '04'});
       }else{
         message.warn('请选择分类！')
       }
@@ -461,14 +461,14 @@ class SuppliesClassify extends Component {
   //选产品1. 模态框确定按钮
   getProductModalData = () => {
     const {selectedKeys , selectedProductRowKeys } = this.state;
-    console.log('发出的请求内容',JSON.stringify({type:'01',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}))
+    console.log('发出的请求内容',JSON.stringify({type:'04',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}))
     if(selectedProductRowKeys.length>0){
       request(basicdata.insertAssetsType,{
-        body:querystring.stringify({type:'01',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
+        body:querystring.stringify({type:'04',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         success: data => { 
           this.closeProductModal();
-          this.refs.table.fetch({type:'01',staticId:selectedKeys[0]})
+          this.refs.table.fetch({type:'04',staticId:selectedKeys[0]})
         },
         error: err => {console.log(err)}
       })
@@ -479,7 +479,7 @@ class SuppliesClassify extends Component {
 
   closeProductModal = ()=>{
     const { selectedKeys } = this.state;
-    this.refs.tables.fetch({type:'01',staticId:selectedKeys[0]});
+    this.refs.tables.fetch({type:'04',staticId:selectedKeys[0]});
     this.refs.productForm.resetFields();
     this.setState({selectedProductRowKeys:[],visible:false})
   }
@@ -518,6 +518,7 @@ class SuppliesClassify extends Component {
         </Col>
       </Row>
     )
+    
     return (
       <Layout style={{background: '#fff'}} className='classifyModule'>
         {/* 大的物资库房下拉框 */}
@@ -532,7 +533,7 @@ class SuppliesClassify extends Component {
         <Row>
           {/* 树形结构部分 */}
           <Col span={5} style={{background: '#f5f5f5', minHeight: 618, padding: '4px 0', border: '1px solid #fafafa'}}>
-            <Button type="primary" onClick={() =>this.setState({visibleSupplies: true})}>添加</Button>
+            <Button type="primary" onClick={() => this.setState({visibleSupplies: true})}>添加</Button>
             <Button style={{marginLeft: 5}} onClick={this.flagHandler}>末级标识</Button>
             {/* 树形结构 */}
             <Spin spinning={isLoading}>
@@ -614,7 +615,7 @@ class SuppliesClassify extends Component {
                         showSearch
                         placeholder={'请选择'}
                         optionFilterProp="children"
-                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
                         >
                             <Option value="" key={-1}>全部</Option>
                             {
@@ -665,7 +666,7 @@ class SuppliesClassify extends Component {
         </Row>
         {/* 添加Modal表单 */}
         <Modal
-          title={`新增物资分类`}
+          title={`新增折旧分类`}
           visible={visibleSupplies}
           onOk={this.addStyleItem}
           onCancel={()=>{this.setState({visibleSupplies: false, isEdit: false});this.props.form.resetFields();}}
@@ -721,6 +722,7 @@ class SuppliesClassify extends Component {
                   selectedProductRowKeys:selectedRowKeys,
                   selectedProductRows:selectedRows}) 
                 }
+              
             }}
             size="small"
             style={{marginTop: 10}}>
@@ -732,7 +734,7 @@ class SuppliesClassify extends Component {
   }
 }
 
-export default Form.create()(SuppliesClassify);
+export default Form.create()(ContableClassify);
 
 class ProductForm extends Component {
   state={
@@ -743,13 +745,13 @@ class ProductForm extends Component {
 
   onSearch = () =>{
     this.props.form.validateFieldsAndScroll((err, values) => {
-      this.props.tableFetch({...values,staticId:this.props.staticId,type: '01'});
+      this.props.tableFetch({...values,staticId:this.props.staticId,type: '04'});
     })
   }
   
   modalReset = () =>{
     this.props.form.resetFields();
-    this.props.tableFetch({staticId:this.props.staticId,type: '01'});
+    this.props.tableFetch({staticId:this.props.staticId,type: '04'});
   }
   render(){
     const { getFieldDecorator } = this.props.form;

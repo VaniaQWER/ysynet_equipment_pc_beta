@@ -748,7 +748,11 @@ class ProductForm extends Component {
       this.props.tableFetch({...values,staticId:this.props.staticId,type: '02'});
     })
   }
-
+  
+  modalReset = () =>{
+    this.props.form.resetFields();
+    this.props.tableFetch({staticId:this.props.staticId,type: '02'});
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
     return(
@@ -828,7 +832,7 @@ class ProductForm extends Component {
             </Col>
             <Col span={8} style={{textAlign: 'right'}}>
               <Button type="primary" htmlType='submit'>查询</Button>
-              <Button style={{marginLeft: 5, marginRight: 25}} onClick={()=>{this.props.form.resetFields()}}>重置</Button>
+              <Button style={{marginLeft: 5, marginRight: 25}} onClick={this.modalReset}>重置</Button>
               {/* userSelect: user-select属性是css3新增的属性，用于设置用户是否能够选中文本 */}
               <a style={{userSelect: 'none'}} onClick={()=>this.setState({isShow: !this.state.isShow})}> 
                 <Icon type={this.state.isShow ? 'up' : 'down'} /> {this.state.isShow ? '收起' : '展开'}
