@@ -17,6 +17,5 @@ export default {
     { exact:true, path: '/deptWork/equipProcurement/add', name: '新建设备采购申请', component: asyncComponent(() => import("../container/deptWork/equipProcurement/add"))},
     { exact:true, path: '/deptWork/equipProcurement/add/:id', name: '编辑设备采购申请', component: asyncComponent(() => import("../container/deptWork/equipProcurement/add"))},
     { exact:true, path: '/deptWork/equipProcurement/details/:id', name: '设备采购申请详情', component: asyncComponent(() => import("../container/deptWork/equipProcurement/details"))},
-  
   ] 
 }

@@ -106,24 +106,32 @@ class RemoteTable extends Component {
   render () {
     const { columns, rowKey, rowClassName, 
             rowSelection, scroll, footer,showHeader,title } = this.props;   
+
+    const _props = {
+        style:this.props.style,
+        columns:columns || null,
+        rowKey:rowKey,
+        bordered:true,
+        size:this.props.size || 'normal',
+        dataSource:this.state.data,
+        pagination:this.state.pagination,
+        loading:this.state.loading,
+        onChange:this.handleTableChange,
+        rowClassName:rowClassName,
+        showHeader:showHeader || null,
+        title:title || null,
+        rowSelection:rowSelection || null,
+        scroll:scroll || { x: '1300px' },
+        footer:footer || null,
+        expandedRowRender:this.props.expandedRowRender,
+    }
+    if(this.props.onExpandedRowsChange && this.props.onExpandedRowsChange){
+      _props.onExpandedRowsChange = this.props.onExpandedRowsChange;
+      _props.expandedRowKeys = this.props.expandedRowKeys;
+    }
     return (
       <Table 
-        style={this.props.style}
-        columns={columns || null}
-        rowKey={rowKey}
-        bordered={true}
-        size={this.props.size || 'normal'}
-        dataSource={this.state.data}
-        pagination={this.state.pagination}
-        loading={this.state.loading}
-        onChange={this.handleTableChange}
-        rowClassName={rowClassName}
-        showHeader={showHeader || null}
-        title={title || null}
-        rowSelection={rowSelection || null}
-        scroll={scroll || { x: '1300px' }}
-        footer={footer || null}
-        expandedRowRender={this.props.expandedRowRender}
+        {..._props}
       />
     )
   }

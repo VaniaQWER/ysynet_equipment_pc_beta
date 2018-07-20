@@ -121,6 +121,7 @@ class SearchForm extends Component{
                             <Select>
                                 <Option value="" key={-1}>全部</Option>
                                 <Option value="01">采购入库</Option>
+                                <Option value="06">入库退货</Option>
                             </Select>
                         )}
                     </FormItem>
@@ -185,6 +186,8 @@ class WareHouseRecord extends Component{
                 render:(text)=>{
                     if(text==="01"){
                         return '采购入库'
+                    }else if (text==="06"){
+                        return '入库退货'
                     }else{
                         return text
                     }
@@ -193,7 +196,7 @@ class WareHouseRecord extends Component{
             {
                     title : '送货单',
                     dataIndex : 'sendNo',
-                    width: 120,
+                    width: 150,
             },	{
                     title : '管理部门',
                     dataIndex : 'bDeptName',
@@ -217,19 +220,21 @@ class WareHouseRecord extends Component{
                     width: 150
             }
         ];
-            return(
+        return(
             <div>
                 <SearchBox query={this.queryHandler}/>
                 <Row>
                     <Button type="primary" style={{marginLeft:16,marginRight:16}}>
                     <Link to={{pathname:`/storage/wareHouseMgt/addWareHouse`}}>入库</Link></Button>
+                    <Button type="primary" style={{marginLeft:16,marginRight:16}}>
+                    <Link to={{pathname:`/storage/wareHouseMgt/refund`}}>退货</Link></Button>
                 </Row>
                 
                 <RemoteTable
                     url={storage.selectImportList}
                     ref='table'
                     query={this.state.query}
-                    scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+                    scroll={{x: '150%', y : document.body.clientHeight - 110 }}
                     columns={columns}
                     rowKey={'sendId'}
                     showHeader={true}

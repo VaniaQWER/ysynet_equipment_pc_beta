@@ -5,7 +5,7 @@
  */
 
 import React , { Component } from 'react'//message,
-import { Layout , Form, Row, Col,Icon, Input, Button , Table ,Modal ,message, Select} from 'antd';
+import { Layout , Form, Row, Col,Icon, Input, Button , Table ,Modal ,message, Select ,TreeSelect} from 'antd';
 // import TableGrid from '../../../component/tableGrid';
 import { CommonData } from '../../../utils/tools';
 import storage from '../../../api/storage';
@@ -80,6 +80,44 @@ class AddWareHouse extends Component {
     query:"",
     baseInfo:{},
     dataSource: [],
+    treeData:[]
+  }
+
+  componentDidMount (){
+    this.searchStaticZc()
+  }
+
+  format = (arr) =>{
+    return  arr.map((item)=>{
+      item.title=item.tfComment;
+      item.value=item.tfComment;
+      item.key=item.staticId;
+      if(item.children.length>0){
+        item.children = this.format(item.children);
+      }
+      return item
+    })
+  }
+  //查询财务分类列表
+  searchStaticZc = () =>{
+    request(storage.searchStaticZc,{
+      body:queryString.stringify({tfClo:'financial'}),
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+            let formatArr = this.format(data.result)
+            console.log(formatArr)
+            this.setState({
+              treeData:formatArr
+            })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
   }
 
   onCellChange = (key, dataIndex) => {
@@ -98,12 +136,19 @@ class AddWareHouse extends Component {
     console.log(values)
     console.log(this.state.dataSource);
     confirm({
-      title:'确定入库',
-      ContentText:"您确定执行该入库操作吗?",
+      title:'当前存在产品无财务分类',
+      content:'选继续操作将影响财务报表的准确性，是否继续？',
       onOk:()=>{
         //发出请求
+        let styleId = [];
+        let styleName =[]
+        this.state.dataSource.map((item)=>{
+          styleId.push(item.styleId)
+          styleName.push(item.styleName)
+          return item
+        })
         request(storage.insertImport,{
-          body:queryString.stringify({sendId:this.state.baseInfo.sendId}),
+          body:queryString.stringify({sendId:this.state.baseInfo.sendId,styleId,styleName}),
           headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
           },
@@ -168,8 +213,18 @@ class AddWareHouse extends Component {
     return total.toFixed(2)
   }
 
+  onChange = (value,label, extra,index) => {
+    console.log(value,label, extra);
+    const { dataSource } = this.state;
+    let ret = [].concat(dataSource);
+    ret[index].styleName = value ;
+    ret[index].styleId = extra.triggerNode.props.eventKey;
+    this.setState({
+      dataSource:ret
+    })
+  }
   render () {
-    const { dataSource , baseInfo } = this.state;
+    const { dataSource , baseInfo , treeData } = this.state;
     const columns = [
       {
         title:"产品名称",
@@ -231,6 +286,21 @@ class AddWareHouse extends Component {
       {
         title:"生产商",
         dataIndex: 'produceName',
+      },
+      {
+        title:"财务分类",
+        dataIndex: 'styleName',
+        render:(text,record,index)=>(
+          <TreeSelect
+            showSearch
+            style={{ width: 300 }}
+            value={record.styleName}
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            treeData={treeData}
+            placeholder="Please select"
+            onChange={(value,label, extra)=>this.onChange(value,label, extra,index)}
+          />
+        )
       }
     ]
 
@@ -250,7 +320,7 @@ class AddWareHouse extends Component {
               </div>
               <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                 <div className="ant-form-item-control">
-                  {baseInfo.sendNo}
+                  {baseInfo?baseInfo.sendNo:''}
                 </div>
               </div>
             </div>
@@ -262,7 +332,7 @@ class AddWareHouse extends Component {
               </div>
               <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                 <div className="ant-form-item-control">
-                {baseInfo.fOrgName}
+                {baseInfo?baseInfo.fOrgName:''}
                 </div>
               </div>
             </div>
@@ -274,7 +344,7 @@ class AddWareHouse extends Component {
               </div>
               <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                 <div className="ant-form-item-control">
-                {baseInfo.tDeptName}
+                {baseInfo?baseInfo.tDeptName:''}
                 </div>
               </div>
             </div>
@@ -286,7 +356,7 @@ class AddWareHouse extends Component {
               </div>
               <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                 <div className="ant-form-item-control">
-                 {baseInfo.tfAddress}
+                 {baseInfo?baseInfo.tfAddress:''}
                 </div>
               </div>
             </div>
@@ -321,7 +391,7 @@ class EditableCell extends Component {
   }
   componentWillMount (){
     CommonData('UNIT', (data) => {
-      this.setState({unitList:data.rows})
+      this.setState({unitList:data})
     })
   }
   handleChange = (e) => {

@@ -118,9 +118,9 @@ class SearchForm extends Component {
       },
       success: data => {
         if(data.status){
-                this.setState({outDeptOptions:data.result})
+          this.setState({outDeptOptions:data.result})
         }else{
-                message.error(data.msg)
+          message.error(data.msg)
         }
       },
       error: err => {console.log(err)}

@@ -185,23 +185,23 @@ class WareHouseDetails extends Component{
         },{
             title : '数量',
             dataIndex : 'rksl',
-            width: 120,
+            width: 100,
         },{
             title : '采购价',
             dataIndex : 'purchasePrice',
-            width: 120,
+            width: 100,
             render:text=>{return text.toFixed(2) }
         },{
             title : '金额',
             dataIndex : 'money',
-            width: 120,
+            width: 100,
             render:(text,record) =>{
                 return  (record.rksl * record.purchasePrice).toFixed(2)
             }
         },{
             title : '供应商',
             dataIndex : 'fOrgName',
-            width: 120,
+            width: 200,
         },{
             title : '生产商',
             dataIndex : 'produceName',
@@ -211,6 +211,10 @@ class WareHouseDetails extends Component{
             dataIndex : 'inDate',
             width: 120,
             render:(text)=>text?text.substr(0,10):""
+        },{
+          title:"财务分类",
+          dataIndex:'styleName',
+          width:120
         }
         ];
         // const query = this.state.query;
@@ -221,7 +225,7 @@ class WareHouseDetails extends Component{
                     url={storage.selectImportParticularsList}
                     ref='table'
                     query={this.state.query}
-                    scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+                    scroll={{x: '150%', y : document.body.clientHeight - 110 }}
                     columns={columns}
                     rowKey={'importDetailGuid'}
                     showHeader={true}

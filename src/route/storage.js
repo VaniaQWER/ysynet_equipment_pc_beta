@@ -17,13 +17,18 @@ export default {
     { exact:true, path: '/storage/wareHouseMgt', name: '入库管理', component: asyncComponent(() => import("../container/storage/wareHouseMgt"))},
     { exact:true, path: '/storage/wareHouseMgt/details/:id', name: '入库详情', component: asyncComponent(() => import("../container/storage/wareHouseMgt/details"))},
     { exact:true, path: '/storage/wareHouseMgt/addWareHouse', name: '新增入库', component: asyncComponent(() => import("../container/storage/wareHouseMgt/addWareHouse"))},
-    
+    { exact:true, path: '/storage/wareHouseMgt/refund', name: '退货', component: asyncComponent(() => import("../container/storage/wareHouseMgt/refund"))},
     { exact:true, path: '/storage/outMgt', name: '出库管理', component: asyncComponent(() => import("../container/storage/outMgt"))},
     { exact:true, path: '/storage/outMgt/details/:id', name: '出库详情', component: asyncComponent(() => import("../container/storage/outMgt/details"))},
     { exact:true, path: '/storage/outMgt/receive', name: '领用', component: asyncComponent(() => import("../container/storage/outMgt/receive"))},
     { exact:true, path: '/storage/outMgt/refund', name: '退库', component: asyncComponent(() => import("../container/storage/outMgt/refund"))},
-   
-
-    
+    /*新增送货单*/
+    { exact:true, path: '/storage/addEquipmentDelivery', name: '新增送货单', component: asyncComponent(() => import("../container/storage/addEquipmentDelivery"))},
+    /*发票登记*/
+    { exact:true, path: '/storage/addEquipmentInvoice', name: '发票登记', component: asyncComponent(() => import("../container/storage/addEquipmentInvoice"))},
+    /*发票查询 */
+    { exact:true, path: '/storage/queryEquipmentInvoice', name: '发票查询', component: asyncComponent(() => import("../container/storage/queryEquipmentInvoice"))},
+    { exact:true, path: '/storage/queryEquipmentInvoice/details', name: '查询发票详情', component: asyncComponent(() => import("../container/storage/queryEquipmentInvoice/details"))},
+    { exact:true, path: '/storage/queryEquipmentInvoice/edit', name: '编辑发票', component: asyncComponent(() => import("../container/storage/queryEquipmentInvoice/edit"))},
   ] 
 }

@@ -69,7 +69,11 @@ const subColumnsData = [
     title:"金额",
     dataIndex:"amountMoney",
     render:(text)=> text?Number(text).toFixed(2):''
-  }
+  },
+  {
+    title: '入库单号',
+    dataIndex: 'inNo',
+  },
 ]
 
 

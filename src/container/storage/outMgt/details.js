@@ -67,6 +67,11 @@ const columns = [
     title:"生产商",
     dataIndex: 'produceName',
     width:150
+  },
+  {
+    title:"财务分类",
+    dataIndex: 'styleName',
+    width:150
   }
 ]
 class WareHouseDetails extends Component {
