@@ -9,6 +9,8 @@ import TableGrid from '../../../component/tableGrid';
 import ledger from '../../../api/ledger';
 import request from '../../../utils/request';
 import queryString from 'querystring';
+import { FTP} from '../../../api/local';
+import PicWall from '../../../component/picWall';
 import { contractStatus } from '../../../constants';
 const FormItem = Form.Item;
 const Search = Input.Search;
@@ -140,6 +142,20 @@ class ContractList extends Component {
       module:"tender"
     })
   }
+
+  getFileList = () => {
+    const data = this.state.baseInfo;
+    const fileList = [];
+    if (data.tfAccessory) {
+      data.tfAccessory.split(';').map((item, index) => fileList.push({
+        uid: index + 1,
+        url: `${FTP}${item}`
+      }))
+      fileList.pop();
+    }
+    return fileList;
+  }
+
   render() {
     const modalColums = [
       {
@@ -286,24 +302,24 @@ class ContractList extends Component {
            footer={null}>
             <div style={{padding:'0 24px'}}>
               <div className="ant-row" style={style.mb}>
-                <div className="ant-col-8">甲方名称 : {baseInfo ? baseInfo.bDeptName: ""}</div>
-                <div className="ant-col-8">乙方名称 : 资产设备类</div>
+                <div className="ant-col-8">甲方名称 : {baseInfo ? baseInfo.rOrgName: ""}</div>
+                <div className="ant-col-8">乙方名称 : {baseInfo ? baseInfo.fOrgName:""}</div>
               </div>
               <div className="ant-row" style={style.mb}>
-                <div className="ant-col-8">合同编号 : {baseInfo ?baseInfo.fOrgName: ""}</div>
-                <div className="ant-col-8">创建时间 : {baseInfo ?baseInfo.fStorageName: ""}</div>
+                <div className="ant-col-8">合同编号 : {baseInfo ?baseInfo.contractNo: ""}</div>
+                <div className="ant-col-8">创建时间 : {baseInfo ?baseInfo.createTime: ""}</div>
               </div>
               <div className="ant-row" style={style.mb}>
-                <div className="ant-col-8">管理科室 : {baseInfo ?baseInfo.createUserName: ""}</div>
-                <div className="ant-col-8">合同类型 : {baseInfo ?baseInfo.createTime: ""}</div>
+                <div className="ant-col-8">管理科室 : {baseInfo ?baseInfo.bDeptName: ""}</div>
+                <div className="ant-col-8">合同类型 : {"设备"}</div>
               </div>
               <div className="ant-row" style={style.mb}>
-                <div className="ant-col-8">状态 : {baseInfo ?baseInfo.modifyUserName: ""}</div>
-                <div className="ant-col-8">总金额 : {baseInfo ?baseInfo.modifiyTime: ""}</div>
+                <div className="ant-col-8">状态 : {baseInfo ?contractStatus[baseInfo.fstate]: ""}</div>
+                <div className="ant-col-8">总金额 : {baseInfo ?baseInfo.totalPrice?baseInfo.totalPrice.toFixed(2): "":""}</div>
               </div>
               <div className="ant-row" style={style.mb}>
                 <div className="ant-col-8">附件 : 
-                  
+                  <PicWall isAdd={false} fileList={this.getFileList()}/>
                 </div>
               </div>
             </div>

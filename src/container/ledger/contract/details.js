@@ -10,6 +10,7 @@ import ledger from '../../../api/ledger';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import PicWall from '../../../component/picWall';
+import { FTP} from '../../../api/local';
 import { contractTypeStatus , contractStatus  } from '../../../constants';
 const { Content } = Layout;
 const style = {
@@ -37,15 +38,15 @@ class ContractDetails extends Component {
   }
   getFileList = () => {
 
-    // const { data } = this.props;
+    const data = this.state.baseInfo;
     const fileList = [];
-    // if (data.scrapAccessory) {
-    //   data.scrapAccessory.split(';').map((item, index) => fileList.push({
-    //     uid: index + 1,
-    //     url: `${FTP}${item}`
-    //   }))
-    //   fileList.pop();
-    // }
+    if (data.tfAccessory) {
+      data.tfAccessory.split(';').map((item, index) => fileList.push({
+        uid: index + 1,
+        url: `${FTP}${item}`
+      }))
+      fileList.pop();
+    }
     return fileList;
   }
   componentWillMount(){

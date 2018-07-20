@@ -302,8 +302,8 @@ class LedgerArchivesAdd extends PureComponent {
           }
           this.setState({
             'orgIdData': orgListRet,
-            'deptNameData':dDeptList,
-            'managementData':useDeptList,
+            'deptNameData':useDeptList,
+            'managementData':dDeptList,
             'userNameData':userList
           })
         }else{
@@ -887,7 +887,7 @@ class LedgerArchivesAdd extends PureComponent {
             <Col span={8}>
               <FormItem label="租赁单价" {...formItemLayout}>
                 {getFieldDecorator('rentingPrice', {
-                  initialValue:''
+                  initialValue:null
                 })(<Input style={{width: 200}} disabled={disabled} placeholder="请输入租赁单价" />)}
               </FormItem>
             </Col>

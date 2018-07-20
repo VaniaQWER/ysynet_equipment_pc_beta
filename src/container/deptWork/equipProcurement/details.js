@@ -130,7 +130,7 @@ class EquipProcurementDetails extends Component {
   validNext = () =>{
     console.log(this.state.baseInfo)
     request(deptwork.checkApproval,{
-      body:queryString.stringify({bDeptId:this.state.baseInfo.deptGuid}),
+      body:queryString.stringify({bDeptId:this.state.baseInfo.bDeptGuid}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
