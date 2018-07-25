@@ -169,7 +169,6 @@ class AddEquipProcurement extends Component {
     const { getFieldDecorator } = this.props.form;
     const { unitList , editStatusText , fillBackData } = this.state; //  editStatus 编辑状态 true为编辑  false 为新增
     const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
-    
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <h3 style={{padding:'24px'}}>{editStatusText}  
@@ -185,7 +184,7 @@ class AddEquipProcurement extends Component {
                   label="申请科室"
                 >
                   {getFieldDecorator('deptGuid',{
-                    initialValue:fillBackData.deptGuid||'',
+                    initialValue:fillBackData.deptGuid||this.state.outDeptOptions.length>0?this.state.outDeptOptions[0].value:'',
                     rules:[{required:true,message:'请选择申请科室'}]
                   })(
                     <Select 
@@ -194,7 +193,6 @@ class AddEquipProcurement extends Component {
                       optionFilterProp="children"
                       filterOption={(input, option)=>this.filterOption(input, option)}
                       >
-                          <Option value="" key={-1}>全部</Option>
                           {
                               this.state.outDeptOptions.map((item,index) => {
                               return <Option key={item.value} value={item.value}>{item.text}</Option>
@@ -222,7 +220,6 @@ class AddEquipProcurement extends Component {
                         this.setState({bDeptName:option.props.children})
                       }}
                       >
-                          <Option value="" key={-1}>全部</Option>
                           {
                               this.state.manageSelect.map((item,index) => {
                               return <Option key={item.value} value={item.value}>{item.text}</Option>

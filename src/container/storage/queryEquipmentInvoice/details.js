@@ -4,12 +4,12 @@
 * @Last Modified time: 2018-07-04 16:12:24 
  */
 import React , { Component } from 'react';
-import {  Row,Breadcrumb,Col,Card,Table} from 'antd';
-import { Link } from 'react-router-dom';
+import { Layout, Row,Card,Table} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import storage from '../../../api/storage';
 import { deliveryStatus } from '../../../constants';
 const { RemoteTable } = TableGrid;
+const { Content } = Layout;
 
 const columns = [
   {
@@ -73,15 +73,7 @@ class DetailsEquipmentInvoice extends Component{
   render(){
     const baseInfo = this.props.location.state || '';
     return (
-      <div>
-        <Row>
-          <Col className="ant-col-6">
-            <Breadcrumb style={{fontSize: '1.1em',marginBottom:24}}>
-              <Breadcrumb.Item><Link to='/storage/queryEquipmentInvoice'>查询设备发票</Link></Breadcrumb.Item>
-              <Breadcrumb.Item>详情</Breadcrumb.Item>
-            </Breadcrumb>
-          </Col>
-        </Row>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
         <Card title={'发票信息'}>
           <Row>
             <div className="ant-col-8">
@@ -135,11 +127,11 @@ class DetailsEquipmentInvoice extends Component{
             <div className="ant-col-8">
               <div className="ant-row ant-form-item">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-6">
-                  <label>医疗机构</label>
+                  <label>供应商</label>
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-18">
                   <div className="ant-form-item-control">
-                    {baseInfo.rOrgName}
+                    {baseInfo.fOrgName}
                   </div>
                 </div>
               </div>
@@ -159,7 +151,6 @@ class DetailsEquipmentInvoice extends Component{
           </Row>
         </Card>
         <Card title={'送货单信息'} style={{marginTop:15}}>
-        
           <RemoteTable
             query={{invoiceId:baseInfo.invoiceId}}
             rowKey={'invoiceId'}
@@ -183,7 +174,7 @@ class DetailsEquipmentInvoice extends Component{
             }} 
           /> 
         </Card>
-      </div>
+      </Content>
     )
   }
 }

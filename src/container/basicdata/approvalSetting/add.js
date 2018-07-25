@@ -104,8 +104,8 @@ class AddEquipProcurement extends Component {
   }
 
   getManageSelect = () => {
-    request(basicdata.selectUseDeptList,{
-      body:queryString.stringify({deptType:"01"}),
+    request(basicdata.queryManagerDeptListByUserId,{
+      body:queryString.stringify({}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },

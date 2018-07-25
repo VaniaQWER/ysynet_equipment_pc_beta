@@ -40,7 +40,7 @@ class ContractDetails extends Component {
 
     const data = this.state.baseInfo;
     const fileList = [];
-    if (data.tfAccessory) {
+    if (data && data.tfAccessory) {
       data.tfAccessory.split(';').map((item, index) => fileList.push({
         uid: index + 1,
         url: `${FTP}${item}`

@@ -116,9 +116,9 @@ class EquipProcurementDetails extends Component {
       },
       success: data => {
         if(data.status){
-          this.setState({
-            idea:''
-          })
+          message.warn('提交成功！')
+          const {history} = this.props;
+          history.push('/approval/approvalNew')
         }else{
           message.error(data.msg)
         }
@@ -225,13 +225,17 @@ class EquipProcurementDetails extends Component {
             }
           </ul>
         </Row>
-        <Affix>
-          <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
-            <Input placeholder='请输入审批意见' onInput={ (e)=>this.setState({idea:e.target.value}) }/>  
-            <Button type="primary" onClick={()=>this.onValid()} style={{marginLeft:8,marginRight:8}}>通过</Button>
-            <Button type="danger" ghost onClick={()=>this.onInvalid()}>不通过</Button>
-          </div>
-        </Affix>
+        {
+          fillBackData &&  fillBackData.approvalFstate ==="00" ?
+          <Affix>
+            <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
+              <Input placeholder='请输入审批意见' onInput={ (e)=>this.setState({idea:e.target.value}) }/>  
+              <Button type="primary" onClick={()=>this.onValid()} style={{marginLeft:8,marginRight:8}}>通过</Button>
+              <Button type="danger" ghost onClick={()=>this.onInvalid()}>不通过</Button>
+            </div>
+          </Affix>
+          :null
+        }
         <Modal
           visible={visible}
           title='选择审批人'

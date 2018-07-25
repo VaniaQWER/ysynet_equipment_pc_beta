@@ -391,7 +391,7 @@ class EditableCell extends Component {
   }
   componentWillMount (){
     CommonData('UNIT', (data) => {
-      this.setState({unitList:data})
+      this.setState({unitList:data.rows})
     })
   }
   handleChange = (e) => {

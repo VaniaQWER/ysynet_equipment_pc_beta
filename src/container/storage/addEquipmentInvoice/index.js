@@ -173,6 +173,7 @@ class SearchForm extends Component {
                 placeholder={'请选择管理部门'}
                 optionFilterProp="children"
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                onChange={(input,option)=>this.props.changeMainDataSource(input)}
                 >
                   <Option key="" value="">请选择</Option>
                   {managementDeptOptions}
@@ -314,11 +315,14 @@ class AddEquipmentInvoice extends Component{
     mainTableData:[],//mainTable的数据
     expandedRowKeys:[],//展开的Key
   }
-  //弹窗 - 打开
+  //弹窗 - 打开 + 获取当前必填数据进行请求
   openModal = () => {
     this.refs.form.validateFields(['fOrgId','bDeptId'],(err,values)=>{
       if(!err){
         this.setState({visible:true,modalQuery:values})
+        if(this.refs.table){
+          this.refs.table.fetch({...values});
+        }
       }
     })
   }
@@ -330,13 +334,13 @@ class AddEquipmentInvoice extends Component{
   //   this.setState({visible:false,selectedRowKeys:[],mainTableData:newArr})
   // }
   //弹窗 - 取消
-  closeModal = () =>{
-    this.refs.modalForm.resetFields();
-    this.setState({visible:false,selectedRowKeys:[]})
-  }
-  //弹窗- 搜索table
+  // closeModal = () =>{
+  //   this.refs.modalForm.resetFields();
+  //   this.setState({visible:false,selectedRowKeys:[]})
+  // }
+  //弹窗内部 进行- 搜索table
   searchModalTable = (val) => {
-    let a = Object.assign(val,this.state.modalQuery)
+    let a = Object.assign(this.state.modalQuery,val)
     this.refs.table.fetch(a);
   }
   //开票金额
@@ -424,7 +428,6 @@ class AddEquipmentInvoice extends Component{
 
   cancelModal = () =>{
     this.refs.modalForm.resetFields();
-    this.refs.table.fetch(this.state.modalQuery); 
     this.setState({visible:false,expandedRowKeys:[]}) 
   }
 
@@ -432,6 +435,20 @@ class AddEquipmentInvoice extends Component{
     this.setState({expandedRowKeys:expandedRows})
   }
 
+  //1-更换管理部门的时候 - 清空主表中的数据
+  clearTable = (data) =>{
+    console.log('更换管理部门后收集到的值，',data)
+    const { selectedRows } = this.state;
+    if(selectedRows.length>0){
+      Confirm({
+        content:"已有选择的送货单,确认后将会清空当前选择！",
+        onOk:()=>{
+          this.setState({selectedRows:[]})
+        },
+        onCancel:()=>{}
+      })
+    }
+  }
   render(){
     const { visible ,selectedRows , expandedRowKeys} = this.state;
     const modalHeader = (
@@ -517,7 +534,7 @@ class AddEquipmentInvoice extends Component{
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
         {/*填写设备发票表格*/}
-        <SearchFormWapper ref='form'/>
+        <SearchFormWapper ref='form' changeMainDataSource={(data)=>this.clearTable(data)}/>
         <Row>
           <Button type='primary' onClick={()=>this.openModal()}>选择送货单</Button>
         </Row>
@@ -595,4 +612,4 @@ class AddEquipmentInvoice extends Component{
     )
   }
 }
-export  default  AddEquipmentInvoice;
+export  default  AddEquipmentInvoice; 

@@ -116,7 +116,7 @@ class AppraisalDetail extends PureComponent {
         <Form onSubmit={this.submit}>  
           <Affix>
             <Row>
-              <Col span={24} style={{textAlign: 'right', padding: '5px 50px', background: '#fff'}}><Button loading={isLoading} size='lg' type='primary' htmlType='submit'>提交</Button></Col>
+              <Col span={24} style={{textAlign: 'right', padding: '5px 50px', background: '#fff'}}><Button loading={isLoading} type='primary' htmlType='submit'>提交</Button></Col>
             </Row>
           </Affix>  
           <Tabs defaultActiveKey="1">

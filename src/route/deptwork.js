@@ -6,7 +6,7 @@
 import asyncComponent from './asyncComponent';
 
 export default { 
-  path: '/deptwork', 
+  path: '/deptWork', 
   name: '科室业务', 
   component: asyncComponent(() => import("../container/deptWork")),
   routes: [

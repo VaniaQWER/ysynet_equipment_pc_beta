@@ -1,5 +1,6 @@
 import {_local} from './local';
 const basicdata = {
+  queryManagerDeptListByUserId:`${_local}/dept/queryManagerDeptListByUserId`,//查询当前用户的所有关联管理科室
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室
  // getTreeData:`${_local}/maintainOrderController/selectMaintainTemplateEquipment`,//获取树结构的保养模板信息
   addMaintainTmp:`${_local}/maintainOrderController/insertMaintainTemplate`,//添加保养模版（1级）

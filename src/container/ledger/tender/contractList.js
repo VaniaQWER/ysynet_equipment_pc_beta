@@ -138,6 +138,7 @@ class ContractList extends Component {
     this.refs.modalTable.fetch({
       searchName:val,
       bDeptId:this.props.mainFillBack.bDeptId,
+      fOrgId:this.props.mainFillBack.fOrgId,
       fstate:"01",
       module:"tender"
     })
@@ -146,7 +147,7 @@ class ContractList extends Component {
   getFileList = () => {
     const data = this.state.baseInfo;
     const fileList = [];
-    if (data.tfAccessory) {
+    if (data && data.tfAccessory) {
       data.tfAccessory.split(';').map((item, index) => fileList.push({
         uid: index + 1,
         url: `${FTP}${item}`
@@ -277,7 +278,7 @@ class ContractList extends Component {
             <Search placeholder='请输入合同名称/编号/供应商' onInput={(e)=>this.setState({modalInput:e.target.values})}  onSearch={(val)=>{this.searchModalTable(val)}} style={{width:250}}/>
               <RemoteTable
                 ref='modalTable'
-                query={{bDeptId:this.props.mainFillBack.bDeptId,fstate:"01",module:"tender"}}
+                query={{bDeptId:this.props.mainFillBack.bDeptId,fOrgId:this.props.mainFillBack.fOrgId,fstate:"01",module:"tender"}}
                 url={ledger.queryContractList}
                 scroll={{x: '100%', y : document.body.clientHeight - 311}}
                 columns={modalColums}

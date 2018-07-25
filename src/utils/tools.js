@@ -7,6 +7,48 @@ export default function textTips(width,text) {
             <div style={{whiteSpace:"nowrap",width:width+"px",textOverflow:"ellipsis",overflow:"hidden"}}>{text}</div>
          </Tooltip>
 }
+
+
+export const fetchData = (
+  api, body, callback, type='application/x-www-form-urlencoded', method='post'
+) => {
+  const query = typeof body === 'object' ? JSON.stringify(body) : body;
+  fetch(api, {
+    method: method,
+    credentials: 'include',
+    mode: 'cors',
+    headers: {
+      'Content-Type': type
+    },
+    body: query
+  })
+    .then(res => {
+      switch (res.status) {
+        // case 996:
+        //   hashHistory.push({pathname: '/login'});
+        //   return message.warn('会话失效，请重新登录');
+        // case 997:
+        //   hashHistory.push({pathname: '/login'});
+        //   return message.warn('非法访问，请重新登录');
+        // case 998:
+        //   hashHistory.push({pathname: '/login'});
+        //   return message.warn('会话失效，请重新登录');
+        // case 999:
+        //   hashHistory.push({pathname: '/login'});
+        //   return message.warn('登录失效，请重新登录');
+        default:
+          return res.json();
+      }
+    })
+    .then(data => {
+      callback(data)
+    })
+    .catch(e => {
+      console.log(e)
+      // message.error('存在异常' + e.message)
+    });
+}
+
 /*时间str转换为时间戳 */
 export function timeToStamp(timeStr){
     if(timeStr){
