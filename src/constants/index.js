@@ -28,6 +28,11 @@ export const repairCommonDataSource = [
     width: 180
   },
   {
+    title: '资产编号',
+    dataIndex: 'assetsRecord',
+    width: 100
+  },
+  {
     title: '使用科室',
     dataIndex: 'deptName',
     width: 100,

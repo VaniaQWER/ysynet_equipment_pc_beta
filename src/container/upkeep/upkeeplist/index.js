@@ -1,4 +1,8 @@
-/**保养登记--列表*/
+/*
+ * @Author: yuwei 保养工单
+ * @Date: 2018-07-26 11:30:17 
+* @Last Modified time: 2018-07-26 11:30:17 
+ */
 import React from 'react';
 import { Row, Col, Input, Button , Form , Icon , DatePicker , Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
@@ -6,7 +10,7 @@ import assets from '../../../api/assets';
 import { upkeepState , upkeepMainTainType ,upkeepStateSel } from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
-import './styles.css';
+// import './styles.css';
 import moment from 'moment';
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
@@ -31,7 +35,7 @@ const columns=[
   { title: '操作', 
   dataIndex: 'maintainGuid', 
   key: 'x', 
-  className:'col05',
+  width:120,
   render: (text,record) =>
     <span>
       { (record.fstate==="00") ? 
@@ -42,8 +46,8 @@ const columns=[
   },
   {
     title: '保养单号',
-    className:'col-1',
     dataIndex: 'maintainNo',
+    width:150,
     render(text, record) {
       return <span title={text}>{text}</span>
     }
@@ -51,8 +55,8 @@ const columns=[
   {
     title: '保养单状态',
     dataIndex: 'fstate',
-    className:'col08',
     key: 'fstate',
+    width:150,
     filters: upkeepStateSel,
     onFilter: (value, record) => (record && record.fstate===value),
     render: text => 
@@ -63,8 +67,8 @@ const columns=[
   },
   {
     title: '设备名称',
+    width:150,
     dataIndex: 'equipmentName',
-    className:'col-1',
     render:(text,record) =>
       <Popover  content={
         <div style={{padding:20}}>
@@ -77,41 +81,46 @@ const columns=[
       </Popover>
   },
   {
+    title: '资产编号',
+    width:150,
+    dataIndex: 'assetsRecord'
+  },
+  {
     title: '保养类型',
-    className:'col05',
+    width:150,
     dataIndex: 'maintainType',
     render: text => <span>{upkeepMainTainType[text].text}</span>
   },
   {
     title: '本次计划保养时间',
-    className:'col-1',
+    width:150,
     dataIndex: 'maintainPlanDate',
     sorter: (a, b) => sortTime(a,b,'maintainPlanDate'),
     render(text, record) {
-      return <span title={text}>{text}</span>
+      return <span title={text}>{text?text.substr(0,11):''}</span>
     }
   },
   {
     title: '保养开始时间',
-    className:'col-1',
+    width:150,
     dataIndex: 'maintainDate',
     sorter: (a, b) => sortTime(a,b,'maintainDate'),
     render(text, record) {
-      return <span title={text}>{text}</span>
+      return <span title={text}>{text?text.substr(0,11):''}</span>
     }
   },
   {
     title: '保养结束时间',
-    className:'col-1',
+    width:150,
     dataIndex: 'endMaintainDate',
     sorter: (a, b) => sortTime(a,b,'endMaintainDate'),
     render(text, record) {
-      return <span title={text}>{text}</span>
+      return <span title={text}>{text?text.substr(0,11):''}</span>
     }
   },
   {
     title: '保养计划单号',
-    className:'col12',
+    width:150,
     dataIndex: 'maintainPlanNo',
     render(text, record) {
       return <span title={text}>{text}</span>
@@ -119,7 +128,7 @@ const columns=[
   },
   {
     title: '下次保养时间',
-    className:'col-1',
+    width:150,
     dataIndex: 'nextMaintainDate',
     sorter: (a, b) => (sortTime(a,b,'nextMaintainDate')),
     render(text, record) {
@@ -128,7 +137,7 @@ const columns=[
   },
   {
     title: '操作员',
-    className:'col-1',
+    width:150,
     dataIndex: 'modifyUserName',
     render(text, record) {
       return <span title={text}>{text}</span>
@@ -155,16 +164,17 @@ class SearchFormWrapper extends React.Component {
         values.endPlanTime=moment(values.PlanTime[1]).format('YYYY-MM-DD');
         delete values['PlanTime'];
       }
-      if(values.PlanTime){
+      if(values.UpkeepTime){
         values.startUpkeepTime=moment(values.UpkeepTime[0]).format('YYYY-MM-DD');
         values.endUpkeepTime=moment(values.UpkeepTime[1]).format('YYYY-MM-DD');
         delete values['UpkeepTime'];
       }
-      if(values.PlanTime){
+      if(values.UpkeepEndTime){
         values.startUpkeepEndTime=moment(values.UpkeepEndTime[0]).format('YYYY-MM-DD');
         values.endUpkeepEndTime=moment(values.UpkeepEndTime[1]).format('YYYY-MM-DD');
         delete values['UpkeepEndTime'];
       }
+      console.log(values)
       this.props.query(values);
     });
   }
@@ -255,6 +265,7 @@ class UpKeepList extends React.Component{
       query:'',
     };
     queryHandler = (query) => {
+      debugger
       this.refs.table.fetch(query);
       this.setState({ query })
     }
@@ -268,7 +279,7 @@ class UpKeepList extends React.Component{
                   ref='table'
                   query={this.state.query}
                   url={assets.selectMaintainOrderList}
-                  scroll={{x: '160%', y : document.body.clientHeight - 110 }}
+                  scroll={{x: '200%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainGuid'}
                   showHeader={true}
