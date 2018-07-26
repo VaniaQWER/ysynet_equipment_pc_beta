@@ -61,14 +61,12 @@ export function moneyValid( val,message="请输入非0正数,最多保留两位�
   let num = Number(val)
   if (/^\d+$/.test(num) ||  /(^\d+\.\d{1}$)/.test(num) || /(^\d+\.\d{2}$)/.test(num)) {
     if (num > 99999999.99) {
-      message.warn(maxmessage)
-      return false
+      return  [false,maxmessage]
     }else{
-      return true
+      return [true]
     }
   } else {
-      message.warn(message)
-      return  false
+      return  [false,message]
   }
 }
 export function cutFtpUrl(fullUrl){
