@@ -5,7 +5,7 @@
  */
 
  import React, { Component }  from 'react'
- import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select ,Tag ,message} from 'antd';
+ import { Layout, DatePicker , Card, Form, Row, Col, Input, Button, Icon, Select ,Tag ,message} from 'antd';
  import TableGrid from '../../../component/tableGrid';
  import { Link } from 'react-router-dom'
  import request from '../../../utils/request';
@@ -13,6 +13,8 @@
  import styles from './style.css';
  import { ledgerData,productTypeData } from '../../../constants';
  import querystring from 'querystring';
+ import moment from 'moment';
+const RangePicker = DatePicker.RangePicker;
  const { Content } = Layout;
  const FormItem = Form.Item;
  const Option = Select.Option;
@@ -107,6 +109,11 @@ class SearchFormWrapper extends Component {
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
+      if(values.buyDate){
+        values.buyDateStart=moment(values.buyDate[0]).format('YYYY-MM-DD');
+        values.buyDateEnd=moment(values.buyDate[1]).format('YYYY-MM-DD');
+        delete values['buyDate'];
+      }
       this.props.query(values);
     });
   }
@@ -222,6 +229,16 @@ class SearchFormWrapper extends Component {
                 <Option key="" value="">全部</Option>
                 {useDeptOptions.map(item=><Option value={item.value} key={item.value} >{item.text}</Option>)}
                 </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col span={6}  style={{display: display}}> 
+            <FormItem
+              {...formItemLayout}
+              label="购置日期"
+            >
+              {getFieldDecorator('buyDate')(
+                <RangePicker />
               )}
             </FormItem>
           </Col>

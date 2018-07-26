@@ -1,21 +1,32 @@
 /**保养登记--列表*/
 import React from 'react';
-import { Row, Col, Input, Layout , Popover} from 'antd';
+import { Row, Col, Input, Button , Form , Icon , DatePicker , Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
 import { upkeepState , upkeepMainTainType ,upkeepStateSel } from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
 import './styles.css';
-const Search = Input.Search;
+import moment from 'moment';
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
-
+const { RangePicker } = DatePicker;
+const FormItem = Form.Item;
 const sortTime = (a,b,key) =>{
   if(a[key] && b[key]){
     return timeToStamp(a[key]) - timeToStamp(b[key])
   }
 }
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
 const columns=[
   { title: '操作', 
   dataIndex: 'maintainGuid', 
@@ -124,12 +135,125 @@ const columns=[
     }
   }
 ]
+
+class SearchFormWrapper extends React.Component {
+  state = {
+    display: 'none',
+  }
+  toggle = () => {
+    const { display, expand } = this.state;
+    this.setState({
+      display: display === 'none' ? 'block' : 'none',
+      expand: !expand
+    })
+  }
+  handleSearch = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if(values.PlanTime){
+        values.startPlanTime=moment(values.PlanTime[0]).format('YYYY-MM-DD');
+        values.endPlanTime=moment(values.PlanTime[1]).format('YYYY-MM-DD');
+        delete values['PlanTime'];
+      }
+      if(values.PlanTime){
+        values.startUpkeepTime=moment(values.UpkeepTime[0]).format('YYYY-MM-DD');
+        values.endUpkeepTime=moment(values.UpkeepTime[1]).format('YYYY-MM-DD');
+        delete values['UpkeepTime'];
+      }
+      if(values.PlanTime){
+        values.startUpkeepEndTime=moment(values.UpkeepEndTime[0]).format('YYYY-MM-DD');
+        values.endUpkeepEndTime=moment(values.UpkeepEndTime[1]).format('YYYY-MM-DD');
+        delete values['UpkeepEndTime'];
+      }
+      this.props.query(values);
+    });
+  }
+  //重置
+  handleReset = () => {
+    this.props.form.resetFields();
+    this.props.query({});
+  }
+
+  render() {
+    const { display } = this.state;
+    const { getFieldDecorator } = this.props.form;
+    return (
+      // 转科记录查询部分
+      <Form onSubmit={this.handleSearch}>
+        <Row>
+          <Col span={6}>
+            <FormItem label={`资产编号`} {...formItemLayout}>
+              {getFieldDecorator('assetsRecord', {})(
+                <Input placeholder="请输入资产编号" />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={6}>
+            <FormItem label={`资产名称`} {...formItemLayout}>
+              {getFieldDecorator('equipmentStandardName', {})(
+                <Input placeholder="请输入资产名称" />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={6}>
+            <FormItem label={`保养单号`} {...formItemLayout}>
+              {getFieldDecorator('upkeepNo', {})(
+                <Input placeholder="请输入保养单号"/>
+              )}
+            </FormItem>
+          </Col>
+
+          <Col span={6} style={{ textAlign: 'right', marginTop: 4}} >
+            <Button type="primary" htmlType="submit">查询</Button>
+            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
+            </a>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={6}  style={{display: display}}> 
+            <FormItem
+              {...formItemLayout}
+              label="保养开始时间"
+            >
+              {getFieldDecorator('UpkeepTime')(
+                <RangePicker />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={6}  style={{display: display}}> 
+            <FormItem
+              {...formItemLayout}
+              label="保养结束时间"
+            >
+              {getFieldDecorator('UpkeepEndTime')(
+                <RangePicker />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={9}  style={{display: display}}> 
+            <FormItem
+              {...formItemLayout}
+              label="本次计划保养时间"
+            >
+              {getFieldDecorator('PlanTime')(
+                <RangePicker />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+      </Form>
+    )
+  }
+}
+const SearchForm = Form.create()(SearchFormWrapper);
+
 class UpKeepList extends React.Component{
 
     state = {
       query:'',
     };
-    
     queryHandler = (query) => {
       this.refs.table.fetch(query);
       this.setState({ query })
@@ -137,19 +261,9 @@ class UpKeepList extends React.Component{
     handleChange = (pagination, filters, sorter)=>{
     }
     render(){
-        
         return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-              <Row>
-                  <Col span={12}>
-                  <Search
-                      placeholder="请输入保养单号/资产名称/资产编码"
-                      onSearch={value =>  {this.queryHandler({'maintainNo':value})}}
-                      style={{ width: 400 }}
-                      enterButton="搜索"
-                  />
-                  </Col>
-              </Row>
+              <SearchForm query={(query)=>this.queryHandler(query)}></SearchForm>
               <RemoteTable
                   ref='table'
                   query={this.state.query}

@@ -234,7 +234,11 @@ class ApplyList extends Component {
       <Card title="新品申请">
         <Row>
             <Col span={16}>
-              <Button type='primary' onClick={()=>this.setState({visible:true})}>选择申请</Button>
+              {
+                this.props.mainFillBack.releaseFlag!=="01"?
+                <Button type='primary' onClick={()=>this.setState({visible:true})}>选择申请</Button>
+                :null
+              }
             </Col>
             <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
         </Row>

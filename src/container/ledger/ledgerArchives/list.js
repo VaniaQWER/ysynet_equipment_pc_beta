@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout,Upload,Button,Table,Tag,message,Radio,Menu,Dropdown,Alert, Form,Select, Modal,Progress} from 'antd';
+import { Row,Col,DatePicker,Input,Icon, Layout,Upload,Button,Table,Tag,message,Radio,Menu,Dropdown,Alert, Form,Select, Modal,Progress} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom'
 import assets from '../../../api/assets';
@@ -7,7 +7,8 @@ import styles from './style.css';
 import { ledgerData,productTypeData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
 import queryString from 'querystring';
-
+import moment from 'moment';
+const RangePicker = DatePicker.RangePicker;
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -139,6 +140,11 @@ class SearchForm extends Component {
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
+      if(values.buyDate){
+        values.buyDateStart=moment(values.buyDate[0]).format('YYYY-MM-DD');
+        values.buyDateEnd=moment(values.buyDate[1]).format('YYYY-MM-DD');
+        delete values['buyDate'];
+      }
       this.props.query(values);
     });
   }
@@ -261,8 +267,17 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
+          <Col span={6}> 
+            <FormItem
+              {...formItemLayout}
+              label="购置日期"
+            >
+              {getFieldDecorator('buyDate')(
+                <RangePicker />
+              )}
+            </FormItem>
+          </Col>
         </Row>
-        
       </Form>
     )
   }

@@ -167,7 +167,7 @@ class AddEquipProcurement extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { unitList , editStatusText , fillBackData } = this.state; //  editStatus 编辑状态 true为编辑  false 为新增
+    const { unitList , editStatusText , fillBackData , editStatus  } = this.state; //  editStatus 编辑状态 true为编辑  false 为新增
     const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
@@ -212,6 +212,7 @@ class AddEquipProcurement extends Component {
                     rules:[{required:true,message:'请选择管理科室'}]
                   })(
                     <Select 
+                      disabled={editStatus}
                       showSearch
                       placeholder={'请选择'}
                       optionFilterProp="children"

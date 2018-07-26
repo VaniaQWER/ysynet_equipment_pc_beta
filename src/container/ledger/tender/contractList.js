@@ -180,7 +180,7 @@ class ContractList extends Component {
       },
       {
         title:"供应商名称",
-        dataIndex:"rOrgName",
+        dataIndex:"fOrgName",
         width:100
       },
       {
@@ -254,7 +254,11 @@ class ContractList extends Component {
       <Card title="采购合同">
         <Row>
             <Col span={16}>
+            {
+              this.props.mainFillBack.releaseFlag!=="01"?
               <Button type='primary' onClick={()=>this.setState({visible:true})}>选择合同</Button>
+              :null
+            }
             </Col>
             <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
         </Row>
@@ -316,7 +320,7 @@ class ContractList extends Component {
               </div>
               <div className="ant-row" style={style.mb}>
                 <div className="ant-col-8">状态 : {baseInfo ?contractStatus[baseInfo.fstate]: ""}</div>
-                <div className="ant-col-8">总金额 : {baseInfo ?baseInfo.totalPrice?baseInfo.totalPrice.toFixed(2): "":""}</div>
+               {/* <div className="ant-col-8">总金额 : {baseInfo ?baseInfo.totalPrice?baseInfo.totalPrice.toFixed(2): "":""}</div>*/}
               </div>
               <div className="ant-row" style={style.mb}>
                 <div className="ant-col-8">附件 : 
