@@ -3,7 +3,7 @@ import upkeep from './upkeep';
 import { _local } from './local';
 // 查询科室
 export async function queryScrapList(options) {
-  return promiseRequest(`${upkeep.selectUseDeptList}`, options);
+  return promiseRequest(`${upkeep.queryUserDeptListByUserId}`, options);
 }
 
 // 提交报废

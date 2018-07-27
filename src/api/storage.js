@@ -2,6 +2,7 @@
 import {_local} from './local';
 const storage = {
   //公共接口
+  selectFOrgList:`${_local}/StaticDataController/selectFOrgList`,//获取供应商列表
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
   selectDeliveryForgList:`${_local}/delivery/selectDeliveryForgList`,//供应商下拉框
   getAdress:`${_local}/dept/selectDeptAddress`,//科室选择后获取下拉框
@@ -50,6 +51,8 @@ const storage = {
    deleteInvoiceZc:`${_local}/invoiceZcController/deleteInvoiceZc`,//设备发票查询列表 - 删除
    updateInvoiceZc:`${_local}/invoiceZcController/updateInvoiceZc`,//设备发票查询列表 - 编辑
    selectInvoiceDetail:`${_local}/invoiceZcController/selectInvoiceDetail`,//设备发票详情的table
+    //库存查询
+    selectAssetsRepertoryList:`${_local}/assetsRecordController/selectAssetsRepertoryList`,//库存查询列表
 }
 
 export default storage;

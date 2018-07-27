@@ -129,7 +129,7 @@ function fetchOutDeptname(deptName, callback) {
   currentValueRollOut = deptName;
   
   let options = {
-    body:querystring.stringify({'deptName': deptName, 'deptType': '00'}),
+    body:querystring.stringify({'excludeUseDeptGuid': deptName,}),
     headers:{
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -147,7 +147,7 @@ function fetchOutDeptname(deptName, callback) {
       }
     }
   }
-  request(transfer.getSelectUseDeptList, options);
+  request(transfer.queryUserDeptListByUserId, options);
 }
 function fetchIntoDeptname(deptName, callback) {
   if (timeout) {
@@ -156,7 +156,7 @@ function fetchIntoDeptname(deptName, callback) {
   }
   currentValueRollOut = deptName;
   let options = {
-    body:querystring.stringify({'deptName': deptName}),
+    body:querystring.stringify({'excludeUseDeptGuid': deptName}),
     headers:{
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -174,9 +174,8 @@ function fetchIntoDeptname(deptName, callback) {
       }
     }
   }
-  request(transfer.getSelectUseDeptList, options);
+  request(transfer.queryUserDeptListByUserId, options);
 }
-
 class NewTransfer extends PureComponent {
   state={
     loading: false,
@@ -339,12 +338,14 @@ class NewTransfer extends PureComponent {
         if (data.result.length === 0) {
           values.newAdd = '';
           this.setState({newAddressEdit: false});
+          this.props.form.setFieldsValue({newAdd:''})
         } else {
           const result = data.result[0].address;
           values.newAdd = result;
           this.setState({newAddressEdit: true});
+          this.props.form.setFieldsValue({newAdd:result})
         }
-        this.setState({data: values});
+        // this.setState({data: values});
       }
     }
     request(transfer.getSelectDeptAddress, options);
@@ -374,6 +375,18 @@ class NewTransfer extends PureComponent {
       CacheProductTabledata: a
     })
   }
+
+  //选择转出科室下拉框-
+  setRollOut = (val,option) =>{
+    this.props.form.setFieldsValue({
+      inDeptguid:"",
+      newAdd:"",
+    })
+    fetchIntoDeptname(val, IntodeptNameData => this.setState({ IntodeptNameData }));
+    this.setState({newAddressEdit:false, outDeptguid:val, outDeptname: option.props.children })
+  }
+
+
   render() {
     const { productVisible, ProductType, mobile, ProductModalCallBackKeys, ProductTabledata, data } = this.state;
     const { getFieldDecorator } = this.props.form;
@@ -443,7 +456,7 @@ class NewTransfer extends PureComponent {
                   // onSearch={this.handleChangeRollOut}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   style={{width: 200}}
-                  onSelect={(val,option)=>this.setState({ outDeptguid:val, outDeptname: option.props.children })}
+                  onSelect={(val,option)=>this.setRollOut(val,option)}
                   placeholder={`请搜索选择转出科室`}
                 >
                   {this.state.deptNameData.map(d => {
@@ -466,6 +479,7 @@ class NewTransfer extends PureComponent {
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   style={{width: 200}}
                   placeholder={`请搜索选择转入科室`}
+                  disabled={this.state.outDeptguid?false:true}
                   onSelect={this.getNewAddessInfo}
                   >
                     {this.state.IntodeptNameData.map(d => {
@@ -475,6 +489,8 @@ class NewTransfer extends PureComponent {
                 )}
                 </FormItem>
               </Col>
+            </Row>
+            <Row>
               <Col span={8}>
                 <FormItem label={`新存放地址`} {...formItemLayout}>
                   {getFieldDecorator('newAdd', {
@@ -517,6 +533,8 @@ class NewTransfer extends PureComponent {
                   })(<DatePicker style={{width: 200}} />)}
                 </FormItem>
               </Col>
+            </Row>
+            <Row>
               <Col span={16}>
                 <FormItem label={`转科原因`} {...formStyleLayout}>
                   {getFieldDecorator('transferOpinion', {

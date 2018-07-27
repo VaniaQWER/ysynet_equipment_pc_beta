@@ -157,6 +157,27 @@ class WarehouseSummary extends Component {
   }
   exportReport = () => {
     const values = this.props.form.getFieldsValue();
+    for (let item in values){
+      if(Array.isArray(values[item])){
+        if(values[item].length===0){
+          delete values[item]
+        }
+      }else{
+        switch(values[item]){
+          case "":
+            delete values[item]
+            break 
+          case null:
+            delete values[item]
+            break
+          case undefined:
+            delete values[item]
+            break
+          default:
+            break 
+        }
+      }
+    }
      if(values.acctDate){
       values.acctDate = moment(values.acctDate).format('YYYYMM');
     }
@@ -205,7 +226,7 @@ class WarehouseSummary extends Component {
             <Col span={6}>
               <FormItem label='供应商' {...formItemLayout}>
                 {getFieldDecorator(`fOrgId`, {
-                  initialValue: ''
+                  initialValue: null
                 })(
                   <Select 
                     showSearch
@@ -213,7 +234,7 @@ class WarehouseSummary extends Component {
                     optionFilterProp="children"
                     filterOption={(input, option)=>this.filterOption(input, option)}
                     >
-                    <Option value=''>全部</Option>
+                    <Option value={null}>全部</Option>
                     {
                       supplierOptions.map((item, index) => <Option key={index} value={item.value.toString()}>{ item.text }</Option>)
                     }

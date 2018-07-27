@@ -120,7 +120,7 @@ class SearchForm extends Component {
               {...formItemLayout}
               label="资产编号"
             >
-              {getFieldDecorator('assetNo')(
+              {getFieldDecorator('assetsRecord')(
                 <Input placeholder='请输入'/>
               )}
             </FormItem>
@@ -142,7 +142,7 @@ const SearchFormWapper = Form.create()(SearchForm);
 
 class WareHouseRefund extends Component {
   state = {
-    query:{},
+    query:{bDeptId:this.props.form.getFieldsValue()},
     manageSelect:[],
     visible:false,//选择产品 - 弹窗
     actionKey:[],//主列表选择操作的数据
@@ -291,6 +291,15 @@ class WareHouseRefund extends Component {
     console.log(val)
     this.refs.modalTable.fetch(val)
   }
+  //打开弹窗
+  openModal=()=>{
+    let val = this.props.form.getFieldsValue();
+    console.log(val)
+    if(this.refs.modalTable){
+      this.refs.modalTable.fetch({...val})
+    }
+    this.setState({visible:true,query:val})
+  }
   // 获取退货金额
   getTotal = () => {
     const { tableRows } = this.state;
@@ -301,6 +310,20 @@ class WareHouseRefund extends Component {
     })
     return  ret.toFixed(2)
   }
+  //切换科室 - 清空 列表
+  changeManage = () =>{
+    const { tableRows } = this.state;
+    if(tableRows.length>0){
+      Confirm({
+        content:'此操作将会清空已选择产品？',
+        onOk:()=>{
+          this.setState({tableRows:[]})
+        },
+        onCancel:()=>{}
+      })
+    }
+  }
+  
   render(){
       const columns = [
           {
@@ -411,15 +434,6 @@ class WareHouseRefund extends Component {
           width: 200
         }
       ]
-      const modalHeader = (
-        <Row>
-          <Col span={12}>添加产品</Col>
-          <Col span={12} style={{textAlign:'right'}}>
-            <Button type='primary' style={{marginRight:15}}  onClick={()=>this.getModalData()}>确定</Button>
-            <Button type='primary' onClick={()=>this.closeModal()}>取消</Button>
-          </Col>
-        </Row>
-      )
       const { getFieldDecorator } = this.props.form;
       const { manageSelect , visible , tableRows , modalSelectedRowKeys , actionKey} = this.state;
       return(
@@ -433,6 +447,7 @@ class WareHouseRefund extends Component {
                         showSearch
                         placeholder={'请选择'}
                         optionFilterProp="children"
+                        onChange={()=>this.changeManage()}
                         filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
                         <Option value="" key={-1}>全部</Option>
@@ -446,7 +461,7 @@ class WareHouseRefund extends Component {
             </FormItem>
           </Form>
           <Row>
-              <Button type="primary" style={{marginLeft:16,marginRight:16}} onClick={()=>this.setState({visible:true})}>选择产品</Button>
+              <Button type="primary" style={{marginLeft:16,marginRight:16}} onClick={()=>this.openModal()}>选择产品</Button>
               <Button onClick={this.deleteRow}>删除</Button>
           </Row>
           <Table rowKey="importDetailGuid" columns={columns} dataSource={tableRows}  scroll={{x: '150%'}} style={{marginTop:24}}
@@ -468,7 +483,10 @@ class WareHouseRefund extends Component {
             width={980}
             visible={visible}
             destroyOnClose={true}
-            title={modalHeader}>
+            title='添加产品'
+            onOk={()=>this.getModalData()}
+            onCancel={()=>this.closeModal()}
+            >
               <SearchFormWapper ref='modalForm' query={(val)=>this.searchTable(val)}></SearchFormWapper>
               <Alert
                 description="发票已审核产品不可退货"

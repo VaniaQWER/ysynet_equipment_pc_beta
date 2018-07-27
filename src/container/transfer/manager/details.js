@@ -4,7 +4,7 @@
  * @since 2018-04-09
  */
 import React, { PureComponent } from 'react';
-import { Layout, Card, Form, Row, Col, Input, Upload, Modal } from 'antd';
+import { Layout, Card, Form, Row, Col, Input, Upload, Modal, Button } from 'antd';
 import './style.css';
 import tableGrid from '../../../component/tableGrid';
 import request from '../../../utils/request';
@@ -96,6 +96,11 @@ class TransferManagerDetails extends PureComponent {
     }
     request(transfer.getSelectTransferList, options);
   }
+
+  //打印 
+  printDetail = () =>{
+
+  }
   render() {
     // 资产列表渲染
     const columns = [
@@ -128,10 +133,16 @@ class TransferManagerDetails extends PureComponent {
     ]
     const { previewVisible, previewImage, data } = this.state;
     const { getFieldDecorator } = this.props.form;
+    const printHeader = (
+      <div>
+        申请信息
+        <Button type='primary' style={{float:'right'}} onClick={()=>this.printDetail()}>打印</Button>
+      </div>
+    )
     return(
       <Content>
         {/* 申请信息部分 */}
-        <Card title="申请信息" bordered={false} className="min_card">
+        <Card title={printHeader} bordered={false} className="min_card">
           <Form>
             <Row>
               <Col span={8}>

@@ -95,7 +95,8 @@ class InventorySummary extends Component {
       storageOptions: [],
       supplierOptions:[],//供应商
       display:'none',
-      expand:false
+      expand:false,
+      money:0.00,//全部合计
     }
   }
   componentWillMount() {
@@ -158,6 +159,8 @@ class InventorySummary extends Component {
         this.refs.table.fetch({
           ...values
         })
+
+        this.getInventoryCollectNum(values)
       }
     });
   }
@@ -191,6 +194,27 @@ class InventorySummary extends Component {
   
   exportReport = () => {
     const values = this.props.form.getFieldsValue();
+    for (let item in values){
+      if(Array.isArray(values[item])){
+        if(values[item].length===0){
+          delete values[item]
+        }
+      }else{
+        switch(values[item]){
+          case "":
+            delete values[item]
+            break 
+          case null:
+            delete values[item]
+            break
+          case undefined:
+            delete values[item]
+            break
+          default:
+            break 
+        }
+      }
+    }
     if(values.acctDate){
       values.acctDate = moment(values.acctDate).format('YYYYMM');
     }
@@ -204,10 +228,17 @@ class InventorySummary extends Component {
     this.setState({isDateTime:false})
   }
 
+  //调用接口获取全部合计
+  getInventoryCollectNum = (values) =>{
+    fetchData(financialControl.selectInventoryCollectNum, querystring.stringify({...values}), data => {
+      this.setState({money:data.result})
+    })
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     let values = this.exportReport();
-    const exportHref = financialControl.exportImportCollect+'?'+querystring.stringify(values);
+    const exportHref = financialControl.exportInventoryCollect+'?'+querystring.stringify(values);
     const loop = data => data.map((item) => {
       if (item.children.length>0) {
         return <TreeNode  title={item.styleName} key={item.guid} value={item.guid}  isLeaf={item.children.length === 0 ? false:true}>{loop(item.children)}</TreeNode>;
@@ -215,10 +246,12 @@ class InventorySummary extends Component {
       return <TreeNode title={item.styleName} key={item.guid} value={item.guid} isLeaf={item.children.length === 0 ? false:true}/>;
     });
     // const treeNodes = loop(this.state.treeData);
-    const { storageOptions, query, isDateTime , supplierOptions , display } = this.state;
+    const { storageOptions, query, isDateTime , supplierOptions , display , money } = this.state;
     const footer = () => {
       return <Row style={{fontWeight: 'bold'}}>
-        <Col className="ant-col-4">全部合计：{this.refs.table&&this.refs.table.state ? this.refs.table.state.fieldName: '0' }</Col>
+        <Col className="ant-col-4">全部合计：{/*this.refs.table&&this.refs.table.state ? this.refs.table.state.fieldName: '0'*/ }
+          {money?Number(money).toFixed(2):'0.00'}
+        </Col>
       </Row>
     };
     return (

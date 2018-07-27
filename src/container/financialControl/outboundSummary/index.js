@@ -151,6 +151,27 @@ class OutboundSummary extends Component {
   }
   exportReport = () => {
     const values = this.props.form.getFieldsValue();
+    for (let item in values){
+      if(Array.isArray(values[item])){
+        if(values[item].length===0){
+          delete values[item]
+        }
+      }else{
+        switch(values[item]){
+          case "":
+            delete values[item]
+            break 
+          case null:
+            delete values[item]
+            break
+          case undefined:
+            delete values[item]
+            break
+          default:
+            break 
+        }
+      }
+    }
     if(values.acctDate){
       values.acctDate =moment(values.acctDate).format('YYYYMM');
     }

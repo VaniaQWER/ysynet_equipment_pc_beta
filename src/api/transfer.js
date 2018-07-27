@@ -22,6 +22,7 @@ const transfer = {
 	 * @param deptGuid 科室id
 	 * @return deptGuid 科室id  Address 地址
 	 */
+  queryUserDeptListByUserId:`${_local}/dept/queryUserDeptListByUserId`,//查询当前用户使用科室
   getSelectDeptAddress: `${_local}/dept/selectDeptAddress`,//根据所有转入科室带出新存放地址
   getInsertTransfer: `${_local}/transferController/insertTransfer`,// 新建转科-新增
   

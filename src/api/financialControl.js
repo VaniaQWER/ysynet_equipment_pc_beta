@@ -11,6 +11,7 @@ const financialControl = {
   selectOutAcctCollect:`${_local}/invoiceZcController/selectOutAcctCollect`,//查询出库汇总
   selectBalanceCollect:`${_local}/invoiceZcController/selectBalanceCollect`,//查询结存汇总
   selectInventoryCollect:`${_local}/invoiceZcController/selectInventoryCollect`,//查询库存汇总
+  selectInventoryCollectNum:`${_local}/invoiceZcController/selectInventoryCollectNum`,//查询库存汇总-全部合计
   exportImportCollect:`${_local}/invoiceZcController/exportImportCollect`,//导出入库汇总
   exportOutAcctCollect:`${_local}/invoiceZcController/exportOutAcctCollect`,//导出出库汇总
   exportBalanceSumList:`${_local}/invoiceZcController/exportBalanceSumList`,//导出结存汇总

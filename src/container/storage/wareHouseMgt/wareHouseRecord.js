@@ -236,7 +236,7 @@ class WareHouseRecord extends Component{
                     query={this.state.query}
                     scroll={{x: '150%', y : document.body.clientHeight - 110 }}
                     columns={columns}
-                    rowKey={'sendId'}
+                    rowKey={'inId'}
                     showHeader={true}
                     style={{marginTop: 10}}
                     size="small">
