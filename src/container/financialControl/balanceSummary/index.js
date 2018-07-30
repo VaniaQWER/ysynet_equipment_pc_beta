@@ -99,7 +99,7 @@ class BalanceSummary extends Component {
     fetchData(financialControl.selectUseDeptList, querystring.stringify({deptType:"01"}), data => {
       if(data.result){
         query =  {
-          bDeptId: data.result[0].value,
+          bDeptId: data.result[0]?data.result[0].value:'',
           invoicing: 'NO_INVOICING',
         } 
         this.setState({ storageOptions: data.result,loading: true});

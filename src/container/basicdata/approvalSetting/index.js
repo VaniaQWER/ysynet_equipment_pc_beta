@@ -45,8 +45,8 @@ class SearchForm extends Component {
       success: data => {
         if(data.status){
           this.setState({manageSelect:data.result})
-          this.props.form.setFieldsValue({bDeptId:data.result[0].value});
-          this.props.query({bDeptId:data.result[0].value});
+          this.props.form.setFieldsValue({bDeptId:data.result[0]?data.result[0].value:''});
+          this.props.query({bDeptId:data.result[0]?data.result[0].value:''});
         }else{
           message.error(data.msg)
         }

@@ -105,7 +105,7 @@ class InventorySummary extends Component {
         this.setState({ 
           storageOptions: data.result,
           query:{
-            bDeptId: data.result[0].value,
+            bDeptId: data.result?data.result[0].value:'',
             acctType: '00'
           } 
         });
