@@ -81,7 +81,7 @@ class SearchForm extends Component {
 
   //获取供应商下拉框
   setOrgSelect = () => {
-    fetchData(storage.selectDeliveryForgList,querystring.stringify({orgType:'01'}),(data) => {
+    fetchData(storage.selectFOrgList,querystring.stringify({}),(data) => {
       if(data){
         this.setState({
           orgSelect:data.result
@@ -127,7 +127,7 @@ class SearchForm extends Component {
   render(){
     const { getFieldDecorator } = this.props.form;
     const { orgSelect , managementDeptSelect , deptSelect , adressSelect} =this.state ;
-    const options = orgSelect.map(d => <Option value={d.value.toString()} key={d.value}>{d.test}</Option>);
+    const options = orgSelect.map(d => <Option value={d.orgId.toString()} key={d.orgId}>{d.orgName}</Option>);
     const managementDeptOptions = managementDeptSelect.map(d => <Option value={d.value.toString()} key={d.value}>{d.text}</Option>);
     const deptSelectOptions = deptSelect.length>0 ? deptSelect.map(d => <Option value={d.value.toString()} key={d.value}>{d.text}</Option>):null;
     const adressSelectOptions = adressSelect.length>0 ? adressSelect.map(d => <Option value={d.text.toString()} key={d.value}>{d.text}</Option>):null;
@@ -303,7 +303,7 @@ class AddEquimentDelivery extends Component{
           if(data.status){
             message.success('发货成功')
             this.refs.form.resetFields()
-            this.setState({dataSource:[initData]})
+            this.setState({dataSource:[{...initData}]})
           }else{
             message.warn(data.msg)
             this.setState({dataSource:this.state.dataSource})

@@ -14,7 +14,7 @@ import moment from 'moment';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
-const { RangePicker , MonthPicker } = DatePicker;
+const { RangePicker } = DatePicker;
 /** 挂载查询表单 */
 const formItemLayout = {
     labelCol: {
@@ -55,6 +55,7 @@ class SearchForm extends React.Component{
 			if(values.acctYh){
 				values.acctYhStart = values.acctYh === undefined ? null : values['acctYh'][0].format('YYYY-MM');
 				values.acctYhEnd = values.acctYh === undefined ? null :  values['acctYh'][1].format('YYYY-MM');
+				delete values['acctYh']
 			}
 			console.log('查询条件: ', values);
 			this.props.query(values);
@@ -65,6 +66,23 @@ class SearchForm extends React.Component{
 		const storageData  = this.props.storageOptions;
 		this.props.form.resetFields();
 		this.props.query({bDeptId: storageData[0].value});
+	}
+
+	//获取当前年月
+	getTime = (beforeMonth) =>{
+		let d = new Date();
+		if(!beforeMonth){
+			let Y = d.getFullYear();
+			let m = d.getMonth()+1;
+			let M = m > 10 ? m : `0${m}`;
+			return `${Y}-${M}`
+		}else{	
+			d.setMonth(d.getMonth()-5);
+			let Y = d.getFullYear();
+			let m = d.getMonth()+1;
+			let M = m > 10 ? m : `0${m}`;
+			return `${Y}-${M}`
+		}
 	}
 
 	render(){
@@ -98,8 +116,13 @@ class SearchForm extends React.Component{
 					</Col>
 					<Col span={6} key={2}>
 						<FormItem {...formItemLayout} label={'会计月'}>
-							{getFieldDecorator('acctYh')(
-								<RangePicker  format={'YYYY-MM'}></RangePicker>
+							{getFieldDecorator('acctYh',{
+								initialValue:[moment(this.getTime(5),'YYYY-MM'),moment(this.getTime(),'YYYY-MM')]
+							})(
+								<RangePicker
+								format="YYYY-MM"
+								mode={['month', 'month']}
+							  />
 							)}
 						</FormItem>
 					</Col>
@@ -120,21 +143,22 @@ class FinancialClosing extends Component{
         query :{},
         visible:false,
 				storageOptions:[],//弹出层- 管理部门
-				checkAmount:0
+				checkAmount:0,
+				invoiceMonth:[]
 		}
-    componentWillMount (){
-			fetchData(financialControl.selectUseDeptList, querystring.stringify({deptType:"01"}), data => {
-				const result = data.result;
-				const options = [];
-				if (result.length) {
-					result.map((item) => options.push({value: item.value, text: item.text}));
-					this.setState({ storageOptions: options ,query:{bDeptId:result[0].value}});
-					this.getSumInvoiceNotAcctCountMoney({bDeptId:result[0].value})
-				}
-			})
+		 componentWillMount (){
+			 fetchData(financialControl.selectUseDeptList, querystring.stringify({deptType:"01"}), data => {
+					const result = data.result;
+					const options = [];
+					if (result.length) {
+						result.map((item) => options.push({value: item.value, text: item.text}));
+						let query = {bDeptId:result[0].value,acctYhStart:this.getTime(5),acctYhEnd:this.getTime()}
+						this.setState({ storageOptions: options ,query:query});
+					}
+				})
 		}
 		
-		// 获取未结账金额
+		// 获取未结账金额 + 获取结账月份
 		getSumInvoiceNotAcctCountMoney = (bDeptIdJson) =>{
 			fetchData(financialControl.sumInvoiceNotAcctCountMoney, querystring.stringify(bDeptIdJson), data => {
 				if(data.status){
@@ -143,6 +167,21 @@ class FinancialClosing extends Component{
 					message.warn(data.msg)
 				}
 			})
+			fetchData(financialControl.selectInvoiceMonth, querystring.stringify(bDeptIdJson), data => {
+				if(data.status){
+					this.setState({invoiceMonth:data.result})
+					this.props.form.setFieldsValue({acctYh:data.result[0]?data.result[0].value:''})
+				}else{
+					message.warn(data.msg)
+				}
+			})
+		}
+
+		//打开弹窗 - 新增结账
+		openModal = () =>{
+			const {bDeptId} = this.state.query;
+			this.getSumInvoiceNotAcctCountMoney({bDeptId})
+			this.setState({visible:true})
 		}
 
 		// header - 搜索
@@ -155,9 +194,6 @@ class FinancialClosing extends Component{
 		submitClose = () =>{
 			this.props.form.validateFieldsAndScroll((err,value)=>{
 				if(!err){
-					if(value.acctYh){
-						value.acctYh = moment(value.acctYh).format('YYYYMM');
-					}
 					console.log('确认结账的数据',JSON.stringify(value))
 					fetchData(financialControl.invoiceSettleAccount, querystring.stringify(value), data => {
 						if(data.status){
@@ -171,20 +207,22 @@ class FinancialClosing extends Component{
 			})
 		}
 
-		// 弹窗时间限制
-		disabledDate = (current) =>{
-			// Can not select days before today and today
-			return current && current < moment().endOf('day');
+		getTime = (beforeMonth) =>{
+			let d = new Date();
+			if(!beforeMonth){
+				let Y = d.getFullYear();
+				let m = d.getMonth()+1;
+				let M = m > 10 ? m : `0${m}`;
+				return `${Y}-${M}`
+			}else{	
+				d.setMonth(d.getMonth()-5);
+				let Y = d.getFullYear();
+				let m = d.getMonth()+1;
+				let M = m > 10 ? m : `0${m}`;
+				return `${Y}-${M}`
+			}
 		}
 
-		getNow = () =>{
-			let d = new Date();
-			let Y = d.getFullYear();
-			let m = d.getMonth()+1;
-			let M = m > 10 ? m : `0${m}`;
-			console.log(`${Y}-${M}`)
-			return `${Y}-${M}`
-		}
 
     render(){
         const columns = [
@@ -194,7 +232,7 @@ class FinancialClosing extends Component{
             width: 80,
             render : (text,record)=>{
                 //`/finance/finance/show`, {...record,storageGuid:this.state.query.storageGuid}
-                return <Link to={{pathname:"/finance/finance/details",state:{...record,storageGuid:this.state.query.storageGuid}}}>
+                return <Link to={{pathname:"/financialControl/financialClosing/details",state:{...record,bDeptId:this.state.query.bDeptId}}}>
                         详情
                     </Link>
             }
@@ -218,14 +256,15 @@ class FinancialClosing extends Component{
             }
         ];
         const { getFieldDecorator } = this.props.form;
-        const { query , visible , storageOptions , checkAmount} =  this.state;
+				const { query , visible , storageOptions , checkAmount , invoiceMonth } =  this.state;
+				const invoiceMonthSelect = invoiceMonth.length?invoiceMonth.map((item,index)=><Option value={item.value} key={index}>{item.text}</Option>):[]
         return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-								<SearchBox ref='headerSearch' query={this.queryHandler} storageOptions={storageOptions}/>
-								<Button type="primary" onClick={()=>this.setState({visible:true})}>新增结账</Button>
-								{
-									query.bDeptId ?
-									<RemoteTable 
+				<SearchBox ref='headerSearch' query={this.queryHandler} storageOptions={storageOptions}/>
+				<Button type="primary" onClick={()=>this.openModal()}>新增结账</Button>
+				{
+					query.bDeptId ?
+					<RemoteTable 
                     style={{marginTop:20}}
                     showHeader={true}
                     query={query}
@@ -280,19 +319,11 @@ class FinancialClosing extends Component{
                         </div>
                         <FormItem label={`会计月`} {...formItemLayout}>
                             {getFieldDecorator(`acctYh`, {
-															initialValue:moment(this.getNow(), 'YYYY-MM') ,
 															rules:[{required:true,message:'请选择会计月！'}]
                             })(
-																<MonthPicker  
-																// monthCellContentRender={
-																// 	(date, locale)=>{
-
-																// 		debugger	
-																// 		return  <span>123123</span>
-																// 	}
-																// }
-																// disabledDate={(current)=>this.disabledDate(current)}
-																></MonthPicker>
+																<Select style={{width:200}}>
+																	{invoiceMonthSelect}
+																</Select>
                             )}
                         </FormItem>
                     </Form>

@@ -99,7 +99,9 @@ class TransferManagerDetails extends PureComponent {
 
   //打印 
   printDetail = () =>{
-
+    const transferGuid = this.props.match.params.id || this.props.id;
+    let json = {transferGuid}
+    window.open(transfer.printTransfer+'?'+querystring.stringify(json))
   }
   render() {
     // 资产列表渲染

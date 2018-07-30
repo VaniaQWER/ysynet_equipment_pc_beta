@@ -22,5 +22,6 @@ const financialControl = {
   selectInvoiceDetailByMonth:`${_local}/invoiceZcController/selectInvoiceDetailByMonth`,//财务已结账详情
   sumInvoiceNotAcctCountMoney:`${_local}/invoiceZcController/sumInvoiceNotAcctCountMoney`,//未结账金额
   invoiceSettleAccount:`${_local}/invoiceZcController/invoiceSettleAccount`,//确认结账
+  selectInvoiceMonth:`${_local}/invoiceZcController/selectInvoiceMonth`,//查询结账月份
 }
 export default financialControl;

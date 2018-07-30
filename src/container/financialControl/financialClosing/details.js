@@ -7,6 +7,7 @@ import React , { Component } from 'react';
 import { Layout,Input, Form, Row, Col, DatePicker, Button } from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import financialControl from '../../../api/financialControl';
+import moment from 'moment';
 // import { fetchData } from '../../../utils/tools';
 // import querystring from 'querystring';
 const { RemoteTable } = TableGrid;
@@ -27,9 +28,35 @@ const formItemLayout = {
 class SearchForm extends Component {
 
   handleSearch = () => {
-    this.props.form.validateFieldsAndScroll((err,value)=>{
+    this.props.form.validateFieldsAndScroll((err,values)=>{
       if(!err){
-        this.props.query(value)
+        if(values.Time){
+          values.invoiceStartTime = moment(values.Time[0]).format('YYYY-MM-DD')
+          values.invoiceEndTime = moment(values.Time[1]).format('YYYY-MM-DD')
+          delete values['Time'];
+        }
+        for (let item in values){
+          if(Array.isArray(values[item])){
+            if(values[item].length===0){
+              delete values[item]
+            }
+          }else{
+            switch(values[item]){
+              case "":
+                delete values[item]
+                break 
+              case null:
+                delete values[item]
+                break
+              case undefined:
+                delete values[item]
+                break
+              default:
+                break 
+            }
+          }
+        }
+        this.props.query(values)
       }
     })
   }
@@ -46,7 +73,7 @@ class SearchForm extends Component {
         <Row>
           <Col span={8}>
             <FormItem label={`发票代码`} {...formItemLayout}>
-              {getFieldDecorator(`invoceNo`,{
+              {getFieldDecorator(`invoiceCode`,{
                 initialValue:''
               })(
                 <Input/>
@@ -55,7 +82,7 @@ class SearchForm extends Component {
           </Col>
           <Col span={8}>
             <FormItem label={`发票号码`} {...formItemLayout}>
-              {getFieldDecorator(`invoceCode`,{
+              {getFieldDecorator(`invoiceNo`,{
                 initialValue:''
               })(
                 <Input/>
@@ -64,10 +91,8 @@ class SearchForm extends Component {
           </Col>
           <Col  span={8}>
             <FormItem label={`开票日期`} {...formItemLayout}>
-              {getFieldDecorator(`invoceNo`,{
-                initialValue:''
-              })(
-                <RangePicker></RangePicker>
+              {getFieldDecorator(`Time`)(
+                <RangePicker/>
               )}
             </FormItem>
           </Col>
@@ -94,14 +119,15 @@ const columns=[
   },
   {
     title:"发票金额",
-    dataIndex:"invoiceMoney",
+    dataIndex:"money",
+    render:(text)=>text?Number(text).toFixed(2):''
   },
   {
     title:"开票日期",
-    dataIndex:"Time",
+    dataIndex:"invoiceDate",
   },{
     title:"供应商",
-    dataIndex:"dpetName",
+    dataIndex:"fOrgName",
   },
   {
     title:"送货单号",
@@ -109,17 +135,23 @@ const columns=[
   },
   {
     title:"会计月",
-    dataIndex:"date",
+    dataIndex:"acctYh",
   }
 ]
 class FinancialClosingDetails extends Component {
   state={
-    query:''
+    query:{
+      acctYh:this.props.location.state?this.props.location.state.acctYh:'',
+      bDeptId:this.props.location.state?this.props.location.state.bDeptId:''
+    }
   }
   query = (val) => {
-    this.refs.table.fetch(val)
+    let values = Object.assign(val,this.state.query)
+    console.log(values);
+    this.refs.table.fetch(values)
   }
   render(){
+    console.log(this.props.location)
     const { query } = this.state;
     return(
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
@@ -130,7 +162,7 @@ class FinancialClosingDetails extends Component {
           query={query}
           ref='table'
           columns={columns}
-          url={financialControl.SELECTINVOICEBYMONTH}
+          url={financialControl.selectInvoiceDetailByMonth}
           rowKey='invoiceId'
           scroll={{ x: '100%' }}
         />
