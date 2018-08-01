@@ -5,7 +5,6 @@
  */
 import React, { PureComponent } from 'react';
 import { Layout, Card, Form, Row, Col, Input, Upload, Modal, Button } from 'antd';
-import './style.css';
 import tableGrid from '../../../component/tableGrid';
 import request from '../../../utils/request';
 import transfer from '../../../api/transfer';
@@ -195,7 +194,7 @@ class TransferManagerDetails extends PureComponent {
               <Col span={8}>
                 <FormItem label={`计划转科时间`} {...formItemLayout}>
                 {getFieldDecorator('transferDate', {
-                  initialValue: data.transferDate
+                  initialValue: data.transferDate?data.transferDate.substr(0,11):''
                 })(
                   <Input style={{width: 200}} disabled={true} />
                 )}

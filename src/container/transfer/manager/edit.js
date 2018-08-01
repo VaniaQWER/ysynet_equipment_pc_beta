@@ -4,6 +4,7 @@
  * @since 2018-04-09
  */
 import React, { PureComponent } from 'react';
+import styles from './style.css';
 import { Layout, Card, Form, Row, Col, Input, Upload, Icon, Modal, Affix, Button, message } from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import request from '../../../utils/request';
@@ -11,7 +12,6 @@ import querystring from 'querystring';
 import transfer from '../../../api/transfer';
 import assets from '../../../api/assets';
 import { cutFtpUrl } from '../../../utils/tools';
-
 
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -208,7 +208,7 @@ class TransferRecordEdit extends PureComponent {
         <Form>
           {/* 申请信息部分 */}
           <Card title="申请信息" bordered={false} className="min_card">
-            <Row>
+          <Row>
               <Col span={8}>
                 <FormItem label={`申请人`} {...formItemLayout}>
                 {getFieldDecorator('createUserName', {
@@ -247,14 +247,14 @@ class TransferRecordEdit extends PureComponent {
               <Col span={8}>
                 <FormItem label={`计划转科时间`} {...formItemLayout}>
                   {getFieldDecorator('transferDate',{
-                    initialValue:data.transferDate
+                     initialValue: data.transferDate?data.transferDate.substr(0,11):''
                   })(<Input style={{width: 200}} disabled={true} />)}
                 </FormItem>
               </Col>
             </Row>
           </Card>
           {/* 资产信息部分 */}
-          <Card title="资产信息" bordered={false} style={{marginTop: 4}} className="min_card">
+          <Card title="资产信息" className={`${styles.defineForm}  min_card`}  bordered={false} style={{marginTop: 4}} >
             <RemoteTable
               showHeader={true}
               columns={columns} 

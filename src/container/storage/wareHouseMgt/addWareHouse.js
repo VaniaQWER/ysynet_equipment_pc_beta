@@ -135,38 +135,55 @@ class AddWareHouse extends Component {
   submit = (values) => {
     console.log(values)
     console.log(this.state.dataSource);
-    confirm({
-      title:'当前存在产品无财务分类',
-      content:'选继续操作将影响财务报表的准确性，是否继续？',
-      onOk:()=>{
-        //发出请求
-        let styleId = [];
-        let styleName =[]
-        this.state.dataSource.map((item)=>{
-          styleId.push(item.styleId)
-          styleName.push(item.styleName)
-          return item
+    const { dataSource } = this.state;
+    let toggle = false;
+
+    for(let i = 0; i<dataSource.length;i++){
+      if(!dataSource[i].styleName){//任意一行未选择财务分类- 则弹窗
+        confirm({
+          title:'当前存在产品无财务分类',
+          content:'选继续操作将影响财务报表的准确性，是否继续？',
+          onOk:()=>{
+            this.submitAjax();
+          }
         })
-        request(storage.insertImport,{
-          body:queryString.stringify({sendId:this.state.baseInfo.sendId,styleId,styleName}),
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          success: data => {
-            if(data.status){
-                message.success('入库成功')
-                this.refs.searchForm.resetFields();
-                this.setState({
-                  baseInfo:{},
-                  dataSource:[]
-                })
-            }else{
-              message.error(data.msg)
-            }
-          },
-          error: err => {console.log(err)}
-        })
+        return
+      }else{
+        toggle=true;
       }
+    }
+    if(toggle){
+      this.submitAjax();
+    }
+  }
+
+  submitAjax = ()=>{
+    //发出请求
+    let styleId = [];
+    let styleName =[]
+    this.state.dataSource.map((item)=>{
+      styleId.push(item.styleId)
+      styleName.push(item.styleName)
+      return item
+    })
+    request(storage.insertImport,{
+      body:queryString.stringify({sendId:this.state.baseInfo.sendId,styleId,styleName}),
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+            message.success('入库成功')
+            this.refs.searchForm.resetFields();
+            this.setState({
+              baseInfo:{},
+              dataSource:[]
+            })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
     })
   }
 

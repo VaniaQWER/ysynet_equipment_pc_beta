@@ -123,6 +123,12 @@ class SearchForm extends Component {
       }
     })
   }
+  filterOption = (input, option) => {
+    if(option.props.children){
+      return option.props.children.indexOf(input) >= 0
+    }
+    return false
+  }
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -146,7 +152,7 @@ class SearchForm extends Component {
                   showSearch
                   placeholder={'请选择供应商'}
                   optionFilterProp="children"
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filterOption={(input, option) =>this.filterOption(input, option)}
                   // onSelect={(e)=>this.getNextSelect(e)}
                   >
                   {options}
@@ -165,7 +171,7 @@ class SearchForm extends Component {
                   showSearch
                   placeholder={'请选择管理部门'}
                   optionFilterProp="children"
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filterOption={(input, option) =>this.filterOption(input, option)}
                   // onSelect={()=>this.props.form.setFieldsValue({tfAddress:""})}
                 >
                   {managementDeptOptions}
@@ -194,7 +200,7 @@ class SearchForm extends Component {
                   showSearch
                   placeholder={'请选择收货科室'}
                   optionFilterProp="children"
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filterOption={(input, option) =>this.filterOption(input, option)}
                   onSelect={(val)=>this.getAdress(val)}>
                   {deptSelectOptions}
                 </Select>
@@ -420,6 +426,13 @@ class AddEquimentDelivery extends Component{
     return CodeName
   }
 
+  filterOption = (input, option) => {
+    if(option.props.children){
+      return option.props.children.indexOf(input) >= 0
+    }
+    return false
+  }
+
   render(){
     const { dataSource , unitList ,tfBrandList } = this.state;  
     const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
@@ -480,7 +493,7 @@ class AddEquimentDelivery extends Component{
               style={styles.fixedWidth}  
               value={text} 
               onSelect={(e)=>this.changeTable(e,record,index,'tfBrand')}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filterOption={(input, option) => this.filterOption(input,option)}
               >
                 {tfBrandOption}
               </Select>
@@ -502,7 +515,7 @@ class AddEquimentDelivery extends Component{
               style={styles.fixedWidth}  
               value={record.purchaseUnit} 
               onSelect={(e)=>this.changeTable(e,record,index,'purchaseUnit')}
-              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
               >
                 {unitOption}
               </Select>

@@ -174,7 +174,7 @@ function fetchIntoDeptname(deptName, callback) {
       }
     }
   }
-  request(transfer.queryUserDeptListByUserId, options);
+  request(transfer.getSelectUseDeptList, options);
 }
 class NewTransfer extends PureComponent {
   state={
@@ -283,7 +283,7 @@ class NewTransfer extends PureComponent {
     postData.inDeptname = this.state.inDeptname;
     postData.newAdd = values.newAdd;
     postData.maintainUserid = values.maintainUserid;
-    postData.transferOpinion = values.transferOpinion;
+    postData.transferCause = values.transferCause;
     if (this.state.maintainUsername) {
       postData.maintainUsername = this.state.maintainUsername.split('-')[0];
     }
@@ -423,7 +423,7 @@ class NewTransfer extends PureComponent {
       },
       {
         title: '使用科室',
-        dataIndex: 'useDeptName',
+        dataIndex: 'useDept',
         width: 100
       }
     ]
@@ -537,7 +537,7 @@ class NewTransfer extends PureComponent {
             <Row>
               <Col span={16}>
                 <FormItem label={`转科原因`} {...formStyleLayout}>
-                  {getFieldDecorator('transferOpinion', {
+                  {getFieldDecorator('transferCause', {
                     rules: [{max: 250}]
                   })(
                     <TextArea  style={{width: 608}} placeholder={`请输入转科原因`} maxLength="250" />

@@ -77,10 +77,11 @@ const columns = [
     title: '供应商', 
     dataIndex: 'fOrgName',
     key: 'fOrgName',
-  }, {
-    title: '生产商',
-    dataIndex: 'produceName',
-    key: 'produceName',
+  },
+  {
+    title: '结账状态',
+    dataIndex: 'acctYh',
+    render:(text)=>text? text==='0'? '未结账':'已结账':''
   }
 ];
 
@@ -279,15 +280,16 @@ class InventorySummary extends Component {
               </FormItem>
             </Col>
             <Col span={8}>
-              <FormItem  {...formItemLayout} label='结账状态'>
+              <FormItem  {...formItemLayout} label='数据类型'>
                 {getFieldDecorator(`acctType`,{
                   initialValue: '00'
                 })(
                   <Select
-                    onSelect={ val => this.setState({ isDateTime: val === '00' ? false: true  })}
+                    onSelect={ val => this.setState({ isDateTime: val === '01' ?  true:false})}
                   >
-                    <Option value={'00'}>待结账</Option>
-                    <Option value={'01'}>已结账</Option>
+                    <Option value={'00'}>当前待结账</Option>
+                    <Option value={'01'}>历史数据</Option>
+                    <Option value={'02'}>当前数据</Option>
                   </Select>
                 )}
               </FormItem>

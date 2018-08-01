@@ -190,7 +190,7 @@ class TransferRecordDetails extends PureComponent {
               <Col span={8}>
                 <FormItem label={`计划转科时间`} {...formItemLayout}>
                 {getFieldDecorator('transferDate', {
-                  initialValue: data.transferDate
+                  initialValue: data.transferDate?data.transferDate.substr(0,11):''
                 })(
                   <Input style={{width: 200}} disabled={true} />
                 )}

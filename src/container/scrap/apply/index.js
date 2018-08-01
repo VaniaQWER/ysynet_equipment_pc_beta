@@ -12,6 +12,7 @@ import TableGrid from '../../../component/tableGrid';
 import { queryScrapList, saveScrap } from '../../../api/scrap';
 import PicWall from '../../../component/picWall'
 import querystring from 'querystring';
+import _ from 'lodash';
 const confirm = Modal.confirm;
 const { RemoteTable } = TableGrid;
 const { Content } = Layout;
@@ -35,7 +36,7 @@ const columns = [
   { title: '资产编号', dataIndex: 'assetsRecord',  width: 100 },
   { title: '资产名称', dataIndex: 'equipmentStandardName', width: 100 },
   { title: '型号', dataIndex: 'spec', width: 100 },
-  { title: '规格', dataIndex: 'model', width: 100 },
+  { title: '规格', dataIndex: 'fmodel', width: 100 },
   { title: '使用科室', dataIndex: 'useDept', width: 100 }
 ];
 class ScrapApply extends PureComponent {
@@ -53,6 +54,7 @@ class ScrapApply extends PureComponent {
       isLoading: false,
       useDeptGuid: '', // 查询科室
     }
+    this.changeInput = _.debounce(this.changeInput,300);
   }
   async componentDidMount() {
     const data = await queryScrapList();
@@ -109,6 +111,16 @@ class ScrapApply extends PureComponent {
         });
       }
     });
+  }
+
+  //关闭弹出层
+  closeModal = () => {
+    this.setState({visible: false,mobile:'',productType:''})
+    this.refs.table.fetch({})
+  }
+  changeInput = (val) =>{
+    console.log(val)
+    this.setState({mobile:val})
   }
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -249,7 +261,7 @@ class ScrapApply extends PureComponent {
           visible={visible}
           footer={null}
           style={{top: 20}}
-          onCancel={() => this.setState({visible: false})}
+          onCancel={() => this.closeModal()}
         >
         <Row>
           <Col span={8}>
@@ -265,14 +277,17 @@ class ScrapApply extends PureComponent {
             </Select>
           </Col>
           <Col span={8}>
-            <Search placeholder="输入资产编号/名称" enterButton="查询" onSearch={
+            <Search placeholder="输入资产编号/名称" value={this.state.mobile}  enterButton="查询"  
+            
+            onChange={(e)=>this.changeInput(e.target.value)}
+            onSearch={
               val => {
+                this.setState({ mobile: val })
                 this.refs.table.fetch({
                   productType: productType,
                   mobile: val,
                   useDeptGuid: this.state.useDeptGuid
                 })
-                this.setState({ mobile: val })
               }
             }/>     
           </Col>

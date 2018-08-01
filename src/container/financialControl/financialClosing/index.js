@@ -28,6 +28,9 @@ const formItemLayout = {
   };
 class SearchForm extends React.Component{
 
+	state={
+		mode: ['month', 'month'],
+	}
 	handleSearch = (e) => {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
@@ -84,11 +87,27 @@ class SearchForm extends React.Component{
 			return `${Y}-${M}`
 		}
 	}
+	
+	handlePanelChange = (value, mode) => {
+		this.props.form.setFieldsValue({acctYh:value})
+		this.setState({
+		  mode: [
+			mode[0] === 'date' ? 'month' : mode[0],
+			mode[1] === 'date' ? 'month' : mode[1],
+		  ],
+		});
+	}
+	filterOption = (input, option) => {
+		if(option.props.children){
+		  return option.props.children.indexOf(input) >= 0
+		}
+		return false
+	}
 
 	render(){
 		const { getFieldDecorator } = this.props.form;
 		const storageData  = this.props.storageOptions;
-	
+		const {mode} = this.state;
     return (
 			<Form onSubmit={this.handleSearch}>
 				<Row>
@@ -121,7 +140,8 @@ class SearchForm extends React.Component{
 							})(
 								<RangePicker
 								format="YYYY-MM"
-								mode={['month', 'month']}
+								mode={mode}
+								onPanelChange={this.handlePanelChange}
 							  />
 							)}
 						</FormItem>
@@ -173,19 +193,21 @@ class FinancialClosing extends Component{
 					this.props.form.setFieldsValue({acctYh:data.result[0]?data.result[0].value:''})
 				}else{
 					message.warn(data.msg)
+					this.setState({invoiceMonth:[]})
+					this.props.form.setFieldsValue({acctYh:''})
 				}
 			})
 		}
 
 		//打开弹窗 - 新增结账
 		openModal = () =>{
-			const {bDeptId} = this.state.query;
-			this.getSumInvoiceNotAcctCountMoney({bDeptId})
+			const {storageOptions} = this.state;
+			this.getSumInvoiceNotAcctCountMoney({bDeptId:storageOptions[0].value})
 			this.setState({visible:true})
 		}
 
 		// header - 搜索
-    queryHandler = (query) => {
+    	queryHandler = (query) => {
 			this.refs.table.fetch(query);
 			this.setState({ query })
 		}
@@ -223,6 +245,12 @@ class FinancialClosing extends Component{
 			}
 		}
 
+		filterOption = (input, option) => {
+			if(option.props.children){
+			  return option.props.children.indexOf(input) >= 0
+			}
+			return false
+		}
 
     render(){
         const columns = [
