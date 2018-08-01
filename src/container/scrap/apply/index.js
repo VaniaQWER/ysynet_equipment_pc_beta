@@ -66,7 +66,8 @@ class ScrapApply extends PureComponent {
   }
   handleOk = () => {
     const { selectedRows } = this.state;
-    this.setState({ dataSource: selectedRows, visible: false })
+    this.setState({ dataSource: selectedRows,selectedRowKeys:[], visible: false ,mobile:'',productType:''})
+    this.refs.table.fetch({})
   }
   submit = e => {
     e.preventDefault();
@@ -115,7 +116,7 @@ class ScrapApply extends PureComponent {
 
   //关闭弹出层
   closeModal = () => {
-    this.setState({visible: false,mobile:'',productType:''})
+    this.setState({visible: false,mobile:'',productType:'',selectedRowKeys:[]})
     this.refs.table.fetch({})
   }
   changeInput = (val) =>{
