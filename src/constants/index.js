@@ -61,25 +61,34 @@ export const useFstateSel =[
   { text: '闲置', value: '05' },
 ];
 
+// ledgerData 01正常在用（启用后或科室验收通过），02故障中（保修），03报废中，04已报废，05借出，06闲置，07转科中
 export const ledgerData = {
   "01": {
     text: "正常",
     color: 'green'
   },
   "02": {
-    text: "故障",
+    text: "故障中",
     color: 'red'
   },
   "03": {
-    text: "报废",
+    text: "报废中",
     color: 'gray'
   },
   "04": {
+    text: "已报废",
+    color: 'gray'
+  },
+  "05": {
     text: "借出",
     color: 'gold'
   },
-  "05": {
+  "06": {
     text: "闲置",
+    color: 'blue'
+  },
+  "07":{
+    text: "转科中",
     color: 'blue'
   },
   null :{
@@ -189,6 +198,11 @@ export const selectOption = {
     { text: "其他", value: "99" },
   ]
 }
+//资产生产商国家
+export const ProductCountry = [
+  { text: "国产", value: "00" },
+  { text: "进口", value: "01" },
+]
 
 export const faultDescribeData ={
   "00" : { text: "部分功能失效" },
