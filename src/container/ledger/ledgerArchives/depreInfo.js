@@ -15,7 +15,6 @@ import _ from 'lodash';
 import { clearNull } from '../../../utils/tools';
 
 import { depreciationTypeData } from '../../../constants';
-const { MonthPicker} = DatePicker;
 const FormItem = Form.Item;
 const { Option } = Select;
 const formItemLayout = {
@@ -180,7 +179,7 @@ class DepreInfo extends Component {
   }
   
   render () {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const { AssetInfoData } = this.props;
     const { editable } = this.state;
     const header= (

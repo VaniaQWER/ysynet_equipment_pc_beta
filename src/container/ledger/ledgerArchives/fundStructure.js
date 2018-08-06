@@ -2,8 +2,7 @@
  * 档案管理-资产档案-详情-基本信息-资产信息
  */
 import React, { Component } from 'react';
-import { Form , Card , Input , Row, Col,message ,DatePicker , Button , Select} from 'antd';
-import styles from './style.css';
+import { Form , Card , Input , Row, Col,message , Button } from 'antd';
 import request from '../../../utils/request';
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
@@ -92,8 +91,12 @@ class FundStructure extends Component {
           "totalDepreciationPrice":totalDepreciationPrice[item]
         })
       }else{
-        originalValue[item]!==""? ret.push({"payType":item,originalValue:originalValue[item]}):'';
-        totalDepreciationPrice[item]!==""? ret.push({"payType":item,totalDepreciationPrice:totalDepreciationPrice[item]}):'';
+        if(originalValue[item]!==""){
+          ret.push({"payType":item,originalValue:originalValue[item]})
+        }
+        if(totalDepreciationPrice[item]!==""){
+          ret.push({"payType":item,totalDepreciationPrice:totalDepreciationPrice[item]})
+        }
       }
     }
 
