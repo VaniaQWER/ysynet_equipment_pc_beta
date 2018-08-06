@@ -450,3 +450,13 @@ export const approvalOpinionStatus ={
   "01":"已审批",
   "02":"未通过",
 }
+
+export const yesNo = {
+  "01":"是",
+  "00":"否",
+}
+
+export const haveNo = {
+  "01":"有",
+  "00":"无",
+}

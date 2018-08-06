@@ -44,17 +44,6 @@ class AccessoryInfo extends Component {
   render () {
     const columns = [
       {
-        title: '操作',
-        dataIndex: 'certId',
-        width: 80,
-        render: (text, record) => 
-          <span>
-            <a  href={assets.YSYPATH+record.tfAccessoryFile} target="_blank"><Icon type="file" />查看</a>
-            <span className="ant-divider" />
-            <a onClick={this.handleDelete.bind(null, record.certId)}><Icon type="delete" />删除</a>
-          </span>  
-      },
-      {
         title: '附件类型',
         dataIndex: 'certCode',
         width: 100,
@@ -74,7 +63,18 @@ class AccessoryInfo extends Component {
         title: '备注',
         dataIndex: 'tfRemark',
         width: 100,
-      }
+      },
+      {
+        title: '操作',
+        dataIndex: 'certId',
+        width: 80,
+        render: (text, record) => 
+          <span>
+            <a  href={assets.YSYPATH+record.tfAccessoryFile} target="_blank"><Icon type="file" />查看</a>
+            <span className="ant-divider" />
+            <a onClick={this.handleDelete.bind(null, record.certId)}><Icon type="delete" />删除</a>
+          </span>  
+      },
     ];
     const props = {
       action: assets.assetsFileUpLoad,
@@ -129,7 +129,7 @@ class AccessoryInfo extends Component {
     );
     console.log( this.state.messageError,' this.state.messageError')
     return (
-      <div className='ysynet-content ysynet-common-bgColor'>
+      <div className='ysynet-content ysynet-common-bgColor' style={{padding:'12px 24px'}}>
           {
               this.state.messageError === "" ? null
               :
@@ -146,7 +146,7 @@ class AccessoryInfo extends Component {
             </Col>
             <Col span={12} className={styles['text-align-right']}>
               <Dropdown overlay={menu} placement="bottomLeft">
-                <Button>添加附件</Button>
+                <Button>上传</Button>
               </Dropdown>
     
             </Col>

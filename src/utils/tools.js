@@ -144,3 +144,28 @@ export const validAmount = (rule, value, callback) => {
       callback(new Error('请输入非0正数！'));
   }
 }
+
+export const clearNull = (values) => {
+  for (let item in values){
+    if(Array.isArray(values[item])){
+      if(values[item].length===0){
+        delete values[item]
+      }
+    }else{
+      switch(values[item]){
+        case "":
+          delete values[item]
+          break 
+        case null:
+          delete values[item]
+          break
+        case undefined:
+          delete values[item]
+          break
+        default:
+          break 
+      }
+    }
+  }
+  return values
+}

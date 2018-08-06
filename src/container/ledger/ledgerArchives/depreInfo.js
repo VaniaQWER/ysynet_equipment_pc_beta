@@ -2,9 +2,8 @@
  * 档案管理-资产档案-详情-基本信息-资产信息
  */
 import React, { Component } from 'react';
-import { Row, Col,message,Tooltip ,DatePicker , Button , Select} from 'antd';
-import InputWrapper from '../../../component/inputWrapper'
-import styles from './style.css';
+import { Form , Card , Input , Row, Col,message,Tooltip ,DatePicker , Button , Select} from 'antd';
+import './style.css';
 import request from '../../../utils/request';
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
@@ -13,15 +12,38 @@ import assets from '../../../api/assets';
 import querystring from 'querystring';
 import moment, { isMoment } from 'moment';
 import _ from 'lodash';
+import { clearNull } from '../../../utils/tools';
+
 import { depreciationTypeData } from '../../../constants';
 const { MonthPicker} = DatePicker;
-
+const FormItem = Form.Item;
+const { Option } = Select;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 6 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 18 },
+  },
+};
+const ShowDomInfo = (props) =>{
+  const { name } = props;
+  return ( 
+    <div style={{height:40,lineHeight:'38px'}}>
+      <Col span={6}>{`${name} :`}</Col>
+      <Col span={18}>{props.children}</Col>
+    </div>
+  )
+} 
 
 class DepreInfo extends Component {
   
   state={
     submitList:[],
-    value:1
+    value:1,
+    editable:false,
   }
 
   componentWillMount () {
@@ -121,95 +143,145 @@ class DepreInfo extends Component {
     }
   }
  
-  render () {
-    const { AssetInfoData } = this.props;
-    return (
-      <Row type="flex" style={{marginTop: 16}}  className={styles['table-row']}>
-        <Col span={4} className={styles['table-span']}>折旧方式</Col>
-        <Col span={8} className={styles['table-span']}>
-          {
-              <Select defaultValue={AssetInfoData.depreciationType} style={{width:140,marginLeft:10}}
-                onChange={(e)=>this.handleUpdateAssetsRecordInfo(e,'DEPRECIATION_TYPE')}>
-                <Select.Option value="00">无折旧方式</Select.Option>
-                <Select.Option value="01">{depreciationTypeData['01'].text}</Select.Option>
-                <Select.Option value="02">{depreciationTypeData['02'].text}</Select.Option>
-                <Select.Option value="03">{depreciationTypeData['03'].text}</Select.Option>
-                <Select.Option value="04">{depreciationTypeData['04'].text}</Select.Option>
-              </Select> 
+   //1-产品信息- 折旧信息 - 整体编辑或保存
+   handleSubmit = () => {
+    // 此处发出请求地址 insertAssetsRecord   获取所有可编辑的数据
+    if(this.state.editable){
+      const { AssetInfoData } = this.props;
+      this.props.form.validateFields((err, values)=>{
+        values.assetsRecordGuid=AssetInfoData.assetsRecordGuid;
+        values.assetsRecord=AssetInfoData.assetsRecord;
+        if(values.depreciationBeginDate && isMoment(values.depreciationBeginDate)){
+          values.depreciationBeginDate=moment(values.depreciationBeginDate).format('YYYY-MM-DD')
+        }
+        console.log('整体编辑或保存', {assetsRecord:clearNull(values),equipmentPayList:[]});
+        request(assets.insertAssetsRecord,{
+          body:JSON.stringify({assetsRecord:clearNull(values),equipmentPayList:[]}),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          success: data => {
+            if(data.status){
+              this.props.freshDetail()
+              this.setState({editable:!this.state.editable})
+              message.success('保存成功！')
+              
+            }else{
+              message.error(data.msg)
             }
-        </Col>
-        <Col span={4} className={styles['table-span']}>原值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.originalValue }</Col>
-        <Col span={4} className={styles['table-span']}>
-          <Tooltip placement="top" title={`自筹资金:￥${this.getBackData('01','buyPrice')}财政拨款：￥${this.getBackData('02','buyPrice')}`} arrowPointAtCenter>累计折旧</Tooltip>
-        </Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.totalDepreciationPrice }</Col>
-        <Col span={4} className={styles['table-span']}>净值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.carryingAmount }</Col>
-        <Col span={4} className={styles['table-span']}>净残值率</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'RESIDUAL_VALUE_V')} text={ AssetInfoData.residualValueV ? AssetInfoData.residualValueV.toString() : '' } /></Col>
-        <Col span={4} className={styles['table-span']}>净残值</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.residualValue }</Col>
-        <Col span={4} className={styles['table-span']}>月折旧率</Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.monthDepreciationV }</Col>
-        <Col span={4} className={styles['table-span']}>
-            <Tooltip placement="top" title={`自筹资金:￥${this.getBackData('01','buyPrice')}财政拨款：￥${this.getBackData('02','buyPrice')}`} arrowPointAtCenter>月折旧额</Tooltip>
-        </Col>
-        <Col span={8} className={styles['table-span']}>{ AssetInfoData.monthDepreciationPrice }</Col>
-        <Col span={4} className={styles['table-span']}>预计使用年限</Col>
-        <Col span={8} className={styles['table-span']}>
-          <InputWrapper onEndEdit={(data) => this.handleUpdateAssetsRecordInfo(data,'USE_LIMIT')} text={ AssetInfoData.useLimit ?  AssetInfoData.useLimit.toString() : '' } />
-        </Col>
-        <Col span={4} className={styles['table-span']}>计提开始时间</Col>
-        <Col span={8} className={styles['table-span']}>
-        <MonthPicker
-         onChange={(data) =>this.handleUpdateAssetsRecordInfo(data,'DEPRECIATION_BEGIN_DATE')}  
-         text={ moment(AssetInfoData.depreciationBeginDate,'YYYY-MM') } placeholder="选择计提开始时间"
-         defaultValue={AssetInfoData.depreciationBeginDate ?  moment(AssetInfoData.depreciationBeginDate,'YYYY-MM') :null}
-         allowClear={false}></MonthPicker>
-        </Col>
+          },
+          error: err => {console.log(err)}
+        })
 
-        <Col span={24} className={styles['table-span']} style={{textAlign:'left',textIndent:'15px'}}>资金结构
-          <Button style={{float:'right',marginTop:5,marginRight:15}} onClick={this.handlePayList} type="primary" > 保存</Button></Col>
-        <Col span={0} className={styles['table-span']}></Col>
+      })
+    }else{
+      this.setState({editable:!this.state.editable})
+    }
+  }
+  
+  render () {
+    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { AssetInfoData } = this.props;
+    const { editable } = this.state;
+    const header= (
+      <Row>
+        <Col span={12}>折旧信息</Col>
+        <Col span={12} style={{textAlign:'right'}}>
+          <Button type='primary' style={{marginRight:15}} onClick={()=>this.handleSubmit()}>{editable? '保存':'编辑'}</Button>
+        </Col>
+      </Row>
+    )
+    return (
 
-        <Col span={4} className={styles['table-span']} style={{textAling:'center'}}> 自筹资金</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'01','buyPrice')} text={ this.getBackData('01','buyPrice') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}  style={{textAling:'center'}}>财政拨款</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) =>  this.setSubmitList(data,'02','buyPrice')} text={ this.getBackData('02','buyPrice') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>自筹资金原值</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'01','originalValue')} text={ this.getBackData('01','originalValue') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>财政拨款原值</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'02','originalValue')} text={ this.getBackData('02','originalValue') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>科研经费</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'03','buyPrice')}  text={  this.getBackData('03','buyPrice') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>教学资金</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'04','buyPrice')}  text={ this.getBackData('04','buyPrice')  } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>科研经费原值</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'03','originalValue')} text={ this.getBackData('03','originalValue') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>教学资金原值</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) =>  this.setSubmitList(data,'04','originalValue')} text={ this.getBackData('04','originalValue') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>接收捐赠</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'05','buyPrice')}  text={ this.getBackData('05','buyPrice') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>其他</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) => this.setSubmitList(data,'06','buyPrice')}  text={ this.getBackData('06','buyPrice') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>接收捐赠原值</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) =>  this.setSubmitList(data,'05','originalValue')} text={ this.getBackData('05','originalValue') } /></Col>
-        
-        <Col span={4} className={styles['table-span']}>其他原值</Col>
-        <Col span={8} className={styles['table-span']}><InputWrapper onEndEdit={(data) =>  this.setSubmitList(data,'06','originalValue')} text={ this.getBackData('06','originalValue') } /></Col>
-        
-    </Row>
+      <Card  title={header} style={{marginTop: 16,marginBottom:24}} className='baseInfo-assetInfo'>
+        <Form>
+          <Row>
+            <Col span={8}>
+              {
+                editable? 
+                  <FormItem label={`折旧方式`} {...formItemLayout}>
+                    {getFieldDecorator(`depreciationType`,{//DEPRECIATION_TYPE
+                      initialValue: AssetInfoData.depreciationType
+                    })(
+                      <Select>
+                        <Option value="00">无折旧方式</Option>
+                        <Option value="01">{depreciationTypeData['01'].text}</Option>
+                        <Option value="02">{depreciationTypeData['02'].text}</Option>
+                        <Option value="03">{depreciationTypeData['03'].text}</Option>
+                        <Option value="04">{depreciationTypeData['04'].text}</Option>
+                      </Select> 
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="折旧方式">{AssetInfoData?AssetInfoData.depreciationType?depreciationTypeData[AssetInfoData.depreciationType].text:'':''}</ShowDomInfo>
+              }
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="原值">{AssetInfoData?AssetInfoData.originalValue:''}</ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="累计折旧">
+                <Tooltip placement="top" title={`自筹资金:￥${this.getBackData('01','buyPrice')}财政拨款：￥${this.getBackData('02','buyPrice')}`} arrowPointAtCenter>
+                {AssetInfoData?AssetInfoData.totalDepreciationPrice:''}
+                </Tooltip>
+              </ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="净值">{AssetInfoData?AssetInfoData.carryingAmount:''}</ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              {
+                editable? 
+                  <FormItem label={`净残值率`} {...formItemLayout}>
+                    {getFieldDecorator(`residualValueV`,{
+                      initialValue: AssetInfoData.residualValueV
+                    })(
+                        <Input addonAfter='%'/>
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="净残值率">{AssetInfoData.residualValueV}</ShowDomInfo>
+              }
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="预计使用年限">{AssetInfoData?AssetInfoData.useLimit:''}</ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="月折旧率">{AssetInfoData?AssetInfoData.monthDepreciationV:''}</ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="月折旧额">{AssetInfoData?AssetInfoData.monthDepreciationPrice:''}</ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              {
+                editable? 
+                  <FormItem label={`已折月数`} {...formItemLayout}>
+                    {getFieldDecorator(`depreciationMonths`,{
+                      initialValue: AssetInfoData.depreciationMonths
+                    })(
+                        <Input/>
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="已折月数">{AssetInfoData.depreciationMonths}</ShowDomInfo>
+              }
+            </Col>
+            <Col span={8}>
+              <ShowDomInfo name="剩余月数">{AssetInfoData?AssetInfoData.surplusMonths:''}</ShowDomInfo>
+            </Col>
+            <Col span={8}>
+              {
+                editable? 
+                  <FormItem label={`开始折旧时间`} {...formItemLayout}>
+                    {getFieldDecorator(`depreciationBeginDate`,{
+                      initialValue: AssetInfoData.depreciationBeginDate?moment(AssetInfoData.depreciationBeginDate,'YYYY-MM'):null
+                    })(
+                        <DatePicker/>
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="开始折旧时间">{ AssetInfoData.depreciationBeginDate?AssetInfoData.depreciationBeginDate.split(' ')[0]:'' }</ShowDomInfo>
+              }
+            </Col>  
+          </Row>
+        </Form>
+      </Card>
     )
   }
 }
@@ -217,6 +289,6 @@ class DepreInfo extends Component {
 
  export default withRouter(connect(null, dispatch => ({
   updateAssetsRecordInfo: (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
-}))(DepreInfo));
+}))(Form.create()(DepreInfo)));
 
 

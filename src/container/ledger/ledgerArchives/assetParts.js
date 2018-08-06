@@ -26,7 +26,7 @@ const columns = [
   {
     title: '品牌',
     dataIndex: 'tfBrand',
-    width: 100
+    width: 80
   },
   {
     title: '配件名称',
@@ -36,12 +36,12 @@ const columns = [
   {
     title: '型号',
     dataIndex: 'fmodel',
-    width: 100
+    width: 80
   },
   {
     title: '规格',
     dataIndex: 'spec',
-    width: 100,
+    width: 80,
   },
   {
     title: '单位',
@@ -153,7 +153,7 @@ class AssetParts extends Component {
             query={{ assetsRecordGuid: this.props.assetsRecordGuid }}
             ref='remote'
             url={assets.selectAssetsExtendList}
-            scroll={{x: '120%',y:400}}
+            scroll={{x: '150%',y:400}}
             columns={columns}
             showHeader={true}
             rowKey={'assetsExtendGuid'}

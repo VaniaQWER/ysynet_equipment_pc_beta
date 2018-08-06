@@ -33,11 +33,27 @@ class CertInfo extends Component {
     const { certInfoData } = this.state;
 
     return (
-        <Row>
+        <Row className={styles.assetBgf}>
           <Col offset={3} span={18}>
-            <h1 className={styles['text-align-center']}>中华人民共和国医疗器械注册证</h1>
-            <span>证件号 : { certInfoData ? certInfoData.registerNo : null }</span>
-            <Row type="flex" style={{marginTop: 16}} className={styles['table-row']}>
+            <h3 className={styles['text-align-center']}>中华人民共和国医疗器械注册证</h3>
+            <div className={`${styles.posBox }  ${styles.certInfoPosBox }`}>
+              <p><small>批准日期:{certInfoData  ? certInfoData.firstTime: null }</small></p>
+              <p><small>证件号:{ certInfoData  ? certInfoData.registerNo: null }</small></p>
+            </div>
+
+            <Row type="flex" style={{marginTop: 24}} className={styles.certInfoContent}>
+              <Col span={12} className={styles.rowGap}>生产者名称:{ certInfoData ? certInfoData.produceName : null}</Col>
+              <Col span={12} className={styles.rowGap}>产品性能结构组成:{ certInfoData ? certInfoData.productStructure : null}</Col>
+              <Col span={12} className={styles.rowGap}>生产者地址:{ certInfoData  ? certInfoData.enterpriseRegAddr :null }</Col>
+              <Col span={12} className={styles.rowGap}>型号规格:{ certInfoData  ? certInfoData.registerNo :null }</Col>
+              <Col span={12} className={styles.rowGap}>生产地址:{ certInfoData  ? certInfoData.produceAddr :null }</Col>
+              <Col span={12} className={styles.rowGap}>产品名称:{ certInfoData  ? certInfoData.materialName :null }</Col>
+              <Col span={12} className={styles.rowGap}>代理人名称:{ certInfoData  ? certInfoData.agentName :null }</Col>
+              <Col span={12} className={styles.rowGap}>代理人地址:{ certInfoData  ? certInfoData.agentAddr :null }</Col>
+              <Col span={12} className={styles.rowGap}>产品标准:{ certInfoData  ? certInfoData.productStandard :null }</Col>
+              <Col span={24} className={styles.rowGap}>其他内容:{ certInfoData  ? certInfoData.registerNo :null }</Col>
+              <Col span={24} className={styles.rowGap}>备注:{ certInfoData  ? certInfoData.tfRemark :null }</Col>
+              {/*
               <Col span={8} className={styles['table-span']}>生产者名称</Col>
               <Col span={16} className={styles['table-span']}>{ certInfoData ? certInfoData.produceName : null} </Col>
               <Col span={8} className={styles['table-span']}>生产者地址</Col>
@@ -62,11 +78,13 @@ class CertInfo extends Component {
               <Col span={16} className={styles['table-span']}>{certInfoData  ? certInfoData.registerNo: null }</Col>
               <Col span={8} className={styles['table-span']}>备注</Col>
               <Col span={16} className={styles['table-span']}>{ certInfoData  ?certInfoData.tfRemark : null}</Col>
+              */}
             </Row>
-            <div  className={styles['text-align-right']}>
+           
+           {/* <div  className={styles['text-align-right']}>
               <p>批准日期:{certInfoData  ? certInfoData.firstTime: null }</p>
               <p>批准日期:{ certInfoData  ? certInfoData.lastTime: null }</p>
-            </div>
+            </div>*/}
           </Col>
         </Row>
     )

@@ -3,10 +3,14 @@ export default {
  userLogin: `${_local}/login/userLogin`,//登录
  picUploadUrl: `${_local}/ftp/post`,//图片上传
  YSYPATH:`${_local}/ftp`,//项目地址
+ selectFOrgList:`${_local}/StaticDataController/selectFOrgList`,//获取供应商列表
  selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
  selectAssetsList: `${_local}/assetsRecordController/selectAssetsList`, //查询资产列表
  selectAssetsRecordDetail: `${_local}/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
  updateAssetsRecordInfo: `${_local}/assetsRecordController/updateAssetsRecordInfo`, // 修改资产档案信息 
+ insertAssetsRecord:`${_local}/assetsRecordController/insertAssetsRecord`,//新增/编辑资产档案信息 
+ selectEquipmentDeptList:`${_local}/equipmentDepreciation/selectEquipmentDeptList`,//查询共用科室 - 资产折旧分摊比例
+ insertEquipmentDepreciationDept:`${_local}/equipmentDepreciation/insertEquipmentDepreciationDept`,//新增共用科室 - 
  selectAssetsExtendList: `${_local}/assetsRecordController/selectAssetsExtendList`, // 根据资产档案GUID查询资产配件信息 
  deleteAssetsExtend: `${_local}/assetsRecordController/deleteAssetsExtend`, //  删除附件信息
  searchCertList: `${_local}/equipmentAdd/searchCertList`, // 根据资产 证件GUID 查询证件信息
