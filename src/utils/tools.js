@@ -159,3 +159,12 @@ export const validDay = (rule, value, callback) => {
     callback(new Error('请输入非0正数！'));
   }
 }
+export const clearNull = (values) => {
+  for (let item in values){
+    if(Array.isArray(values[item])){
+      if(values[item].length===0){
+        delete values[item]
+      }
+    }
+  }
+}
