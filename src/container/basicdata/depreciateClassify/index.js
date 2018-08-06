@@ -68,6 +68,27 @@ const columns = [
   }
 ]
 
+const mainCol = [
+  {
+    title: '折旧分类', dataIndex: 'queryStaticInfoZcName', 
+  },
+  ...columns,
+  {
+    title: '预计使用年限（年）', dataIndex: 'useLimit', 
+  },
+  {
+    title: '已折月数', dataIndex: 'depreciationMonths', 
+  }
+]
+
+const modalCol = [
+  ...columns,
+  {
+    title: '预计使用年限', dataIndex: 'useLimit', 
+  }
+]
+
+
 class DepreciateClassify extends Component {
 
   constructor(props) {
@@ -259,7 +280,7 @@ class DepreciateClassify extends Component {
     return (
       <Row className='treeNode'>
         {/* 标题 */}
-        <Col title={item.tfComment} span={20} style={{whiteSpace: "nowrap"}}>{item.tfComment}</Col>
+        <Col title={item.tfComment} span={20} style={{whiteSpace: "nowrap"}}>{`${item.tfComment}${item.styleFlag===1? item.remark? '_'+item.remark+'年':'' :''}`}</Col>
         {/* 修改 */}
         <Col span={2} style={{paddingLeft: 4}}>
           <Icon 
@@ -296,7 +317,8 @@ class DepreciateClassify extends Component {
     })
     this.props.form.setFieldsValue({
       tfComment: item.tfComment,
-      tfClo: item.tfClo
+      tfClo: item.tfClo,
+      remark:item.remark
     })
   }
   // 2.6.1 删除
@@ -350,6 +372,7 @@ class DepreciateClassify extends Component {
         const postData = {
           tfComment: values.tfComment,
           tfClo: values.tfClo,
+          remark:values.remark,
           parentStaticId: this.state.topClassInfo.staticId,
           staticId:this.state.topClassInfo.staticId,
         }
@@ -365,6 +388,7 @@ class DepreciateClassify extends Component {
           this.setState({isEdit: false});
           // this.props.form.resetFields();
         }
+        console.log('新增发出请求参数',postData)
         request(url,{
           body:JSON.stringify(postData),
           success: data => {
@@ -463,14 +487,32 @@ class DepreciateClassify extends Component {
     const {selectedKeys , selectedProductRowKeys } = this.state;
     console.log('发出的请求内容',JSON.stringify({type:'02',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}))
     if(selectedProductRowKeys.length>0){
-      request(basicdata.insertAssetsType,{
-        body:querystring.stringify({type:'02',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        success: data => { 
-          this.closeProductModal();
-          this.refs.table.fetch({type:'02',staticId:selectedKeys[0]})
+      confirm({
+        content:"当前资产存在使用年限，继续操作将更新为新的使用年限",
+        onOk:()=>{
+          request(basicdata.insertAssetsType,{//cover 01 覆盖 
+            body:querystring.stringify({type:'02',cover:'01',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            success: data => { 
+              this.closeProductModal();
+              this.refs.table.fetch({type:'02',staticId:selectedKeys[0]})
+            },
+            error: err => {console.log(err)}
+          })
         },
-        error: err => {console.log(err)}
+        onCancel:()=>{
+          //---此处需要增加一个字段 使用以上接口
+          console.log('此处需要增加一个字段 使用以上接口')
+          request(basicdata.insertAssetsType,{//cover 02 不覆盖 
+            body:querystring.stringify({type:'02',cover:'02',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            success: data => { 
+              this.closeProductModal();
+              this.refs.table.fetch({type:'02',staticId:selectedKeys[0]})
+            },
+            error: err => {console.log(err)}
+          })
+        }
       })
     }else{
       message.warn('请选择产品后再添加！')
@@ -646,7 +688,7 @@ class DepreciateClassify extends Component {
                   ref='table'
                   query={query}
                   scroll={{x: '180%'}}
-                  columns={[...columns]}
+                  columns={[...mainCol]}
                   rowKey={'assetsRecordGuid'}
                   showHeader={true}
                   rowSelection={{ onChange: ((selectedRowKeys, selectedRows) => { this.setState({selectedRowKeys, selectedRows}) }) }}
@@ -656,7 +698,7 @@ class DepreciateClassify extends Component {
                 </RemoteTable> : 
                 <Table
                   scroll={{x: '180%'}}
-                  columns={[...columns]}
+                  columns={[...mainCol]}
                   rowKey={'assetsRecordGuid'}
                   style={{marginTop: 10}}
                 />
@@ -687,6 +729,12 @@ class DepreciateClassify extends Component {
                   })(<Input disabled={isEdit} />)}
                 </FormItem>
               </Col>
+              <Col span={24}>
+                <FormItem label={`折旧年限`} {...formItemLayoutModal}>
+                  {getFieldDecorator('remark', {
+                  })(<Input addonAfter='年'/>)}
+                </FormItem>
+              </Col>
             </Row>
           </Form>
         </Modal>
@@ -712,7 +760,7 @@ class DepreciateClassify extends Component {
             ref='tables'
             query={this.state.modalProductQuery}
             scroll={{x: '180%'}}
-            columns={columns}
+            columns={modalCol}
             rowKey={'assetsRecordGuid'}
             showHeader={true}
             rowSelection={{ 
