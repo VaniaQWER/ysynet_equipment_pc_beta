@@ -53,6 +53,7 @@ class ScrapApply extends PureComponent {
       mobile: '', //资产名称/编号
       isLoading: false,
       useDeptGuid: '', // 查询科室
+      selKey:[],//选中的资产数量
     }
     this.changeInput = _.debounce(this.changeInput,300);
   }
@@ -76,9 +77,9 @@ class ScrapApply extends PureComponent {
   }
   submit = e => {
     e.preventDefault();
-    const { postFile, selectedRowKeys , dataSource } = this.state;
-    console.log(dataSource.length);
-    if (!dataSource.length) {
+    const { postFile, selKey , dataSource } = this.state;
+    console.log(selKey.length);
+    if (!selKey.length) {
       return message.error('至少选择一项资产!')
     }
     this.props.form.validateFieldsAndScroll(async (err, values) => {
@@ -86,7 +87,7 @@ class ScrapApply extends PureComponent {
         this.setState({ isLoading: true })
         confirm({
           title: '是否确认报废',
-          content: `请确定是否报废${selectedRowKeys.length}项?`,
+          content: `请确定是否报废${selKey.length}项?`,
           onOk: async () => {
             const postF = [];
             if (postFile) {
@@ -97,9 +98,10 @@ class ScrapApply extends PureComponent {
             }    
             const postData = {
               ...values,
-              assetsGuids: selectedRowKeys,
+              assetsGuids: selKey,
               scrapAccessorys: postF
             }
+            console.log(postData)
             const data = await saveScrap({
               body: querystring.stringify({
                 ...postData
@@ -132,12 +134,13 @@ class ScrapApply extends PureComponent {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { dataSource, visible, selectedRows, selectedRowKeys, productType, postFile,
-      deptOption, isLoading } = this.state;  
+      deptOption, isLoading  } = this.state;  
     // rowSelection object indicates the need for row selection
     const rowSelection = {
       selectedRowKeys: selectedRowKeys,
       onChange: (selectedRowKeys, selectedRows) => {
-        this.setState({ selectedRowKeys })
+        console.log(selectedRowKeys)
+        this.setState({ selectedRowKeys ,selKey:selectedRowKeys  })
       },
       onSelect: (record, selected, rows) => {
         if (selected) {
