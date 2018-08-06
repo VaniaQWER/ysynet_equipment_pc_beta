@@ -165,6 +165,21 @@ export const clearNull = (values) => {
       if(values[item].length===0){
         delete values[item]
       }
+    }else{
+      switch(values[item]){
+        case "":
+          delete values[item]
+          break 
+        case null:
+          delete values[item]
+          break
+        case undefined:
+          delete values[item]
+          break
+        default:
+          break 
+      }
     }
   }
+  return values
 }
