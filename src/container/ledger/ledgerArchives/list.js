@@ -18,13 +18,13 @@ const columns = [
     title: '操作',
     dataIndex: 'RN',
     width: 250,
-    render: (text, record) => 
+    render: (text, record) =>
       <span>
         <Link to={{pathname: `/ledger/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
         <Link className={styles['ml10']}  to={{pathname: `/ledger/lifecycle/${record.assetsRecordGuid}`}}><Icon type="profile" />生命周期</Link>
-        <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+queryString.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a> 
+        <a className={styles['ml10']} target="_blank" href={assets.printEquipmentQrcode+"?"+queryString.stringify({assetsRecordGuid:record.assetsRecordGuid})}>打码</a>
         <Link className={styles['ml10']}  to={{pathname: `/ledger/benefitAnalysis/${record.assetsRecordGuid}`}}><Icon type="profile" />效益分析</Link>
-      </span>  
+      </span>
   },
   {
     title: '资产编号',
@@ -158,7 +158,7 @@ class SearchForm extends Component {
     return (
       <Form  onSubmit={this.handleSearch}>
         <Row>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="资产编码"
@@ -168,7 +168,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="资产名称"
@@ -178,7 +178,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="型号"
@@ -188,7 +188,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6} style={{textAlign:'right',paddingRight:15,paddingTop:5}}> 
+          <Col span={6} style={{textAlign:'right',paddingRight:15,paddingTop:5}}>
               <Button type="primary" htmlType="submit">搜索</Button>
               <Button style={{marginLeft: 30,}} onClick={this.handleReset}>重置</Button>
               <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
@@ -197,7 +197,7 @@ class SearchForm extends Component {
           </Col>
         </Row>
         <Row style={{display: display}}>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="规格"
@@ -207,7 +207,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="管理科室"
@@ -215,7 +215,7 @@ class SearchForm extends Component {
               {getFieldDecorator('manageDeptGuid',{
                 initialValue:""
               })(
-                <Select 
+                <Select
                 showSearch
                 placeholder={'请选择'}
                 optionFilterProp="children"
@@ -231,7 +231,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="使用科室"
@@ -239,7 +239,7 @@ class SearchForm extends Component {
               {getFieldDecorator('useDeptGuid',{
                 initialValue:""
               })(
-                <Select 
+                <Select
                 showSearch
                 placeholder={'请选择'}
                 optionFilterProp="children"
@@ -257,7 +257,7 @@ class SearchForm extends Component {
           </Col>
         </Row>
         <Row style={{display: display}}>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="保管员"
@@ -267,7 +267,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6}>
             <FormItem
               {...formItemLayout}
               label="购置日期"
@@ -561,7 +561,7 @@ class LedgerArchivesList extends Component {
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
-         
+
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10}}>
             <Col span={12}></Col>
@@ -606,8 +606,8 @@ class LedgerArchivesList extends Component {
                 this.setState({tableRecords:data.result.records})
               }
             }
-          /> 
-          <Modal 
+          />
+          <Modal
             title='导入数据'
             width={980}
             visible={this.state.visibleImportModal}
@@ -646,8 +646,8 @@ class LedgerArchivesList extends Component {
                     this.state.importModalType==="01" ?
                     <a href={assets.importModalTemplate} style={{ marginRight: 8 }} target="_blank">资产模板.xls</a>
                     :<a href={assets.accessoriesModalTemplate} style={{ marginRight: 8 }} target="_blank"> 配件模板.xls</a>
-                  } 
-                
+                  }
+
                 </span>
                 <Upload
                   action={assets.importAssets}
@@ -703,7 +703,7 @@ class LedgerArchivesList extends Component {
 
           </Modal>
 
-          
+
         </Content>
     )
   }

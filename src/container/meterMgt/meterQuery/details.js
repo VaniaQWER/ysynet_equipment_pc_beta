@@ -1,8 +1,9 @@
 /*计量查询- 详情*/
 import React , { Component } from 'react';
 import { Layout, Card, Col, Row, message, Upload} from 'antd';
-// import querystring from 'querystring';
-// import request from '../../../utils/request';
+import queryString from 'querystring';
+import request from '../../../utils/request';
+import meterStand from '../../../api/meterStand';
 import assets from '../../../api/assets';
 const { Content } = Layout;
 
@@ -15,29 +16,51 @@ class MeterQueryDetails extends Component{
       name: 'xxx.png',
       status: 'done',
       url: 'http://www.baidu.com/xxx.png',
-    }],
-    baseInfo:{}
+    }]
   }
-  searchAsset=(e)=>{
-    this.setState({SearchKey:e.target.value}) 
-    //在这里发出请求获取资产信息,将回填信息给assets做操作
-    // this.setState({assetsInfo:{ }})
-  }
-  save = () => {
-    this.props.form.validateFields((err,values)=>{
-      if(!err){
-        values.daijianshijian = values.daijianshijian.format('YYYY-MM-DD');
-        values.xiacidaijianshijian = values.xiacidaijianshijian.format('YYYY-MM-DD');
-        values = Object.assign(values,{assetbianma : this.state.SearchKey})
-      }
+  componentDidMount() {
+    const recordInfoGuid = this.props.match.params.id;
+    console.log(recordInfoGuid)
+    request(meterStand.meterRecordInfoList, {
+      body: queryString.stringify({ recordInfoGuid }),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: (data) => {
+        let assetsInfo = data.result[0];
+        switch (assetsInfo.productType) {
+          case "01":
+            assetsInfo.productType = "通用设备";
+            break;
+          case "02":
+            assetsInfo.productType = "电气设备";
+            break;
+          case "03":
+            assetsInfo.productType = "电子产品及通信设备";
+            break;
+          case "04":
+            assetsInfo.productType = "仪器仪表及其他";
+            break;
+          case "05":
+            assetsInfo.productType = "专业设备";
+            break;
+          case "06":
+            assetsInfo.productType = "其他";
+            break;
+          default:
+            assetsInfo.productType = '';
+        }
+        this.setState({ assetsInfo });
+      },
+      error: (err) => console.log(err)
     })
   }
   handleChange = (fileListObj) => {
-    let { fileList } = fileListObj ; 
+    let { fileList } = fileListObj ;
     // 1. Limit the number of uploaded files
     //    Only to show two recent uploaded files, and old ones will be replaced by the new
     fileList = fileList.slice(-2);
-    
+
     for(let i = 0;i<fileList.length;i++){
       switch (fileList[i].type){
         case "application/x-rar-compressed":
@@ -79,11 +102,10 @@ class MeterQueryDetails extends Component{
     this.setState({fileList})
   }
   render(){
-    const { assetsInfo , baseInfo } = this.state;
+    const { assetsInfo } = this.state;
     const props = {
       action: assets.picUploadUrl,
-      fileList:this.state.fileList,
-      onChange: this.handleChange,
+      fileList: assets.accessory,
       multiple: true,
     };
     return(
@@ -98,23 +120,20 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                       {/* <Input style={{width: 200}}  onPressEnter={this.searchAsset}
-                        placeholder={`请输入资产编号`} />*/}
-
-                        {assetsInfo.zichanmingc || '资产编号'}
+                        {assetsInfo.assetsRecord || ''}
                       </div>
                     </div>
                   </div>
-    
+
                 </Col>
-                <Col span={16}>
+                <Col span={8} offset={8}>
                   <div className="ant-row ant-form-item">
                     <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
                       <label>资产名称</label>
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {assetsInfo.zichanmingc || '资产名称'}
+                        {assetsInfo.equipmentName || ''}
                       </div>
                     </div>
                   </div>
@@ -128,7 +147,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {assetsInfo.xinghao || '型号'}
+                        {assetsInfo.fmodel || ''}
                       </div>
                     </div>
                   </div>
@@ -140,7 +159,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                      {assetsInfo.xinghao || '规格'}
+                      {assetsInfo.spec || ''}
                       </div>
                     </div>
                   </div>
@@ -152,7 +171,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                      {assetsInfo.xinghao || '资产类别'}
+                      {assetsInfo.productType || ''}
                       </div>
                     </div>
                   </div>
@@ -166,7 +185,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                      {assetsInfo.xinghao || '使用科室'}
+                      {assetsInfo.useDeptName || ''}
                       </div>
                     </div>
                   </div>
@@ -178,7 +197,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                      {assetsInfo.xinghao || '保管员'}
+                      {assetsInfo.custodian || ''}
                       </div>
                     </div>
                   </div>
@@ -190,21 +209,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                      {assetsInfo.xinghao || '管理科室'}
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={8}>
-                  <div className="ant-row ant-form-item">
-                    <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-                      <label>原值</label>
-                    </div>
-                    <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-                      <div className="ant-form-item-control">
-                      {assetsInfo.xinghao || '原值'}
+                      {assetsInfo.bDeptGuidName || ''}
                       </div>
                     </div>
                   </div>
@@ -222,7 +227,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '检定方式'}
+                        {assetsInfo.type === "00"? "内检" : "外检" || ''}
                       </div>
                     </div>
                   </div>
@@ -234,12 +239,12 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '计量周期'}
+                        {`${assetsInfo.measureCycly}月` || '计量周期'}
                       </div>
                     </div>
                   </div>
                 </Col>
-    
+
                 <Col span={8}>
                   <div className="ant-row ant-form-item">
                     <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
@@ -247,7 +252,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '本次待检日期'}
+                        {assetsInfo.measureDate || ''}
                       </div>
                     </div>
                   </div>
@@ -261,7 +266,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '下次待检日期'}
+                        {assetsInfo.nextMeasureDate || ''}
                       </div>
                     </div>
                   </div>
@@ -273,7 +278,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '证书编号'}
+                        {assetsInfo.certNo || ''}
                       </div>
                     </div>
                   </div>
@@ -285,7 +290,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '检定结果'}
+                        {assetsInfo.results === "00"? "合格" : "不合格" || ''}
                       </div>
                     </div>
                   </div>
@@ -299,7 +304,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '计量费用'}
+                        {assetsInfo.measurePay || ''}
                       </div>
                     </div>
                   </div>
@@ -311,7 +316,7 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                        {baseInfo.zichanmingc || '检定人'}
+                        {assetsInfo.verdictUserName || ''}
                       </div>
                     </div>
                   </div>
@@ -325,8 +330,11 @@ class MeterQueryDetails extends Component{
                     </div>
                     <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                       <div className="ant-form-item-control">
-                          <Upload {...props} fileList={this.state.fileList} withCredentials={true} 
-                          showUploadList={{showRemoveIcon:false}}>
+                          <Upload 
+                            {...props} 
+                            withCredentials={true}
+                            showUploadList={{showRemoveIcon:false}}
+                          >
                           </Upload>
                       </div>
                     </div>
@@ -334,7 +342,7 @@ class MeterQueryDetails extends Component{
                   </Col>
               </Row>
           </Card>
-      </Content>  
+      </Content>
     )
   }
 }

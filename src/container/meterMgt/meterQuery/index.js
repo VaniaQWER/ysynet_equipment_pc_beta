@@ -4,9 +4,8 @@ import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker ,
 import tableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 // import moment from 'moment';
-// import request from '../../../utils/request';
-// import querystring from 'querystring';
-import meterStand from '../../../api/meterStand'
+import request from '../../../utils/request';
+import meterStand from '../../../api/meterStand';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -27,39 +26,58 @@ const formItemLayout = {
 class SearchFormWrapper extends Component {
   state = {
     display: 'none',
-    deptNameData: [],// 转出科室保存数据
-    IntodeptNameData: [],// 转入科室保存数据
-    deptName: '',// 转入转出科室
+    useDeptData: [],   //使用科室保存数据
+    mgtDeptData: [],  //管理科室保存数据
   }
   toggle = () => {
-    const { display, expand } = this.state;
+    const { display } = this.state;
     this.setState({
-      display: display === 'none' ? 'block' : 'none',
-      expand: !expand
+      display: display === 'none' ? 'block' : 'none'
     })
   }
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      const createDate = values.createDate === undefined ? '': values.createDate;
-      if(createDate.length>0) {
-        values.startCreateDate = createDate[0].format('YYYY-MM-DD');
-        values.endCreateDate = createDate[1].format('YYYY-MM-DD');
+      let {detecDate} = values;
+      detecDate = detecDate === undefined ? '' : detecDate;
+      if(detecDate.length>0) {
+        values.startTime = detecDate[0].format('YYYY-MM-DD');
+        values.endTime = detecDate[1].format('YYYY-MM-DD');
+      }else {
+        values.startTime = '';
+        values.endTime = '';
       }
+      delete values.detecDate;
       this.props.query(values);
     });
  }
+  componentDidMount() {
+    request(meterStand.userDeptList, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      success: (data) => {
+        if(data.status) {
+          this.setState({ useDeptData: data.result });
+        }
+      },
+      error: (err) => console.log(err)
+    });
+    request(meterStand.mgtDeptList, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      success: (data) => {
+        if(data.status) {
+          this.setState({ mgtDeptData: data.result });
+        }
+      },
+      error: (err) => console.log(err)
+    });
+  }
   //重置
   handleReset = () => {
     this.props.form.resetFields();
-  }
-  // 转出科室
-  handleChangeRollOut = (deptName) => {
-    this.setState({ deptName });
-  }
-  // 转入科室
-  handleChangeInto = (deptName) => {
-    this.setState({ deptName });
   }
   render() {
     const { display } = this.state;
@@ -70,69 +88,82 @@ class SearchFormWrapper extends Component {
         <Row>
           <Col span={8}>
             <FormItem label={`资产名称`} {...formItemLayout}>
-              {getFieldDecorator('equipmentStandardName', {})(
+              {getFieldDecorator('assetName', {})(
                 <Input placeholder="请输入资产名称" style={{width: 200}} />
               )}
             </FormItem>
           </Col>
-          <Col span={8} >
-            <FormItem label={`使用科室`} {...formItemLayout}>
-              {getFieldDecorator('outDeptguid', {})(
+          <Col span={8}>
+            <FormItem label={`资产编号`} {...formItemLayout}>
+              {getFieldDecorator('assetsRecord', {})(
+                <Input placeholder="请输入资产编号" style={{width: 200}} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}  style={{display: display}} >
+            <FormItem label={`管理科室`} {...formItemLayout}>
+              {getFieldDecorator('bDeptId', {})(
               <Select
                 showSearch
-                onSearch={this.handleChangeRollOut}
+                onSearch={this.handleChangeMagtDept}
                 defaultActiveFirstOption={false}
                 showArrow={false}
                 allowClear={true}
                 filterOption={false}
                 style={{width: 200}}
-                onSelect={(val,option)=>{this.setState({ outDeptguid:val, outDeptname: option.props.children })}}
-                placeholder={`请搜索选择转出科室`}
+                placeholder={`请搜索选择管理科室`}
               >
-                {this.state.deptNameData.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
+                {this.state.mgtDeptData.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
               </Select>
               )}
             </FormItem>
           </Col>
-          
-          <Col span={8} style={{ textAlign: 'right', marginTop: 4}} >
-            <Button type="primary" htmlType="submit">查询</Button>
-            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
-            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
-              {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
-            </a>
+          <Col span={8}  style={{display: display}} >
+            <FormItem label={`使用科室`} {...formItemLayout}>
+              {getFieldDecorator('useDeptId', {})(
+              <Select
+                showSearch
+                onSearch={this.handleChangeUseDept}
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                allowClear={true}
+                filterOption={false}
+                style={{width: 200}}
+                placeholder={`请搜索选择转出科室`}
+              >
+                {this.state.useDeptData.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
+              </Select>
+              )}
+            </FormItem>
           </Col>
-        </Row>
-        <Row>
           <Col span={8} style={{display: display}}>
-            <FormItem label={`检测日期`} {...formItemLayout}>
-              {getFieldDecorator('createDate', {})(
+            <FormItem label={`检定日期`} {...formItemLayout}>
+              {getFieldDecorator('detecDate', {})(
                 <RangePicker style={{width: 200}} />
               )}
             </FormItem>
           </Col>
           <Col span={8} style={{display: display}}>
-            <FormItem label={`计量检测编号`} {...formItemLayout}>
-              {getFieldDecorator('jiliangjiancebainhao', {})(
-                <Input placeholder="请输入计量检测编号" style={{width: 200}} />
-              )}
-            </FormItem>
-          </Col>
-          <Col span={8} style={{display: display}}>
             <FormItem label={`检测结果`} {...formItemLayout}>
-              {getFieldDecorator('inDeptguid', {
+              {getFieldDecorator('results', {
                 initialValue:""
               })(
               <Select style={{width: 200}}
-              onSelect={(val, option) => this.setState({inDeptguid: val, inDeptName: option.props.children})}
               >
-                <Option value="01" key="01">合格</Option>
-                <Option value="00" key="00">不合格</Option>
+                <Option value="" key="">全部</Option>
+                <Option value="00" key="00">合格</Option>
+                <Option value="01" key="01">不合格</Option>
               </Select>
               )}
             </FormItem>
           </Col>
-          
+          <Col span={8} style={{ textAlign: 'right', marginTop: 4, float: 'right'}} >
+            <Button type="primary" htmlType="submit">查询</Button>
+            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              {this.state.display === 'block' ? '收起' : '展开'} <Icon type={this.state.display === 'block' ? 'up' : 'down'} />
+            </a>
+          </Col>
         </Row>
       </Form>
     )
@@ -148,79 +179,69 @@ class MeterQuery extends Component{
     selectedRows:[],//勾选数据的具体信息
   }
 
+  queryHandle = (query) => {
+    for (const key in query) {
+      query[key] = query[key] === undefined? '' : query[key];
+    };
+    this.setState({ query }, ()=>{ this.refs.table.fetch() });
+  }
+
   render(){
     const columns = [
       {
-        title:'序号',
-        dataIndex: 'index', 
-        width:50,
-        render: (text, record, index) => {
-          return `${index+1}`
-        }
-      },
-      {
-        title: '操作',
-        dataIndex: 'transferGuid',
-        width:50,
-        render: (text, record, index) => {
-            return (
-              <span><Link to={{pathname:`/meterMgt/meterQuery/details/${record.assetsRecordGuid}`}}>详情</Link></span>
-            )
-        }
-      },
-      {
         title: '计量检测编号',
-        width:200,
-        dataIndex: 'assetsRecordGuid',
+        width: 200,
+        dataIndex: 'recordNo',
+        render: (text, record) => <Link to={{ pathname: `/meterMgt/meterQuery/details/${record.recordInfoGuid}` }}>{text}</Link>
       },
       {
         title: '资产名称',
-        dataIndex: 'zichanmingc',
-        width:120,
+        dataIndex: 'equipmentName',
+        width: 120,
+      },
+      {
+        title: '资产编号',
+        dataIndex: 'assetsRecord',
+        width: 200
       },
       {
         title: '型号',
-        dataIndex: 'xinghao',
-        width:120,
+        dataIndex: 'fmodel',
+        width: 120,
       },
       {
         title: '规格',
-        dataIndex: 'desp',
-        width:120,
+        dataIndex: 'spec',
+        width: 120,
       },
       {
         title: '使用科室',
-        dataIndex: 'outDeptName',
-        width:120,
+        dataIndex: 'useDeptName',
+        width: 120,
       },
       {
         title: '检测日期',
-        dataIndex: 'createUserName',
-        width:120,
+        dataIndex: 'measureDate',
+        width: 200,
       },
       {
         title: '下次待检日期',
-        dataIndex: 'createDate',
-        width:120,
+        dataIndex: 'nextMeasureDate',
+        width: 200,
       },
       {
-        // --状态 00合格 03不合格 07已关闭 
+        // --状态 00合格 01不合格
         title: '检测结果',
-        dataIndex: 'fstate',
+        dataIndex: 'results',
         width:120,
         render: (text, record, index) => {
-          if (record.fstate === "00") {
+          if (record.results === "00") {
             return <span>合格</span>;
-          } else if (record.fstate === "03") {
+          } else if (record.fstate === "01") {
             return <span>不合格</span>;
           }
         }
-      },{
-        title: '计量编号',
-        width:200,
-        dataIndex: 'jiliangbainhaoa',
-      },
-      
+      }
     ]
     const { query } = this.state;
     return(
@@ -233,10 +254,12 @@ class MeterQuery extends Component{
             query={query}
             showHeader={true}
             ref='table'
-            url={meterStand.planList}
+            url={meterStand.meterRecordInfoList}
+            pagination={{
+              showTotal: (total, range) => `总共${total}个项目`
+            }}
             scroll={{x: '120%', y : document.body.clientHeight - 110 }}
             columns={columns}
-            size="small"
             rowKey={'RN'}
             style={{marginTop: 10}}
           />

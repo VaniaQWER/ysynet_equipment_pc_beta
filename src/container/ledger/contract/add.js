@@ -302,7 +302,9 @@ class AddContract extends Component {
             </Row>
             <Row>
               <FormItem label='附件' {...formItemLayout}>
-                <PicWall file={data => this.setState({postFile: data})} fileList={postFile}/>
+                <PicWall file={data => {
+                  this.setState({postFile: data})
+                }} fileList={postFile}/>
               </FormItem>
             </Row>
         </Form>

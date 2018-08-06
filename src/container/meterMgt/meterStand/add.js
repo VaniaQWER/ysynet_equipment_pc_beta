@@ -1,10 +1,15 @@
 /*计量台账- 添加*/
 import React , { Component } from 'react';
-import { Layout, Card, Button, Affix, Form, Col, Row, Input,  DatePicker, Radio } from 'antd';
+import { Layout, Card, Button, Affix, Form, Col, Row, Input,  DatePicker, Radio, Modal, Select, Icon, message } from 'antd';
 import { Link } from 'react-router-dom';
-// import querystring from 'querystring';
-// import request from '../../../utils/request';
+import meterStand from '../../../api/meterStand';
+import tableGrid from '../../../component/tableGrid';           
+import queryString from 'querystring';
+import {validAmount, validDay} from '../../../utils/tools';     //验证方法
+import request from '../../../utils/request';
+const Option = Select.Option;
 const { Content } = Layout;
+const { RemoteTable } = tableGrid;
 const FormItem = Form.Item;
 const formItemLayout = {
   labelCol: {
@@ -19,26 +24,159 @@ const formItemLayout = {
 
 class AddMeterStand extends Component{
   state ={
-    SearchKey:'',//资产编号搜索
-    assetsInfo:{}
+    selectUseDeptList: [],    //使用科室列表
+    selectMgtDeptList: [],    //管理科室列表
+    showAssetModel: false,
+    assetsInfo: {},
+    query: {}
   }
-  searchAsset = (e) => {
-    this.setState({SearchKey:e.target.value}) 
-    //在这里发出请求获取资产信息,将回填信息给assets做操作
-    // this.setState({assetsInfo:{ }})
+
+  Setquery = (query) => {
+    for (const key in query) {
+      query[key] = query[key] === undefined? '' : query[key];
+    };
+    this.setState({ query }, () => { this.refs.selectTab.fetch() });
   }
-  save = () => {
+
+  
+  showAssetModel = () => {    
+    this.setState({showAssetModel: true});
+    request(meterStand.selectAssetsList,{   //添加资产表格
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: (data) => {
+        this.setState({ selectAssetData: data.result.rows });
+      },
+      error: (err) => console.log(err)
+    });
+    request(meterStand.selectUseDeptList,{    //使用科室列表
+      body: queryString.stringify({deptType: "00"}),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: (data) => {
+        let selectUseDeptList = [{text: "全部", value: ""}, ...data.result]
+        this.setState({ selectUseDeptList });
+      },
+      error: (err) => console.log(err)
+    });
+    request(meterStand.mgtDeptList,{        //管理科室列表
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: (data) => {
+        let selectMgtDeptList = [{text: "全部", value: ""}, ...data.result]
+        this.setState({ selectMgtDeptList });
+      },
+      error: (err) => console.log(err)
+    });
+  }
+  
+  handleCancel = (e) => {
+    this.setState({showAssetModel: false});
+  }
+  save = () => {    //保存添加资产
+    let {assetsInfo} = this.state;
+    if(!assetsInfo.assetsRecordGuid){
+      message.warning('请选择一条资产');
+      return;
+    }
     this.props.form.validateFields((err,values)=>{
       if(!err){
-        values.daijianshijian = values.daijianshijian.format('YYYY-MM-DD')
-        console.log(this.state.SearchKey);//此处为资产编码
-        values = Object.assign(values,{assetbianma : this.state.SearchKey})
+        values.nextMeasureDate = values.nextMeasureDate.format('YYYY-MM-DD')
+
+        values.remindDays = values.remindDays === undefined? '' : values.remindDays;
+
+        values = {...values, assetsRecordGuid: assetsInfo.assetsRecordGuid}
+        request(meterStand.addAssetMeter, {
+          body: queryString.stringify(values),
+          headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: (data) => {
+            if(data.status) {
+              let {history} = this.props;
+              history.push('/meterMgt/meterStand');
+            }
+          },
+          error: (err) => console.log(err)
+        })
       }
     })
   }
+  setAssetInfo = (assetsInfo) => {
+    this.setState({ 
+      assetsInfo,
+      showAssetModel: false
+     });
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { assetsInfo } = this.state;
+    const { assetsInfo, query, selectUseDeptList, selectMgtDeptList } = this.state;
+    let {productType} = assetsInfo;   //资产分类
+    switch (productType) {
+      case "01":
+        productType = "通用设备";
+        break;
+      case "02":
+        productType = "电气设备";
+        break;
+      case "03":
+        productType = "电子产品及通信设备";
+        break;  
+      case "04":
+        productType = "仪器仪表及其他";
+        break;
+      case "05":
+        productType = "专业设备";
+        break;
+      case "06":
+        productType = "其他";
+        break;
+      default: 
+        productType = "其他";
+    }
+    const columns = [
+      {
+        title: '操作',
+        dataIndex: 'handle',
+        width: 50,
+        render: (text, record) => {
+          return <span><a onClick={ ()=>{ this.setAssetInfo(record) } }>添加</a></span>
+        }
+      },
+      {
+        title: '资产编号',
+        dataIndex: 'assetsRecord',
+        width: 120
+      },
+      {
+        title: '资产名称',
+        dataIndex: 'equipmentName',
+        width:120,
+      },
+      {
+        title: '型号',
+        dataIndex: 'fmodel',
+        width:120,
+      },
+      {
+        title: '规格',
+        dataIndex: 'spec',
+        width:120,
+      },
+      {
+        title: '管理科室',
+        dataIndex: 'bDeptGuidName',
+        width: 120
+      },
+      {
+        title: '使用科室',
+        dataIndex: 'useDeptName',
+        width: 120
+      }
+    ]
     return(
       <Content className='ysynet-content'>
       {/* 保存申请信息按钮部分 */}
@@ -51,6 +189,42 @@ class AddMeterStand extends Component{
       {/* 资产信息部分 */}
       <Card title="资产信息" bordered={false} className="min_card">
           <Row>
+          <Col span={8} >
+              <div className="ant-row ant-form-item">
+                <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-11">
+                  <Button type="primary" onClick={this.showAssetModel}>选择资产</Button>
+                  <Modal
+                    width={1000}
+                    style={{ top: 10 }}
+                    title="添加资产"
+                    visible={this.state.showAssetModel}
+                    onCancel={this.handleCancel}
+                    footer={null}
+                  >
+                    <Row>
+                      <SelectAssetFormWrapper 
+                        Setquery={ this.Setquery }
+                        selectUseDeptList = {selectUseDeptList}
+                        selectMgtDeptList = {selectMgtDeptList}
+                      />
+                    </Row>
+                    <RemoteTable
+                      ref="selectTab"
+                      url={meterStand.selectAssetsList}
+                      columns={ columns }
+                      showHeader={ true }
+                      bordered={ true }
+                      pagination={{
+                        showTotal: (total) => `总共${total}个项目`
+                      }}
+                      rowKey={'RN'}
+                      query={query}
+                      size="small"
+                    />
+                  </Modal>
+                </div>
+              </div>
+            </Col>
             <Col span={8}>
               <div className="ant-row ant-form-item">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
@@ -58,21 +232,19 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                    <Input style={{width: 200}}  onPressEnter={this.searchAsset}
-                    placeholder={`请输入资产编号`} />
+                  {assetsInfo.assetsRecord || ''}
                   </div>
                 </div>
               </div>
-
             </Col>
-            <Col span={16}>
+            <Col span={8}>
               <div className="ant-row ant-form-item">
                 <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
                   <label>资产名称</label>
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                    {assetsInfo.zichanmingc || '资产名称'}
+                    {assetsInfo.equipmentName || ''}
                   </div>
                 </div>
               </div>
@@ -86,7 +258,7 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                    {assetsInfo.xinghao || '型号'}
+                    {assetsInfo.fmodel || ''}
                   </div>
                 </div>
               </div>
@@ -98,7 +270,7 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                  {assetsInfo.xinghao || '规格'}
+                  {assetsInfo.spec || ''}
                   </div>
                 </div>
               </div>
@@ -110,7 +282,7 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                  {assetsInfo.xinghao || '资产类别'}
+                  {productType || ''}
                   </div>
                 </div>
               </div>
@@ -125,7 +297,7 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                  {assetsInfo.xinghao || '使用科室'}
+                  {assetsInfo.useDeptName || ''}
                   </div>
                 </div>
               </div>
@@ -137,7 +309,7 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                  {assetsInfo.xinghao || '保管员'}
+                  {assetsInfo.custodian || ''}
                   </div>
                 </div>
               </div>
@@ -149,7 +321,19 @@ class AddMeterStand extends Component{
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
                   <div className="ant-form-item-control">
-                  {assetsInfo.xinghao || '管理科室'}
+                  {assetsInfo.bDeptGuidName || ''}
+                  </div>
+                </div>
+              </div>
+            </Col>
+            <Col span={8}>
+              <div className="ant-row ant-form-item">
+                <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
+                  <label>原值</label>
+                </div>
+                <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
+                  <div className="ant-form-item-control">
+                  {assetsInfo.originalValue || ''}
                   </div>
                 </div>
               </div>
@@ -162,28 +346,31 @@ class AddMeterStand extends Component{
           <Row>
             <Col span={8}>
               <FormItem  {...formItemLayout} label='检定方式'>
-                {getFieldDecorator('jiandingfangshi', {
-                  initialValue:"01"
+                {getFieldDecorator('type', {
+                  initialValue:"00"
                 })(
                   <Radio.Group>
-                    <Radio value="01">内检</Radio>
+                    <Radio value="00">内检</Radio>
                   </Radio.Group>
                 )}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem {...formItemLayout} label='计量周期'>
-                {getFieldDecorator('password', {
-                  rules: [{ required: true, message: '请填写计量周期!' }],
+                {getFieldDecorator('measureCycly', {
+                  rules: [
+                    { required: true, message: '请填写计量周期!' },
+                    { validator: validAmount }
+                  ],
                 })(
-                  <Input addonAfter='月' style={{width:200}}/>
+                  <Input placeholder="请输入计量周期" addonAfter='月' style={{width:200}}/>
                 )}
               </FormItem>
             </Col>
 
             <Col span={8}>
               <FormItem {...formItemLayout} label='下次待检日期'>
-              {getFieldDecorator('daijianshijian',{
+              {getFieldDecorator('nextMeasureDate',{
                 initialValue:null,
                 rules:[{
                   required:true,message:"请选择下次待检日期!"
@@ -197,8 +384,12 @@ class AddMeterStand extends Component{
           <Row>
             <Col span={8}>
               <FormItem {...formItemLayout} label='提前提醒天数'>
-                {getFieldDecorator('tiqiantixingtianshu', )(
-                  <Input addonAfter='天' style={{width:200}}/>
+                {getFieldDecorator('remindDays', {
+                  reles: [{
+                    validator: validDay 
+                  }]
+                })(
+                  <Input placeholder="请输入提醒天数" addonAfter='天' style={{width:200}}/>
                 )}
               </FormItem>
             </Col>
@@ -209,5 +400,109 @@ class AddMeterStand extends Component{
     )
   }
 }
+
+class SelectAssetForm extends Component{
+  state = {
+    display: 'none'
+  }
+  toggle = () => {
+    const { display } = this.state;
+    this.setState({
+      display: display === 'none' ? 'block' : 'none',
+    })
+  }
+  handleSearch = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      this.props.Setquery(values);
+    });
+ }
+  //重置
+  handleReset = () => {
+    this.props.form.resetFields();
+  }
+  render() {
+    const { display } = this.state;
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form onSubmit={this.handleSearch}>
+        <Row>
+          <Col span={8}>
+            <FormItem label={`资产名称`} {...formItemLayout}>
+              {getFieldDecorator('assetName', {})(
+                <Input placeholder="请输入资产名称" style={{width: 200}} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem label={`资产编号`} {...formItemLayout}>
+              {getFieldDecorator('assetsRecord', {})(
+                <Input placeholder="请输入资产编号" style={{width: 200}} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}  style={{display: display}} >
+            <FormItem label={`型号`} {...formItemLayout}>
+              {getFieldDecorator('fmodel', {})(
+                <Input placeholder="请输入型号" style={{width: 200}} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}  style={{display: display}} >
+            <FormItem label={`规格`} {...formItemLayout}>
+              {getFieldDecorator('spec', {})(
+                <Input placeholder="请输入规格" style={{width: 200}} />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}  style={{display: display}} >
+            <FormItem label={`使用科室`} {...formItemLayout}>
+              {getFieldDecorator('useDeptGuid', {})(
+              <Select
+                showSearch
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                allowClear={true}
+                filterOption={false}
+                style={{width: 200}}
+                placeholder={`请搜索选择使用科室`}
+              >
+                {this.props.selectUseDeptList.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
+              </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}  style={{display: display}} >
+            <FormItem label={`管理科室`} {...formItemLayout}>
+              {getFieldDecorator('manageDeptGuid', {})(
+              <Select
+                showSearch
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                allowClear={true}
+                filterOption={false}
+                style={{width: 200}}
+                placeholder={`请搜索选择管理科室`}
+              >
+                {this.props.selectMgtDeptList.map( d => <Option value={d.value} key={d.value}>{d.text}</Option> )}
+              </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8} style={{ textAlign: 'right', marginBottom: 10, float: 'right'}} >
+            <Button type="primary" htmlType="submit">查询</Button>
+            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              {this.state.display === 'block'  ? '收起' : '展开'} <Icon type={this.state.display === 'block' ? 'up' : 'down'} />
+            </a>
+          </Col>
+        </Row>
+      </Form>
+    )
+  }
+}
+
+const SelectAssetFormWrapper = Form.create()(SelectAssetForm);
+
 
 export default Form.create()(AddMeterStand) ; 
