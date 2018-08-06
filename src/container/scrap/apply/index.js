@@ -64,15 +64,21 @@ class ScrapApply extends PureComponent {
       })
     }
   }
+  //弹出层-提交
   handleOk = () => {
     const { selectedRows } = this.state;
-    this.setState({ dataSource: selectedRows,selectedRowKeys:[], visible: false ,mobile:'',productType:''})
-    this.refs.table.fetch({})
+    if(selectedRows && selectedRows.length){
+      this.setState({ dataSource: selectedRows,selectedRowKeys:[], visible: false ,mobile:'',productType:''})
+      this.refs.table.fetch({})
+    }else{
+       message.error('至少选择一项资产!')
+    }
   }
   submit = e => {
     e.preventDefault();
-    const { postFile, selectedRowKeys } = this.state;
-    if (!selectedRowKeys.length) {
+    const { postFile, selectedRowKeys , dataSource } = this.state;
+    console.log(dataSource.length);
+    if (!dataSource.length) {
       return message.error('至少选择一项资产!')
     }
     this.props.form.validateFieldsAndScroll(async (err, values) => {
@@ -264,50 +270,50 @@ class ScrapApply extends PureComponent {
           style={{top: 20}}
           onCancel={() => this.closeModal()}
         >
-        <Row>
-          <Col span={8}>
-            选择分类：     
-            <Select style={{width: 300}} value={productType} onChange={val => this.setState({productType: val})}>
-              <Option value="">全部分类</Option>
-              <Option value="01">通用设备</Option>
-              <Option value="02">电气设备</Option>
-              <Option value="03">电子产品及通信设备</Option>
-              <Option value="04">仪器仪表及其他</Option>
-              <Option value="05">专业设备</Option>
-              <Option value="06">其他</Option>
-            </Select>
-          </Col>
-          <Col span={8}>
-            <Search placeholder="输入资产编号/名称" value={this.state.mobile}  enterButton="查询"  
-            
-            onChange={(e)=>this.changeInput(e.target.value)}
-            onSearch={
-              val => {
-                this.setState({ mobile: val })
-                this.refs.table.fetch({
-                  productType: productType,
-                  mobile: val,
-                  useDeptGuid: this.state.useDeptGuid
-                })
-              }
-            }/>     
-          </Col>
-          <Col span={8} style={{textAlign: 'right'}}>
-            <Button type='primary' onClick={this.handleOk}>新增</Button>
-          </Col>
-        </Row>
-        <RemoteTable
-          query={{useDeptGuid: this.state.useDeptGuid}}
-          ref='table'
-          url={assets.selectAssetsList}
-          columns={columns}
-          showHeader={true}
-          rowKey={'assetsRecordGuid'}
-          style={{marginTop: 10}}
-          size="small"
-          scroll={{x: '100%'}}
-          rowSelection={rowSelection}
-        /> 
+          <Row>
+            <Col span={8}>
+              选择分类：     
+              <Select style={{width: 300}} value={productType} onChange={val => this.setState({productType: val})}>
+                <Option value="">全部分类</Option>
+                <Option value="01">通用设备</Option>
+                <Option value="02">电气设备</Option>
+                <Option value="03">电子产品及通信设备</Option>
+                <Option value="04">仪器仪表及其他</Option>
+                <Option value="05">专业设备</Option>
+                <Option value="06">其他</Option>
+              </Select>
+            </Col>
+            <Col span={8}>
+              <Search placeholder="输入资产编号/名称" value={this.state.mobile}  enterButton="查询"  
+              
+              onChange={(e)=>this.changeInput(e.target.value)}
+              onSearch={
+                val => {
+                  this.setState({ mobile: val })
+                  this.refs.table.fetch({
+                    productType: productType,
+                    mobile: val,
+                    useDeptGuid: this.state.useDeptGuid
+                  })
+                }
+              }/>     
+            </Col>
+            <Col span={8} style={{textAlign: 'right'}}>
+              <Button type='primary' onClick={this.handleOk}>新增</Button>
+            </Col>
+          </Row>
+          <RemoteTable
+            query={{useDeptGuid: this.state.useDeptGuid}}
+            ref='table'
+            url={assets.selectAssetsList}
+            columns={columns}
+            showHeader={true}
+            rowKey={'assetsRecordGuid'}
+            style={{marginTop: 10}}
+            size="small"
+            scroll={{x: '100%'}}
+            rowSelection={rowSelection}
+          /> 
         </Modal>
       </Content>  
     )
