@@ -9,7 +9,7 @@ class RemoteTable extends Component {
     this.defaultPageSize = window.screen.height >= 1080 ? 20 : 10
     this.state = {
       data: [],
-      pagination: {},
+      pagination:{},
       loading: false,
       searchParams: {}
     }
@@ -38,7 +38,7 @@ class RemoteTable extends Component {
         pagesize: pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || this.defaultPageSize ),
         ...params,
         ...catchData
-      })  
+      }) 
       request(url,{
         body,
         headers:{
@@ -105,8 +105,7 @@ class RemoteTable extends Component {
   }
   render () {
     const { columns, rowKey, rowClassName, 
-            rowSelection, scroll, footer,showHeader,title } = this.props;   
-
+            rowSelection, scroll, footer,showHeader,title, pagination } = this.props;   
     const _props = {
         style:this.props.style,
         columns:columns || null,
@@ -114,7 +113,7 @@ class RemoteTable extends Component {
         bordered:true,
         size:this.props.size || 'normal',
         dataSource:this.state.data,
-        pagination:this.state.pagination,
+        pagination: {...this.state.pagination, ...pagination},
         loading:this.state.loading,
         onChange:this.handleTableChange,
         rowClassName:rowClassName,

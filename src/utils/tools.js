@@ -134,7 +134,7 @@ export const validMoney = (rule, value, callback) => {
 
 export const validAmount = (rule, value, callback) => {
   let num = Number(value);
-  if (/^\d+$/.test(num)) {
+  if (/^\d+$/.test(num) && num !== 0) {
     if (num > 99999999) {
       callback(new Error('输入数值过大, 不能超过100000000'));
     }else{
@@ -145,27 +145,17 @@ export const validAmount = (rule, value, callback) => {
   }
 }
 
-export const clearNull = (values) => {
-  for (let item in values){
-    if(Array.isArray(values[item])){
-      if(values[item].length===0){
-        delete values[item]
-      }
+export const validDay = (rule, value, callback) => {
+  let num = Number(value);
+  if (/^\d+$/.test(num) && num !== 0) {
+    if (num > 99999999) {
+      callback(new Error('输入数值过大, 不能超过100000000'));
     }else{
-      switch(values[item]){
-        case "":
-          delete values[item]
-          break 
-        case null:
-          delete values[item]
-          break
-        case undefined:
-          delete values[item]
-          break
-        default:
-          break 
-      }
+      callback();
     }
+  } else if(value === '' || value === undefined || num !== 0) {
+    callback();
+  } else {
+    callback(new Error('请输入非0正数！'));
   }
-  return values
 }
