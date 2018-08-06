@@ -77,7 +77,7 @@ class ScrapApply extends PureComponent {
   }
   submit = e => {
     e.preventDefault();
-    const { postFile, selKey , dataSource } = this.state;
+    const { postFile, selKey } = this.state;
     console.log(selKey.length);
     if (!selKey.length) {
       return message.error('至少选择一项资产!')
