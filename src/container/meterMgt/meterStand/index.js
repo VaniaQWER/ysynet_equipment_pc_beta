@@ -39,19 +39,18 @@ class SearchFormWrapper extends Component {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: (data) => {
-        let useDeptData = [{ text: "全部", value: "" }, ...data.result];
+        let useDeptData = [{text: "全部", value: ""}, ...data.result];
         this.setState({ useDeptData });
       },
       error: (err) => console.log(err)
     };
-    request(meterStand.userDeptList, useOptions);
+    request(meterStand.selectUseDeptList, useOptions);
     let mgtOptions = {
-      body: queryString.stringify({deptType: "01"}),
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: (data) => {
-        let mgtDeptData = [{ text: "全部", value: "" }, ...data.result];
+        let mgtDeptData = [{text: "全部", value: ""}, ...data.result];
         this.setState({ mgtDeptData });
       },
       error: (err) => console.log(err)

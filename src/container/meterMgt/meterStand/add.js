@@ -70,7 +70,6 @@ class AddMeterStand extends Component{
 
 
     request(meterStand.mgtDeptList,{        //管理科室列表
-      body: queryString.stringify({deptType: "01"}),
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
