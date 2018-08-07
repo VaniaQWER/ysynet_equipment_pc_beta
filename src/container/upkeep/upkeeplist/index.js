@@ -228,7 +228,7 @@ class SearchFormWrapper extends React.Component {
               label="保养开始时间"
             >
               {getFieldDecorator('UpkeepTime')(
-                <RangePicker />
+                <RangePicker allowClear={false}/>
               )}
             </FormItem>
           </Col>
@@ -238,7 +238,7 @@ class SearchFormWrapper extends React.Component {
               label="保养结束时间"
             >
               {getFieldDecorator('UpkeepEndTime')(
-                <RangePicker />
+                <RangePicker allowClear={false}/>
               )}
             </FormItem>
           </Col>
@@ -248,7 +248,7 @@ class SearchFormWrapper extends React.Component {
               label="本次计划保养时间"
             >
               {getFieldDecorator('PlanTime')(
-                <RangePicker />
+                <RangePicker allowClear={false}/>
               )}
             </FormItem>
           </Col>

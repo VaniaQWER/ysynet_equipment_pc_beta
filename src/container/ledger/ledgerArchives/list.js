@@ -8,6 +8,7 @@ import { ledgerData,productTypeData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import moment from 'moment';
+const Confirm = Modal.confirm;
 const RangePicker = DatePicker.RangePicker;
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -521,8 +522,18 @@ class LedgerArchivesList extends Component {
   }
 
   sendPrintAjax = (json) => {
+    Confirm({
+      title:'您是否需要打印资产配件的标签?',
+      content:'选择是将打印附件标签，你还要继续吗?',
+      onOk:()=>{
+        json.extendBoolean='yes';
+        window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(json))
+      },
+      onCancel:()=>{
+        window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(json))
+      }
+    })
     // console.log('发出的数据内容',JSON.stringify(json))
-    window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(json))
     this.setState({selectedRowKeys:[]})
   }
   //导出资产

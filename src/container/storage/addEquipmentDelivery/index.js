@@ -453,20 +453,6 @@ class AddEquimentDelivery extends Component{
       },
       {
         title:"型号",
-        dataIndex: 'spec',
-        width:150,
-        render: (text,record,index) => {
-          return(
-          record.editState ==="01" ? text :
-             <span>
-              <i style={styles.redColor}>*</i>
-              <Input value={text}  onChange={(e)=>this.changeTable(e,record,index,'spec')} style={styles.fixedWidth}/>
-             </span> 
-          )
-        } 
-      },
-      {
-        title:"规格",
         dataIndex: 'fmodel',
         width:150,
         render: (text,record,index) => {
@@ -475,6 +461,20 @@ class AddEquimentDelivery extends Component{
              <span>
               <i style={styles.redColor}>*</i>
               <Input value={text}  onChange={(e)=>this.changeTable(e,record,index,'fmodel')} style={styles.fixedWidth}/>
+             </span> 
+          )
+        } 
+      },
+      {
+        title:"规格",
+        dataIndex: 'spec',
+        width:150,
+        render: (text,record,index) => {
+          return(
+          record.editState ==="01" ? text :
+             <span>
+              <i style={styles.redColor}>*</i>
+              <Input value={text}  onChange={(e)=>this.changeTable(e,record,index,'spec')} style={styles.fixedWidth}/>
              </span> 
           )
         } 

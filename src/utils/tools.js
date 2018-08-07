@@ -183,3 +183,35 @@ export const clearNull = (values) => {
   }
   return values
 }
+
+/*允许4位小数点以及正整数
+rules:[{validator:limitNum,max:12,message:'请输入0-12正整数'}]
+*/
+export const limitNum = (rule, value, callback,source,options) => {
+  let num = Number(value)
+  if (!num || /^\d+$/.test(num) ||  /(^\d+\.\d{1}$)/.test(num) || /(^\d+\.\d{2}$)/.test(num)) {
+    if (num > rule.max) {
+      callback(new Error(rule.message));
+    }else{
+      callback();
+    }
+  } else {
+      callback(new Error('请输入非0正数,最多保留两位小数！'));
+  }
+}
+
+/*验证月份0-12正整数
+rules:[{validator:validMonth,max:12,message:'请输入0-12正整数'}]
+*/
+export const validMonth = (rule, value, callback,source,options) => {
+  let num = Number(value)
+  if (!num || /^\d+$/.test(num)) {
+    if (num > rule.max) {
+      callback(new Error(rule.message));
+    }else{
+      callback();
+    }
+  } else {
+      callback(new Error('请输入非0正数！'));
+  }
+}

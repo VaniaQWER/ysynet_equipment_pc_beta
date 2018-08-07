@@ -1,6 +1,6 @@
 /**折旧计提--列表*/
 import React from 'react';
-import { message , Row, Col, Layout ,Button ,DatePicker , Modal ,Spin} from 'antd';
+import { message , Row, Col, Layout ,Button ,DatePicker , Modal ,Spin , Select , Alert, Form } from 'antd';
 import querystring from 'querystring';
 import TableGrid from '../../../component/tableGrid';
 import devalue from '../../../api/devalue';
@@ -8,10 +8,12 @@ import request from '../../../utils/request';
 import { depreciationState ,depreciationStateSel} from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
+import moment from 'moment';
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 const { RangePicker } = DatePicker;
-
+const { Option } = Select;  
+const FormItem = Form.Item;
 const sortTime = (a,b,key) =>{
   if(a[key] && b[key]){
     return timeToStamp(a[key]) - timeToStamp(b[key])
@@ -19,34 +21,82 @@ const sortTime = (a,b,key) =>{
 		return false
 	}
 }
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 6 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 18 },
+  },
+};
 
 class WithDraw extends React.Component{
 
     state = {
 				query:{},
-				loading:false
+        loading:false,
+        selOptions:[],//管理科室下拉框
     }
 
+    componentDidMount (){
+      //当前登陆用户的管理科室
+      request(devalue.queryManagerDeptListByUserId,{
+        body:querystring.stringify({}),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        success: data => { 
+          if(data.status){
+            this.setState({
+              selOptions:data.result
+            })
+            this.refs.table.fetch({bDeptId:data.result[0].value})
+          }
+        },
+        error: err => {console.log(err)}
+      })
+    }
+
+    //搜索表单 - 查询 
     queryHandler = (query) => {
-      this.refs.table.fetch(this.state.query);
+      let value = this.props.form.getFieldsValue();
+      console.log(value)
+      if(value.createDate){
+        value.startCreateDate=moment(value.createDate[0]).format('YYYY-MM');
+        value.endCreateDate=moment(value.createDate[1]).format('YYYY-MM');
+        delete value['createDate']
+      }
+      this.refs.table.fetch(value);
+      this.setState({query:value})
+    }
+    //搜索表单 - 重置
+    reset = () =>{
+      const { selOptions } = this.state;
+      this.props.form.resetFields(['createDate']);
+      this.props.form.setFieldsValue({'bDeptId':selOptions?selOptions.length?selOptions[0].value:'':''})
+      this.refs.table.fetch({'bDeptId':selOptions?selOptions.length?selOptions[0].value:'':''});
+      this.setState({
+        query:{'bDeptId':selOptions?selOptions.length?selOptions[0].value:'':''}
+      })
+    }
+    //搜索表单 - 时间日期设置
+    handlePanelChange = (value, mode) => {
+		  this.props.form.setFieldsValue({createDate:value})
+      this.setState({
+        mode: [
+          mode[0] === 'date' ? 'month' : mode[0],
+          mode[1] === 'date' ? 'month' : mode[1],
+        ],
+      });
     }
 
-    onChange = (date, dateString) => {
-        let options ={
-          startCreateDate:dateString[0],
-          endCreateDate:dateString[1],
-        }
-        this.setState({
-            query:Object.assign(this.state.query,options)
-        })
-		}
-    
     sendWithDraw = (record) =>{
-
       let json ={
+        bDeptId:this.props.form.getFieldValue('bDeptId'),
         depreciationDate:record.depreciationDate,
         equipmentDepreciationGuid:record.equipmentDepreciationGuid,
       }
+      console.log('ajax',json)
       let options = {
         body:querystring.stringify(json),
         headers:{
@@ -96,10 +146,10 @@ class WithDraw extends React.Component{
     render(){
       const columns=[
         {
-            title: '序号', 
-            dataIndex: 'index', 
-            width:'1%',
-            render : (text,record,index)=> index+1
+          title: '序号', 
+          dataIndex: 'index', 
+          width:'1%',
+          render : (text,record,index)=> index+1
         },
         { title: '操作', 
         dataIndex: 'equipmentDepreciationGuid', 
@@ -113,7 +163,7 @@ class WithDraw extends React.Component{
           </span>
         },
         {
-          title: '折旧月份',
+          title: '会计月',
           dataIndex: 'depreciationDate',
           width:'10%',
           render:(text, record) =>{
@@ -150,26 +200,61 @@ class WithDraw extends React.Component{
           }
         }
       ]
-      const { query , loading } = this.state;
+      const { loading, selOptions } = this.state;
+      const { getFieldDecorator } = this.props.form;
       return(
           <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-            <Row>
-                <Col span={12}>
-                  折旧月份：<RangePicker onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM'/>
-                  <Button type='primary' size='default' onClick={this.queryHandler}>查询</Button>
+            <Form>
+              <Row>
+                <Col span={6}>
+                  <FormItem label='管理科室' {...formItemLayout}>
+                    {getFieldDecorator('bDeptId',{
+                      initialValue:selOptions?selOptions.length?selOptions[0].value:'':''
+                    })(
+                      <Select 
+                        style={{width:200}}
+                        showSearch
+                        placeholder={'请选择'}
+                        optionFilterProp="children"
+                        filterOption={(input, option) => option.props.children.indexOf(input>= 0)}
+                      > 
+                        {
+                          selOptions.map(item=><Option key={item.value} value={item.value}>{item.text}</Option>)
+                        }
+                      </Select>
+                    )}
+                  </FormItem>
                 </Col>
-            </Row>
+                <Col span={6}>
+                  <FormItem label='会计月' {...formItemLayout}>
+                    {getFieldDecorator('createDate')(
+                      <RangePicker
+                        style={{width:'80%'}}
+                        format="YYYY-MM"
+                        mode={['month', 'month']}
+                        onPanelChange={this.handlePanelChange}
+                      />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={6}>
+                  <Button type='primary' style={{marginRight:8}} onClick={this.queryHandler}>查询</Button>
+                  <Button onClick={this.reset}>重置</Button>
+                </Col>
+              </Row>
+            </Form>
+            <Alert message="月结后才能计提折旧" closable style={{width:500,marginTop:24}} type="warning" showIcon></Alert>
             <RemoteTable
-                ref='table'
-                query={query}
-                url={devalue.getDevalueList}
-                scroll={{x: '100%', y : document.body.clientHeight - 110 }}
-                columns={columns}
-                rowKey={'equipmentDepreciationGuid'}
-                showHeader={true}
-                // sortByTime={{method:'down',key:'depreciationDate'}}
-                style={{marginTop: 10}}
-                size="small"
+              ref='table'
+              query={{bDeptId:'000'}}
+              url={devalue.getDevalueList}
+              scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+              columns={columns}
+              rowKey={'equipmentDepreciationGuid'}
+              showHeader={true}
+              // sortByTime={{method:'down',key:'depreciationDate'}}
+              style={{marginTop: 10}}
+              size="small"
             /> 
             <Modal
               visible={loading}
@@ -184,4 +269,4 @@ class WithDraw extends React.Component{
     }
 
 }
-export default WithDraw;
+export default Form.create()(WithDraw);

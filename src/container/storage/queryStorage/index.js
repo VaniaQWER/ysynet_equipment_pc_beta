@@ -16,7 +16,7 @@ const { RemoteTable } = TableGrid;
 const columns = [
   {
     title: '产品名称',
-    dataIndex: 'equipmentStandardName',
+    dataIndex: 'assetName',
     width:100
   },
   {

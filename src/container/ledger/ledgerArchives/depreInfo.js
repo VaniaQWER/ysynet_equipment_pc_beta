@@ -12,7 +12,7 @@ import assets from '../../../api/assets';
 import querystring from 'querystring';
 import moment, { isMoment } from 'moment';
 import _ from 'lodash';
-import { clearNull } from '../../../utils/tools';
+import { clearNull , limitNum , validMonth } from '../../../utils/tools';
 
 import { depreciationTypeData } from '../../../constants';
 const FormItem = Form.Item;
@@ -232,12 +232,13 @@ class DepreInfo extends Component {
                 editable? 
                   <FormItem label={`净残值率`} {...formItemLayout}>
                     {getFieldDecorator(`residualValueV`,{
-                      initialValue: AssetInfoData.residualValueV
+                      initialValue: AssetInfoData.residualValueV*100,
+                      rules:[{validator:limitNum,max:100,message:'请输入0-100的数字，最多保留两位小数!'}]
                     })(
                         <Input addonAfter='%'/>
                     )}
                   </FormItem>
-                  :<ShowDomInfo name="净残值率">{AssetInfoData.residualValueV}</ShowDomInfo>
+                  :<ShowDomInfo name="净残值率">{`${AssetInfoData.residualValueV*100}%`}</ShowDomInfo>
               }
             </Col>
             <Col span={8}>
@@ -254,7 +255,9 @@ class DepreInfo extends Component {
                 editable? 
                   <FormItem label={`已折月数`} {...formItemLayout}>
                     {getFieldDecorator(`depreciationMonths`,{
-                      initialValue: AssetInfoData.depreciationMonths
+                      initialValue: AssetInfoData.depreciationMonths,
+                      rules:[{validator:validMonth,max:12,message:'请输入0-12正整数'}]
+                      
                     })(
                         <Input/>
                     )}

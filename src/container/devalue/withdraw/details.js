@@ -25,7 +25,16 @@ const styles={
 		width:150
 	}
 }
-
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 20 },
+  },
+};
 //搜索表单内容
 class AdvancedSearchForm extends React.Component {
   state = {
@@ -111,29 +120,25 @@ class AdvancedSearchForm extends React.Component {
 		const { getFieldDecorator } = this.props.form;
 		const { expand ,selectUseDepart } = this.state;
 		return (
-			<Form
-				className="ant-advanced-search-form"
-						onSubmit={this.handleSearch}
-						style={styles.mb}
-			>
+			<Form onSubmit={this.handleSearch} style={styles.mb} >
 					<Row gutter={24}>
 					<Col span={8} style={{ display: 'block'}}>
-							<FormItem label={`资产名称`}>
+							<FormItem label={`资产名称`} {...formItemLayout}>
 								{getFieldDecorator(`equipmentStandardName`)(
 									<Input placeholder="请输入资产名称" />
 								)}
 							</FormItem>
 						</Col>
 						<Col span={8} style={{ display: 'block'}}>
-							<FormItem label={`资产编码`}>
+							<FormItem label={`资产编码`} {...formItemLayout}>
 								{getFieldDecorator(`assetsRecord`)(
 									<Input placeholder="请输入资产编码" />
 								)}
 							</FormItem>
 						</Col>
 						
-						<Col span={8} className={ expand ? 'show':'hide' }>
-							<FormItem label={`使用科室`}>
+						<Col span={8} style={{display: expand ? 'block':'none' }}>
+							<FormItem label={`使用科室`} {...formItemLayout}>
 								{getFieldDecorator(`useDeptGuid`)(
 									<Select
 										placeholder="请输入资产分类"
@@ -151,9 +156,7 @@ class AdvancedSearchForm extends React.Component {
 								)}
 							</FormItem>
 						</Col>
-					</Row>
-					<Row>
-						<Col span={24} style={{ textAlign: 'right' }}>
+						<Col span={8} style={{ float:'right', textAlign: 'right' }}>
 							<Button type="primary" htmlType="submit" onChange={this.handleSearch}>查询</Button>
 							<Button style={{ marginLeft: 8 }} onClick={this.handleReset}>重置</Button>
 							<a style={{ marginLeft: 8, fontSize: 12 }} onClick={this.toggle}>
@@ -201,88 +204,116 @@ class WithDrawDetails extends Component {
   render() {
 		const columns =[
 			{
-			title: '序号',
-			key: 'index',
-			width:50,
-			render: (text,record,index) => {return `${index+1}`},
-		},
-		{
-			title: '资产编号',
-			key: 'assetsRecord',
-			dataIndex: 'assetsRecord',
-			width:100,
-			render: (text,record,index) => <span>{text}</span>
-		},{
-			title: '资产名称',
-			key: 'equipmentStandardName',
-			dataIndex: 'equipmentStandardName',
-			width:100,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '型号',
-			key: 'fmodel',
-			dataIndex: 'fmodel',
-			width:100,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '规格',
-			key: 'spec',
-			dataIndex: 'spec',
-			width:100,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '使用科室',
-			key: 'useDept',
-			dataIndex: 'useDept',
-			width:100,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '存放地址',
-			key: 'deposit',
-			dataIndex: 'deposit',
-			width:100,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '月折旧率',
-			key: 'monthDepreciationV',
-			dataIndex: 'monthDepreciationV',
-			width:80,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '资金来源',
-			key: 'payType',
-			dataIndex: 'payType',
-			width:80,
-			render:(text)=>{
-				if(text){
-					return(
-						<span title={payType[text].text}>  {payType[text].text}</span>
-					)
-				}else{
-					return(
-						<span> 总计 </span>
-					)
+				title: '序号',
+				key: 'index',
+				width:50,
+				render: (text,record,index) => {return `${index+1}`},
+			},
+			{
+				title: '科室',
+				key: 'aDeptName',
+				dataIndex: 'aDeptName',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
+			},
+			{
+				title: '分摊比例',
+				key: 'shareRatio',
+				dataIndex: 'shareRatio',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
+			},
+			{
+				title: '资产名称',
+				key: 'equipmentStandardName',
+				dataIndex: 'equipmentStandardName',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
+			},
+			{
+				title: '资产编号',
+				key: 'assetsRecord',
+				dataIndex: 'assetsRecord',
+				width:100,
+				render: (text,record,index) => <span>{text}</span>
+			},
+			{
+				title: '折旧年限（年）',
+				key: 'useLimit',
+				dataIndex: 'useLimit',
+				width:100,
+				render: (text,record,index) => <span>{text}</span>
+			},
+			{
+				title: '已折月数',
+				key: 'depreciationMonths',
+				dataIndex: 'depreciationMonths',
+				width:100,
+				render: (text,record,index) => <span>{text}</span>
+			},
+			{
+				title: '资金来源',
+				key: 'payType',
+				dataIndex: 'payType',
+				width:80,
+				render:(text)=>{
+					if(text){
+						return(
+							<span title={payType[text].text}>  {payType[text].text}</span>
+						)
+					}else{
+						return(
+							<span> 总计 </span>
+						)
+					}
 				}
+			},
+			{
+				title: '资产原值',
+				key: 'originalValue',
+				dataIndex: 'originalValue',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
+			},{
+				title: '本次计提',
+				key: 'monthDepreciationPrice',
+				dataIndex: 'monthDepreciationPrice',
+				width:80,
+				render:(text)=><span title={text}>{text}</span>
+			},{
+				title: '累计折旧',
+				key: 'totalDepreciationPrice',
+				dataIndex: 'totalDepreciationPrice',
+				width:80,
+				render:(text)=><span title={text}>{text}</span>
+			},{
+				title: '净值',
+				key: 'carryingAmount',
+				dataIndex: 'carryingAmount',
+				width:80,
+				render:(text)=><span title={text}>{text}</span>
+			},
+			{
+				title: '型号',
+				key: 'fmodel',
+				dataIndex: 'fmodel',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
+			},{
+				title: '规格',
+				key: 'spec',
+				dataIndex: 'spec',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
+			},{
+				title: '购置日期',
+				key: 'buyDate',
+				dataIndex: 'buyDate',
+				width:100,
+				render:(text)=><span title={text}>{text}</span>
 			}
-		},{
-			title: '月折旧金额',
-			key: 'monthDepreciationPrice',
-			dataIndex: 'monthDepreciationPrice',
-			width:80,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '累计折旧金额',
-			key: 'totalDepreciationPrice',
-			dataIndex: 'totalDepreciationPrice',
-			width:80,
-			render:(text)=><span title={text}>{text}</span>
-		},{
-			title: '净值',
-			key: 'carryingAmount',
-			dataIndex: 'carryingAmount',
-			width:80,
-			render:(text)=><span title={text}>{text}</span>
-		}]
+		]
+
     return (
 			<div style={{padding:20}}>
 				<Card title='资产信息'>
