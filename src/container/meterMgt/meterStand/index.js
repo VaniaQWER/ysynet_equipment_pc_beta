@@ -3,7 +3,7 @@ import React , { Component } from 'react';
 import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker , Modal, Radio , message} from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom';
-import {validAmount, validDay} from '../../../utils/tools';
+import {validAmount, validDay, timeToStamp} from '../../../utils/tools';
 // import moment from 'moment';
 import request from '../../../utils/request';
 import meterStand from '../../../api/meterStand';
@@ -231,6 +231,10 @@ class meterStandList extends Component{
     })
   }
 
+  sortTime = (a, b) => { 
+    return timeToStamp(a.nextMeasureDate) - timeToStamp(b.nextMeasureDate);
+  }
+
   render(){
     const columns = [
       {
@@ -267,13 +271,13 @@ class meterStandList extends Component{
         title: '下次待检日期',
         dataIndex: 'nextMeasureDate',
         width:120,
-        // sorter: (a, b) => this.sortTime(a,b,'endMaintainDate')
+        sorter: (a, b) => this.sortTime(a,b)
       },
       {
         title: '操作',
         dataIndex: 'transferGuid',
         width:50,
-        render: (text, record, index) => {
+        render: (text, record) => {
             return (
               <span><Link to={{pathname:`/meterMgt/meterStand/check/${record.assetsRecordGuid}`}}>检定</Link></span>
             )

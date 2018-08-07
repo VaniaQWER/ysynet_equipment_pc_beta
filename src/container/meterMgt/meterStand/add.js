@@ -28,7 +28,14 @@ class AddMeterStand extends Component{
     selectMgtDeptList: [],    //管理科室列表
     showAssetModel: false,
     assetsInfo: {},
-    query: {}
+    query: {
+      assetName: '',
+      assetsRecord: '',
+      fmodel: '',
+      spec: '',
+      useDeptGuid: '', 
+      manageDeptGuid: ''
+    }
   }
 
   Setquery = (query) => {
@@ -41,15 +48,14 @@ class AddMeterStand extends Component{
   
   showAssetModel = () => {    
     this.setState({showAssetModel: true});
-    request(meterStand.selectAssetsList,{   //添加资产表格
-      headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: (data) => {
-        this.setState({ selectAssetData: data.result.rows });
-      },
-      error: (err) => console.log(err)
-    });
+    if( this.refs.modalForm ) {
+      this.refs.modalForm.resetFields();  //清空表单
+      let {query} = this.state;
+      for (const key in query) {          //重新搜索
+        query[key] = '';
+      };
+      this.setState({ query }, () => { this.refs.selectTab.fetch() });
+    };
     request(meterStand.selectUseDeptList,{    //使用科室列表
       body: queryString.stringify({deptType: "00"}),
       headers:{
@@ -61,7 +67,10 @@ class AddMeterStand extends Component{
       },
       error: (err) => console.log(err)
     });
+
+
     request(meterStand.mgtDeptList,{        //管理科室列表
+      body: queryString.stringify({deptType: "01"}),
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -200,9 +209,11 @@ class AddMeterStand extends Component{
                     visible={this.state.showAssetModel}
                     onCancel={this.handleCancel}
                     footer={null}
+                    afterClose={()=>{ console.log(this.refs.modalForm) }}
                   >
                     <Row>
                       <SelectAssetFormWrapper 
+                        ref = "modalForm"
                         Setquery={ this.Setquery }
                         selectUseDeptList = {selectUseDeptList}
                         selectMgtDeptList = {selectMgtDeptList}
