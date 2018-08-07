@@ -237,7 +237,7 @@ class MeterQuery extends Component{
         render: (text, record, index) => {
           if (record.results === "00") {
             return <span>合格</span>;
-          } else if (record.fstate === "01") {
+          } else if (record.results === "01") {
             return <span>不合格</span>;
           }
         }
