@@ -16,11 +16,11 @@ const { RemoteTable } = tableGrid;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 8 },
+    sm: { span: 6 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 16 },
+    sm: { span: 18 },
   },
 };
 
@@ -99,7 +99,7 @@ class SearchFormWrapper extends Component {
     return (
       // 转科记录查询部分
       <Form onSubmit={this.handleSearch}>
-        <Row>
+        <Row gutter={30}>
           <Col span={8}>
             <FormItem label={`资产名称`} {...formItemLayout}>
               {getFieldDecorator('assetName', {})(
@@ -229,10 +229,6 @@ class meterStandList extends Component{
         this.setState({visible:false})
       }
     })
-  }
-
-  edit = ()=> {
-
   }
 
   render(){

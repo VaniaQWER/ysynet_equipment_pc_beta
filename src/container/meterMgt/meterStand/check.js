@@ -39,7 +39,7 @@ class CheckMeterStand extends Component{
           },
           success: (data) => {
             let assetsInfo = data.result[0];
-            let nextMeasureDate2 = this.nextMeasureDateValue(assetsInfo.nextMeasureDate);
+            let nextMeasureDate2 = this.nextMeasureDateValue(assetsInfo.nextMeasureDate, assetsInfo.measureCycly);
             assetsInfo.nextMeasureDate2 = nextMeasureDate2;
             this.setState({ 
               assetsInfo,  
@@ -104,17 +104,28 @@ class CheckMeterStand extends Component{
         return nextMeasureDate.valueOf() <= measureDate.valueOf();
       }
 
-      nextMeasureDateValue = (nextMeasureDate) => {    //计算下次待检日期
+      nextMeasureDateValue = (nextMeasureDate, measureCycly) => {    //计算下次待检日期
         if (!nextMeasureDate) return;
         nextMeasureDate = nextMeasureDate.split('-');
-        let moment = Number(nextMeasureDate[1]) + 1,
-            year = Number(nextMeasureDate[0]);
-        if( moment > 12 ) {
-          moment = '01';
-          year += 1;
-        }else if(moment < 10) {
-          moment = '0' + moment;
+        let moment = Number(nextMeasureDate[1]) + measureCycly%12, 
+            year = Number(nextMeasureDate[0]), 
+            addYear;
+
+        if(measureCycly >= 12 && measureCycly%12 >=0 ) {
+
+          addYear = Math.floor(measureCycly/12);
+
+          year += addYear;
+
         };
+
+        if( moment > 12 ) {
+
+          year += 1;
+
+        }
+        moment = moment%12 < 10? `0${moment%12}`: moment%12;
+
         return `${year}-${moment}-${nextMeasureDate[2]}`;
       }
 
@@ -351,8 +362,8 @@ class CheckMeterStand extends Component{
                           }]
                         })(
                           <Select placeholder="请选择检定结果" style={{width:200}}>
-                            <Option value="01">合格</Option>
-                            <Option value="00">不合格</Option>
+                            <Option value="00">合格</Option>
+                            <Option value="01">不合格</Option>
                           </Select>
                         )}
                       </FormItem>
@@ -393,7 +404,7 @@ class CheckMeterStand extends Component{
                         <FormItem label='附件' {...formItemLayout}>
                           {getFieldDecorator('accessoryList', )(
                             <div>
-                              <Upload listType="picture-card" {...props} withCredentials={true}>
+                              <Upload listType="picture" {...props} withCredentials={true}>
                                 <Button>
                                   <Icon type="upload" /> 上传文件
                                 </Button>
