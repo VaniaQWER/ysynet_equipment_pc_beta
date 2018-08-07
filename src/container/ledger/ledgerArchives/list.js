@@ -524,7 +524,7 @@ class LedgerArchivesList extends Component {
   sendPrintAjax = (json) => {
     Confirm({
       title:'您是否需要打印资产配件的标签?',
-      content:'选择是将打印附件标签，你还要继续吗?',
+      content:'选择"是"，将打印配件标签，您还要继续吗?',
       onOk:()=>{
         json.extendBoolean='yes';
         window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(json))

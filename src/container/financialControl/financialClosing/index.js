@@ -164,7 +164,8 @@ class FinancialClosing extends Component{
         visible:false,
 				storageOptions:[],//弹出层- 管理部门
 				checkAmount:0,
-				invoiceMonth:[]
+				invoiceMonth:[],
+				selectMonthStr:''
 		}
 		 componentWillMount (){
 			 fetchData(financialControl.selectUseDeptList, querystring.stringify({deptType:"01"}), data => {
@@ -214,8 +215,10 @@ class FinancialClosing extends Component{
 		
 		//新增结账
 		submitClose = () =>{
+
 			this.props.form.validateFieldsAndScroll((err,value)=>{
 				if(!err){
+					value.acctDate  = this.state.selectMonthStr;
 					console.log('确认结账的数据',JSON.stringify(value))
 					fetchData(financialControl.invoiceSettleAccount, querystring.stringify(value), data => {
 						if(data.status){
@@ -322,11 +325,11 @@ class FinancialClosing extends Component{
                                 showSearch
                                 placeholder={'请选择'}
                                 optionFilterProp="children"
-																filterOption={(input, option)=>this.filterOption(input, option)}
-																onSelect={(input, option)=>{
-																	this.getSumInvoiceNotAcctCountMoney({bDeptId:input})
-																}}
-																>
+								filterOption={(input, option)=>this.filterOption(input, option)}
+								onSelect={(input, option)=>{
+									this.getSumInvoiceNotAcctCountMoney({bDeptId:input})
+								}}
+								>
                                 {
                                 storageOptions.map((item, index) => (
                                     <Option key={index} value={item.value}>{ item.text }</Option>
@@ -347,11 +350,15 @@ class FinancialClosing extends Component{
                         </div>
                         <FormItem label={`会计月`} {...formItemLayout}>
                             {getFieldDecorator(`acctYh`, {
-															rules:[{required:true,message:'请选择会计月！'}]
+								rules:[{required:true,message:'请选择会计月！'}]
                             })(
-																<Select style={{width:200}}>
-																	{invoiceMonthSelect}
-																</Select>
+								<Select style={{width:200}}
+								
+								onSelect={(input, option)=>{
+									this.setState({selectMonthStr:option.props.children})
+								}}>
+									{invoiceMonthSelect}
+								</Select>
                             )}
                         </FormItem>
                     </Form>
