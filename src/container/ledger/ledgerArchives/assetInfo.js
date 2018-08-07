@@ -463,10 +463,10 @@ class AssetInfo extends Component {
               }
             </Col>
             <Col span={8}>
-              <ShowDomInfo name="型号">{AssetInfoData.spec?AssetInfoData.spec:''}</ShowDomInfo>
+              <ShowDomInfo name="型号">{AssetInfoData.fmodel?AssetInfoData.fmodel:''}</ShowDomInfo>
             </Col>
             <Col span={8}>
-              <ShowDomInfo name="规格">{AssetInfoData.fmodel?AssetInfoData.fmodel:''}</ShowDomInfo>
+              <ShowDomInfo name="规格">{AssetInfoData.spec?AssetInfoData.spec:''}</ShowDomInfo>
             </Col>
             <Col span={8}>
               <ShowDomInfo name="注册证号">{AssetInfoData.registerNo?AssetInfoData.registerNo:''}</ShowDomInfo>
