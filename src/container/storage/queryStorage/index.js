@@ -31,7 +31,7 @@ const columns = [
   },
   {
     title: '单位',
-    dataIndex: 'meteringUnit',
+    dataIndex: 'meteringUnitName',
     width:100
   },
   {
