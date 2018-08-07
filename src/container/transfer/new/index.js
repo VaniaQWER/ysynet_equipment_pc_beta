@@ -156,7 +156,7 @@ function fetchIntoDeptname(deptName, callback) {
   }
   currentValueRollOut = deptName;
   let options = {
-    body:querystring.stringify({'excludeUseDeptGuid': deptName}),
+    body:querystring.stringify({'excludeUseDeptGuid': deptName,"deptType":"00"}),
     headers:{
       'Content-Type': 'application/x-www-form-urlencoded'
     },
