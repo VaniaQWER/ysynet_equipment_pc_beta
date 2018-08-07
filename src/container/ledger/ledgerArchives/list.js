@@ -504,7 +504,8 @@ class LedgerArchivesList extends Component {
   printAll = () =>{
     if(this.state.tableRecords<=100){
       let v = this.refs.form.getFieldsValue();
-      this.sendPrintAjax(v)
+      window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(v))
+      this.setState({selectedRowKeys:[]})
     }else{
       message.warn('为了提高效率，打印数量请保持在100以内');
     }
