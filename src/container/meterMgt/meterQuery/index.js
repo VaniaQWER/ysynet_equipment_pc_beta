@@ -2,6 +2,7 @@
 import React , { Component } from 'react';
 import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker ,} from 'antd';
 import tableGrid from '../../../component/tableGrid';
+import queryString from 'querystring';
 import { Link } from 'react-router-dom';
 // import moment from 'moment';
 import request from '../../../utils/request';
@@ -52,7 +53,8 @@ class SearchFormWrapper extends Component {
     });
  }
   componentDidMount() {
-    request(meterStand.userDeptList, {
+    request(meterStand.selectUseDeptList, {   //使用科室
+      bady: queryString.stringify({deptType: "00"}),
       headers: {
         'Content-Type': 'application/json'
       },
@@ -63,7 +65,7 @@ class SearchFormWrapper extends Component {
       },
       error: (err) => console.log(err)
     });
-    request(meterStand.mgtDeptList, {
+    request(meterStand.mgtDeptList, {     //管理科室
       headers: {
         'Content-Type': 'application/json'
       },
