@@ -84,6 +84,9 @@ class EnginCount extends PureComponent{
       },
       error: err => {console.log(err)}
     })
+    if(!this.state.disable){
+      this.refs.table.fetch(val)
+    }
   }
   //tab切换 - 更改工程师的禁用条件
   tabChange = (key) => {
