@@ -53,7 +53,7 @@ class LedgerArchivesDetail extends Component {
           <Col span={20}>
             <h3>{AssetInfoData?AssetInfoData.equipmentStandardName:''}</h3>
             <Col span={9} style={{marginTop:12}}>资产编号:{AssetInfoData?AssetInfoData.assetsRecord:''}</Col>
-            <Col span={8} style={{marginTop:12}}>物资分类:123123</Col>
+            <Col span={8} style={{marginTop:12}}>物资分类:{AssetInfoData?AssetInfoData.typeName:''}</Col>
             <Col span={9} style={{marginTop:12}}>保管员:{AssetInfoData?AssetInfoData.custodian:''}</Col>
             <Col span={8} style={{marginTop:12}}>使用科室:{AssetInfoData?AssetInfoData.useDept:''}</Col>
             <Col span={9} style={{marginTop:12}}>存放地址:{AssetInfoData?AssetInfoData.deposit:''}</Col>
