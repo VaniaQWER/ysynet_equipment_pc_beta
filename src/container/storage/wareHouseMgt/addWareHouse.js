@@ -5,7 +5,7 @@
  */
 
 import React , { Component } from 'react'//message,
-import { Layout , Form, Row, Col,Icon, Input, Button , Table ,Modal ,message, Select ,TreeSelect} from 'antd';
+import { Layout , Form, Row, Col,Icon, Input, Button , Table , Radio , Modal ,message, Select ,TreeSelect} from 'antd';
 // import TableGrid from '../../../component/tableGrid';
 import { CommonData } from '../../../utils/tools';
 import storage from '../../../api/storage';
@@ -43,8 +43,11 @@ class SearchForm extends Component {
   //搜索表单
   searchFrom = () => {
     let values = this.props.form.getFieldsValue();
-    console.log(values)
-    this.props.query(values)
+    if(values.sendNo && values.sendNo!=='' ){
+      this.props.query(values)
+    }else{
+      message.warn('请填写送货单号！')
+    }
   }
 
   render(){
@@ -63,7 +66,17 @@ class SearchForm extends Component {
            <Col span={3}>
             <Button type='primary'  style={styles.top}  onClick={()=>this.searchFrom()}>搜索</Button>
            </Col>
-           <Col span={13} style={styles.textRight}>
+           <Col span={6}>
+            <FormItem label={`越库`} {...formItemLayout} style={styles.fillRight}>
+              {getFieldDecorator(`yueku`,{initialValue:'00'})(
+                <Radio.Group>
+                  <Radio value="01">是</Radio>
+                  <Radio value="00">否</Radio>
+                </Radio.Group>
+              )}
+            </FormItem>
+           </Col>
+           <Col span={7} style={styles.textRight}>
               <Button type='primary'  style={styles.fillRight}  onClick={()=>this.props.submit(this.props.form.getFieldsValue())}>确认入库</Button>
               <Button type='primary' ><Link to={{pathname:`/storage/wareHouseMgt`}}>取消</Link></Button>
            </Col>

@@ -225,6 +225,11 @@ class OutDetails extends Component{
                 title : '入库单号',
                 dataIndex : 'inNo',
                 width: 120,
+            },
+            {
+                title:"资产编号",
+                dataIndex: 'assetCode',
+                width:150
             }
         ];
         // const query = this.state.query;
@@ -235,7 +240,7 @@ class OutDetails extends Component{
                     url={storage.queryOutportAssetDetails}
                     ref='table'
                     query={this.state.query}
-                    scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+                    scroll={{x: '200%', y : document.body.clientHeight - 110 }}
                     columns={columns}
                     rowKey={'RN'}
                     showHeader={true}

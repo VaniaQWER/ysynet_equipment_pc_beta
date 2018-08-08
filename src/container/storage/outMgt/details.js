@@ -72,6 +72,11 @@ const columns = [
     title:"财务分类",
     dataIndex: 'styleName',
     width:150
+  },
+  {
+    title:"资产编号",
+    dataIndex: 'assetCode',
+    width:150
   }
 ]
 class WareHouseDetails extends Component {

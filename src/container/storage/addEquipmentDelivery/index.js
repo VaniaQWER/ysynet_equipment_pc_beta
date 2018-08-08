@@ -191,11 +191,7 @@ class SearchForm extends Component {
         <Row>
           <Col span={6}>
             <FormItem label={`收货科室`} {...formItemLayout}>
-              {getFieldDecorator(`tDeptGuid`, {
-                rules: [{
-                  required: true, message: '请输入收货科室',
-                }]
-              })(
+              {getFieldDecorator(`tDeptGuid`)(
                 <Select
                   showSearch
                   placeholder={'请选择收货科室'}
