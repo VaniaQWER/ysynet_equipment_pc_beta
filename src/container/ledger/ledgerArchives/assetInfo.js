@@ -705,7 +705,7 @@ class AssetInfo extends Component {
                         <Input addonAfter='元/小时'/>
                     )}
                   </FormItem>
-                  :<ShowDomInfo name="借用单价">{AssetInfoData?`${AssetInfoData.rentingPrice}元/小时`:''}</ShowDomInfo>
+                  :<ShowDomInfo name="借用单价">{AssetInfoData && AssetInfoData.rentingPrice?`${AssetInfoData.rentingPrice}元/小时`:''}</ShowDomInfo>
               }
             </Col>  
             <Col span={8}>
