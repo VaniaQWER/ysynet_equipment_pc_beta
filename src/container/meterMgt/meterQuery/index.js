@@ -4,6 +4,7 @@ import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker ,
 import tableGrid from '../../../component/tableGrid';
 import queryString from 'querystring';
 import { Link } from 'react-router-dom';
+import {timeToStamp} from '../../../utils/tools';
 // import moment from 'moment';
 import request from '../../../utils/request';
 import meterStand from '../../../api/meterStand';
@@ -188,6 +189,14 @@ class MeterQuery extends Component{
     this.setState({ query }, ()=>{ this.refs.table.fetch() });
   }
 
+  nextMeasureDate = (a, b) => {
+    return timeToStamp(a.nextMeasureDate) - timeToStamp(b.nextMeasureDate);
+  }
+
+  sortTime = (a, b) => {
+    return timeToStamp(a.measureDate) - timeToStamp(b.measureDate);
+  }
+
   render(){
     const columns = [
       {
@@ -225,11 +234,13 @@ class MeterQuery extends Component{
         title: '检测日期',
         dataIndex: 'measureDate',
         width: 200,
+        sorter: (a, b) => this.sortTime(a,b)
       },
       {
         title: '下次待检日期',
         dataIndex: 'nextMeasureDate',
         width: 200,
+        sorter: (a, b) => this.nextMeasureDate(a,b)
       },
       {
         // --状态 00合格 01不合格
@@ -263,6 +274,7 @@ class MeterQuery extends Component{
             }}
             scroll={{x: '120%', y : document.body.clientHeight - 110 }}
             columns={columns}
+            size="small"
             rowKey={'RN'}
             style={{marginTop: 10}}
           />
