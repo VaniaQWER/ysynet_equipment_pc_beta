@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 
+import BorrowMgtForm from './component/borrowMgtForm';
+
 class BorrowMgt extends Component {
     render() {
-        return <div>BorrowMgt</div>
+        return (
+            <div>
+                <BorrowMgtForm/>
+            </div>
+        )
     }
 };
 
