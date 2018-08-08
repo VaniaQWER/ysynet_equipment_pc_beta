@@ -20,7 +20,6 @@ class MeterQueryDetails extends Component{
   }
   componentDidMount() {
     const recordInfoGuid = this.props.match.params.id;
-    console.log(recordInfoGuid)
     request(meterStand.meterRecordInfoList, {
       body: queryString.stringify({ recordInfoGuid }),
       headers:{
