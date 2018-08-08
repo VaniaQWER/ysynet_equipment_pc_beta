@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 class Loan extends Component {
     render() {
-        return '借出'
+        return <div>借出</div>
     }
 };
 

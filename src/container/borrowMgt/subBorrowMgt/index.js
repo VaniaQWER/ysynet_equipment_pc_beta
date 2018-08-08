@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class BorrowMgt extends Component {
     render() {
-        return 'BorrowMgt'
+        return <div>BorrowMgt</div>
     }
 };
 

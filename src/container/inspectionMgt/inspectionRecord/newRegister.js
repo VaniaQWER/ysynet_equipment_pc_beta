@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 class NewRegister extends Component {
     render() {
-        return '巡检记录 - 新建'
+        return <div>巡检记录 - 新建</div>
     }
 }
 
