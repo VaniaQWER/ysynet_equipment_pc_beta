@@ -27,7 +27,7 @@ class MeterQueryDetails extends Component{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: (data) => {
-        let assetsInfo = data.result[0];
+        let assetsInfo = data.result.rows[0];
         switch (assetsInfo.productType) {
           case "01":
             assetsInfo.productType = "通用设备";
