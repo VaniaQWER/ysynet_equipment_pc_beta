@@ -228,7 +228,7 @@ class OutDetails extends Component{
             },
             {
                 title:"资产编号",
-                dataIndex: 'assetCode',
+                dataIndex: 'assetsRecord',
                 width:150
             }
         ];

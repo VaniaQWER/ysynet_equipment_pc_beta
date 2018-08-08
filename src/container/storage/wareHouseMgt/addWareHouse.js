@@ -68,10 +68,10 @@ class SearchForm extends Component {
            </Col>
            <Col span={6}>
             <FormItem label={`越库`} {...formItemLayout} style={styles.fillRight}>
-              {getFieldDecorator(`yueku`,{initialValue:'00'})(
+              {getFieldDecorator(`isOut`,{initialValue:''})(
                 <Radio.Group>
-                  <Radio value="01">是</Radio>
-                  <Radio value="00">否</Radio>
+                  <Radio value="yes">是</Radio>
+                  <Radio value="">否</Radio>
                 </Radio.Group>
               )}
             </FormItem>
@@ -179,8 +179,16 @@ class AddWareHouse extends Component {
       styleName.push(item.styleName)
       return item
     })
+    let isOut =  this.refs.searchForm.getFieldsValue().isOut;
+    let json = {}
+    if(isOut!==''){
+       json = {isOut,sendId:this.state.baseInfo.sendId,styleId,styleName}
+    }else{
+       json = {sendId:this.state.baseInfo.sendId,styleId,styleName}
+    }
+
     request(storage.insertImport,{
-      body:queryString.stringify({sendId:this.state.baseInfo.sendId,styleId,styleName}),
+      body:queryString.stringify(json),
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
       },

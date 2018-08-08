@@ -75,7 +75,7 @@ const columns = [
   },
   {
     title:"资产编号",
-    dataIndex: 'assetCode',
+    dataIndex: 'assetsRecord',
     width:150
   }
 ]
