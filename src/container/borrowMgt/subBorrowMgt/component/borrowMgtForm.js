@@ -1,8 +1,10 @@
+/*借用管理 - 表单组件*/
+
 import React, {Component} from 'react';
 
 import {Form, Input, Row, Col, DatePicker, Select, Button, Icon} from 'antd';
 
-import meterStand from '../../../../api/meterStand';
+import borrowMgt from '../../../../api/borrowMgt';
 
 import request from '../../../../utils/request';
 
@@ -32,7 +34,7 @@ class BorrowMgtForm extends Component {
         loanData: [],     //借出科室数据
     }
     componentDidMount() {
-        request(meterStand.selectUseDeptList, {     //借出科室
+        request(borrowMgt.selectUseDeptList, {     //借出科室
             body: queryString.stringify({ deptType: "00" }),
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -43,7 +45,7 @@ class BorrowMgtForm extends Component {
             },
             error: (err) => console.log(err)
         });
-        request(meterStand.mgtDeptList, {     //管理科室
+        request(borrowMgt.mgtDeptList, {     //管理科室
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -172,7 +174,7 @@ class BorrowMgtForm extends Component {
                     </Col>
                     <Col span={8} style={{ textAlign: 'right' }} >
                         <Button type="primary" htmlType="submit" >查询</Button>
-                        <Button style={{ margin: '0 8px' }} onClick={this.props.form.resetFields}>重置</Button>
+                        <Button style={{ margin: '0 8px' }} onClick={() => { this.props.form.resetFields(); }}>重置</Button>
                         <a onClick={this.toggle}>{ display === 'none'? '展开' : '收起' }<Icon type={ display === 'none'? 'down' : 'up' } /></a>
                     </Col>
                 </Row>

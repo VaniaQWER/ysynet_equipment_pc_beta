@@ -59,6 +59,9 @@ class BorrowMgt extends Component {
             message.warning('请选择一条数据', 2);
             return;
         }
+        if(this.refs.modalForm) {
+            this.refs.modalForm.resetFields();
+        };
         this.setState({visible: true});
     }
     setQuery = (query) => {
@@ -66,33 +69,37 @@ class BorrowMgt extends Component {
     }
     handleOk = () => {
         this.refs.modalForm.validateFields((err, values) => {
+            if(err) return;
             let {selectedRows} = this.state;
             this.setState({okLoading: true});
             values.actualBack = values.actualBack.format('YYYY-MM-DD HH:mm:ss');
             values.remark = values.remark === undefined? '' : values.remark;
             values.borrowDetailGuids = selectedRows.map( (item) => item.borrowDetailGuid );
-            
-            request(borrowMgt.updateBorrow, {
-                body: queryString.stringify(values),
+            this.giveback(values);
+        })
+    }
+    giveback = (query) => {
+        request(borrowMgt.updateBorrow, {
+                body: queryString.stringify(query),
                 headers:{
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 success: (data) => {
                     if(data.status) {
-                        this.setState({okLoading: true, visible: false}, ()=>{
+                        this.setState({okLoading: false, visible: false, selectedRowKeys: []}, ()=>{
                             this.refs.table.fetch();
                         });
                         message.success('归还成功');
                     }else {
                         message.error(data.msg);
+                        this.setState({okLoading: false});
                     }
                 },
                 error: (err) => console.log(err)
             })
-        })
     }
     render() {
-        let {query, visible, okLoading} = this.state;
+        let {query, visible, okLoading, selectedRows} = this.state;
         const columns = [
             {
                 title: '借用单号',
@@ -141,16 +148,17 @@ class BorrowMgt extends Component {
         ];
         return (
             <Content>
-                <Card bordered={false}>
+                <Card style={{margin: '16px 16px 0'}} bordered={false}>
                     <BorrowMgtForm setQuery={this.setQuery} />
                 </Card>
-                <Card>
+                <Card style={{ margin: '0 16px' }}>
                     <Row style={{ marginBottom: 50 }}>
                         <Link to={{ pathname: `/borrowMgt/subBorrowMgt/loan` }}><Button type="primary" >新增借出</Button></Link>
                         <Button onClick={this.showModal} style={{ marginLeft: 8 }} type="primary" >归还</Button>
                     </Row>
                     <RemoteTable
                         ref="table"
+                        selectedRows={selectedRows}
                         rowSelection={{
                             onChange: (selectedRowKeys, selectedRows) => {
                                 this.setState({ selectedRowKeys, selectedRows });
@@ -165,7 +173,7 @@ class BorrowMgt extends Component {
                         }}
                         query={query}
                         url={borrowMgt.BorrowRecordList}
-                        scroll={{x: '120%'}}
+                        scroll={{x: '150%'}}
                         showHeader={true}
                         columns={columns}
                         size="small"
@@ -184,7 +192,6 @@ class BorrowMgt extends Component {
                             ref="modalForm"
                         />
                     </Row>
-                    <Row></Row>
                 </Modal>
             </Content>
         )
