@@ -37,6 +37,10 @@ class AddUpKeep extends React.Component{
             message.warning('请最少添加一条项目!')
             return false
           }
+          if(values.engineerName && values.engineerUserid){
+            values.engineerName = values.engineerName.split('-')[0];
+            values.engineerUserid = values.engineerUserid.split('-')[0];
+          }
           values.maintainDate = moment(values['maintainDate']).format('YYYY-MM-DD HH:mm') 
           values.endMaintainDate = moment(values['endMaintainDate']).format('YYYY-MM-DD HH:mm') 
           if(values['nextMaintainDate']){

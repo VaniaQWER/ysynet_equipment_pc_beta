@@ -113,6 +113,7 @@ export default class AddUpKeepForm extends React.Component {
       selectedKeys: [],
       startValue: null,
       endValue: null,
+      upKeepPerson:[],//保养人下拉框
     };
     //图片上传内容---------------------------------------------
     handleCancel = () => this.setState({ previewVisible: false })
@@ -168,6 +169,21 @@ export default class AddUpKeepForm extends React.Component {
         this.setState({
           editState:editState,
         })
+
+        //获取保养人下拉框
+        request(upkeep.selectUserNameList,{
+          body:querystring.stringify({}),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: data => {
+            if(data.status){
+              this.setState({upKeepPerson:data.result})
+            }
+          },
+          error: err => {console.log(err)}
+        })
+
     }
     //获取详情数据并给form表单
     getDetailAjax = (keys) =>{
@@ -411,7 +427,7 @@ export default class AddUpKeepForm extends React.Component {
     render() {
       const { getFieldDecorator } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
-      const { previewVisible, previewImage } = this.state;
+      const { previewVisible, previewImage , upKeepPerson } = this.state;
       const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
       const columns = [
         {
@@ -494,7 +510,7 @@ export default class AddUpKeepForm extends React.Component {
             xs: { span: 24 },
             sm: { span: 14 },
           },
-        };
+      };
 
         return (
         <Form>
@@ -574,12 +590,36 @@ export default class AddUpKeepForm extends React.Component {
                 <Col span={8}>
                 {editState ? 
                   <FormItem label='保养人' {...formItemLayout}>
-                  {getFieldDecorator(`engineerName`,{initialValue:data.engineerName})(
-                    <Input placeholder="支持多人"/>
+                  {getFieldDecorator(`engineerUserid`,{
+                    initialValue:data.engineerUserid,
+                    rules:[{required:true,message:'请选择保养人'}]
+                  })(
+                   /*  <Input placeholder="支持多人"/> */
+                    <Select
+                      showSearch
+                      style={{ width: 200 }}
+                      optionFilterProp="children"
+                      onSelect={(input, option)=>{
+                        console.log(option)
+                        this.props.form.setFieldsValue({engineerName:option.props.children})
+                      }}
+                      filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                    >
+                      {
+                        upKeepPerson.map(item=>(<Option value={`${item.value}-${item.RN}`} key={item.RN}>{`${item.userName?item.userName:''}${item.deptName?`-${item.deptName}`:''}`}</Option>))
+                      }
+                    </Select>
                   )}
                   </FormItem>
                   :UnStateText('保养人',data.engineerName)
                 }
+                </Col>
+                <Col span={0}>
+                  <FormItem label='保养人Name' {...formItemLayout}>
+                  {getFieldDecorator(`engineerName`,{initialValue:data.engineerName})(
+                    <Input />
+                  )}
+                  </FormItem>
                 </Col>
                 <Col span={8}>
                   {editState ? 

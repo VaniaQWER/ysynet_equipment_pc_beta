@@ -3,6 +3,7 @@ const upkeep = {
   queryUserDeptListByUserId:`${_local}/dept/queryUserDeptListByUserId`,//查询当前用户使用科室
   getAssetInfo: `${_local}/assetsRecordController/selectAssetsRecordDetail`,//通过资产编号带出资产信息
   submitAssetInfo:`${_local}/maintainOrderController/insertMaintainOrder`,//提交保养登记表单
+  selectUserNameList:`${_local}/user/selectUserNameList`,//保养登记-保养人
   listToDetails:`${_local}/maintainOrderController/selectMaintainOrderDetail`,//立标进入详情获取对应信息
   getTreeData:`${_local}/maintainOrderController/selectTemplateAndTypeList`,//获取保养模板树状结构
   queryAllProject:`${_local}/maintainOrderController/searchMaintainType`,//查询引用新增-------------
