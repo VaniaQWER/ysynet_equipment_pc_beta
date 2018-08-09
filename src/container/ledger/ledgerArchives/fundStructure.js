@@ -129,6 +129,7 @@ class FundStructure extends Component {
             if(data.status){
               this.getDevalueInfoData(AssetInfoData.assetsRecordGuid)
               this.setState({editable:!this.state.editable})
+              this.props.freshDetail()
               message.success('保存成功！')
             }else{
               message.error(data.msg)

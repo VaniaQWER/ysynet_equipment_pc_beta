@@ -20,19 +20,19 @@ const { Option } = Select;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 6 },
+    sm: { span: 7 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 18 },
+    sm: { span: 17 },
   },
 };
 const ShowDomInfo = (props) =>{
   const { name } = props;
   return ( 
     <div style={{height:40,lineHeight:'38px'}}>
-      <Col span={6}>{`${name} :`}</Col>
-      <Col span={18}>{props.children}</Col>
+      <Col span={7}>{`${name} :`}</Col>
+      <Col span={17}>{props.children}</Col>
     </div>
   )
 } 
@@ -278,7 +278,7 @@ class DepreInfo extends Component {
                         <DatePicker/>
                     )}
                   </FormItem>
-                  :<ShowDomInfo name="开始折旧时间">{ AssetInfoData.depreciationBeginDate?AssetInfoData.depreciationBeginDate.split(' ')[0]:'' }</ShowDomInfo>
+                  :<ShowDomInfo name="开始折旧时间">{ AssetInfoData.depreciationBeginDate?AssetInfoData.depreciationBeginDate.substr(0,7):'' }</ShowDomInfo>
               }
             </Col>  
           </Row>
