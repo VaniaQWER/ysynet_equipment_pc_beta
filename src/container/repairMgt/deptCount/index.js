@@ -108,8 +108,18 @@ const chartField ={
       },
       success: data => {
         if(data.status){
-          let allData = data.result;
-          this.setState({allData,query:val,chartData:allData.rrpairNumberList})
+          if(data.result.rrpairNumberList.length && data.result.actualPriceList.length){
+            let allData = data.result;
+            const { chartFieldText } = this.state;
+            this.setState({allData,query:val,})
+            if(chartFieldText==='rrpairNumberList'){
+              //rrpairNumberList 渲染的图表
+              this.setState({chartData:allData[this.state.chartFieldText]})
+            }else{
+              //actualPriceList 的时候渲染的图表
+              this.setState({chartData:this.formatData( allData[this.state.chartFieldText] , 'actualPriceList')  })
+            }
+          }
         }
       },
       error: err => {console.log(err)}
