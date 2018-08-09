@@ -9,6 +9,7 @@ import {Chart, Axis, Tooltip, Geom , Guide } from "bizcharts";
 import TableGrid from '../../../component/tableGrid';
 import operation from '../../../api/operation';
 import request from '../../../utils/request';
+import queryString from 'querystring';
 import '../style.css';
 const Text = Guide.Text;
 const { RemoteTable } = TableGrid;
@@ -32,26 +33,31 @@ const buttonStyle = {
 };
 const columns = [
   {
-    title: '申请科室',
-    dataIndex: 'deptName',
+    title: '工程师',
+    dataIndex: 'inRrpairUserName',
     width:120
   },
   {
-    title: '管理科室',
-    dataIndex: 'bDeptName',
+    title: '维修台数',
+    dataIndex: 'rrpairNumber',
     width:100,
   },
   {
-    title: '申请时间',
-    dataIndex: 'createTime',
+    title: '维修天数',
+    dataIndex: 'rrpairDateNum',
     width:100,
-    render:(text)=>text?text.substr(0,11):""
+  },
+  {
+    title:'平均维修天数',
+    dataIndex: 'avgDay',
+    width:100,
   }
 ];
 class EnginCount extends PureComponent{
 
   state={
     disable:true,//工程师的禁用条件 。图true- 禁用  表false-可用
+    query:{},//初始化的搜索条件
     allData:{},//当前图表所有数据
     chartData:[
       { year: '1951 年', sales: 38 },
@@ -69,9 +75,9 @@ class EnginCount extends PureComponent{
   
   //表单搜索 - 获取数据 并更新图表以及table
   onSearch = (val)=>{ 
-    console.log(val)
-    request(operation.queryApprovalList,{
-      body:JSON.stringify(val),
+    //获取图表数据
+    request(operation.selectEngineerCountChart,{
+      body:queryString.stringify(val),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -79,11 +85,12 @@ class EnginCount extends PureComponent{
         if(data.status){
           console.log(9999)
           let allData = data.result;
-          this.setState({allData})
+          this.setState({allData,query:val})
         }
       },
       error: err => {console.log(err)}
     })
+    //获取table数据
     if(!this.state.disable){
       this.refs.table.fetch(val)
     }
@@ -109,10 +116,10 @@ class EnginCount extends PureComponent{
   }
   
   render(){
-    const { disable , chartData , chartTitle , activedButton} = this.state;
+    const { disable , chartData , chartTitle , activedButton , query} = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
-        <SearchForm query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
+        <SearchForm ref='form' query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
         <Tabs defaultActiveKey="1" onChange={this.tabChange}>
           {/*chart*/}
           <TabPane tab="图" key="1">
@@ -152,7 +159,8 @@ class EnginCount extends PureComponent{
           <TabPane tab="表" key="0">
             <RemoteTable
               ref='table'
-              url={operation.queryApprovalList}
+              query={query.bDeptId?query:{}}
+              url={operation.selectEngineerCount}
               scroll={{x: '100%', y : document.body.clientHeight - 311}}
               columns={columns}
               showHeader={true}
@@ -190,7 +198,6 @@ class EnginCount extends PureComponent{
         error: (err) => console.log(err)
       };
       request(operation.queryManagerDeptListByUserId, options);
-    
     }
     toggle = () => {
       const { display } = this.state;
@@ -203,12 +210,12 @@ class EnginCount extends PureComponent{
       this.props.form.validateFields((err, values) => {
         const createDate = values.createDate === undefined ? '': values.createDate;
         if(createDate.length>0) {
-          values.startTime = createDate[0].format('YYYY-MM-DD');
-          values.endTime = createDate[1].format('YYYY-MM-DD');
-        }else {
-          values.startTime = '';
-          values.endTime = '';
-        };
+          values.createStartDate = createDate[0].format('YYYY-MM-DD');
+          values.createEndDate = createDate[1].format('YYYY-MM-DD');
+          delete values['createDate']
+        }else{
+          delete values['createDate']
+        }
         for (const key in values) {
           values[key] = values[key] === undefined? "" : values[key];
         }
@@ -240,7 +247,6 @@ class EnginCount extends PureComponent{
                 showSearch
                 optionFilterProp="children"
                 filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
-                onSelect={this.onSelect}
               >
                 <Option value='666' key='666'>全部</Option>
                 {manageOptions.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
@@ -257,8 +263,8 @@ class EnginCount extends PureComponent{
           </Col>
           <Col span={8}  style={{display: display}}>
             <FormItem label={`工程师`} {...formItemLayout}>
-              {getFieldDecorator('assetName', {})(
-                <Input placeholder="请输入资产名称" disabled={this.props.disable} style={{width: 200}} />
+              {getFieldDecorator('rrpairUserName', {})(
+                <Input placeholder="请输入工程师姓名" disabled={this.props.disable} style={{width: 200}} />
               )}
             </FormItem>
           </Col>
