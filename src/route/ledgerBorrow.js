@@ -12,5 +12,7 @@ export default {
   component: asyncComponent(() => import("../container/ledgerBorrow")),
   routes: [
     { exact:true, path: '/ledgerBorrow/borrowRecord', name: '借用记录', component: asyncComponent(() => import("../container/ledgerBorrow/borrowRecord"))},
+    { exact:true, path: '/ledgerBorrow/borrowMgt', name: '借用管理', component: asyncComponent(() => import("../container/ledgerBorrow/borrowMgt"))},
+    { exact:true, path: '/ledgerBorrow/borrowMgt/loan', name: '借出', component: asyncComponent(() => import("../container/ledgerBorrow/borrowMgt/loan"))},
    ] 
 }

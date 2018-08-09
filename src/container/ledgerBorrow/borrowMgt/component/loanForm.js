@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import {Row, Form, Input, Col, DatePicker, Select} from 'antd';
 
-import borrowMgt from '../../../../api/borrowMgt';
+import ledgerBorrow from '../../../../api/ledgerBorrow';
 
 import request from '../../../../utils/request';
 
@@ -33,7 +33,7 @@ class LoanForm extends Component{
     }
 
     componentDidMount() {
-        request(borrowMgt.selectUseDeptList, {     //借出科室
+        request(ledgerBorrow.selectUseDeptList, {     //借出科室
             body: queryString.stringify({ deptType: "00" }),
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
