@@ -105,6 +105,6 @@
 :global(.baseInfo-assetInfo .ant-form-item-label.ant-col-sm-5){
   text-align:left;
 }
-:global(.baseInfo-assetInfo .ant-form-item-label.ant-col-sm-6){
+:global(.baseInfo-assetInfo .ant-form-item-label.ant-col-sm-6),:global(.baseInfo-assetInfo .ant-form-item-label.ant-col-sm-7){
   text-align:left;
 }
