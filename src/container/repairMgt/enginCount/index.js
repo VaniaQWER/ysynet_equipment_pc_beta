@@ -56,7 +56,7 @@ const columns = [
 
 /**
  * @param  rrpairNumberList 维修台数 ：[x inRrpairUserName 用户名 , y  rrpairNumber 维修台数]
- * @param  rrpairDateNumList 维修天数图 ：[x rrpairDateNum 用户名 , y  rrpairDateNum 维修台数]
+ * @param  rrpairDateNumList 维修天数图 ：[x inRrpairUserName 用户名 , y  rrpairDateNum 维修台数]
  * @param  avgDayList 平均天数 ：[x inRrpairUserName 用户名 , y  avgDay 平均天数]
 
 */
@@ -73,14 +73,7 @@ class EnginCount extends PureComponent{
     query:{},//初始化的搜索条件
     allData:{},//当前图表所有数据
     chartData:[
-      { year: '1951 年', sales: 38 },
-      { year: '1952 年', sales: 52 },
-      { year: '1956 年', sales: 61 },
-      { year: '1957 年', sales: 145},
-      { year: '1958 年', sales: 48 },
-      { year: '1959 年', sales: 38 },
-      { year: '1960 年', sales: 38 },
-      { year: '1962 年', sales: 38 },
+      { year: '1951 年', sales: 38 }
     ],//图表-数据
     chartTitle:'维修台数',//默认图表的Y轴显示文字
     activedButton:'1',//有边框色样式的button
@@ -98,13 +91,13 @@ class EnginCount extends PureComponent{
       success: data => {
         if(data.status){
           let allData = data.result;
-          this.setState({allData,query:val,chartData:allData.rrpairNumberList})
+          this.setState({allData,query:val,chartData:allData[this.state.chartFieldText]})
         }
       },
       error: err => {console.log(err)}
     })
     //获取table数据
-    if(!this.state.disable){
+    if(this.refs.table){
       this.refs.table.fetch(val)
     }
   }
@@ -112,6 +105,12 @@ class EnginCount extends PureComponent{
   tabChange = (key) => {
     let ret = key==='1'? true:false;
     this.setState({disable:ret})
+    if(key==="1"){
+      this.SearchForm.props.form.setFieldsValue({rrpairUserName:''})
+      this.onSearch(this.SearchForm.props.form.getFieldsValue());
+    }else{
+      this.onSearch(this.SearchForm.props.form.getFieldsValue());
+    }
   }
   //左侧按钮切换 - 更换data源
   /**
@@ -120,7 +119,6 @@ class EnginCount extends PureComponent{
    * @param dataField - 对应更改数据源的字段
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
-    console.log(dataField,this.state.allData)
     this.setState({
       chartTitle:title,
       activedButton:hasStyleIndex,
@@ -133,7 +131,7 @@ class EnginCount extends PureComponent{
     const { disable , chartData , chartTitle , activedButton , query} = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
-        <SearchForm ref='form' query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
+        <SearchForm wrappedComponentRef={(inst) => this.SearchForm = inst}  query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
         <Tabs defaultActiveKey="1" onChange={this.tabChange}>
           {/*chart*/}
           <TabPane tab="图" key="1">
@@ -250,7 +248,6 @@ class EnginCount extends PureComponent{
     }
     //选择管理科室
     onSelect = (val) => {
-      console.log(val)
       this.props.query({bDeptId:val});
     }
  
