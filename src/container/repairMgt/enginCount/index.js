@@ -53,6 +53,19 @@ const columns = [
     width:100,
   }
 ];
+
+/**
+ * @param  rrpairNumberList 维修台数 ：[x inRrpairUserName 用户名 , y  rrpairNumber 维修台数]
+ * @param  rrpairDateNumList 维修天数图 ：[x rrpairDateNum 用户名 , y  rrpairDateNum 维修台数]
+ * @param  avgDayList 平均天数 ：[x inRrpairUserName 用户名 , y  avgDay 平均天数]
+
+*/
+const chartField ={
+  rrpairNumberList:['inRrpairUserName','rrpairNumber'],
+  rrpairDateNumList:['inRrpairUserName','rrpairDateNum'],
+  avgDayList:['inRrpairUserName','avgDay']
+}
+
 class EnginCount extends PureComponent{
 
   state={
@@ -71,6 +84,7 @@ class EnginCount extends PureComponent{
     ],//图表-数据
     chartTitle:'维修台数',//默认图表的Y轴显示文字
     activedButton:'1',//有边框色样式的button
+    chartFieldText:'rrpairNumberList',//当前字段
   }
   
   //表单搜索 - 获取数据 并更新图表以及table
@@ -83,9 +97,8 @@ class EnginCount extends PureComponent{
       },
       success: data => {
         if(data.status){
-          console.log(9999)
           let allData = data.result;
-          this.setState({allData,query:val})
+          this.setState({allData,query:val,chartData:allData.rrpairNumberList})
         }
       },
       error: err => {console.log(err)}
@@ -111,7 +124,8 @@ class EnginCount extends PureComponent{
     this.setState({
       chartTitle:title,
       activedButton:hasStyleIndex,
-      // chartData:this.state.allData[dataField]
+      chartData:this.state.allData[dataField],
+      chartFieldText:dataField
     })  
   }
   
@@ -124,9 +138,9 @@ class EnginCount extends PureComponent{
           {/*chart*/}
           <TabPane tab="图" key="1">
             <Col span={2}>
-              <Button style={buttonStyle} actived={activedButton==='1'?'actived':''} onClick={()=>this.changeChartData('维修台数','1','维修台数字段')  }>维修台数</Button>
-              <Button style={buttonStyle} actived={activedButton==='2'?'actived':''} onClick={()=>this.changeChartData('维修天数','2','维修天数字段')  }>维修天数</Button>
-              <Button style={buttonStyle} actived={activedButton==='3'?'actived':''}  onClick={()=>this.changeChartData('平均天数','3','平均天数字段') }>平均天数</Button>
+              <Button style={buttonStyle} actived={activedButton==='1'?'actived':''} onClick={()=>this.changeChartData('维修台数','1','rrpairNumberList')  }>维修台数</Button>
+              <Button style={buttonStyle} actived={activedButton==='2'?'actived':''} onClick={()=>this.changeChartData('维修天数','2','rrpairDateNumList')  }>维修天数</Button>
+              <Button style={buttonStyle} actived={activedButton==='3'?'actived':''}  onClick={()=>this.changeChartData('平均天数','3','avgDayList') }>平均天数</Button>
             </Col>
             <Col span={20}>
               <Chart height={500} data={chartData}  forceFit>
@@ -148,10 +162,18 @@ class EnginCount extends PureComponent{
                     }}
                   />
                 </Guide>
-                <Axis name="year" />
-                <Axis name="sales" />
-                <Tooltip crosshairs={{type : "y"}}/>
-                <Geom type="interval" position="year*sales"  size={15}  />
+                <Axis name={chartField[this.state.chartFieldText][0]} />
+                <Tooltip crosshairs={{type : "y"}} />
+                <Geom 
+                  type="interval"
+                  tooltip={[`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`, (time, sold) => {
+                    return {
+                      name: chartTitle,
+                      value: sold
+                    };
+                  }]}
+                  position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
+                  size={15}  />
               </Chart>
             </Col>
           </TabPane>
@@ -248,7 +270,7 @@ class EnginCount extends PureComponent{
                 optionFilterProp="children"
                 filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
               >
-                <Option value='666' key='666'>全部</Option>
+                <Option value='' key=''>全部</Option>
                 {manageOptions.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
               </Select>
               )}
