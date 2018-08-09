@@ -2,7 +2,7 @@
  * 档案管理-资产档案-详情-基本信息-资产信息
  */
 import React, { Component } from 'react';
-import { Form , Card , Input , Row, Col,message , Button } from 'antd';
+import { Form , Card , Input , Row, Col,message , Button , Alert} from 'antd';
 import request from '../../../utils/request';
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
@@ -147,7 +147,9 @@ class FundStructure extends Component {
     const { editable } = this.state;
     const header= (
       <Row>
-        <Col span={12}>资金结构</Col>
+        <Col span={12}>资金结构
+          <Alert style={{display:'inline-block',paddingRight:50,marginLeft:15}} message="修改累计折旧请同时修改已折月数" type="warning" closable></Alert>
+        </Col>
         <Col span={12} style={{textAlign:'right'}}>
           <Button type='primary' style={{marginRight:15}} onClick={()=>this.handleSubmit()}>{editable? '保存':'编辑'}</Button>
         </Col>

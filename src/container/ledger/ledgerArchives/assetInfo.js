@@ -123,7 +123,7 @@ class ModalForm extends Component {
               key={`keshi${k}`}
             >
               {getFieldDecorator(`deptGuid[${k}]`, {
-                initialValue:modalFillBack.options[k].deptGuid
+                initialValue:modalFillBack.options[k]?modalFillBack.options[k].deptGuid:''
               })(
                 <Select 
                   showSearch
@@ -148,7 +148,7 @@ class ModalForm extends Component {
               key={`shareRatio${k}`}
             >
               {getFieldDecorator(`shareRatio[${k}]`, {
-                initialValue:modalFillBack.options[k].shareRatio*100
+                initialValue:modalFillBack.options[k]?modalFillBack.options[k].shareRatio*100 :''
               })(
                   <Input addonAfter='%' style={{width:'60%'}}/>
               )}
@@ -206,7 +206,7 @@ class ModalForm extends Component {
               key={`shareRatio0`}
             >
               {getFieldDecorator(`shareRatio[0]`, {
-                initialValue:modalFillBack.options?modalFillBack.options[0].shareRatio*100:''
+                initialValue:modalFillBack.options[0].shareRatio?modalFillBack.options[0].shareRatio*100:'100'
               })(
                   <Input addonAfter='%' style={{width:'70%'}}/>
               )}
@@ -392,11 +392,13 @@ class AssetInfo extends Component {
         //   "proportion" : "***"; //分摊比例 
         // }]
         console.log('Received values of form: ', values);
-        let deptList = values.deptGuid.map((item,index)=>{
+        let deptList = [];
+        values.deptGuid.map((item,index)=>{
           let ret = {
             deptGuid:item,
             proportion: values.shareRatio[index]
           }
+          deptList.push(ret)
           return ret 
         })
         values.deptList = deptList;
@@ -703,7 +705,7 @@ class AssetInfo extends Component {
                         <Input addonAfter='元/小时'/>
                     )}
                   </FormItem>
-                  :<ShowDomInfo name="借用单价">{AssetInfoData.rentingPrice}</ShowDomInfo>
+                  :<ShowDomInfo name="借用单价">{AssetInfoData && AssetInfoData.rentingPrice?`${AssetInfoData.rentingPrice}元/小时`:''}</ShowDomInfo>
               }
             </Col>  
             <Col span={8}>

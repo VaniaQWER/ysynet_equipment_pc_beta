@@ -38,7 +38,7 @@ class CheckMeterStand extends Component{
             'Content-Type': 'application/x-www-form-urlencoded'
           },
           success: (data) => {
-            let assetsInfo = data.result[0];
+            let assetsInfo = data.result.rows[0];
             let nextMeasureDate2 = this.nextMeasureDateValue(assetsInfo.nextMeasureDate, assetsInfo.measureCycly);
             assetsInfo.nextMeasureDate2 = nextMeasureDate2;
             this.setState({ 
@@ -89,7 +89,6 @@ class CheckMeterStand extends Component{
 
       disabledStartDate = (measureDate)=>{
         const {nextMeasureDate} = this.state;
-        console.log(nextMeasureDate)
         if (!nextMeasureDate || !measureDate) {
           return false;
         } 
