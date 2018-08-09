@@ -97,7 +97,7 @@ const chartField ={
       error: err => {console.log(err)}
     })
     //获取table数据
-    if(!this.state.disable){
+    if(this.refs.table){
       this.refs.table.fetch(val)
     }
   }
@@ -106,15 +106,10 @@ const chartField ={
     let ret = key==='1'? true:false;
     this.setState({disable:ret})
     if(key==="1"){
-      console.log(this.refs.form.getFieldsValue())
-      this.refs.form.setFieldsValue({engineerUserName:''})
-      this.onSearch(this.refs.form.getFieldsValue());
+      this.SearchForm.props.form.setFieldsValue({engineerUserName:''})
+      this.onSearch(this.SearchForm.props.form.getFieldsValue());
     }else{
-      console.log(this.refs.form.getFieldsValue())
-      const val = this.refs.form.getFieldsValue()
-      if(!this.state.disable){
-        this.refs.table.fetch(val)
-      }
+      this.onSearch(this.SearchForm.props.form.getFieldsValue());
     }
   }
   //左侧按钮切换 - 更换data源
@@ -124,7 +119,6 @@ const chartField ={
    * @param dataField - 对应更改数据源的字段
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
-    console.log(dataField,this.state.allData)
     this.setState({
       chartTitle:title,
       activedButton:hasStyleIndex,
@@ -137,7 +131,7 @@ const chartField ={
     const { disable , chartData , chartTitle , activedButton , query} = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
-        <SearchForm ref='form' query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
+        <SearchForm wrappedComponentRef={(inst) => this.SearchForm = inst}  query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
         <Tabs defaultActiveKey="1" onChange={this.tabChange}>
           {/*chart*/}
           <TabPane tab="图" key="1">
@@ -255,7 +249,6 @@ const chartField ={
   }
   //选择管理科室
   onSelect = (val) => {
-    console.log(val)
     this.props.query({bDeptId:val});
   }
 
