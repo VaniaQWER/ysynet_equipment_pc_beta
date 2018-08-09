@@ -12,7 +12,7 @@ import LoanForm from './component/loanForm';
 
 import ModalForm from './component/modalForm';
 
-import borrowMgt from '../../../api/borrowMgt';
+import ledgerBorrow from '../../../api/ledgerBorrow';
 
 import request from '../../../utils/request';
 
@@ -34,7 +34,7 @@ class Loan extends Component {
     }
 
     componentDidMount() {
-        request(borrowMgt.mgtDeptList, {     //管理科室
+        request(ledgerBorrow.mgtDeptList, {     //管理科室
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -101,7 +101,7 @@ class Loan extends Component {
     }
 
     saveRequest = (query) => {
-        request(borrowMgt.addBorrow, {
+        request(ledgerBorrow.addBorrow, {
             body: queryString.stringify(query),
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -248,7 +248,7 @@ class Loan extends Component {
                         pagination={{
                             showTotal: (total, range) => `总共${total}个项目`
                         }}
-                        url={borrowMgt.queryAssetsList}
+                        url={ledgerBorrow.queryAssetsList}
                         scroll={{x: '100%'}}
                         showHeader={true}
                         columns={modalColumns}

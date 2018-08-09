@@ -4,7 +4,7 @@ import BorrowMgtForm from './component/borrowMgtForm';
 
 import tableGrid from '../../../component/tableGrid';
 
-import borrowMgt from '../../../api/borrowMgt';
+import ledgerBorrow from '../../../api/ledgerBorrow';
 
 import request from '../../../utils/request';
 
@@ -79,7 +79,7 @@ class BorrowMgt extends Component {
         })
     }
     giveback = (query) => {
-        request(borrowMgt.updateBorrow, {
+        request(ledgerBorrow.updateBorrow, {
                 body: queryString.stringify(query),
                 headers:{
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -153,7 +153,7 @@ class BorrowMgt extends Component {
                 </Card>
                 <Card style={{ margin: '0 16px' }}>
                     <Row style={{ marginBottom: 50 }}>
-                        <Link to={{ pathname: `/borrowMgt/subBorrowMgt/loan` }}><Button type="primary" >新增借出</Button></Link>
+                        <Link to={{ pathname: `/ledgerBorrow/borrowMgt/loan` }}><Button type="primary" >新增借出</Button></Link>
                         <Button onClick={this.showModal} style={{ marginLeft: 8 }} type="primary" >归还</Button>
                     </Row>
                     <RemoteTable
@@ -172,7 +172,7 @@ class BorrowMgt extends Component {
                             showTotal: (total, range) => `总共${total}个项目`
                         }}
                         query={query}
-                        url={borrowMgt.BorrowRecordList}
+                        url={ledgerBorrow.BorrowRecordList}
                         scroll={{x: '150%'}}
                         showHeader={true}
                         columns={columns}
