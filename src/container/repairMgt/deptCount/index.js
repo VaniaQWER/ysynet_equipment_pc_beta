@@ -4,7 +4,7 @@
 * @Last Modified time: 2018-08-08 14:16:06 
  */
 import React , { PureComponent } from 'react';
-import { Layout , Col , Row , Input , DatePicker , Select , Form , Icon , Button , Tabs} from 'antd';
+import { Layout , Col , Row , DatePicker , Select , Form , Icon , Button , Tabs} from 'antd';
 import {Chart, Axis, Tooltip, Geom , Guide , Legend } from "bizcharts";
 import TableGrid from '../../../component/tableGrid';
 import operation from '../../../api/operation';

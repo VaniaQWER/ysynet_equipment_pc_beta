@@ -107,7 +107,7 @@ class WithDraw extends React.Component{
             setTimeout(()=>{
               this.setState({'loading':false})
               message.success('操作成功')
-              this.refs.table.fetch(this.state.query);
+              this.refs.table.fetch(this.props.form.getFieldsValue());
             },2000)
           }else{
             message.error(data.msg)

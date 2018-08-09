@@ -14,6 +14,12 @@ const operation={
   /*科室统计 */
   selectUseDeptCountChart:`${_local}/rrpairOrderController/selectUseDeptCountChart`,//科室统计图表数据
   selectUseDeptCount:`${_local}/rrpairOrderController/selectUseDeptCount`,//科室统计列表
+
+
+  /* 保养统计 */
+  selectMaintainEngineerCountChart:`${_local}/maintainOrderController/selectMaintainEngineerCountChart`,//保养统计图表数据
+  selectMaintainEngineerCount:`${_local}/maintainOrderController/selectMaintainEngineerCount`,//保养统计列表
+
 }
 
 export default operation;
