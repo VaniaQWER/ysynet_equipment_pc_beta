@@ -125,7 +125,7 @@ const chartField ={
       error: err => {console.log(err)}
     })
     //获取table数据
-    if(!this.state.disable){
+    if(this.refs.table){
       this.refs.table.fetch(val)
     }
   }
@@ -135,8 +135,10 @@ const chartField ={
     this.setState({disable:ret})
 
     if(key==="1"){
-      this.refs.form.setFieldsValue({useDeptId:''})
-      // this.onSearch(this.refs.form.getFieldsValue());
+      this.SearchForm.props.form.setFieldsValue({useDeptId:''})
+      this.onSearch(this.SearchForm.props.form.getFieldsValue());
+    }else{
+      this.onSearch(this.SearchForm.props.form.getFieldsValue());
     }
   }
 
@@ -145,7 +147,6 @@ const chartField ={
    * @param dataField 当前维修金额对应的X，Y轴
    */
   formatData = (data,dataField) => {
-    console.log(data)
     let actualPriceObj = {name:'维修费'};
     let fittingPriceObj = {name:'材料费'};
     let deptNameArr = []; // X轴的科室名称
@@ -192,7 +193,7 @@ const chartField ={
     const { disable , chartData , chartTitle , activedButton , query , chartFieldText} = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
-        <SearchForm ref='form' query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
+        <SearchForm wrappedComponentRef={(inst) => this.SearchForm = inst} query={(val)=>this.onSearch(val)} disable={disable} ></SearchForm>
         <Tabs defaultActiveKey="1" onChange={this.tabChange}>
           {/*chart*/}
           <TabPane tab="图" key="1">
@@ -337,7 +338,6 @@ const chartField ={
   }
   //选择管理科室
   onSelect = (val) => {
-    console.log(val)
     this.props.query({bDeptId:val});
   }
 

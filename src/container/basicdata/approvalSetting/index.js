@@ -4,7 +4,7 @@
 * @Last Modified time: 2018-07-11 15:05:57 
  */
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout,Table,Button,message,Form,Select,Modal} from 'antd';
+import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,Modal} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import basicdata from '../../../api/basicdata';
@@ -115,7 +115,10 @@ class ApprovalSetting extends Component {
     selectedRowKeys:[],//选中的tablekey
   }
   searchTable = (val) => {
-    this.refs.table.fetch(val)
+    if(this.refs.table){
+      this.refs.table.fetch(val)
+    }
+    this.setState({query:val})
   }
   //删除配置
   deleteRow = (record)=>{
@@ -238,8 +241,9 @@ class ApprovalSetting extends Component {
           </Row>
         </div>
         {
-          this.state.query ?
-          <RemoteTable
+          this.state.query.bDeptId?
+        
+        <RemoteTable
           ref='table'
           query={this.state.query}
           url={basicdata.selectZCApprovalList}
@@ -255,8 +259,8 @@ class ApprovalSetting extends Component {
               this.setState({selectedRowKeys})
             },
           }}
-        /> :
-        <Table columns={columns} dataSource={[]}></Table>
+        />
+        :null
         }
         
       </Content>

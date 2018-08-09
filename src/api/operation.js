@@ -14,7 +14,9 @@ const operation={
   /*科室统计 */
   selectUseDeptCountChart:`${_local}/rrpairOrderController/selectUseDeptCountChart`,//科室统计图表数据
   selectUseDeptCount:`${_local}/rrpairOrderController/selectUseDeptCount`,//科室统计列表
-
+  /* 故障统计 */
+  selectAssectRrpairCountChart:`${_local}/rrpairOrderController/selectAssectRrpairCountChart`,//故障统计图表数据
+  selectAssectRrpairCount:`${_local}/rrpairOrderController/selectAssectRrpairCount`,//故障统计列表
 
   /* 保养统计 */
   selectMaintainEngineerCountChart:`${_local}/maintainOrderController/selectMaintainEngineerCountChart`,//保养统计图表数据
