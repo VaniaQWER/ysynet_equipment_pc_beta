@@ -5,12 +5,11 @@
  */
 import React , { PureComponent } from 'react';
 import { Layout , Col , Row , DatePicker , Select , Form , Icon , Button , Tabs , Input } from 'antd';
-import {Chart, Axis, Tooltip, Geom , Guide , Legend } from "bizcharts";
+import {Chart, Axis, Tooltip, Geom , Guide} from "bizcharts";
 import TableGrid from '../../../component/tableGrid';
 import ledgerBorrow from '../../../api/ledgerBorrow';
 import request from '../../../utils/request';
 import queryString from 'querystring';
-import { DataSet } from '@antv/data-set';
 import './style.css';
 const Text = Guide.Text;
 const { RemoteTable } = TableGrid;
@@ -100,7 +99,7 @@ const chartField ={
         if(data.status){
           let allData = data.result;
           const { chartFieldText } = this.state;
-          this.setState({allData,query:val,chartData:this.formatData( allData[this.state.chartFieldText] ) })
+          this.setState({allData,query:val,chartData:this.formatData( allData[chartFieldText] ) })
         }
       },
       error: err => {console.log(err)}
@@ -189,17 +188,17 @@ const chartField ={
                       }}
                     />
                   </Guide>
-                  <Axis name={chartField[this.state.chartFieldText][0]} />
+                  <Axis name={chartField[chartFieldText][0]} />
                  <Tooltip crosshairs={{type : "y"}} />
                   <Geom 
                   type="interval"
-                  tooltip={[`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`, (time, sold) => {
+                  tooltip={[`${chartField[chartFieldText][0]}*${chartField[chartFieldText][1]}`, (time, sold) => {
                     return {
                       name: chartTitle,
                       value: sold
                     };
                   }]}
-                  position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
+                  position={`${chartField[chartFieldText][0]}*${chartField[chartFieldText][1]}`}  
                   size={15}/>
               </Chart>
             </Col>
@@ -283,7 +282,7 @@ const chartField ={
   }
 
 render() {
-  const { display , manageOptions , useOptions} = this.state;
+  const { display , manageOptions } = this.state;
   const { getFieldDecorator } = this.props.form;
   return (
     <Form onSubmit={this.handleSearch}>
