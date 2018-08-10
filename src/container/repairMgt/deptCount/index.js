@@ -6,10 +6,12 @@
 import React , { PureComponent } from 'react';
 import { Layout , Col , Row , DatePicker , Select , Form , Icon , Button , Tabs} from 'antd';
 import {Chart, Axis, Tooltip, Geom , Guide , Legend } from "bizcharts";
+import { getRangeTime } from '../../../utils/tools';
 import TableGrid from '../../../component/tableGrid';
 import operation from '../../../api/operation';
 import request from '../../../utils/request';
 import queryString from 'querystring';
+import moment from 'moment';
 import { DataSet } from '@antv/data-set';
 import '../style.css';
 const Text = Guide.Text;
@@ -67,7 +69,7 @@ const chartField ={
   rrpairNumberList:['useDeptName','rrpairNumber'],
   actualPriceList:['useDeptName','rrpairDateNum']
 }
-
+const initTime = getRangeTime('month',1,'before') ;
  class DeptCount extends PureComponent{
  
   state={
@@ -118,13 +120,27 @@ const chartField ={
   tabChange = (key) => {
     let ret = key==='1'? true:false;
     this.setState({disable:ret})
-
     if(key==="1"){
       this.SearchForm.props.form.setFieldsValue({useDeptId:''})
-      this.onSearch(this.SearchForm.props.form.getFieldsValue());
-    }else{
-      this.onSearch(this.SearchForm.props.form.getFieldsValue());
     }
+    this.onSearch(this.formatSubmit());
+    
+  }
+  formatSubmit = () => {
+    let values = this.SearchForm.props.form.getFieldsValue() ; 
+    
+    if(values.createDate.length) {
+      values.createStartDate = moment(values.createDate[0]).format('YYYY-MM-DD');
+      values.createEndDate = moment(values.createDate[1]).format('YYYY-MM-DD');
+      delete values['createDate']
+    }else{
+      delete values['createDate']
+    }
+    for (const key in values) {
+      values[key] = values[key] === undefined? "" : values[key];
+    }
+    this.setState({query:values})
+    return values
   }
 
   /**
@@ -161,7 +177,6 @@ const chartField ={
         key: '', // x
         value: '', // y
       });
-      console.log(dv)
       return dv;
     }
   }
@@ -173,7 +188,6 @@ const chartField ={
    * @param dataField - 对应更改数据源的字段
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
-    console.log(dataField,this.state.allData)
     let data = this.state.allData[dataField] ;
     //双柱图 data转换
     if(dataField==='actualPriceList'){ 
@@ -287,7 +301,7 @@ const chartField ={
         //设置默认管理科室
         this.setState({ manageOptions });
         val = manageOptions[0].value;
-        await this.props.query({bDeptId:val})
+        await this.props.query({bDeptId:val,createStartDate:initTime[0],createEndDate:initTime[1]})
       },
       error: (err) => console.log(err)
     };
@@ -319,8 +333,8 @@ const chartField ={
     this.props.form.validateFields((err, values) => {
       const createDate = values.createDate === undefined ? '': values.createDate;
       if(createDate.length>0) {
-        values.createStartDate = createDate[0].format('YYYY-MM-DD');
-        values.createEndDate = createDate[1].format('YYYY-MM-DD');
+        values.createStartDate = moment(createDate[0]).format('YYYY-MM-DD');
+        values.createEndDate = moment(createDate[1]).format('YYYY-MM-DD');
         delete values['createDate']
       }else{
         delete values['createDate']
@@ -334,12 +348,9 @@ const chartField ={
   //重置
   handleReset = () => {
     this.props.form.resetFields();
+    this.props.form.setFieldsValue({createDate:[]});
   }
-  //选择管理科室
-  onSelect = (val) => {
-    this.props.query({bDeptId:val});
-  }
-
+ 
 render() {
   const { display , manageOptions , useOptions} = this.state;
   const { getFieldDecorator } = this.props.form;
@@ -356,7 +367,6 @@ render() {
               optionFilterProp="children"
               filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
             >
-              <Option value='' key=''>全部</Option>
               {manageOptions.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
             </Select>
             )}
@@ -364,9 +374,11 @@ render() {
         </Col>
         <Col span={8}>
           <FormItem label={`统计时间`} {...formItemLayout}>
-            {getFieldDecorator('createDate', {})(
-              <RangePicker style={{width: 200}} />
-            )}
+            {getFieldDecorator('createDate', {
+                initialValue:[moment(initTime[0],'YYYY-MM-DD'),moment(initTime[1],'YYYY-MM-DD')]
+              })(
+                <RangePicker style={{width: 250}} />
+              )}
           </FormItem>
         </Col>
         <Col span={8}  style={{display: display}}>

@@ -97,6 +97,53 @@ export function sortUpByKey(arr,key){
 export function sortDownByKey(arr,key){
   return  arr.sort(compareDown(key))
 }
+
+
+
+function getTimeStr (DT){
+  let y = DT.getFullYear();
+  let m = DT.getMonth()+1 <10 ? `0${DT.getMonth()+1}`:DT.getMonth()+1;
+  let d = DT.getDate() <10 ? `0${DT.getDate()}`:DT.getDate();
+  let str = `${y}-${m}-${d}`;
+  return str
+}
+/**
+ * @param type  'year','month','day' //根据年月日来控制范围
+ * @param range  Number //年月日数量
+ * @param timeType  'before','after' //获取当前时间之前的时间或者之后的时间
+ * use getRangeTime('month',1,'before') 
+ * return ['2018-08-10','2018-09-20']
+ */
+export const getRangeTime = (type,range,timeType)=>{
+  let DT = new Date();
+  let firstTime = getTimeStr(DT);
+  if(type==='year'){
+    if(timeType==='before'){
+      DT.setFullYear(DT.getFullYear()-range);
+    }else{
+      DT.setFullYear(DT.getFullYear()+range);
+    }
+  }else if(type==='month'){
+    if(timeType==='before'){
+      DT.setMonth(DT.getMonth()-range);
+    }else{
+      DT.setMonth(DT.getMonth()+range);
+    }
+  }else if(type==='day'){
+    if(timeType==='before'){
+      DT.setDate(DT.getDate()-range);
+    }else{
+      DT.setDate(DT.getDate()+range);
+    }
+  }else{}
+  let secondTime = getTimeStr(DT);
+  if(Date.parse(firstTime)>Date.parse(secondTime)){
+    return [secondTime,firstTime]
+  }else{
+    return [firstTime,secondTime]
+  }
+}
+
 /*查询字典*/
 export const CommonData = (type, cb, params={}, url) => {
   if(localStorage.getItem(type)) {

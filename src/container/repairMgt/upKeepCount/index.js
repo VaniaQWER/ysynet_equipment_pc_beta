@@ -6,10 +6,12 @@
 import React , { PureComponent } from 'react';
 import { Layout , Col , Row , Input , DatePicker , Select , Form , Icon , Button , Tabs } from 'antd';
 import {Chart, Axis, Tooltip, Geom , Guide } from "bizcharts";
+import { getRangeTime } from '../../../utils/tools';
 import TableGrid from '../../../component/tableGrid';
 import operation from '../../../api/operation';
 import request from '../../../utils/request';
 import queryString from 'querystring';
+import moment from 'moment';
 import '../style.css';
 const Text = Guide.Text;
 const { RemoteTable } = TableGrid;
@@ -65,6 +67,7 @@ const chartField ={
   maintainDateNumList:['engineerUserName','maintainDateNum'],
   maintainAvgDayList:['engineerUserName','maintainAvgDay']
 }
+const initTime = getRangeTime('month',1,'before') ;
 
  class UpKeepCount extends PureComponent{
   
@@ -106,11 +109,24 @@ const chartField ={
     let ret = key==='1'? true:false;
     this.setState({disable:ret})
     if(key==="1"){
-      this.SearchForm.props.form.setFieldsValue({engineerUserName:''})
-      this.onSearch(this.SearchForm.props.form.getFieldsValue());
-    }else{
-      this.onSearch(this.SearchForm.props.form.getFieldsValue());
+      this.SearchForm.props.form.setFieldsValue({engineerUserName:''})   
     }
+    this.onSearch(this.formatSubmit());
+  }
+  formatSubmit = () => {
+    let values = this.SearchForm.props.form.getFieldsValue() ; 
+    if(values.createDate.length) {
+      values.maintainStartDate = moment(values.createDate[0]).format('YYYY-MM-DD');
+      values.maintainEndDate = moment(values.createDate[1]).format('YYYY-MM-DD');
+      delete values['createDate']
+    }else{
+      delete values['createDate']
+    }
+    for (const key in values) {
+      values[key] = values[key] === undefined? "" : values[key];
+    }
+    this.setState({query:values})
+    return values
   }
   //左侧按钮切换 - 更换data源
   /**
@@ -214,7 +230,7 @@ const chartField ={
         //设置默认管理科室
         this.setState({ manageOptions });
         val = manageOptions[0].value;
-        await this.props.query({bDeptId:val})
+        await this.props.query({bDeptId:val,maintainStartDate:initTime[0],maintainEndDate:initTime[1]})
       },
       error: (err) => console.log(err)
     };
@@ -231,8 +247,8 @@ const chartField ={
     this.props.form.validateFields((err, values) => {
       const createDate = values.createDate === undefined ? '': values.createDate;
       if(createDate.length>0) {
-        values.maintainStartDate = createDate[0].format('YYYY-MM-DD');
-        values.maintainEndDate = createDate[1].format('YYYY-MM-DD');
+        values.maintainStartDate = moment(createDate[0]).format('YYYY-MM-DD');
+        values.maintainEndDate = moment(createDate[1]).format('YYYY-MM-DD');
         delete values['createDate']
       }else{
         delete values['createDate']
@@ -246,10 +262,7 @@ const chartField ={
   //重置
   handleReset = () => {
     this.props.form.resetFields();
-  }
-  //选择管理科室
-  onSelect = (val) => {
-    this.props.query({bDeptId:val});
+    this.props.form.setFieldsValue({createDate:[]})
   }
 
 render() {
@@ -268,7 +281,6 @@ render() {
               optionFilterProp="children"
               filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
             >
-              <Option value='' key=''>全部</Option>
               {manageOptions.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
             </Select>
             )}
@@ -276,9 +288,11 @@ render() {
         </Col>
         <Col span={8}>
           <FormItem label={`统计时间`} {...formItemLayout}>
-            {getFieldDecorator('createDate', {})(
-              <RangePicker style={{width: 200}} />
-            )}
+            {getFieldDecorator('createDate', {
+                initialValue:[moment(initTime[0],'YYYY-MM-DD'),moment(initTime[1],'YYYY-MM-DD')]
+              })(
+                <RangePicker style={{width: 250}} />
+             )}
           </FormItem>
         </Col>
         <Col span={8}  style={{display: display}}>
