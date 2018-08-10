@@ -67,25 +67,23 @@ const columns = [
     title:'维修总费用',
     dataIndex: 'actualPrice',
     width:100,
-    render:(text)=>text?Number(text).toFixed(2):''
+    render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
     title:'材料费',
     dataIndex: 'fittingPrice',
     width:100,
-    render:(text)=>text?Number(text).toFixed(2):''
+    render:(text)=>String(text)?Number(text).toFixed(2):''
   },
 ];
 
 /**
- * @param  rrpairNumberList 维修台数 ：[x inRrpairUserName 用户名 , y  rrpairNumber 维修台数]
- * @param  rrpairDateNumList 维修天数图 ：[x rrpairDateNum 用户名 , y  rrpairDateNum 维修台数]
- * @param  avgDayList 平均天数 ：[x inRrpairUserName 用户名 , y  avgDay 平均天数]
-
+ * @param  rrpairNumberList 维修次数 ：[x equipmentStandardName 设备 , y  rrpairNumber 维修台数]
+ * @param  actualPriceList 维修金额 ：[x equipmentStandardName 设备 , y  rrpairDateNum 维修台数]
 */
 const chartField ={
-  rrpairNumberList:['useDeptName','rrpairNumber'],
-  actualPriceList:['useDeptName','rrpairDateNum']
+  rrpairNumberList:['equipmentStandardName','rrpairNumber'],
+  actualPriceList:['equipmentStandardName','rrpairDateNum']
 }
  class ErrorCount extends PureComponent{
   
@@ -101,22 +99,6 @@ const chartField ={
     chartFieldText:'rrpairNumberList',//当前字段
   }
 
-  componentDidMount(){
-    const data = [
-      { name:'London', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.' :39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
-      { name:'Berlin', 'Jan.': 12.4, 'Feb.': 23.2, 'Mar.' :34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4}
-    ];
-    const ds = new DataSet();
-    const dv = ds.createView().source(data);
-    dv.transform({
-      type: 'fold',
-      fields: [ 'Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.' ], // 展开字段集
-      key: '月份', // key字段
-      value: '月均降雨量', // value字段
-    });
-    console.log(dv)
-  }
-  
   //表单搜索 - 获取数据 并更新图表以及table
   onSearch = (val)=>{ 
     //获取图表数据
@@ -170,9 +152,9 @@ const chartField ={
     let fittingPriceObj = {name:'材料费'};
     let deptNameArr = []; // X轴的科室名称
     data.map(item=>{
-      actualPriceObj[`${item.useDeptName}`]=item.actualPrice;
-      fittingPriceObj[`${item.useDeptName}`]=item.fittingPrice;
-      deptNameArr.push(item.useDeptName);
+      actualPriceObj[`${item.equipmentStandardName}`]=item.actualPrice;
+      fittingPriceObj[`${item.equipmentStandardName}`]=item.fittingPrice;
+      deptNameArr.push(item.equipmentStandardName);
       return item;
     })
     let dataSource = [actualPriceObj , fittingPriceObj];
@@ -234,7 +216,7 @@ const chartField ={
                   <Text
                     top={true}
                     position={ ['98%','97%'] }  // 文本的起始位置，值为原始数据值，支持 callback
-                    content= {'科室'} // 显示的文本内容
+                    content= {'设备'} // 显示的文本内容
                     style= {{
                       fontSize: '12', // 文本大小
                     }}
