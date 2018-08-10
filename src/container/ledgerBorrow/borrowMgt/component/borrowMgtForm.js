@@ -81,7 +81,8 @@ class BorrowMgtForm extends Component {
     startEndDate = (date) => {      //格式化开始结束时间
         let startTime = '';
         let endTime = '';
-        if(date !== undefined || date.length !== 0) {
+        date = date === undefined? [] : date;
+        if(date.length !== 0) {
             startTime = date[0].format('YYYY-MM-DD');
             endTime = date[1].format('YYYY-MM-DD');
         };

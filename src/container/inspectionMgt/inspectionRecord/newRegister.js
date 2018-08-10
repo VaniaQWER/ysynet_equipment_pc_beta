@@ -86,6 +86,8 @@ class NewRegister extends Component {
                         if(data.status) {
                             message.success('保存成功');
                             this.props.history.push(`/inspectionMgt/inspectionRecord`);
+                        }else {
+                            message.error(data.msg);
                         }
                     },
                     error: err => console.log(err)
