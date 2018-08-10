@@ -255,6 +255,7 @@ class AddEquimentDelivery extends Component{
       this.setState({unitList:data.rows})
     })
     CommonData('TF_BRAND', (data) => {
+      console.log(data.rows)
       this.setState({tfBrandList: _.unionBy(data.rows,'TF_CLO_NAME')})
     })
   }
@@ -292,6 +293,7 @@ class AddEquimentDelivery extends Component{
             return 
           }else{
             dataSource[i].purchaseUnit=this.gettfCode(dataSource[i].purchaseUnit);
+            // dataSource[i].tfBrand=this.gettfBrandName(dataSource[i].tfBrand);
             dataSource[i].amount = Number(dataSource[i].amount);
             dataSource[i].purchasePrice = Number(dataSource[i].purchasePrice);
             delete dataSource[i].guid
@@ -421,6 +423,17 @@ class AddEquimentDelivery extends Component{
     let CodeName = code.length>0 ? code[0].TF_CLO_NAME :''
     return CodeName
   }
+  gettfBrandName = (val) => {
+    let brandList = this.state.tfBrandList;
+    let code = brandList.filter(item=>{
+      if(item.TF_CLO_CODE===val){
+        return item
+      }
+      return null;
+    });
+    let CodeName = code.length>0 ? code[0].TF_CLO_NAME :''
+    return CodeName
+  }
 
   filterOption = (input, option) => {
     if(option.props.children){
@@ -432,7 +445,7 @@ class AddEquimentDelivery extends Component{
   render(){
     const { dataSource , unitList ,tfBrandList } = this.state;  
     const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
-    const tfBrandOption = tfBrandList.map(item=>(<Option key={item.TF_CLO_NAME} value={item.TF_CLO_NAME}>{item.TF_CLO_NAME}</Option>))
+    const tfBrandOption = tfBrandList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
     const columns = [
       {
         title:"产品名称",
@@ -481,7 +494,7 @@ class AddEquimentDelivery extends Component{
         width:150,
         render: (text,record,index) => {
           return(
-          record.editState ==="01" ? text :
+          record.editState ==="01" ? this.gettfBrandName(text) :
              <span>
               <i style={styles.redColor}>*</i>
               <Select 

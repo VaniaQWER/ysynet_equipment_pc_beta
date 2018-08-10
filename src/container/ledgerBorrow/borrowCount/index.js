@@ -145,7 +145,6 @@ const chartField ={
    * @param dataField - 对应更改数据源的字段
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
-    console.log(dataField,this.state.allData)
     let data = this.state.allData[dataField] ;
     data =  this.formatData(data,dataField);
     this.setState({

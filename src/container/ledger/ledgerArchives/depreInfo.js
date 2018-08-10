@@ -275,7 +275,7 @@ class DepreInfo extends Component {
                     {getFieldDecorator(`depreciationBeginDate`,{
                       initialValue: AssetInfoData.depreciationBeginDate?moment(AssetInfoData.depreciationBeginDate,'YYYY-MM'):null
                     })(
-                        <DatePicker/>
+                        <DatePicker.MonthPicker allowClear={false}/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="开始折旧时间">{ AssetInfoData.depreciationBeginDate?AssetInfoData.depreciationBeginDate.substr(0,7):'' }</ShowDomInfo>

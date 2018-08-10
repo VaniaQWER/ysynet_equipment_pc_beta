@@ -179,7 +179,6 @@ const chartField ={
         key: '', // x
         value: '', // y
       });
-      console.log(dv)
       return dv;
     }
   }
@@ -191,7 +190,6 @@ const chartField ={
    * @param dataField - 对应更改数据源的字段
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
-    console.log(dataField,this.state.allData)
     let data = this.state.allData[dataField] ;
     //双柱图 data转换
     if(dataField==='actualPriceList'){ 
