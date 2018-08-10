@@ -80,24 +80,7 @@ const chartField ={
     chartTitle:'维修次数',//默认图表的Y轴显示文字
     activedButton:'1',//有边框色样式的button
     chartFieldText:'rrpairNumberList',//当前字段
-  }
-
-  componentDidMount(){
-    const data = [
-      { name:'London', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.' :39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
-      { name:'Berlin', 'Jan.': 12.4, 'Feb.': 23.2, 'Mar.' :34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4}
-    ];
-    const ds = new DataSet();
-    const dv = ds.createView().source(data);
-    dv.transform({
-      type: 'fold',
-      fields: [ 'Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.' ], // 展开字段集
-      key: '月份', // key字段
-      value: '月均降雨量', // value字段
-    });
-    console.log(dv)
-  }
-  
+  }  
   //表单搜索 - 获取数据 并更新图表以及table
   onSearch = (val)=>{ 
     //获取图表数据
@@ -119,6 +102,8 @@ const chartField ={
               //actualPriceList 的时候渲染的图表
               this.setState({chartData:this.formatData( allData[this.state.chartFieldText] , 'actualPriceList')  })
             }
+          }else{
+            this.setState({allData:data.result,chartData:[]})
           }
         }
       },
@@ -147,6 +132,7 @@ const chartField ={
    * @param dataField 当前维修金额对应的X，Y轴
    */
   formatData = (data,dataField) => {
+    if(data.length){
     let actualPriceObj = {name:'维修费'};
     let fittingPriceObj = {name:'材料费'};
     let deptNameArr = []; // X轴的科室名称
@@ -166,6 +152,18 @@ const chartField ={
       value: chartField[dataField][1], // y
     });
     return dv;
+    }else{
+      const ds = new DataSet(); 
+      const dv = ds.createView().source([]);
+      dv.transform({
+        type: 'fold',
+        fields:[], // 展开字段集 [ 'Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.' ]
+        key: '', // x
+        value: '', // y
+      });
+      console.log(dv)
+      return dv;
+    }
   }
 
   //左侧按钮切换 - 更换data源
@@ -223,9 +221,6 @@ const chartField ={
                 </Guide>
                 <Axis name={chartField[this.state.chartFieldText][0]} />
                 <Tooltip crosshairs={{type : "y"}} />
-                {//双柱图显示  - 维修金额
-                  chartFieldText ==='actualPriceList'?<Legend />:null
-                }
                 {//不同参数显示不同参数属性
                   chartFieldText !=='actualPriceList'? 
                   <Geom 
@@ -239,10 +234,14 @@ const chartField ={
                   position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
                   size={15}/>
                   :
-                  <Geom 
-                  type="interval"
-                  position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
-                  color={'name'} adjust={[{type: 'dodge',marginRatio: 1/32}]}  size={25}/>
+                  <div>
+                    <Geom 
+                      type="interval"
+                      position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
+                      color={'name'} adjust={[{type: 'dodge',marginRatio: 1/32}]}  size={25}/>
+                    <Legend />
+                  </div>
+                
                 }
                 
               </Chart>

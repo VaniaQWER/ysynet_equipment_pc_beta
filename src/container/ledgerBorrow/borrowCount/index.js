@@ -1,5 +1,5 @@
 /*
- * @Author: yuwei - 故障统计  errorCount
+ * @Author: yuwei - 借用统计  borrowCount
  * @Date: 2018-08-08 14:16:06 
 * @Last Modified time: 2018-08-08 14:16:06 
  */
@@ -7,11 +7,11 @@ import React , { PureComponent } from 'react';
 import { Layout , Col , Row , DatePicker , Select , Form , Icon , Button , Tabs , Input } from 'antd';
 import {Chart, Axis, Tooltip, Geom , Guide , Legend } from "bizcharts";
 import TableGrid from '../../../component/tableGrid';
-import operation from '../../../api/operation';
+import ledgerBorrow from '../../../api/ledgerBorrow';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import { DataSet } from '@antv/data-set';
-import '../style.css';
+import './style.css';
 const Text = Guide.Text;
 const { RemoteTable } = TableGrid;
 const { Content } = Layout;
@@ -54,38 +54,27 @@ const columns = [
     width:100,
   },
   {
-    title:'使用科室',
-    dataIndex: 'useDeptName',
+    title:'借用次数',
+    dataIndex: 'borrowNumber',
     width:100,
   },
   {
-    title:'维修次数',
-    dataIndex: 'rrpairNumber',
-    width:100,
-  },
-  {
-    title:'维修总费用',
-    dataIndex: 'actualPrice',
-    width:100,
-    render:(text)=>String(text)?Number(text).toFixed(2):''
-  },
-  {
-    title:'材料费',
-    dataIndex: 'fittingPrice',
+    title:'借出费用',
+    dataIndex: 'borrowPrice',
     width:100,
     render:(text)=>String(text)?Number(text).toFixed(2):''
   },
 ];
 
 /**
- * @param  rrpairNumberList 维修次数 ：[x equipmentStandardName 设备 , y  rrpairNumber 维修台数]
- * @param  actualPriceList 维修金额 ：[x equipmentStandardName 设备 , y  rrpairDateNum 维修台数]
+ * @param  borrowNumberList 借出次数 ：[x equipmentStandardName 设备 , y  borrowNumber 借出次数]
+ * @param  borrowPriceList 借出金额 ：[x equipmentStandardName 设备 , y  borrowPrice 借出金额]
 */
 const chartField ={
-  rrpairNumberList:['equipmentStandardName','rrpairNumber'],
-  actualPriceList:['equipmentStandardName','rrpairDateNum']
+  borrowNumberList:['equipmentStandardName','borrowNumber'],
+  borrowPriceList:['equipmentStandardName','borrowPrice']
 }
- class ErrorCount extends PureComponent{
+ class BorrowCount extends PureComponent{
   
   state={
     disable:true,//使用科室的禁用条件 。图true- 禁用  表false-可用
@@ -94,35 +83,24 @@ const chartField ={
     chartData:[
       { year: '1951 年', sales: 38 }
     ],//图表-数据
-    chartTitle:'维修次数',//默认图表的Y轴显示文字
+    chartTitle:'借出次数',//默认图表的Y轴显示文字
     activedButton:'1',//有边框色样式的button
-    chartFieldText:'rrpairNumberList',//当前字段
+    chartFieldText:'borrowNumberList',//当前字段
   }
 
   //表单搜索 - 获取数据 并更新图表以及table
   onSearch = (val)=>{ 
     //获取图表数据
-    request(operation.selectAssectRrpairCountChart,{
+    request(ledgerBorrow.selectAssectBorrowCountChart,{
       body:queryString.stringify(val),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
-          if(data.result.rrpairNumberList.length && data.result.actualPriceList.length){
-            let allData = data.result;
-            const { chartFieldText } = this.state;
-            this.setState({allData,query:val,})
-            if(chartFieldText==='rrpairNumberList'){
-              //rrpairNumberList 渲染的图表
-              this.setState({chartData:allData[this.state.chartFieldText]})
-            }else{
-              //actualPriceList 的时候渲染的图表
-              this.setState({chartData:this.formatData( allData[this.state.chartFieldText] , 'actualPriceList')  })
-            }
-          }else{
-            this.setState({allData:data.result,chartData:[]})
-          }
+          let allData = data.result;
+          const { chartFieldText } = this.state;
+          this.setState({allData,query:val,chartData:this.formatData( allData[this.state.chartFieldText] ) })
         }
       },
       error: err => {console.log(err)}
@@ -138,7 +116,7 @@ const chartField ={
     this.setState({disable:ret})
 
     if(key==="1"){
-      this.SearchForm.props.form.setFieldsValue({useDeptId:'',assetsRecord:null,equipmentStandardName:null})
+      this.SearchForm.props.form.setFieldsValue({assetsRecord:null,equipmentStandardName:null})
       this.onSearch(this.SearchForm.props.form.getFieldsValue());
     }else{
       this.onSearch(this.SearchForm.props.form.getFieldsValue());
@@ -151,36 +129,13 @@ const chartField ={
    */
   formatData = (data,dataField) => {
     if(data.length){
-      let actualPriceObj = {name:'维修费'};
-      let fittingPriceObj = {name:'材料费'};
-      let deptNameArr = []; // X轴的科室名称
       data.map(item=>{
-        actualPriceObj[`${item.equipmentStandardName}`]=item.actualPrice;
-        fittingPriceObj[`${item.equipmentStandardName}`]=item.fittingPrice;
-        deptNameArr.push(item.equipmentStandardName);
-        return item;
+        let name = item.equipmentStandardName.split('-')[0];
+        return item.equipmentStandardName=`${name}-${item.assetsRecord}`;
       })
-      let dataSource = [actualPriceObj , fittingPriceObj];
-      const ds = new DataSet(); 
-      const dv = ds.createView().source(dataSource);
-      dv.transform({
-        type: 'fold',
-        fields:deptNameArr, // 展开字段集 [ 'Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.' ]
-        key: chartField[dataField][0], // x
-        value: chartField[dataField][1], // y
-      });
-      return dv;
+      return data;
     }else{
-      const ds = new DataSet(); 
-      const dv = ds.createView().source([]);
-      dv.transform({
-        type: 'fold',
-        fields:[], // 展开字段集 [ 'Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.' ]
-        key: '', // x
-        value: '', // y
-      });
-      console.log(dv)
-      return dv;
+      return [];
     }
   }
 
@@ -193,10 +148,7 @@ const chartField ={
   changeChartData = (title,hasStyleIndex,dataField) => {
     console.log(dataField,this.state.allData)
     let data = this.state.allData[dataField] ;
-    //双柱图 data转换
-    if(dataField==='actualPriceList'){ 
-      data =  this.formatData(data,dataField);
-    }
+    data =  this.formatData(data,dataField);
     this.setState({
       chartTitle:title,
       activedButton:hasStyleIndex,
@@ -214,33 +166,31 @@ const chartField ={
           {/*chart*/}
           <TabPane tab="图" key="1">
             <Col span={2}>
-              <Button style={buttonStyle} actived={activedButton==='1'?'actived':''} onClick={()=>this.changeChartData('维修次数','1','rrpairNumberList')  }>维修次数</Button>
-              <Button style={buttonStyle} actived={activedButton==='2'?'actived':''} onClick={()=>this.changeChartData('维修金额','2','actualPriceList')  }>维修金额</Button>
+              <Button style={buttonStyle} actived={activedButton==='1'?'actived':''} onClick={()=>this.changeChartData('借出次数','1','borrowNumberList')  }>借出次数</Button>
+              <Button style={buttonStyle} actived={activedButton==='2'?'actived':''} onClick={()=>this.changeChartData('借出金额','2','borrowPriceList')  }>借出金额</Button>
             </Col>
             <Col span={20}>{/* chartData */}
               <Chart height={500} data={chartData}  forceFit>
-                <Guide>
-                  <Text
-                    top={true}
-                    position={ ['0%','0%'] }  // 文本的起始位置，值为原始数据值，支持 callback
-                    content= {chartTitle} // 显示的文本内容
-                    style= {{
-                      fontSize: '12', // 文本大小
-                    }}
-                  />
-                  <Text
-                    top={true}
-                    position={ ['98%','97%'] }  // 文本的起始位置，值为原始数据值，支持 callback
-                    content= {'设备'} // 显示的文本内容
-                    style= {{
-                      fontSize: '12', // 文本大小
-                    }}
-                  />
-                </Guide>
-                <Axis name={chartField[this.state.chartFieldText][0]} />
-                <Tooltip crosshairs={{type : "y"}} />
-                {//不同参数显示不同参数属性
-                  chartFieldText !=='actualPriceList'? 
+                  <Guide>
+                    <Text
+                      top={true}
+                      position={ ['0%','0%'] }  // 文本的起始位置，值为原始数据值，支持 callback
+                      content= {chartTitle} // 显示的文本内容
+                      style= {{
+                        fontSize: '12', // 文本大小
+                      }}
+                    />
+                    <Text
+                      top={true}
+                      position={ ['98%','97%'] }  // 文本的起始位置，值为原始数据值，支持 callback
+                      content= {'设备'} // 显示的文本内容
+                      style= {{
+                        fontSize: '12', // 文本大小
+                      }}
+                    />
+                  </Guide>
+                  <Axis name={chartField[this.state.chartFieldText][0]} />
+                 <Tooltip crosshairs={{type : "y"}} />
                   <Geom 
                   type="interval"
                   tooltip={[`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`, (time, sold) => {
@@ -251,17 +201,6 @@ const chartField ={
                   }]}
                   position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
                   size={15}/>
-                  :
-                  <div>
-                    <Geom 
-                      type="interval"
-                      position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
-                      color={'name'} adjust={[{type: 'dodge',marginRatio: 1/32}]}  size={25}/>
-                    <Legend />
-                  </div>
-                
-                }
-                
               </Chart>
             </Col>
           </TabPane>
@@ -270,7 +209,7 @@ const chartField ={
             <RemoteTable
               ref='table'
               query={query.bDeptId?query:{}}
-              url={operation.selectAssectRrpairCount}
+              url={ledgerBorrow.selectAssectBorrowCount}
               scroll={{x: '100%', y : document.body.clientHeight - 311}}
               columns={columns}
               showHeader={true}
@@ -284,14 +223,13 @@ const chartField ={
     )
   }
  }
- export default ErrorCount;
+ export default BorrowCount;
 
  
  class SearchFormWrapper extends PureComponent {
   state = {
     display: 'none',
     manageOptions: [],  //管理科室
-    useOptions:[],//使用科室
   }
   componentDidMount() {
     let val = '';
@@ -309,21 +247,7 @@ const chartField ={
       },
       error: (err) => console.log(err)
     };
-    request(operation.queryManagerDeptListByUserId, options);
-
-    //2-获取机构使用科室
-    request(operation.selectUseDeptList,{
-      body:queryString.stringify({deptType:'00'}),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: data => {
-        if(data.status){
-          this.setState({useOptions:data.result})
-        }
-      },
-      error: err => {console.log(err)}
-    })
+    request(ledgerBorrow.mgtDeptList, options);
 
   }
   toggle = () => {
@@ -384,21 +308,6 @@ render() {
           <FormItem label={`统计时间`} {...formItemLayout}>
             {getFieldDecorator('createDate', {})(
               <RangePicker style={{width: 200}} />
-            )}
-          </FormItem>
-        </Col>
-        <Col span={8}  style={{display: display}}>
-          <FormItem label={`使用科室`} {...formItemLayout}>
-            {getFieldDecorator('useDeptId', {})(
-              <Select
-                showSearch
-                optionFilterProp="children"
-                disabled={this.props.disable} 
-                filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
-              >
-                <Option value='' key=''>全部</Option>
-                {useOptions.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
-              </Select>
             )}
           </FormItem>
         </Col>

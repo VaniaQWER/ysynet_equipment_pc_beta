@@ -12,6 +12,10 @@ const ledgerBorrow = {
   mgtDeptList: `${_local}/dept/queryManagerDeptListByUserId`,   //管理科室
   addBorrow: `${_local}/borrowController/addBorrow`,            //新增借出
   queryAssetsList: `${_local}/borrowController/queryAssetsList`, //选择资产列表
+
+  /* 借用统计 */
+  selectAssectBorrowCountChart:`${_local}/borrowController/selectAssectBorrowCountChart`,//借用统计图表数据
+  selectAssectBorrowCount:`${_local}/borrowController/selectAssectBorrowCount`,//借用统计列表
 }
 
 export default ledgerBorrow;
