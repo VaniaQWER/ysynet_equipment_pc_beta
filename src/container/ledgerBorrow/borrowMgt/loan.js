@@ -29,8 +29,7 @@ class Loan extends Component {
         visible: false, 
         manageDeptGuid: '',      //选择管理科室guid
         clearOff: false, 
-        selectedRows: []        
-             
+        selectedRows: [],
     }
 
     componentDidMount() {
@@ -39,7 +38,8 @@ class Loan extends Component {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             success: (data) => {
-                this.setState({ mgtDeptData: data.result });
+                let manageDeptGuid = data.result.length === 1? data.result[0].value : '';
+                this.setState({ mgtDeptData: data.result, manageDeptGuid });
             },
             error: (err) => console.log(err)
         });
@@ -109,7 +109,7 @@ class Loan extends Component {
             success: (data) => {
                 if(data.status) {
                     message.success('保存成功');
-                    this.props.history.push(`/borrowMgt/subBorrowMgt`);
+                    this.props.history.push(`/ledgerBorrow/borrowMgt`);
                 }else {
                     message.error(data.msg);
                 }
@@ -191,13 +191,14 @@ class Loan extends Component {
                     <LoanForm ref="loanForm" >
                         <div className="ant-row ant-form-item">
                             <div className="ant-form-item-label ant-col-xs-24 ant-col-sm-7">
-                                <label>管理科室</label>
+                                <label className="ant-form-item-required">管理科室</label>
                             </div>
                             <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-17">
                                 <div className="ant-form-item-control">
                                     <Select
                                         onChange={(value) => { this.setState({ manageDeptGuid: value }) }}
                                         placeholder="请选择管理科室" 
+                                        value = {manageDeptGuid}
                                         defaultActiveFirstOption = {false}
                                         allowClear={true}  
                                         filterOption={false}

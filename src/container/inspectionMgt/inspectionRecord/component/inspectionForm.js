@@ -4,6 +4,12 @@ import React, {Component} from 'react';
 
 import {Form, Input, Row, Col, Button, Icon, Select, DatePicker} from 'antd';
 
+import inspectionMgt from '../../../../api/inspectionMgt';
+
+import request from '../../../../utils/request';
+
+import queryString from 'querystring';
+
 const FormItem = Form.Item;
 
 const {Option} = Select;
@@ -23,7 +29,24 @@ const formItemLayout = {
 
 class InspectionForm extends Component {
     state = {
-        display: 'none'
+        display: 'none',
+        userDeptData: []
+    }
+    componentDidMount() {
+        request(inspectionMgt.selectUseDeptList, {
+            body: queryString.stringify({deptType: "00"}),
+            headers:{
+                    'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: (data) => {
+                if(data.status) {
+                    let userDeptData = data.result;
+                    userDeptData = [{text: "全部", value: ''}, ...userDeptData];
+                    this.setState({ userDeptData });
+                }
+            },
+            error: err => console.log(err)
+        })
     }
     toggle = () => {
         this.setState({
@@ -33,46 +56,46 @@ class InspectionForm extends Component {
     handleSearch = (e) => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
-            this.props.queryAsset(values);
+            this.props.setQuery(values);
         })
     }
     render() {
         let {getFieldDecorator} = this.props.form;
-        let {display} = this.state;
+        let {display, userDeptData} = this.state;
         return (
             <Form onSubmit={this.handleSearch}>
                 <Row gutter={30}>
                     <Col span={8}>
                         <FormItem label={`巡检单号`} {...formItemLayout}>
-                            {getFieldDecorator(`equipmentStandardName`)(
+                            {getFieldDecorator(`checkNo`)(
                                 <Input placeholder="请输入巡检单号" />
                             )}
                         </FormItem>
                     </Col>
                     <Col span={8}>
                         <FormItem label={`巡检科室`} {...formItemLayout}>
-                            {getFieldDecorator(`assetsRecord`)(
+                            {getFieldDecorator(`deptGuid`)(
                                 <Select
                                     placeholder="请选择巡检科室"
                                     defaultActiveFirstOption = {false}
                                     allowClear={true}  
                                     filterOption={false}
                                 >
-                                    <Option key="00" value="01" >科室</Option>
+                                    { userDeptData.map((item) => <Option key={item.value} value={item.value} >{item.text}</Option> ) }
                                 </Select>
                             )}
                         </FormItem>
                     </Col>
                     <Col span={8} style={{ display }} >
                         <FormItem label={`巡检人`} {...formItemLayout}>
-                            {getFieldDecorator(`spec`)(
+                            {getFieldDecorator(`checkUserName`)(
                                 <Input placeholder="请输入巡检人" />
                             )}
                         </FormItem>
                     </Col>
                     <Col span={8} style={{ display }} >
                         <FormItem label={`巡检日期`} {...formItemLayout}>
-                            {getFieldDecorator(`fmodel`)(
+                            {getFieldDecorator(`createTime`)(
                                 <RangePicker
                                     format={'YYYY-MM-DD'}
                                 />

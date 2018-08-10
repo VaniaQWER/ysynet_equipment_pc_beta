@@ -81,7 +81,7 @@ class BorrowMgtForm extends Component {
     startEndDate = (date) => {      //格式化开始结束时间
         let startTime = '';
         let endTime = '';
-        if(date) {
+        if(date !== undefined || date.length !== 0) {
             startTime = date[0].format('YYYY-MM-DD');
             endTime = date[1].format('YYYY-MM-DD');
         };
@@ -143,7 +143,7 @@ class BorrowMgtForm extends Component {
                         </FormItem>
                     </Col>
                     <Col span={8} style={{ display }} >
-                        <FormItem label={`归还日期`} {...formItemLayout}>
+                        <FormItem label={`实际归还日期`} {...formItemLayout}>
                             {getFieldDecorator(`returnDate`)(
                                 <RangePicker />
                             )}
@@ -166,9 +166,9 @@ class BorrowMgtForm extends Component {
                         </FormItem>
                     </Col>
                     <Col span={8} style={{ display }} >
-                        <FormItem label={`借用编号`} {...formItemLayout}>
+                        <FormItem label={`借用单号`} {...formItemLayout}>
                             {getFieldDecorator(`borrowNo`)(
-                                <Input placeholder="请输入借用编号" />
+                                <Input placeholder="请输入借用单号" />
                             )}
                         </FormItem>
                     </Col>
