@@ -24,6 +24,5 @@ export default {
     { exact:true, path: '/repairMgt/enginCount', name: '工程师统计', component: asyncComponent(() => import("../container/repairMgt/enginCount"))},
     { exact:true, path: '/repairMgt/deptCount', name: '科室统计', component: asyncComponent(() => import("../container/repairMgt/deptCount"))},
     { exact:true, path: '/repairMgt/errorCount', name: '故障统计', component: asyncComponent(() => import("../container/repairMgt/errorCount"))},
-    { exact:true, path: '/repairMgt/upKeepCount', name: '保养统计', component: asyncComponent(() => import("../container/repairMgt/upKeepCount"))},
   ]
 }

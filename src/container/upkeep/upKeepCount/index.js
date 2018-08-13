@@ -12,7 +12,7 @@ import operation from '../../../api/operation';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import moment from 'moment';
-import '../style.css';
+import './style.css';
 const Text = Guide.Text;
 const { RemoteTable } = TableGrid;
 const { Content } = Layout;
