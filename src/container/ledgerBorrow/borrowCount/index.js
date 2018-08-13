@@ -143,7 +143,7 @@ const initTime = getRangeTime('month',1,'before') ;
    * @param dataField 当前维修金额对应的X，Y轴
    */
   formatData = (data,dataField) => {
-    if(data.length){
+    if(data && data.length){
       data.map(item=>{
         let name = item.equipmentStandardName.split('-')[0];
         return item.equipmentStandardName=`${name}-${item.assetsRecord}`;
