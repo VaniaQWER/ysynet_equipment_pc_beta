@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import {Layout, Card, Icon, Button, Row} from 'antd';
+import {Layout, Icon, Button, Row} from 'antd';
 
 import {Link} from 'react-router-dom';
 
@@ -77,26 +77,24 @@ class InspectionRecord extends Component {
             },
         ];
         return (
-            <Content>
-                <Card style={{margin: '16px 16px 0'}} bordered={false}>
-                    <InspectionForm setQuery={this.setQuery} />
-                    <Row style={{ marginBottom: 10 }}>
-                        <Link to={{ pathname: `/inspectionMgt/inspectionRecord/newRegister` }}><Button type="primary"><Icon type="plus"/>新建</Button></Link>
-                    </Row>
-                    <RemoteTable
-                        ref="table"
-                        pagination={{
-                            showTotal: (total, range) => `总共${total}个项目`
-                        }}
-                        query={query}
-                        url={inspectionMgt.queryCheckInfoList}
-                        scroll={{x: '100%'}}
-                        showHeader={true}
-                        columns={columns}
-                        size="small"
-                        rowKey={'RN'}
-                    />
-                </Card>
+            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
+                <InspectionForm setQuery={this.setQuery} />
+                <Row style={{ marginBottom: 10 }}>
+                    <Link to={{ pathname: `/inspectionMgt/inspectionRecord/newRegister` }}><Button type="primary"><Icon type="plus"/>新建</Button></Link>
+                </Row>
+                <RemoteTable
+                    ref="table"
+                    pagination={{
+                        showTotal: (total, range) => `总共${total}个项目`
+                    }}
+                    query={query}
+                    url={inspectionMgt.queryCheckInfoList}
+                    scroll={{x: '100%'}}
+                    showHeader={true}
+                    columns={columns}
+                    size="small"
+                    rowKey={'RN'}
+                />
             </Content>
         )
     }
