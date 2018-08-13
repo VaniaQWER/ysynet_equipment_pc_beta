@@ -154,10 +154,10 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6} style={{textAlign:'right',paddingRight:15,paddingTop:5}}> 
+          <Col span={6} style={{textAlign:'right', paddingTop:5}}> 
               <Button type="primary" htmlType="submit">搜索</Button>
-              <Button style={{marginLeft: 30,}} onClick={this.handleReset}>重置</Button>
-              <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
+              <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
                 {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
           </Col>
@@ -214,7 +214,7 @@ class OperationData extends Component {
   }
   render() {
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
          {
             this.state.messageError === "" ? null
@@ -251,7 +251,7 @@ class OperationData extends Component {
                     }
                 }}
                 >
-                <Button style={{ marginRight: 8 }}>
+                <Button>
                   <Icon type='export'/> 导入
                 </Button>
               </Upload>

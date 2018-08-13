@@ -194,13 +194,12 @@ class OutboundSummary extends Component {
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
           <Form onSubmit={this.onSubmit}>
             <Row>
-              <Col span={6}>
+              <Col span={8}>
                 <FormItem label={`管理部门`} {...formItemLayout}>
                   {getFieldDecorator(`bDeptId`, {
                     initialValue: storageOptions.length ? storageOptions[0].value : null
                   })(
                     <Select 
-                      style={{width: 200}} 
                       showSearch
                       placeholder={'请选择'}
                       optionFilterProp="children"
@@ -218,7 +217,7 @@ class OutboundSummary extends Component {
                   )}
                 </FormItem>
               </Col>
-              <Col span={6}>
+              <Col span={8}>
                 <FormItem label='出库科室' {...formItemLayout}>
                   {getFieldDecorator(`deptGuid`, {
                     initialValue: ''
@@ -226,7 +225,7 @@ class OutboundSummary extends Component {
                     <Select 
                       showSearch
                       filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                      style={{width: 200}}>
+                      >
                       <Option value=''>全部</Option>
                       {
                         supplierOptions.map((item, index) => <Option key={index} value={item.value.toString()}>{ item.text }</Option>)
@@ -235,7 +234,7 @@ class OutboundSummary extends Component {
                   )}
                 </FormItem>
               </Col>
-              <Col span={7}>
+              <Col span={8}>
                 <FormItem label='出库方式' {...formItemLayout}>
                   {getFieldDecorator(`outModes`, {
                     initialValue: []
@@ -243,7 +242,6 @@ class OutboundSummary extends Component {
                     <Select 
                       placeholder='全部'
                       className={'repot_trend_holder'}
-                      style={{width: 300}} 
                       mode="multiple">
 
                       <Option value="02">科室领用出库</Option>
@@ -252,13 +250,12 @@ class OutboundSummary extends Component {
                   )}
                 </FormItem>
               </Col>
-              <Col span={6}>
+              <Col span={8}>
                 <FormItem  {...formItemLayout} label='状态'>
                   {getFieldDecorator(`acctType`, {
                     initialValue: '00'
                   })(
                     <Select 
-                      style={{width: 200}} 
                       onChange={ val => 
                       val === "01" ? this.setState({showDate: true}) : this.setState({showDate: false})
                     }>
@@ -270,7 +267,7 @@ class OutboundSummary extends Component {
               </Col>
               {
                 showDate ? 
-                  <Col span={6} >
+                  <Col span={8} >
                     <FormItem  {...formItemLayout} label={`会计月`}>
                       {getFieldDecorator(`acctDate`,{
                         rules: [{required: true, message: '请选择日期'}]
@@ -280,7 +277,7 @@ class OutboundSummary extends Component {
                     </FormItem> 
                 </Col> : null
               }
-              <Col span={8} style={{paddingLeft: 30}}>
+              <Col span={8} style={{textAlign: 'right'}}>
                 <Button type="primary" icon="search" htmlType="submit" style={{marginTop: 3,marginRight:8,verticalAlign: 'baseline'}}>搜索</Button>
                 <Button style={{marginLeft: 8,verticalAlign: 'baseline'}} onClick={()=>this.handleReset()}>重置</Button>
               </Col>

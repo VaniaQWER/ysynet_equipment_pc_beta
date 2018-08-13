@@ -520,7 +520,7 @@ class FinanceClassify extends Component {
     // )
     
     return (
-      <Layout style={{background: '#fff'}} className='classifyModule'>
+      <Layout className='classifyModule ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
         {/* 大的物资库房下拉框 */}
         <Row style={{background: '#fff', padding: '4px 0'}}>
           <Col span={5}>

@@ -160,10 +160,10 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={8} style={{textAlign:'right',paddingRight:15,paddingTop:5}}> 
+          <Col span={8} style={{textAlign:'right', paddingTop:5}}> 
               <Button type="primary" htmlType="submit">搜索</Button>
-              <Button style={{marginLeft: 30,}} onClick={this.handleReset}>重置</Button>
-              <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
+              <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
                 {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
           </Col>
@@ -222,7 +222,7 @@ class ApprovalNew extends Component {
       }
     ];
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
         <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
         <RemoteTable
             ref='table'
@@ -232,7 +232,6 @@ class ApprovalNew extends Component {
             columns={columns}
             showHeader={true}
             rowKey={'RN'}
-            style={{padding:24}}
             size="small"
           /> 
       </Content>

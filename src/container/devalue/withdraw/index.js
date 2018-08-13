@@ -50,7 +50,9 @@ class WithDraw extends React.Component{
             this.setState({
               selOptions:data.result
             })
-            this.refs.table.fetch({bDeptId:data.result[0].value})
+            if(data.result[0]) {
+              this.refs.table.fetch({bDeptId:data.result[0].value})
+            };
           }
         },
         error: err => {console.log(err)}
@@ -203,16 +205,16 @@ class WithDraw extends React.Component{
       const { loading, selOptions } = this.state;
       const { getFieldDecorator } = this.props.form;
       return(
-          <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+          <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
             <Form>
               <Row>
-                <Col span={6}>
+                <Col span={8}>
                   <FormItem label='管理科室' {...formItemLayout}>
                     {getFieldDecorator('bDeptId',{
                       initialValue:selOptions?selOptions.length?selOptions[0].value:'':''
                     })(
                       <Select 
-                        style={{width:200}}
+                        style={{width:'100%'}}
                         showSearch
                         placeholder={'请选择'}
                         optionFilterProp="children"
@@ -225,11 +227,11 @@ class WithDraw extends React.Component{
                     )}
                   </FormItem>
                 </Col>
-                <Col span={6}>
+                <Col span={8}>
                   <FormItem label='会计月' {...formItemLayout}>
                     {getFieldDecorator('createDate')(
                       <RangePicker
-                        style={{width:'80%'}}
+                        style={{width:'100%'}}
                         format="YYYY-MM"
                         mode={['month', 'month']}
                         onPanelChange={this.handlePanelChange}
@@ -237,7 +239,7 @@ class WithDraw extends React.Component{
                     )}
                   </FormItem>
                 </Col>
-                <Col span={6}>
+                <Col style={{ textAlign: 'right' }} span={8}>
                   <Button type='primary' style={{marginRight:8}} onClick={this.queryHandler}>查询</Button>
                   <Button onClick={this.reset}>重置</Button>
                 </Col>

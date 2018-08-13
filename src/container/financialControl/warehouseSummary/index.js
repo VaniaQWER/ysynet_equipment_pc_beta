@@ -195,16 +195,15 @@ class WarehouseSummary extends Component {
     let values = this.exportReport();
     const exportHref = financialControl.exportImportCollect+'?'+querystring.stringify(values);
     return (
-      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
         <Form onSubmit={this.onSubmit}>
           <Row>
-            <Col span={6}>
+            <Col span={8}>
               <FormItem label={`管理部门`} {...formItemLayout}>
                 {getFieldDecorator(`bDeptId`, {
                   initialValue: storageOptions.length ? storageOptions[0].value : null
                 })(
                   <Select 
-                  style={{width: 200}} 
                   showSearch
                   placeholder={'请选择'}
                   optionFilterProp="children"
@@ -223,7 +222,7 @@ class WarehouseSummary extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <FormItem label='供应商' {...formItemLayout}>
                 {getFieldDecorator(`fOrgId`, {
                   initialValue: null
@@ -242,7 +241,7 @@ class WarehouseSummary extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <FormItem label='入库方式' {...formItemLayout}>
                 {getFieldDecorator(`intype`, {
                   initialValue: []
@@ -250,7 +249,7 @@ class WarehouseSummary extends Component {
                   <Select 
                     placeholder='全部'
                     className={'repot_trend_holder'}
-                    style={{width: 300}} mode="multiple">
+                    mode="multiple">
                     <Option value="01" key={'1'}>采购入库</Option>
                     <Option value="06" key={'2'}>退货</Option>
                     {/*
@@ -262,13 +261,12 @@ class WarehouseSummary extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <FormItem  {...formItemLayout} label='状态'>
                 {getFieldDecorator(`acctType`, {
                   initialValue: '00'
                 })(
                   <Select 
-                    style={{width: 200}} 
                     onChange={ val => 
                     val === "01" ? this.setState({showDate: true}) : this.setState({showDate: false})
                   }>
@@ -281,7 +279,7 @@ class WarehouseSummary extends Component {
             </Col>
             {
               showDate ? 
-                <Col span={6} >
+                <Col span={8} >
                   <FormItem {...formItemLayout} label={`会计月`}>
                     {getFieldDecorator(`acctDate`,{
                       initialValue:null,
@@ -292,7 +290,7 @@ class WarehouseSummary extends Component {
                   </FormItem> 
               </Col> : null
             }
-            <Col span={8} style={{paddingLeft: 30}}>
+            <Col span={8} style={{textAlign: 'right'}}>
               <Button type="primary" icon="search" htmlType="submit" style={{marginTop: 3,marginRight:8,verticalAlign: 'baseline'}}>搜索</Button>
               <Button style={{marginLeft:8,verticalAlign: 'baseline'}} onClick={()=>this.handleReset()}>重置</Button>
             </Col>

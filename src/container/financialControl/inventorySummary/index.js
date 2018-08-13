@@ -309,8 +309,6 @@ class InventorySummary extends Component {
                 </FormItem>
               </Col>
             }
-            </Row>
-            <Row>
               <Col style={{display: display}} span={8}>
                 <FormItem label={`产品名称`} {...formItemLayout}>
                   {getFieldDecorator(`materialName`)(
@@ -351,8 +349,8 @@ class InventorySummary extends Component {
                   )}
                 </FormItem>
               </Col>
-              <Col span={display==='none'? 24 : 8} style={display==='none'?{textAlign:'right'}:null}>
-                <Button type="primary"  icon="search" htmlType="submit" style={{marginLeft:50,marginRight:8,verticalAlign: 'middle'}}>搜索</Button>
+              <Col span={8} style={{textAlign:'right', float: 'right'}}>
+                <Button type="primary"  icon="search" htmlType="submit" style={{marginRight:8,verticalAlign: 'middle'}}>搜索</Button>
                 <Button onClick={()=>this.resetFields()} style={{verticalAlign: 'middle'}}>重置</Button>
                 <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
                   {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />

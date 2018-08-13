@@ -315,7 +315,7 @@ class WithDrawDetails extends Component {
 		]
 
     return (
-			<div style={{padding:20}}>
+			<div style={{padding:24}}>
 				<Card title='资产信息'>
 					<WrappedAdvancedSearchForm formInfo ='' callback={(queryJson)=>{this.queryTable(queryJson)}}></WrappedAdvancedSearchForm>
 					

@@ -290,7 +290,7 @@ class FinancialClosing extends Component{
 				const { query , visible , storageOptions , checkAmount , invoiceMonth } =  this.state;
 				const invoiceMonthSelect = invoiceMonth.length?invoiceMonth.map((item,index)=><Option value={item.value} key={index}>{item.text}</Option>):[]
         return(
-            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+            <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
 				<SearchBox ref='headerSearch' query={this.queryHandler} storageOptions={storageOptions}/>
 				<Button type="primary" onClick={()=>this.openModal()}>新增结账</Button>
 				{

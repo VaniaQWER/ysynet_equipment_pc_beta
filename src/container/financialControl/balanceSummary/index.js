@@ -28,14 +28,12 @@ const formItemLayout = {
 const columns = [{
   title: '财务分类',
   dataIndex: 'styleName',
-  key: 'styleName',
   render: (text,record)=>{
     return !text ? '未分类': text
   }
 }, {
   title: '期初金额',
   dataIndex: 'initialTotal',
-  key: 'initialTotal',
   width: '20%',
   render: (text,record)=>{
     return text ? text.toFixed(2): '0.00';
@@ -45,14 +43,12 @@ const columns = [{
   children: [{
     title: '入库汇总',
     dataIndex: 'importTotal',
-    key: 'importTotal',
     render: (text,record)=>{
       return text ? text.toFixed(2): '0.00';
     }
   }, {
     title: '其他入库',
     dataIndex: 'elseImportTotal',
-    key: 'elseImportTotal',
     render: (text,record)=>{
       return text ? text.toFixed(2): '0.00';
     }
@@ -62,14 +58,12 @@ const columns = [{
   children: [{
     title: '出库汇总',
     dataIndex: 'outportTotal',
-    key: 'outportTotal',
     render: (text,record)=>{
       return text ? text.toFixed(2): '0.00';
     }
   }, {
     title: '其他出库',
     dataIndex: 'elseOutportTotal',
-    key: 'elseOutportTotal',
     render: (text,record)=>{
       return text ? text.toFixed(2): '0.00';
     }
@@ -77,7 +71,6 @@ const columns = [{
 }, {
   title: '期末金额汇总',
   dataIndex: 'endTotal',
-  key: 'endTotal',
   width: '20%',
   render: (text,record)=>{
     return text ? text.toFixed(2): '0.00';
@@ -251,19 +244,18 @@ class BalanceSummary extends Component {
                 </FormItem>
               </Col>
             }
-            <Col span={6}>
-              <Button type="primary" htmlType="submit" style={{marginLeft:50,marginTop: 3,marginRight:8,verticalAlign: 'baseline'}}>搜索</Button>
-              <Button style={{marginLeft: 30,verticalAlign: 'baseline'}} onClick={()=>this.handleReset()}>重置</Button>
+            <Col style={{textAlign: 'right'}} span={6}>
+              <Button type="primary" htmlType="submit" style={{marginTop: 3, verticalAlign: 'baseline'}}>搜索</Button>
+              <Button style={{marginLeft: 8,verticalAlign: 'baseline'}} onClick={()=>this.handleReset()}>重置</Button>
             </Col>
           </Row>
           <Row>
-            <Button style={{marginLeft: 10}} icon="line-chart" onClick={this.genReport}> 生成报表 </Button>
-            <a href={exportHref}><Button style={{marginLeft: 10}} icon="download" type="primary" ghost> 导出 </Button></a>
+            <Button icon="line-chart" onClick={this.genReport}> 生成报表 </Button>
+            <a href={exportHref}><Button style={{marginLeft: 8}} icon="download" type="primary" ghost> 导出 </Button></a>
           </Row>
         </Form>
         <Table 
-          
-            ref='table'
+          ref='table'
           style={{marginTop:20}}
           border={true}
           loading={this.state.loading}

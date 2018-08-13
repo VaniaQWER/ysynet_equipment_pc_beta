@@ -171,10 +171,9 @@ class EquipProcurementDetails extends Component {
     const { getFieldDecorator } = this.props.form;
     const { fillBackData , visible , userList , validInfo} = this.state;
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
-        <h3 style={{padding:'24px'}}>审批详情  
-        </h3>
-        <div style={{padding:'0 24px'}}>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
+        <h3 style={{ fontWeight: 'bold' }}>审批详情</h3>
+        <div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">申请单号 : {fillBackData?fillBackData.applyNo:''}</div>
             <div className="ant-col-12">申请时间 : {fillBackData?fillBackData.createTime:''}</div>
@@ -207,7 +206,7 @@ class EquipProcurementDetails extends Component {
         </div>
         <Row>
           <hr className={styleCss.hr}/>
-          <h3 style={{padding:'0 24px'}}>审批意见</h3>
+          <h3 style={{ fontWeight: 'bold' }}>审批意见</h3>
           <ul>
             {
               fillBackData ? fillBackData.commentList?

@@ -99,7 +99,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={8} style={{textAlign:'right',paddingRight:15,paddingTop:5}}> 
+          <Col span={8} style={{textAlign:'right', paddingTop:5}}> 
               <Button type="primary" htmlType="submit">搜索</Button>
           </Col>
         </Row>
@@ -221,25 +221,23 @@ class ApprovalSetting extends Component {
       }
     ];
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
-        <div style={{padding:'24px 24px 0'}}>
-          <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
-          <Row>
-            <Button type='primary'>
-              <Icon type="plus" />
-              <Link to={{pathname:`/basicdata/approvalSetting/add`}} style={{color:'#fff'}}> 新建</Link>
-            </Button>
-            {
-              (selectedRowKeys.length===1 || selectedRowKeys.length===0)  ?
-              (
-                <span>
-                  <Button style={{marginLeft:8}} onClick={()=>this.moveStep('01')}>上移</Button>
-                  <Button style={{marginLeft:8}} onClick={()=>this.moveStep('02')}>下移</Button>
-                </span>
-              ):null
-            }
-          </Row>
-        </div>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{ padding: 24 }}>
+        <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
+        <Row style={{ marginBottom: 24 }}>
+          <Button type='primary'>
+            <Icon type="plus" />
+            <Link to={{pathname:`/basicdata/approvalSetting/add`}} style={{color:'#fff'}}> 新建</Link>
+          </Button>
+          {
+            (selectedRowKeys.length===1 || selectedRowKeys.length===0)  ?
+            (
+              <span>
+                <Button style={{marginLeft:8}} onClick={()=>this.moveStep('01')}>上移</Button>
+                <Button style={{marginLeft:8}} onClick={()=>this.moveStep('02')}>下移</Button>
+              </span>
+            ):null
+          }
+        </Row>
         {
           this.state.query.bDeptId?
         
@@ -251,7 +249,6 @@ class ApprovalSetting extends Component {
           columns={columns}
           showHeader={true}
           rowKey={'approvalGuid'}
-          style={{padding:24}}
           size="small"
           rowSelection = {{
             selectedRowKeys,

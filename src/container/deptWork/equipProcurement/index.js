@@ -192,8 +192,8 @@ class EquipProcurement extends Component {
       },
     ];
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
-        <Row style={{padding:'24px 24px 0'}}>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
+        <Row>
             <Col span={12}>
               <Button type='primary'>
                 <Icon type="plus" />
@@ -210,7 +210,6 @@ class EquipProcurement extends Component {
             columns={columns}
             showHeader={true}
             rowKey={'applyId'}
-            style={{padding:24}}
             size="small"
           /> 
       </Content>

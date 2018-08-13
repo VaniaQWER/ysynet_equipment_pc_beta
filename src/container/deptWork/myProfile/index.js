@@ -5,7 +5,7 @@
  */
 
  import React, { Component }  from 'react'
- import { Layout, DatePicker , Card, Form, Row, Col, Input, Button, Icon, Select ,Tag ,message} from 'antd';
+ import { Layout, DatePicker , Form, Row, Col, Input, Button, Icon, Select ,Tag ,message} from 'antd';
  import TableGrid from '../../../component/tableGrid';
  import { Link } from 'react-router-dom'
  import request from '../../../utils/request';
@@ -198,8 +198,8 @@ class SearchFormWrapper extends Component {
 
           <Col span={6} style={{ textAlign: 'right', marginTop: 4}} >
             <Button type="primary" htmlType="submit">查询</Button>
-            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
-            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+            <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
               {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
             </a>
           </Col>
@@ -267,10 +267,8 @@ const SearchForm = Form.create()(SearchFormWrapper);
   }
   render() {
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
-          <Card bordered={false} className="min_card" >
-            <SearchForm query={this.queryHandler} />
-          </Card>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
+          <SearchForm query={this.queryHandler} />
           <RemoteTable
             loading={ this.state.loading}
             ref='table'

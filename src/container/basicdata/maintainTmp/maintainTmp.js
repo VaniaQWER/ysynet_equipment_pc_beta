@@ -472,7 +472,7 @@ class maintainTmpEdit extends React.Component{
 			});
 
 			return(
-					<Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+					<Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
 						<Row style={{ marginBottom: 8 }}>
 								<Col span={12} >
 								<Button type="primary" className={styles.marginM} onClick={()=>this.openModal('addVisible','新增')}> 新增</Button>

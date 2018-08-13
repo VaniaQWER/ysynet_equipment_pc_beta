@@ -170,7 +170,7 @@ class MaintainTmpTransfer extends React.Component{
       }),
     };
     return(
-        <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+        <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
           <Row>
 
             <Col span={11} style={{border:'1px solid #d9d9d9',padding:15,borderRadius:5}}>
