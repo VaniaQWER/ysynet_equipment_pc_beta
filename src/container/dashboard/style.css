@@ -1,0 +1,30 @@
+.matter-card {
+    border-radius: 3%;
+    height: 70px;
+    border: 1px solid #5CACEE;
+}
+
+.matter-card-img {
+    width: 70px;
+    background: #5CACEE;
+    height: 69px;
+    float: left;
+    border-radius: 3% 0 0 3%;
+    margin: 0 0 0 -1px;
+}
+
+.matter-card-img img {
+    margin: 10px;
+}
+
+.matter-card-text {
+    width: 88px; 
+    height: 69px;
+    float: right;
+}
+
+.matter-card-text h1 {
+    height: 30px;
+    color: #5CACEE;
+    margin-left: 20px
+}
