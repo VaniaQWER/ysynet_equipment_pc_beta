@@ -80,7 +80,7 @@ class ScrapForm extends PureComponent {
     const { columns, defaultParams, search, history } = this.props; 
     const pathname = history.location.pathname;
     return (
-      <Content className='ysynet-content'>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
         <Form style={{padding: 8, background: '#fff'}} onSubmit={this.onSubmit}>
           <Row>
             <Col span={8}>

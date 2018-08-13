@@ -1,6 +1,6 @@
 /*计量台账- 首页 - 列表页*/
 import React , { Component } from 'react';
-import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker , Modal, Radio , message} from 'antd';
+import { Layout, Form, Row, Col, Input, Button, Icon, Select, DatePicker , Modal, Radio , message} from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import {validAmount, validDay, timeToStamp} from '../../../utils/tools';
@@ -154,10 +154,10 @@ class SearchFormWrapper extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={8} style={{ textAlign: 'center', marginTop: 4}} >
+          <Col span={8} style={{float:'right', textAlign: 'center', marginTop: 4}} >
             <Button type="primary" htmlType="submit">查询</Button>
-            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
-            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+            <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
               {this.state.display === 'block' ? '收起' : '展开'} <Icon type={this.state.display === 'block' ? 'up' : 'down'} />
             </a>
           </Col>
@@ -285,14 +285,11 @@ class meterStandList extends Component{
     ]
     const {visible , loading, query, selectedRowKeys } = this.state;
     return(
-      <Content>
-        <Card bordered={false} className="min_card" >
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
           <SearchForm query={this.queryHandle} />
-        </Card>
-        <Card >
           <Row style={{textAlign: 'left'}} >
               <Button type="primary"><Link to={{pathname:`/meterMgt/meterStand/add`}}>新增</Link></Button>
-              <Button type="primary" style={{marginLeft: 30}} onClick={this.showModal}>编辑</Button>
+              <Button type="primary" style={{marginLeft: 8}} onClick={this.showModal}>编辑</Button>
           </Row>
           <RemoteTable
             rowSelection={{
@@ -314,7 +311,6 @@ class meterStandList extends Component{
             rowKey={'RN'}
             style={{marginTop: 10}}
           />
-        </Card>
         <Modal
           visible={visible}
           title="批量编辑"

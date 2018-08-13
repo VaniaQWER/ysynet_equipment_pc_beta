@@ -147,8 +147,8 @@ class SearchFormWrapper extends PureComponent {
           </Col>
           <Col span={8} style={{ textAlign: 'right', marginTop: 4}} >
             <Button type="primary" htmlType="submit">查询</Button>
-            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
-            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+            <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
               {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
             </a>
           </Col>
@@ -292,7 +292,7 @@ class TransferRecord extends PureComponent {
     ]
     const query = this.state.query;
     return (
-      <Content>
+      <Content className='ysynet-content'>
         {/* 转科记录查询部分 */}
         <Card bordered={false} className="min_card">
           <SearchForm query={this.queryHandle} activeKey={this.state.activeKey}/>

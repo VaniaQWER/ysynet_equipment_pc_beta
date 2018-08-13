@@ -4,7 +4,7 @@
  * @since 2018-04-08
  */
 import React, { PureComponent } from 'react';
-import { Layout, Row, Col, Card, Form, Input, Select, Table, Affix,
+import { Layout, Row, Col, Form, Input, Select, Table, Affix,
   Button, Modal, message } from 'antd';
 import { withRouter } from 'react-router-dom'  
 import assets from '../../../api/assets';
@@ -23,7 +23,7 @@ const Search = Input.Search;
 const formItemLayoutForOne = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 2 },
+    sm: { span: 3 },
   },
   wrapperCol: {
     xs: { span: 24 },
@@ -190,80 +190,80 @@ class ScrapApply extends PureComponent {
       ...columns
     ]
     return (
-      <Content className='ysynet-content'>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
         <Form onSubmit={this.submit}>
           <Affix>
             <Row>
-              <Col span={24} style={{textAlign: 'right', padding: '5px 50px', background: '#fff'}}><Button loading={isLoading} size='large' type='primary' htmlType='submit'>提交</Button></Col>
+              <Col span={24} style={{textAlign: 'right', padding: '5px 50px', background: '#fff'}}>
+                <Button loading={isLoading} type='primary' htmlType='submit'>提交</Button>
+              </Col>
             </Row>
           </Affix>  
-          <Card title='报废信息'>
-            <Row>
-              <Col>
-                <FormItem label={`使用科室`} {...formItemLayoutForOne}>
-                  {getFieldDecorator(`useDeptGuid`, {
-                    rules: [{ required: true, message: '请选择使用科室' }],
-                  })(
-                    <Select
-                      onChange={val => {
-                        if (this.refs.table) {
-                          this.refs.table.fetch({
-                            productType: productType,
-                            mobile: this.state.mobile,
-                            useDeptGuid: val,
-                          })
-                        }
-                        this.setState({ useDeptGuid: val ,dataSource: [], selectedRows: [],selectedRowKeys: []})
-                      }}
-                      showSearch
-                      style={{ width: 200 }}
-                      placeholder="选择科室"
-                      optionFilterProp="children"
-                      filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                    >
-                      {
-                        deptOption.map((item, index) => (
-                          <Option value={item.value} key={item.text}>{ item.text }</Option>
-                        ))
+          <h3>报废信息</h3>
+          <Row>
+            <Col>
+              <FormItem label={`使用科室`} {...formItemLayoutForOne}>
+                {getFieldDecorator(`useDeptGuid`, {
+                  rules: [{ required: true, message: '请选择使用科室' }],
+                })(
+                  <Select
+                    onChange={val => {
+                      if (this.refs.table) {
+                        this.refs.table.fetch({
+                          productType: productType,
+                          mobile: this.state.mobile,
+                          useDeptGuid: val,
+                        })
                       }
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col>
-                <FormItem label={`报废原因`} {...formItemLayoutForOne}>
-                  {getFieldDecorator(`scrapCause`, {
-                    rules: [{ required: true, message: '请输入报废原因' }],
-                  })(
-                    <TextArea placeholder="输录入报废原因" rows={4}/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col>  
-                <FormItem label={`使用情况`} {...formItemLayoutForOne}>
-                  {getFieldDecorator(`useSituation`)(
-                    <TextArea placeholder="请录入使用情况" rows={4}/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col>  
-                <FormItem label={`报废附件`} {...formItemLayoutForOne}>
-                  <PicWall file={data => this.setState({postFile: data})} fileList={postFile}/>
-                </FormItem>
-              </Col>
-            </Row>  
-          </Card>  
-          <Card style={{marginTop: 4}} title='资产信息'>
-            <Button style={{marginBottom: 4}} type='primary' onClick={() => this.setState({visible: true})}>选择资产</Button>
-            <Table 
-              dataSource={dataSource} 
-              columns={newColums} 
-              bordered={true} 
-              size={'small'} 
-              rowKey={'assetsRecordGuid'}
-              pagination={false}
-            />
-          </Card>      
+                      this.setState({ useDeptGuid: val ,dataSource: [], selectedRows: [],selectedRowKeys: []})
+                    }}
+                    showSearch
+                    style={{ width: 200 }}
+                    placeholder="选择科室"
+                    optionFilterProp="children"
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  >
+                    {
+                      deptOption.map((item, index) => (
+                        <Option value={item.value} key={item.text}>{ item.text }</Option>
+                      ))
+                    }
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col>
+              <FormItem label={`报废原因`} {...formItemLayoutForOne}>
+                {getFieldDecorator(`scrapCause`, {
+                  rules: [{ required: true, message: '请输入报废原因' }],
+                })(
+                  <TextArea placeholder="输录入报废原因" rows={4}/>
+                )}
+              </FormItem>
+            </Col>
+            <Col>  
+              <FormItem label={`使用情况`} {...formItemLayoutForOne}>
+                {getFieldDecorator(`useSituation`)(
+                  <TextArea placeholder="请录入使用情况" rows={4}/>
+                )}
+              </FormItem>
+            </Col>
+            <Col>  
+              <FormItem label={`报废附件`} {...formItemLayoutForOne}>
+                <PicWall file={data => this.setState({postFile: data})} fileList={postFile}/>
+              </FormItem>
+            </Col>
+          </Row>  
+          <h3  style={{marginTop: 4}}>资产信息</h3>
+          <Button style={{marginBottom: 4}} type='primary' onClick={() => this.setState({visible: true})}>选择资产</Button>
+          <Table 
+            dataSource={dataSource} 
+            columns={newColums} 
+            bordered={true} 
+            size={'small'} 
+            rowKey={'assetsRecordGuid'}
+            pagination={false}
+          />
         </Form>
         <Modal
           width={1200}        

@@ -4,7 +4,7 @@
  * @since 2018-04-08
  */
 import React, { PureComponent } from 'react';
-import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker } from 'antd';
+import { Layout, Form, Row, Col, Input, Button, Icon, Select, DatePicker } from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import { Link } from 'react-router-dom';
 import transfer from '../../../api/transfer';
@@ -21,11 +21,11 @@ const { RemoteTable } = tableGrid
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 8 },
+    sm: { span: 6 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 16 },
+    sm: { span: 18 },
   },
 };
 // 转出转入科室
@@ -146,15 +146,7 @@ class SearchFormWrapper extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col span={8} style={{ textAlign: 'right', marginTop: 4}} >
-            <Button type="primary" htmlType="submit">查询</Button>
-            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
-            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
-              {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
-            </a>
-          </Col>
-        </Row>
-        <Row>
+         
           <Col span={8} style={{display: display}}>
             <FormItem label={`转出科室`} {...formItemLayout}>
               {getFieldDecorator('outDeptguid', {})(
@@ -199,6 +191,13 @@ class SearchFormWrapper extends PureComponent {
                 <RangePicker style={{width: 200}} />
               )}
             </FormItem>
+          </Col>
+          <Col span={8} style={{ textAlign: 'center', marginTop: 4}} >
+            <Button type="primary" htmlType="submit">查询</Button>
+            <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
+              {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
+            </a>
           </Col>
         </Row>
       </Form>
@@ -296,23 +295,19 @@ class TransferManager extends PureComponent {
     ]
     const query = this.state.query;
     return (
-      <Content>
-        <Card bordered={false} className="min_card" >
-          <SearchForm query={this.queryHandle} />
-        </Card>
-        <Card style={{marginTop: 4}} >
-          <RemoteTable
-          query={query}
-          showHeader={true}
-          ref='table'
-          url={transfer.getSelectTransferList}
-          scroll={{x: '140%', y : document.body.clientHeight - 110 }}
-          columns={columns}
-          size="small"
-          rowKey={'transferGuid'}
-          style={{marginTop: 10}}
-          />
-        </Card>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
+        <SearchForm query={this.queryHandle} />
+        <RemoteTable
+        query={query}
+        showHeader={true}
+        ref='table'
+        url={transfer.getSelectTransferList}
+        scroll={{x: '140%', y : document.body.clientHeight - 110 }}
+        columns={columns}
+        size="small"
+        rowKey={'transferGuid'}
+        style={{marginTop: 10}}
+        />
       </Content>
     )
   }

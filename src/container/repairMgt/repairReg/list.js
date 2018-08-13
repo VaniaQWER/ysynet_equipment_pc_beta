@@ -60,7 +60,7 @@ class RepairRegList extends Component {
         }  
       }];
     return (
-        <Content className='ysynet-content ysynet-common-bgColor'>
+        <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}} >
           <Row>
             <Col span={12}>
               <Search

@@ -191,7 +191,7 @@ class AddMeterStand extends Component{
       <Affix>
         <div style={{background: '#fff', padding: '10px 20px', marginBottom: 4, display: 'flex', alignContent: 'center', justifyContent: 'flex-end'}}>
         <Button type="primary"><Link to={{pathname:`/meterMgt/meterStand/`}}>取消</Link></Button>
-        <Button type="primary" onClick={this.save} style={{marginLeft:15}}>保存</Button>
+        <Button type="primary" onClick={this.save} style={{marginLeft:8}}>保存</Button>
         </div>
       </Affix>
       {/* 资产信息部分 */}

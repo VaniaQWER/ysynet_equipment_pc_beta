@@ -160,8 +160,8 @@ class SearchForm extends Component {
           </Col>
           <Col span={6} style={{textAlign:'right',paddingRight:15,paddingTop:5}}> 
               <Button type="primary" htmlType="submit">搜索</Button>
-              <Button style={{marginLeft: 30,}} onClick={this.handleReset}>重置</Button>
-              <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
+              <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
                 {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
           </Col>

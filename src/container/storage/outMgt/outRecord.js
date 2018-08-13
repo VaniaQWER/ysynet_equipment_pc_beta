@@ -153,7 +153,7 @@ class SearchForm extends Component{
                     </FormItem>
                 </Col>
                 <Col span={7} key={6} >
-                    <Button type="primary" htmlType="submit" style={{marginTop:3}}>搜索</Button>
+                    <Button type="primary" htmlType="submit" style={{float:'right',marginTop:3}}>搜索</Button>
                 </Col>
               </Row>
             </Form>
@@ -233,11 +233,11 @@ class OutRecord extends Component{
             <div>
                 <SearchBox query={this.queryHandler}/>
                 <Row>
-                        <Button type="primary" style={{marginLeft:16,marginRight:16}}>
-                        <Link to={{pathname:`/storage/outMgt/receive`}}>领用</Link></Button>
+                    <Button type="primary" style={{marginLeft:8,marginRight:8}}>
+                    <Link to={{pathname:`/storage/outMgt/receive`}}>领用</Link></Button>
 
-                        <Button type="primary">
-                        <Link to={{pathname:`/storage/outMgt/refund`}}>退库</Link></Button>
+                    <Button type="primary">
+                    <Link to={{pathname:`/storage/outMgt/refund`}}>退库</Link></Button>
                 </Row>
                 
                 <RemoteTable

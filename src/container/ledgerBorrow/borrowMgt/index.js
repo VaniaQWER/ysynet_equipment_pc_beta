@@ -12,7 +12,7 @@ import queryString from 'querystring';
 
 import { timeToStamp } from '../../../utils/tools';
 
-import {Button, Row, Modal, Layout, Card, Form, DatePicker, Input, message} from 'antd';
+import {Button, Row, Modal, Layout, Form, DatePicker, Input, message} from 'antd';
 
 import {Link} from 'react-router-dom';
 
@@ -159,39 +159,35 @@ class BorrowMgt extends Component {
             },
         ];
         return (
-            <Content>
-                <Card style={{margin: '16px 16px 0'}} bordered={false}>
-                    <BorrowMgtForm setQuery={this.setQuery} />
-                </Card>
-                <Card style={{ margin: '0 16px' }}>
-                    <Row style={{ marginBottom: 50 }}>
-                        <Link to={{ pathname: `/ledgerBorrow/borrowMgt/loan` }}><Button type="primary" >新增借出</Button></Link>
-                        <Button onClick={this.showModal} style={{ marginLeft: 8 }} type="primary" >归还</Button>
-                    </Row>
-                    <RemoteTable
-                        ref="table"
-                        selectedRows={selectedRows}
-                        rowSelection={{
-                            onChange: (selectedRowKeys, selectedRows) => {
-                                this.setState({ selectedRowKeys, selectedRows });
-                            },
-                            getCheckboxProps: record => ({
-                                disabled: record.borrowFstate === '01', // Column configuration not to be checked
-                                borrowFstate: record.borrowFstate,
-                             })
-                        }}
-                        pagination={{
-                            showTotal: (total, range) => `总共${total}个项目`
-                        }}
-                        query={query}
-                        url={ledgerBorrow.BorrowRecordList}
-                        scroll={{x: '150%'}}
-                        showHeader={true}
-                        columns={columns}
-                        size="small"
-                        rowKey={'RN'}
-                    />
-                </Card>
+            <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
+                <BorrowMgtForm setQuery={this.setQuery} />
+                <Row style={{ marginBottom: 50 }}>
+                    <Link to={{ pathname: `/ledgerBorrow/borrowMgt/loan` }}><Button type="primary" >新增借出</Button></Link>
+                    <Button onClick={this.showModal} style={{ marginLeft: 8 }} type="primary" >归还</Button>
+                </Row>
+                <RemoteTable
+                    ref="table"
+                    selectedRows={selectedRows}
+                    rowSelection={{
+                        onChange: (selectedRowKeys, selectedRows) => {
+                            this.setState({ selectedRowKeys, selectedRows });
+                        },
+                        getCheckboxProps: record => ({
+                            disabled: record.borrowFstate === '01', // Column configuration not to be checked
+                            borrowFstate: record.borrowFstate,
+                            })
+                    }}
+                    pagination={{
+                        showTotal: (total, range) => `总共${total}个项目`
+                    }}
+                    query={query}
+                    url={ledgerBorrow.BorrowRecordList}
+                    scroll={{x: '150%'}}
+                    showHeader={true}
+                    columns={columns}
+                    size="small"
+                    rowKey={'RN'}
+                />
                 <Modal
                     title="归还"
                     visible={visible}

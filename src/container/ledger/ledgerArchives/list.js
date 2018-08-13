@@ -191,8 +191,8 @@ class SearchForm extends Component {
           </Col>
           <Col span={6} style={{textAlign:'right',paddingRight:15,paddingTop:5}}>
               <Button type="primary" htmlType="submit">搜索</Button>
-              <Button style={{marginLeft: 30,}} onClick={this.handleReset}>重置</Button>
-              <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+              <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
+              <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
                 {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
           </Col>
@@ -571,15 +571,14 @@ class LedgerArchivesList extends Component {
   render() {
     const { selectedRowKeys , importDataSource } = this.state;
     return (
-      <Content className='ysynet-content ysynet-common-bgColor'>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
-
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
           <Row style={{marginTop : 10}}>
             <Col span={12}></Col>
             <Col span={8} className={styles['text-align-right']}>
-              <Button type='primary' style={{marginRight:15}} onClick={()=>this.setState({visibleImportModal:true})}>导入</Button>
-              <Button type='primary' style={{marginRight:15}} onClick={()=>this.exportAssets()}>导出</Button>
+              <Button type='primary' style={{marginRight:8}} onClick={()=>this.setState({visibleImportModal:true})}>导入</Button>
+              <Button type='primary' style={{marginRight:8}} onClick={()=>this.exportAssets()}>导出</Button>
               <Dropdown overlay={
                 <Menu  onClick={()=>this.printAll()}>
                   <Menu.Item key="1"> 全部打印</Menu.Item>

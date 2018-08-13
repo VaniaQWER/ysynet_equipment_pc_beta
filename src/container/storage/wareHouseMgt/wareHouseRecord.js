@@ -224,9 +224,9 @@ class WareHouseRecord extends Component{
             <div>
                 <SearchBox query={this.queryHandler}/>
                 <Row>
-                    <Button type="primary" style={{marginLeft:16,marginRight:16}}>
+                    <Button type="primary" style={{marginLeft:8,marginRight:8}}>
                     <Link to={{pathname:`/storage/wareHouseMgt/addWareHouse`}}>入库</Link></Button>
-                    <Button type="primary" style={{marginLeft:16,marginRight:16}}>
+                    <Button type="primary" style={{marginRight:8}}>
                     <Link to={{pathname:`/storage/wareHouseMgt/refund`}}>退货</Link></Button>
                 </Row>
                 

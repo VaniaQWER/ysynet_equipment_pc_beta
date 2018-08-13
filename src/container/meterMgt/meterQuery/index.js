@@ -1,6 +1,6 @@
 /*计量查询- 首页 - 列表页*/
 import React , { Component } from 'react';
-import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker ,} from 'antd';
+import { Layout, Form, Row, Col, Input, Button, Icon, Select, DatePicker ,} from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import queryString from 'querystring';
 import { Link } from 'react-router-dom';
@@ -162,8 +162,8 @@ class SearchFormWrapper extends Component {
           </Col>
           <Col span={8} style={{ textAlign: 'right', marginTop: 4, float: 'right'}} >
             <Button type="primary" htmlType="submit">查询</Button>
-            <Button style={{marginLeft: 30}} onClick={this.handleReset}>重置</Button>
-            <a style={{marginLeft: 30, fontSize: 14}} onClick={this.toggle}>
+            <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
+            <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
               {this.state.display === 'block' ? '收起' : '展开'} <Icon type={this.state.display === 'block' ? 'up' : 'down'} />
             </a>
           </Col>
@@ -258,27 +258,23 @@ class MeterQuery extends Component{
     ]
     const { query } = this.state;
     return(
-      <Content>
-        <Card bordered={false} className="min_card" >
-          <SearchForm query={this.queryHandle} />
-        </Card>
-        <Card>
-          <RemoteTable
-            query={query}
-            showHeader={true}
-            ref='table'
-            url={meterStand.meterRecordInfoList}
-            pagination={{
-              size: 'small',
-              showTotal: (total, range) => `总共${total}个项目`
-            }}
-            scroll={{x: '120%', y : document.body.clientHeight - 110 }}
-            columns={columns}
-            size="small"
-            rowKey={'RN'}
-            style={{marginTop: 10}}
-          />
-        </Card>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
+        <SearchForm query={this.queryHandle} />
+        <RemoteTable
+          query={query}
+          showHeader={true}
+          ref='table'
+          url={meterStand.meterRecordInfoList}
+          pagination={{
+            size: 'small',
+            showTotal: (total, range) => `总共${total}个项目`
+          }}
+          scroll={{x: '120%', y : document.body.clientHeight - 110 }}
+          columns={columns}
+          size="small"
+          rowKey={'RN'}
+          style={{marginTop: 10}}
+        />
       </Content>
     )
   }

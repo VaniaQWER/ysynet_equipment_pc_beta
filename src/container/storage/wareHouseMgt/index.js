@@ -20,7 +20,7 @@ class wareHouseMgt extends Component {
     const selectTab = typeof query.activeKey === 'undefined' ? '1' : query.activeKey;
 
     return (
-      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
+      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
         <Tabs defaultActiveKey={selectTab}>
           <TabPane tab="入库记录" key="1">
               <WareHouseRecord router={this.props.router}/>

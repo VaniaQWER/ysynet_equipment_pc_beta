@@ -83,7 +83,6 @@ const initTime = getRangeTime('month',1,'before') ;
     query:{},//初始化的搜索条件
     allData:{},//当前图表所有数据
     chartData:[
-      { year: '1951 年', sales: 38 }
     ],//图表-数据
     chartTitle:'借出次数',//默认图表的Y轴显示文字
     activedButton:'1',//有边框色样式的button
@@ -255,10 +254,12 @@ const initTime = getRangeTime('month',1,'before') ;
       },
       success:async (data) => {
         let manageOptions = data.result;
-        //设置默认管理科室
-        this.setState({ manageOptions });
-        val = manageOptions[0].value;
-        await this.props.query({bDeptId:val,createStartDate:initTime[0],createEndDate:initTime[1]})
+        if(manageOptions.length){
+          //设置默认管理科室
+          this.setState({ manageOptions });
+          val = manageOptions[0].value;
+          await this.props.query({bDeptId:val,createStartDate:initTime[0],createEndDate:initTime[1]})
+        }
       },
       error: (err) => console.log(err)
     };
