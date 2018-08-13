@@ -127,9 +127,9 @@ class SearchForm extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if(values.CreateDate){
-        const [startCreateDate,endCreateDate]=values.CreateDate;
-        values.startCreateDate = moment(startCreateDate).format('YYYY-MM-DD');
-        values.endCreateDate = moment(endCreateDate).format('YYYY-MM-DD');
+        const [loanStartTime,loanEndTime]=values.CreateDate;
+        values.loanStartTime = moment(loanStartTime).format('YYYY-MM-DD');
+        values.loanEndTime = moment(loanEndTime).format('YYYY-MM-DD');
         delete values.CreateDate;
       }
       this.props.query(values);
