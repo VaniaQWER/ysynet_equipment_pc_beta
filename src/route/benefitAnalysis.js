@@ -13,5 +13,6 @@ export default {
     { exact:true, path: '/benefitAnalysis/operation', name: '运行数据导入', component: asyncComponent(() => import("../container/benefitAnalysis/operation"))},
     { exact:true, path: '/benefitAnalysis/income', name: '收入数据导入', component: asyncComponent(() => import("../container/benefitAnalysis/income"))},
     { exact:true, path: '/benefitAnalysis/expenses', name: '支出数据导入', component: asyncComponent(() => import("../container/benefitAnalysis/expenses"))},
+    { exact:true, path: '/benefitAnalysis/deptBenefitQuery', name: '效益分析查询', component: asyncComponent(() => import("../container/benefitAnalysis/deptBenefitQuery"))},
   ] 
 }
