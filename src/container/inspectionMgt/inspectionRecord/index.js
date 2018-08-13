@@ -23,7 +23,7 @@ class InspectionRecord extends Component {
         query: {}
     }
     setQuery = (query) => {
-        if( query.createTime ) {
+        if( query.createTime && query.createTime.length > 0 ) {
             query.startTime = query.createTime[0].format('YYYY-MM-DD');
             query.endTime = query.createTime[1].format('YYYY-MM-DD');
         }else {

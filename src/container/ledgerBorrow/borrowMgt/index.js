@@ -10,6 +10,8 @@ import request from '../../../utils/request';
 
 import queryString from 'querystring';
 
+import { timeToStamp } from '../../../utils/tools';
+
 import {Button, Row, Modal, Layout, Card, Form, DatePicker, Input, message} from 'antd';
 
 import {Link} from 'react-router-dom';
@@ -51,6 +53,13 @@ class BorrowMgt extends Component {
         selectedRows: [],
         visible: false,
         okLoading: false
+    }
+    sortTime = (a, b, key) =>{
+        if(a[key] && b[key]){
+            return timeToStamp(a[key]) - timeToStamp(b[key])
+        }else{
+            return false
+        }
     }
     showModal = () => {
         let {selectedRows} = this.state;
@@ -119,13 +128,16 @@ class BorrowMgt extends Component {
                 dataIndex: 'deptName'
             },{
                 title: '借用时间',
-                dataIndex: 'createTime'
+                dataIndex: 'createTime',
+                sorter: (a, b) => this.sortTime(a, b, 'createTime'),
             },{
                 title: '预计归还时间',
-                dataIndex: 'estimateBack'
+                dataIndex: 'estimateBack',
+                sorter: (a, b) => this.sortTime(a, b, 'estimateBack'),
             },{
                 title: '实际归还时间',
-                dataIndex: 'actualBack'
+                dataIndex: 'actualBack',
+                sorter: (a, b) => this.sortTime(a, b, 'actualBack'),
             },{
                 title: '借用原因',
                 dataIndex: 'borrowCause'
