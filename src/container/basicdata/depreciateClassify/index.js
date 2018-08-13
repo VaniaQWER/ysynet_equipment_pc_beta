@@ -551,15 +551,15 @@ class DepreciateClassify extends Component {
   render(){
     const { getFieldDecorator } = this.props.form;
     const { visible , visibleSupplies, query , isLoading ,  selectedKeys, treeData, expandKeys, isEdit } = this.state;
-    const productModalHeader = (
-      <Row>
-        <Col span={12}>未选资产</Col>
-        <Col span={12} style={{textAlign:'right'}}>
-          <Button type='primary' style={{marginRight:15}}  onClick={()=>this.getProductModalData()}>确定</Button>
-          <Button type='primary' onClick={()=>this.closeProductModal()}>取消</Button>
-        </Col>
-      </Row>
-    )
+    // const productModalHeader = (
+    //   <Row>
+    //     <Col span={12}>未选资产</Col>
+    //     <Col span={12} style={{textAlign:'right'}}>
+    //       <Button type='primary' style={{marginRight:15}}  onClick={()=>this.getProductModalData()}>确定</Button>
+    //       <Button type='primary' onClick={()=>this.closeProductModal()}>取消</Button>
+    //     </Col>
+    //   </Row>
+    // )
     
     return (
       <Layout style={{background: '#fff'}} className='classifyModule'>
@@ -742,9 +742,11 @@ class DepreciateClassify extends Component {
         {/*选产品弹窗*/}
         <Modal
           width={980}
-          title={productModalHeader}
+          // title={productModalHeader}
+          title='未选资产'
+          onOk={()=>this.getProductModalData()}
+          onCancel={()=>this.closeProductModal()}
           visible={visible}
-          footer={null}
           maskClosable={false}
           closable={false}
           >
@@ -772,8 +774,7 @@ class DepreciateClassify extends Component {
                 }
               
             }}
-            size="small"
-            style={{marginTop: 10}}>
+            size="small">
           </RemoteTable>
         </Modal>
         
@@ -791,7 +792,8 @@ class ProductForm extends Component {
     outDeptSelect:this.props.outDeptSelect,
   }
 
-  onSearch = () =>{
+  onSearch = (e) =>{
+    e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       this.props.tableFetch({...values,staticId:this.props.staticId,type: '02'});
     })
