@@ -35,6 +35,11 @@ const buttonStyle = {
 };
 const columns = [
   {
+    title:'使用科室',
+    dataIndex: 'useDeptName',
+    width:100,
+  },
+  {
     title: '资产编号',
     dataIndex: 'assetsRecord',
     width:120
@@ -55,27 +60,62 @@ const columns = [
     width:100,
   },
   {
-    title:'使用科室',
-    dataIndex: 'useDeptName',
+    title:'原值',
+    dataIndex: 'originalValue',
     width:100,
+    render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
-    title:'维修次数',
+    title:'使用次数',
     dataIndex: 'rrpairNumber',
     width:100,
   },
   {
-    title:'维修总费用',
+    title:'月保本量',
+    dataIndex: 'rrpairNumber123',
+    width:100,
+  },
+  {
+    title:'总收入',
     dataIndex: 'actualPrice',
     width:100,
     render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
-    title:'材料费',
+    title:'总支出',
     dataIndex: 'fittingPrice',
     width:100,
     render:(text)=>String(text)?Number(text).toFixed(2):''
   },
+  {
+    title:'利润',
+    dataIndex: 'lirun',
+    width:100,
+    render:(text)=>String(text)?Number(text).toFixed(2):''
+  },
+  {
+    title:'利润率',
+    dataIndex: 'lirunlv',
+    width:100,
+    render:(text)=>String(text)?`${text}%`:''
+  },
+  {
+    title:'利润率',
+    dataIndex: 'lirunlv',
+    width:100,
+    render:(text)=>String(text)?`${text}%`:''
+  },
+  {
+    title:'投资回报率',
+    dataIndex: 'huibaolv',
+    width:100,
+    render:(text)=>String(text)?`${text}%`:''
+  },
+  {
+    title:'投资回收年限',
+    dataIndex: 'touzihuishounianxain',
+    width:100
+  }
 ];
 
 /**
