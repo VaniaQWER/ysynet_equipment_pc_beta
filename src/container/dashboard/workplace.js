@@ -2,7 +2,7 @@
  * @file 工作台
  */
 import React, { Component } from 'react';
-import { Layout, Card, Button, Select } from 'antd';
+import { Layout, Card, Button, Select, Row, Col } from 'antd';
 // import { withRouter } from 'react-router'
 // import { connect } from 'react-redux';
 import assets from '../../api/assets';
@@ -88,15 +88,55 @@ class Workplace extends Component {
       };
     return (
       <Content>
-        <Card title={`代办事项`} extra={<a>设置</a>} style={{margin: 10}} bordered={false}>
-          <div style={{width: '15%', borderRadius: '3%', height: 70, border: '1px solid #5CACEE', float: 'left', marginLeft: '3%'}}>
-            <div style={{width: 70, background: '#5CACEE', height: 69, margin: 0, padding: 0, float: 'left'}}><img src={require('./work01.png')} alt="维修派工" style={{margin: 10}} /></div>
-            <div style={{width: 88, height: 69, float: 'right'}}>
-              <h1 style={{height: 30, color: '#5CACEE', marginLeft: 20}}>5</h1>
-              <span>维修派工</span>
-            </div>
-          </div>
-          <div style={{width: '15%', borderRadius: '3%', height: 70, border: '1px solid #F4A460', float: 'left', marginLeft: '4%'}}>
+        <Card title={`您好，今日的代办事项`} style={{margin: 10}} bordered={false}>
+          <Row type="flex" justify="space-around" align="middle">
+            <Col span={4}>
+              <div style={{borderRadius: '3%', height: 70, border: '1px solid #5CACEE'}}>
+                <div style={{width: 70, background: '#5CACEE', height: 69, float: 'left'}}><img src={require('./work01.png')} alt="维修派工" style={{margin: 10}} /></div>
+                <div style={{width: 88, height: 69, float: 'right'}}>
+                  <h1 style={{height: 30, color: '#5CACEE', marginLeft: 20}}>5</h1>
+                  <span>维修派工</span>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={{borderRadius: '3%', height: 70, border: '1px solid #5CACEE'}}>
+                <div style={{width: 70, background: '#5CACEE', height: 69, margin: 0, padding: 0, float: 'left'}}><img src={require('./work01.png')} alt="维修派工" style={{margin: 10}} /></div>
+                <div style={{width: 88, height: 69, float: 'right'}}>
+                  <h1 style={{height: 30, color: '#5CACEE', marginLeft: 20}}>5</h1>
+                  <span>维修派工</span>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={{borderRadius: '3%', height: 70, border: '1px solid #5CACEE'}}>
+                <div style={{width: 70, background: '#5CACEE', height: 69, margin: 0, padding: 0, float: 'left'}}><img src={require('./work01.png')} alt="维修派工" style={{margin: 10}} /></div>
+                <div style={{width: 88, height: 69, float: 'right'}}>
+                  <h1 style={{height: 30, color: '#5CACEE', marginLeft: 20}}>5</h1>
+                  <span>维修派工</span>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={{borderRadius: '3%', height: 70, border: '1px solid #5CACEE'}}>
+                <div style={{width: 70, background: '#5CACEE', height: 69, margin: 0, padding: 0, float: 'left'}}><img src={require('./work01.png')} alt="维修派工" style={{margin: 10}} /></div>
+                <div style={{width: 88, height: 69, float: 'right'}}>
+                  <h1 style={{height: 30, color: '#5CACEE', marginLeft: 20}}>5</h1>
+                  <span>维修派工</span>
+                </div>
+              </div>
+            </Col>
+            <Col span={4}>
+              <div style={{borderRadius: '3%', height: 70, border: '1px solid #5CACEE'}}>
+                <div style={{width: 70, background: '#5CACEE', height: 69, margin: 0, padding: 0, float: 'left'}}><img src={require('./work01.png')} alt="维修派工" style={{margin: 10}} /></div>
+                <div style={{width: 88, height: 69, float: 'right'}}>
+                  <h1 style={{height: 30, color: '#5CACEE', marginLeft: 20}}>5</h1>
+                  <span>维修派工</span>
+                </div>
+              </div>
+            </Col>
+          </Row>
+          {/* <div style={{width: '15%', borderRadius: '3%', height: 70, border: '1px solid #F4A460', float: 'left', marginLeft: '4%'}}>
             <div style={{width: 70, background: '#F4A460', height: 69, margin: 0, padding: 0, float: 'left'}}><img src={require('./work02.png')} alt="维修处理" style={{margin: 10}} /></div>
             <div style={{width: 88, height: 69, float: 'right'}}>
               <h1 style={{height: 30, color: '#F4A460', marginLeft: 20}}>{this.state.rrpairData}</h1>
@@ -124,9 +164,9 @@ class Workplace extends Component {
               <span>设备计量</span>
             </div>
           </div>
-          <div style={{clear: 'both'}}></div>
+          <div style={{clear: 'both'}}></div> */}
         </Card>
-        <Card title={`设备维修情况`} extra={<a>设置</a>} style={{margin: 10, width: '48%', float: 'left'}} bordered={false}>
+        {/* <Card title={`设备维修情况`} extra={<a>设置</a>} style={{margin: 10, width: '48%', float: 'left'}} bordered={false}>
           <ButtonGroup>
             <Button type="primary">最近一月</Button>
             <Button>最近三月</Button>
@@ -164,7 +204,7 @@ class Workplace extends Component {
             <Geom type="line" position="month*value" size={2} />
             <Geom type='point' position="month*value" size={4} shape={'circle'} style={{ stroke: '#fff', lineWidth: 1}} />
           </Chart>
-        </Card>
+        </Card> */}
       </Content>
     )
   }
