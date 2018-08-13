@@ -26,7 +26,7 @@ class Detail extends Component {
             },
             success: (data) => {
                 if(data.status) {
-                    let fileList = []
+                    let fileList = [];
                     if( data.result.rows[0].tfAccessory ) {
                         fileList = data.result.rows.map( (item, index) => ({
                             uid: index,
