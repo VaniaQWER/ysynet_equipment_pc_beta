@@ -7,7 +7,7 @@ import React , { PureComponent } from 'react';
 import { Layout , Col , Row , DatePicker , Select , Form , Icon , Button , Tabs , Input } from 'antd';
 import {Chart, Axis, Tooltip, Geom , Guide } from "bizcharts";
 import TableGrid from '../../../component/tableGrid';
-import operation from '../../../api/operation';
+import benefitAnalysis from '../../../api/benefitAnalysis';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import moment from 'moment';
@@ -67,65 +67,60 @@ const columns = [
   },
   {
     title:'使用次数',
-    dataIndex: 'rrpairNumber',
+    dataIndex: 'useTime',
     width:100,
   },
   {
     title:'月保本量',
-    dataIndex: 'rrpairNumber123',
+    dataIndex: 'ybbl',
     width:100,
   },
   {
     title:'总收入',
-    dataIndex: 'actualPrice',
+    dataIndex: 'zsr',
     width:100,
     render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
     title:'总支出',
-    dataIndex: 'fittingPrice',
+    dataIndex: 'zzc',
     width:100,
     render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
     title:'利润',
-    dataIndex: 'lirun',
+    dataIndex: 'ylr',
     width:100,
     render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
     title:'利润率',
-    dataIndex: 'lirunlv',
+    dataIndex: 'ylrl',
     width:100,
     render:(text)=>String(text)?`${text}%`:''
   },
   {
-    title:'利润率',
-    dataIndex: 'lirunlv',
-    width:100,
-    render:(text)=>String(text)?`${text}%`:''
-  },
-  {
-    title:'投资回报率',
-    dataIndex: 'huibaolv',
+    title:'投资收益率',
+    dataIndex: 'tzsyl',
     width:100,
     render:(text)=>String(text)?`${text}%`:''
   },
   {
     title:'投资回收年限',
-    dataIndex: 'touzihuishounianxain',
+    dataIndex: 'tzhsq',
     width:100
   }
 ];
 
 /**
- * @param  rrpairNumberList 维修次数 ：[x equipmentStandardName 设备 , y  rrpairNumber 维修台数]
- * @param  actualPriceList 维修金额 ：[x equipmentStandardName 设备 , y  rrpairDateNum 维修台数]
+ * @param  ylrlList 月利润率 ：[x equipmentStandardName 设备 , y  rrpairNumber 维修台数]
+ * @param  tzhsqList 投资回收期 ：[x equipmentStandardName 设备 , y  rrpairDateNum 维修台数]
+ * @param  tzsylList 投资收益率 ：[x equipmentStandardName 设备 , y  rrpairDateNum 维修台数]
 */
 const chartField ={
-  rrpairNumberList:['equipmentStandardName','rrpairNumber'],
-  actualPriceList:['equipmentStandardName','rrpairDateNum'],
-  rrpairNumberList2:['equipmentStandardName','rrpairNumber'],
+  ylrlList:['equipmentStandardName','ylrl'],
+  tzhsqList:['equipmentStandardName','tzhsq'],
+  tzsylList:['equipmentStandardName','tzsyl'],
 }
 const initTime = `${new Date().getFullYear()}-${new Date().getMonth()+1}`;
 
@@ -139,25 +134,23 @@ class DeptBenefitQuery extends PureComponent{
     ],//图表-数据
     chartTitle:'利润率',//默认图表的Y轴显示文字
     activedButton:'1',//有边框色样式的button
-    chartFieldText:'rrpairNumberList',//当前字段
+    chartFieldText:'ylrlList',//当前字段
   }
 
   //表单搜索 - 获取数据 并更新图表以及table
   onSearch = (val)=>{ 
     //获取图表数据
-    request(operation.selectAssectRrpairCountChart,{
+    request(benefitAnalysis.selectBenefitByMonthChart,{
       body:queryString.stringify(val),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
-          if(data.result.rrpairNumberList.length && data.result.actualPriceList.length){
+          if(data.result.ylrlList.length && data.result.tzhsqList.length && data.result.tzsylList.length){
             let allData = data.result;
             const { chartFieldText } = this.state;
-            this.setState({allData,query:val,chartData:allData[chartFieldText]})
-          }else{
-            this.setState({allData:data.result,chartData:[]})
+            this.setState({allData,query:val,chartData:this.formatData( allData[chartFieldText] )})
           }
         }
       },
@@ -174,24 +167,36 @@ class DeptBenefitQuery extends PureComponent{
     this.setState({disable:ret})
 
     if(key==="1"){
-      this.SearchForm.props.form.setFieldsValue({useDeptId:'',assetsRecord:null,equipmentStandardName:null})
+      this.SearchForm.props.form.setFieldsValue({assetsRecord:null,equipmentStandardName:null})
     }
     this.onSearch(this.formatSubmit());
     
   }
   formatSubmit = () => {
     let values = this.SearchForm.props.form.getFieldsValue() ; 
-    if(values.createDate.length) {
-      values.createStartDate = moment(values.createDate).format('YYYY-MM');
-      delete values['createDate']
-    }else{
-      delete values['createDate']
+    if(values.benefitMonth) {
+      values.benefitMonth = moment(values.benefitMonth).format('YYYY-MM');
     }
     for (const key in values) {
       values[key] = values[key] === undefined? "" : values[key];
     }
     this.setState({query:values})
     return values
+  }
+   /**
+   * @param data 后端传递的对应-维修金额的data数组
+   * @param dataField 当前维修金额对应的X，Y轴
+   */
+  formatData = (data,dataField) => {
+    if(data && data.length){
+      data.map(item=>{
+        let name = item.equipmentStandardName.split('-')[0];
+        return item.equipmentStandardName=`${name}-${item.assetsRecord}`;
+      })
+      return data;
+    }else{
+      return [];
+    }
   }
 
   //左侧按钮切换 - 更换data源
@@ -202,6 +207,7 @@ class DeptBenefitQuery extends PureComponent{
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
     let data = this.state.allData[dataField] ;
+    data =  this.formatData(data,dataField);
     this.setState({
       chartTitle:title,
       activedButton:hasStyleIndex,
@@ -219,9 +225,9 @@ class DeptBenefitQuery extends PureComponent{
           {/*chart*/}
           <TabPane tab="图" key="1">
             <Col span={2}>
-              <Button style={buttonStyle} actived={activedButton==='1'?'actived':''} onClick={()=>this.changeChartData('利润率','1','rrpairNumberList')  }>利润率</Button>
-              <Button style={buttonStyle} actived={activedButton==='2'?'actived':''} onClick={()=>this.changeChartData('投资回收期','2','actualPriceList')  }>投资回收期</Button>
-              <Button style={buttonStyle} actived={activedButton==='3'?'actived':''} onClick={()=>this.changeChartData('投资回报率','3','rrpairNumberList2')  }>投资回报率</Button>
+              <Button style={buttonStyle} actived={activedButton==='1'?'actived':''} onClick={()=>this.changeChartData('利润率','1','ylrlList')  }>利润率</Button>
+              <Button style={buttonStyle} actived={activedButton==='2'?'actived':''} onClick={()=>this.changeChartData('投资回收期','2','tzhsqList')  }>投资回收期</Button>
+              <Button style={buttonStyle} actived={activedButton==='3'?'actived':''} onClick={()=>this.changeChartData('投资收益率','3','tzsylList')  }>投资收益率</Button>
             </Col>
             <Col span={20}>{/* chartData */}
               <Chart height={500} data={chartData}  forceFit>
@@ -263,8 +269,8 @@ class DeptBenefitQuery extends PureComponent{
             <RemoteTable
               ref='table'
               query={query.bDeptId?query:{}}
-              url={operation.selectAssectRrpairCount}
-              scroll={{x: '100%', y : document.body.clientHeight - 311}}
+              url={benefitAnalysis.selectBenefitByMonth}
+              scroll={{x: '120%', y : document.body.clientHeight - 311}}
               columns={columns}
               showHeader={true}
               rowKey={'RN'}
@@ -302,7 +308,7 @@ class DeptBenefitQuery extends PureComponent{
           val = manageOptions[0].value;
 
           //2-获取当前机构的所有使用科室
-          await request(operation.selectUseDeptList,{
+          await request(benefitAnalysis.selectUseDeptList,{
             body:queryString.stringify({deptType:'00'}),
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
@@ -312,19 +318,17 @@ class DeptBenefitQuery extends PureComponent{
                 if(data.result && data.result.length){
                   this.setState({useOptions:data.result});
                   let useDeptId = data.result[0].value;
-                  await this.props.query({bDeptId:val,useDeptId,createStartDate:initTime})
+                  await this.props.query({bDeptId:val,useDeptId,benefitMonth:initTime})
                 }
               }
             },
             error: err => {console.log(err)}
           })
-
-
         }
       },
       error: (err) => console.log(err)
     };
-    request(operation.queryManagerDeptListByUserId, options);
+    request(benefitAnalysis.queryManagerDeptListByUserId, options);
   }
   toggle = () => {
     const { display } = this.state;
@@ -335,11 +339,8 @@ class DeptBenefitQuery extends PureComponent{
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if(values.createDate) {
-        values.createStartDate = moment(values.createDate).format('YYYY-MM');
-        delete values['createDate']
-      }else{
-        delete values['createDate']
+      if(values.benefitMonth) {
+        values.benefitMonth = moment(values.benefitMonth).format('YYYY-MM');
       }
       for (const key in values) {
         values[key] = values[key] === undefined? "" : values[key];
@@ -350,7 +351,7 @@ class DeptBenefitQuery extends PureComponent{
   //重置
   handleReset = () => {
     this.props.form.resetFields();
-    this.props.form.setFieldsValue({createDate:null});
+    this.props.form.setFieldsValue({benefitMonth:null});
   }
  
 render() {
@@ -391,7 +392,7 @@ render() {
         </Col>
         <Col span={8}  style={{display: display}}>
           <FormItem label={`选择月份`} {...formItemLayout}>
-            {getFieldDecorator('createDate', {
+            {getFieldDecorator('benefitMonth', {
                 initialValue:moment(initTime,'YYYY-MM-DD')
               })(
                 <MonthPicker style={{width: 250}} />
