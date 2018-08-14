@@ -211,7 +211,7 @@ class DepreInfo extends Component {
                       </Select> 
                     )}
                   </FormItem>
-                  :<ShowDomInfo name="折旧方式">{AssetInfoData?AssetInfoData.depreciationType?depreciationTypeData[AssetInfoData.depreciationType].text:'':''}</ShowDomInfo>
+                  :<ShowDomInfo name="折旧方式">{AssetInfoData?depreciationTypeData[AssetInfoData.depreciationType]?depreciationTypeData[AssetInfoData.depreciationType].text:'':''}</ShowDomInfo>
               }
             </Col>
             <Col span={8}>
