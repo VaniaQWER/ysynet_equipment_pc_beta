@@ -1,30 +1,79 @@
 .matter-card {
     border-radius: 3%;
-    height: 70px;
-    border: 1px solid #5CACEE;
+    height: 102px;
+    border: 1px solid #e8e8e8;
 }
 
 .matter-card-img {
-    width: 70px;
-    background: #5CACEE;
-    height: 69px;
+    width: 100px;
+    height: 100px;
     float: left;
-    border-radius: 3% 0 0 3%;
-    margin: 0 0 0 -1px;
+    border-radius: 6px 0 0 6px;
 }
 
 .matter-card-img img {
-    margin: 10px;
+    margin: 14px;
 }
 
 .matter-card-text {
     width: 88px; 
-    height: 69px;
+    height: 100px;
     float: right;
 }
 
 .matter-card-text h1 {
+    margin: 0;
     height: 30px;
-    color: #5CACEE;
-    margin-left: 20px
+    text-align: center;
+    padding-top: 10px;
+    font-size: 24px;
 }
+
+.matter-card-text  div {
+    margin-top: 26px;
+    text-align: center;
+    font-size: 14px;
+    color: rgba(0, 0, 0, .65);
+}
+
+.bill-text {
+    font-size: 16px;
+    color: rgba(0, 0, 0, .85);
+    line-height: 30px;
+    font-weight: bold;
+}
+
+.a {       //报废
+    border-color: rgb(36, 147, 252);
+}
+
+.b {        //维修验收
+    border-color: rgb(149, 99, 234);
+}
+
+.c {        //保养到期
+    border-color: rgb(36, 143, 252);
+}
+
+.d {        //维修处理
+    border-color: rgb(39, 184, 190);
+}
+
+.e {        //维修派工
+    border-color: rgb(36, 143, 252);
+}
+
+.f {        //计量提醒
+    border-color: rgb(39, 184, 190);
+}
+
+.g {        //转科审批
+    border-color: rgb(149, 99, 234);
+}
+
+.h {       //等待维修
+    border-color: rgb(39, 184, 190);
+}
+
+
+

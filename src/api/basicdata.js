@@ -32,6 +32,9 @@ const basicdata = {
   deleteZCApproval:`${_local}/approvalController/deleteZCApproval`,//删除审批配置
   updateZCApprovalSeqNum:`${_local}/approvalController/updateZCApprovalSeqNum`,//审批上下移动  
   queryUserListByOrgId:`${_local}/dept/queryUserListByOrgId`,//查询审批人-当前机构所有用户
+
+  //工作台配置
+  findGroupList: `${_local}/user/findGroupList`,        //查询当前机构用户组
   
 }
 export default basicdata;
