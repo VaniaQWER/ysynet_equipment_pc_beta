@@ -3,11 +3,11 @@
  */
 import React, { Component } from 'react';
 
-import { Layout, Card, Select, Row, Col } from 'antd';
+import { Layout, Card, Select, Row, Col, message } from 'antd';
 
-import assets from '../../api/assets';
+import workplace from '../../api/workplace';
 
-import querystring from 'querystring';
+import queryString from 'querystring';
 
 import request from '../../utils/request';
 
@@ -17,108 +17,117 @@ const { Content } = Layout;
 
 const { Option } = Select;
 
+console.log(S)
+
 class Workplace extends Component {
   state={
-    maintainData: '',
+    matterData: [],   //待办事项
     rrpairData: '',
     transferData: ''
   };
 
   componentDidMount = () => {
-    // this.getTodoInfo();
+    request(workplace.commissionList, {
+      headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: (data) => {
+        if(data.status) {
+           let matterData = this.dataDispose(data.result[0]);
+          // console.log(matterData)
+          this.setState({ matterData });
+        }else {
+          message(data.msg);
+        }
+        
+      },
+      error: err => console.log(err)
+    });
+    request(workplace.documentTypeList, {
+      body: queryString.stringify({
+        type: "01"
+      }),
+      headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: (data) => {
+        if(data.status) {
+           
+        }else {
+          message(data.msg);
+        }
+        
+      },
+      error: err => console.log(err)
+    });
   }
 
-  // 待办事项
-  getTodoInfo = () => {
-    let options = {
-      body:querystring.stringify(),
-      headers:{
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: data => {
-        if (data.status) {
-          data.result.maintainFstateNum.forEach(item => {
-            if (item.fstate === "00") {
-              this.setState({maintainData: item.num});
-            }
-          });
-          data.result.rrpairFstateNum.forEach(item => {
-            if (item.fstate === "30") {
-              this.setState({rrpairData: item.num});
-            }
-          });
-          data.result.transferFstateNum.forEach(item => {
-            if (item.fstate === "00") {
-              this.setState({transferData: item.num});
-            }
-          });
-        }
-      },
-      error: err => {console.log(err)}
-    }
-    request(assets.getSelectOrderNumber, options);
+  dataDispose = (data) => {
+    let arr = [],
+        name = '';
+    for (const key in data) {
+      switch (key) {
+        case 'awaitCheck':
+          name = '维修验收';
+          break;
+        case 'notTurned':
+          name = '转科审批';
+          break;
+        case 'maintainNumber':
+          name = '保养到期';
+          break;
+        case 'awaitDispatch':
+          name = '维修派工';
+          break;
+        case 'meter':
+          name = '计量到期';
+          break;
+        case 'awaitRepair':
+          name = '等待维修';
+          break;
+        case 'scrapNumber':
+          name = '报废申请';
+          break;
+        case 'maintenance':
+          name = '维修处理';
+          break;
+        default:
+          name = '';
+          break;
+      };
+      arr.push({
+        name,
+        anotherName: key,
+        num: data[key]
+      });
+    };
+    return arr;
   }
+
+  
   
   render() {
+    let {matterData} = this.state;
+    matterData = matterData.map( (item, i) => {
+      return (
+        <Col key={i} span={4}>
+          <div className={`${S[item.anotherName]} ${S['matter-card']}`}>
+            <div className={S['matter-card-img']}><img src={require(`./Icon/${item.anotherName}.png`)} alt={item.name}/></div>
+            <div className={S['matter-card-text']}>
+              <h1>{item.num}</h1>
+              <div>
+                <span>{item.name}</span>
+              </div>
+            </div>
+          </div>
+        </Col>
+      )
+    });
     return (
       <Content>
         <Card title={<h1 style={{fontSize: 28, margin: 0}}>您好，今日的代办事项</h1>} bordered={false}>
           <Row type="flex" justify="space-around" align="middle">
-            <Col span={4}>
-              <div className={S['matter-card']}>
-                <div className={S['matter-card-img']}><img src={require('./Icon/icon_maintenance_acceptance_violet.png')} alt="维修派工"/></div>
-                <div className={S['matter-card-text']}>
-                  <h1>5</h1>
-                  <div>
-                    <span>维修派工</span>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col span={4}>
-              <div className={S['matter-card']}>
-                <div className={S['matter-card-img']}><img src={require('./Icon/icon_maintenance_expiration_blue.png')} alt="维修派工"/></div>
-                <div className={S['matter-card-text']}>
-                  <h1>5</h1>
-                  <div>
-                    <span>维修派工</span>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col span={4}>
-              <div className={S['matter-card']}>
-                <div className={S['matter-card-img']}><img src={require('./Icon/icon_Maintenance_treatment_green.png')} alt="维修派工"/></div>
-                <div className={S['matter-card-text']}>
-                  <h1>5</h1>
-                  <div>
-                    <span>维修派工</span>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col span={4}>
-              <div className={S['matter-card']}>
-                <div className={S['matter-card-img']}><img src={require('./Icon/icon_maintenance_work_blue.png')} alt="维修派工"/></div>
-                <div className={S['matter-card-text']}>
-                  <h1>5</h1>
-                  <div>
-                    <span>维修派工</span>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col span={4}>
-              <div className={S['matter-card']}>
-                <div className={S['matter-card-img']}><img src={require('./Icon/icon_measure_maturity_green.png')} alt="维修派工"/></div>
-                <div className={S['matter-card-text']}>
-                  <h1>5</h1>
-                  <div>
-                    <span>维修派工</span>
-                  </div>
-                </div>
-              </div>
-            </Col>
+            {matterData}
           </Row>
         </Card>
         <Row style={{background: '#fff', padding: '0 20px'}}>
@@ -161,21 +170,6 @@ class Workplace extends Component {
                 </Col>
                 <Col span={12} style={{textAlign: 'right'}}>5小时前</Col>
               </Row>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <p>123</p>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <p>123</p>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <p>123</p>
             </Card>
           </Col>
         </Row>
