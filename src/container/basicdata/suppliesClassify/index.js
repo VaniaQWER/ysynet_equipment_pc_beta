@@ -351,7 +351,7 @@ class SuppliesClassify extends Component {
             tfComment: values.tfComment,
             tfClo: values.tfClo,
             parentStaticId:this.state.topClassInfo.staticId, //     this.state.selectedGuid 
-            staticId:this.state.topClassInfo.staticId,
+            staticId:this.state.topClassInfo.staticId
           }
           if (this.state.selectedKeyInfo.node) {
             postData.parentStaticId = this.state.selectedKeyInfo.node.props.guId;
@@ -464,7 +464,7 @@ class SuppliesClassify extends Component {
     console.log('发出的请求内容',JSON.stringify({type:'01',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}))
     if(selectedProductRowKeys.length>0){
       request(basicdata.insertAssetsType,{
-        body:querystring.stringify({type:'01',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
+        body:querystring.stringify({type:'01',cover:"02",staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         success: data => { 
           this.closeProductModal();

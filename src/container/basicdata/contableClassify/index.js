@@ -464,7 +464,7 @@ class ContableClassify extends Component {
     console.log('发出的请求内容',JSON.stringify({type:'04',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}))
     if(selectedProductRowKeys.length>0){
       request(basicdata.insertAssetsType,{
-        body:querystring.stringify({type:'04',staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
+        body:querystring.stringify({type:'04',cover:"02",staticId:selectedKeys[0],assetsRecordGuids:selectedProductRowKeys}),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         success: data => { 
           this.closeProductModal();
