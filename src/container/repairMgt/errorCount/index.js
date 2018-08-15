@@ -257,14 +257,26 @@ const initTime = getRangeTime('month',1,'before') ;
                     htmlTemplate:(text, item, index)=>{
                       let t = text.split('-')
                       return `<div style="margin-top:10px;"><p style="text-align:center;font-size:10px;margin-bottom:0;
-                      max-height: 28px;
-                      overflow: hidden;
-                      text-overflow: ellipsis;
-                      width: 100%;
-                      -webkit-line-clamp: 2;
-                      -webkit-box-orient: vertical;
-                      display: -webkit-box;
-                      ">${t[0] || '  ' }</p><span style="font-size:10px;">${t[1]  || '  ' }</span></div>`
+                        max-height:35px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        width: 100%;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        display: -webkit-box;"
+                        title=${t[0]||'  '}>${t[0] || '  '}
+                        </p><span 
+                        style="
+                        font-size:10px;
+                        width: 80%;
+                        margin-left: 10%;
+                        text-align: center;
+                        overflow: hidden;
+                        display: inline-block;
+                        text-overflow: ellipsis;
+                        "
+                        title=${t[1]||'  '}
+                        >${t[1]||'  '}</span></div>`
                     }
                   }}/>
                 <Tooltip crosshairs={{type : "y"}} />
