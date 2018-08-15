@@ -249,7 +249,21 @@ class DeptBenefitQuery extends PureComponent{
                     }}
                   />
                 </Guide>
-                <Axis name={chartField[chartFieldText][0]} />
+                <Axis
+                    name={chartField[chartFieldText][0]} 
+                    label={{
+                      htmlTemplate:(text, item, index)=>{
+                        let t = text.split('-')
+                        return `<div style="margin-top:10px;"><p style="text-align:center;font-size:10px;margin-bottom:0;
+                        max-height: 28px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        width: 100%;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        display: -webkit-box;">${t[0] || '  '}</p><span style="font-size:10px;">${t[1]||'  '}</span></div>`
+                      }
+                    }}/>
                 <Tooltip crosshairs={{type : "y"}} />
                 <Geom 
                 type="interval"
@@ -351,7 +365,6 @@ class DeptBenefitQuery extends PureComponent{
   //重置
   handleReset = () => {
     this.props.form.resetFields();
-    this.props.form.setFieldsValue({benefitMonth:null});
   }
  
 render() {
@@ -395,7 +408,7 @@ render() {
             {getFieldDecorator('benefitMonth', {
                 initialValue:moment(initTime,'YYYY-MM-DD')
               })(
-                <MonthPicker style={{width: 250}} />
+                <MonthPicker style={{width: 250}} allowClear={false}/>
               )}
           </FormItem>
         </Col>

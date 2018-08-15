@@ -251,27 +251,42 @@ const initTime = getRangeTime('month',1,'before') ;
                     }}
                   />
                 </Guide>
-                <Axis name={chartField[this.state.chartFieldText][0]} />
+                <Axis 
+                  name={chartField[this.state.chartFieldText][0]} 
+                  label={{
+                    htmlTemplate:(text, item, index)=>{
+                      let t = text.split('-')
+                      return `<div style="margin-top:10px;"><p style="text-align:center;font-size:10px;margin-bottom:0;
+                      max-height: 28px;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      width: 100%;
+                      -webkit-line-clamp: 2;
+                      -webkit-box-orient: vertical;
+                      display: -webkit-box;
+                      ">${t[0] || '  ' }</p><span style="font-size:10px;">${t[1]  || '  ' }</span></div>`
+                    }
+                  }}/>
                 <Tooltip crosshairs={{type : "y"}} />
                 {//不同参数显示不同参数属性
                   chartFieldText !=='actualPriceList'? 
-                  <Geom 
-                  type="interval"
-                  tooltip={[`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`, (time, sold) => {
-                    return {
-                      name: chartTitle,
-                      value: sold
-                    };
-                  }]}
-                  position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
-                  size={15}/>
+                    <Geom 
+                    type="interval"
+                    tooltip={[`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`, (time, sold) => {
+                      return {
+                        name: chartTitle,
+                        value: sold
+                      };
+                    }]}
+                    position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
+                    size={15}/>
                   :
                   <div>
                     <Geom 
                       type="interval"
                       position={`${chartField[this.state.chartFieldText][0]}*${chartField[this.state.chartFieldText][1]}`}  
                       color={'name'} adjust={[{type: 'dodge',marginRatio: 1/32}]}  size={25}/>
-                    <Legend />
+                    <Legend offsetY={30}/>
                   </div>
                 
                 }

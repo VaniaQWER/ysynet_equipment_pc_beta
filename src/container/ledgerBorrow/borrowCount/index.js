@@ -203,7 +203,21 @@ const initTime = getRangeTime('month',1,'before') ;
                       }}
                     />
                   </Guide>
-                  <Axis name={chartField[chartFieldText][0]} />
+                  <Axis
+                    name={chartField[chartFieldText][0]} 
+                    label={{
+                      htmlTemplate:(text, item, index)=>{
+                        let t = text.split('-')
+                        return `<div style="margin-top:10px;"><p style="text-align:center;font-size:10px;margin-bottom:0;
+                        max-height: 28px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        width: 100%;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        display: -webkit-box;">${t[0] || '  '}</p><span style="font-size:10px;">${t[1]||'  '}</span></div>`
+                      }
+                    }}/>
                  <Tooltip crosshairs={{type : "y"}} />
                   <Geom 
                   type="interval"
