@@ -76,7 +76,7 @@ class LoanForm extends Component{
                     <Col span={8}>
                         <FormItem label={`借用人`} {...formItemLayout}>
                             {getFieldDecorator(`borrowUserName`)(
-                                <Input placeholder="请输入资产名称" />
+                                <Input placeholder="请输入借用人" />
                             )}
                         </FormItem>
                     </Col>
