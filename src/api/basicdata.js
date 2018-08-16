@@ -35,6 +35,7 @@ const basicdata = {
 
   //工作台配置
   findGroupList: `${_local}/user/findGroupList`,        //查询当前机构用户组
-  
+  documentTypeList: `${_local}/StaticDataController/documentTypeList`,        //单据类型和 最新单据列表
+  insertOrgConfig: `${_local}/orgConfigController/insertOrgConfig`            //添加或修改工作台配置
 }
 export default basicdata;

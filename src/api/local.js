@@ -1,5 +1,6 @@
 
-export const _local = 'http://192.168.0.200:9099/meqm'; //本地测试版
+// export const _local = 'http://192.168.0.200:9099/meqm'; //本地测试版
+export const _local = 'http://192.168.0.114:8081'; 
 export const FTP = 'http://120.26.128.15:8905/meqm/ftp';//线下
 // export const FTP = 'http://118.31.237.150:9100/backw/ftp'; //线上
 // export const _local = 'http://192.168.31.142:8080/meqm'; 
