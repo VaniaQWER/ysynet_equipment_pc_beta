@@ -39,7 +39,7 @@ class WorkplaceConfig extends Component{
                     this.setList(data.result.rows[0].groupId);
                     this.setState({ userList: data.result.rows, groupId: data.result.rows[0].groupId });
                 }else {
-                    message.warn(data.msg);
+                    message.error(data.msg);
                 }
             },
             error: err => console.log(err)
@@ -63,7 +63,7 @@ class WorkplaceConfig extends Component{
                     handleRemind = this.dataDispose(handleRemind);
                     this.setState({ handleRemind, warnKeys });
                 }else {
-                    message.warn(data.msg);
+                    message.error(data.msg);
                 }
             },
             error: err => console.log(err)
@@ -74,7 +74,9 @@ class WorkplaceConfig extends Component{
                 groupId: code,
                 type: '02'
             }),
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
             success: (data) => {
                 if(data.status) {
                     let newOrder = data.result;
@@ -83,7 +85,7 @@ class WorkplaceConfig extends Component{
                     newOrder = this.dataDispose(newOrder);
                     this.setState({ newOrder,  docuKeys });
                 }else {
-                    message.warn(data.msg);
+                    message.error(data.msg);
                 }
             },
             error: err => console.log(err)
@@ -125,10 +127,12 @@ class WorkplaceConfig extends Component{
         });
     }
 
-    onCheck = (checkedKeys, type) => {
+    onCheck = (checkedKeys, type, e) => {
         let {groupId} = this.state;
-        console.log(checkedKeys);
-        
+        let codes = '';
+        if(e) {
+            codes = e.node.props.eventKey;
+        };
         if(type === "handleRemind") {
             if(checkedKeys.length > 5) {
                 message.warning('工作提醒请控制在5个以内');
@@ -136,24 +140,30 @@ class WorkplaceConfig extends Component{
             }
             this.setState({warnKeys: checkedKeys});
         }else {
+            if(checkedKeys.length > 5) {
+                codes = checkedKeys.filter( item => item !== "最新单据" );
+            }
             this.setState({docuKeys: checkedKeys});
         };
-        checkedKeys = checkedKeys.filter( item => item !== "最新单据" );
         
-        // request(basicdata.insertOrgConfig, {
-        //     body: queryString.stringify({
-        //         groupId,
-        //         queryType: type,
-        //         codes: checkedKeys
-        //     }),
-        //     headers: {
-        //         'Content-Type': 'application/x-www-form-urlencoded'
-        //     },
-        //     success: (data) => {
-                
-        //     },
-        //     error: err => console.log(err)
-        // });
+        request(basicdata.insertOrgConfig, {
+            body: queryString.stringify({
+                groupId,
+                queryType: type,
+                codes
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: (data) => {
+                if(data.status) {
+                    message.success('配置成功');
+                }else {
+                    message.eroor(data.msg);
+                }
+            },
+            error: err => console.log(err)
+        });
     }
 
     onExpand = (expandedKeys, key) => {
@@ -190,7 +200,7 @@ class WorkplaceConfig extends Component{
                                         checkable
                                         onExpand={(warnExpanded) => {this.onExpand(warnExpanded, 'warnExpanded')}}
                                         expandedKeys={warnExpanded}
-                                        onCheck={(checkedKeys, k) => { this.onCheck(checkedKeys, 'handleRemind', k) }}
+                                        onCheck={(checkedKeys, e) => { this.onCheck(checkedKeys, 'handleRemind', e) }}
                                         checkedKeys={warnKeys}
                                     >
                                         {this.renderTreeNodes(handleRemind)}
@@ -200,7 +210,7 @@ class WorkplaceConfig extends Component{
                                         checkable
                                         onExpand={(docuExpanded) => {this.onExpand(docuExpanded, 'docuExpanded')}}
                                         expandedKeys={docuExpanded}
-                                        onCheck={(checkedKeys) => { this.onCheck(checkedKeys, 'newOrder') }}
+                                        onCheck={(checkedKeys, e) => { this.onCheck(checkedKeys, 'newOrder', e) }}
                                         checkedKeys={docuKeys}
                                     >
                                         {this.renderTreeNodes(newOrder)}

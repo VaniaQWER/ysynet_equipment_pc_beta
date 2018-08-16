@@ -23,7 +23,13 @@ class Workplace extends Component {
     documentData: [],   //单据类型数据
     documentColor: {},
     billList: [],       //最新单据列表
-    billsType: '',      //单据类型
+    textMap: {          //单据对应文字
+      "01": "维修单",
+      "02": "保养计划",
+      "03": "计量台账",
+      "04": "维修单",
+      "05": "报废申请单"
+    }
   };
 
   componentDidMount = () => {
@@ -113,19 +119,22 @@ class Workplace extends Component {
     return arr;
   }
 
-  upDateDocu = (guid, key) => {
+  upDateDocu = (code, key) => {
     request(workplace.queryBillList, {
       body: queryString.stringify({
-        code: guid
+        code
       }),
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: (data) => {
         if(data.status) {
-          this.setState({billList: data.result.rows, billsType: key.props.children});
+          this.setState({
+            billList: data.result.rows,  
+            code
+          });
         }else {
-          message.warn(data.msg)
+          message.error(data.msg);
         }
       },
       error: err => console.log(err)
@@ -135,7 +144,7 @@ class Workplace extends Component {
   
   
   render() {
-    let {matterData, billList, billsType, documentData} = this.state;
+    let {matterData, billList, documentData, code, textMap} = this.state;
     matterData = matterData.map( (item, i) => {
       return (
         <Col key={i} span={4}>
@@ -153,18 +162,18 @@ class Workplace extends Component {
     });
     billList = billList.map((item, i) => {
       return (
-        <Col span={6}>
+        <Col key={i} style={{ marginBottom: 16 }} span={6}>
             <Card>
               <Row>
                 <Col span={18}>
-                  <img alt="" src={require(`./Icon/001.png`)} />
+                  <img alt="" src={require(`./Icon/0${code}.png`)} />
                   <span style={{paddingLeft: 10}} className={S['bill-text']}>{item.billNo}</span>
                 </Col>
                 <Col span={6} className={S['bill-text']} style={{textAlign: 'right'}}>{item.fstate}</Col>
               </Row>
               <Row style={{margin: '20px 0 14px', fontSize: '14px', color: 'rgba(0, 0, 0, .25)'}}>
                 <Col span={12}>
-                  <span>{billsType}</span>
+                  <span>{textMap[code]}</span>
                 </Col>
                 <Col span={12} style={{textAlign: 'right'}}>{item.time}</Col>
               </Row>
