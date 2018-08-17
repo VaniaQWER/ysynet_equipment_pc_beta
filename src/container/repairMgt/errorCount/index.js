@@ -117,7 +117,7 @@ const initTime = getRangeTime('month',1,'before') ;
             this.setState({allData,query:val,})
             if(chartFieldText==='rrpairNumberList'){
               //rrpairNumberList 渲染的图表
-              this.setState({chartData:allData[this.state.chartFieldText]})
+              this.setState({chartData:this.otherFormat(allData[this.state.chartFieldText])})
             }else{
               //actualPriceList 的时候渲染的图表
               this.setState({chartData:this.formatData( allData[this.state.chartFieldText] , 'actualPriceList')  })
@@ -171,9 +171,9 @@ const initTime = getRangeTime('month',1,'before') ;
       let fittingPriceObj = {name:'材料费'};
       let deptNameArr = []; // X轴的科室名称
       data.map(item=>{
-        actualPriceObj[`${item.equipmentStandardName}`]=item.actualPrice;
-        fittingPriceObj[`${item.equipmentStandardName}`]=item.fittingPrice;
-        deptNameArr.push(item.equipmentStandardName);
+        actualPriceObj[`${item.equipmentStandardName}-${item.assetsRecord}`]=item.actualPrice;
+        fittingPriceObj[`${item.equipmentStandardName}-${item.assetsRecord}`]=item.fittingPrice;
+        deptNameArr.push(`${item.equipmentStandardName}-${item.assetsRecord}`);
         return item;
       })
       let dataSource = [actualPriceObj , fittingPriceObj];
@@ -199,6 +199,17 @@ const initTime = getRangeTime('month',1,'before') ;
     }
   }
 
+  otherFormat = (data)=>{
+    if(data && data.length){
+      data.map(item=>{
+        let name = item.equipmentStandardName.split('-')[0];
+        return item.equipmentStandardName=`${name}-${item.assetsRecord}`;
+      })
+      return data;
+    }else{
+      return [];
+    }
+  }
   //左侧按钮切换 - 更换data源
   /**
    * @param title - 更改chartTitle
@@ -206,7 +217,7 @@ const initTime = getRangeTime('month',1,'before') ;
    * @param dataField - 对应更改数据源的字段
    */
   changeChartData = (title,hasStyleIndex,dataField) => {
-    let data = this.state.allData[dataField] ;
+    let data = this.otherFormat(this.state.allData[dataField] );
     //双柱图 data转换
     if(dataField==='actualPriceList'){ 
       data =  this.formatData(data,dataField);
