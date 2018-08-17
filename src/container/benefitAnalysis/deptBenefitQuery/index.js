@@ -42,7 +42,7 @@ const columns = [
   {
     title: '资产编号',
     dataIndex: 'assetsRecord',
-    width:120
+    width:130
   },
   {
     title: '资产名称',
@@ -74,6 +74,7 @@ const columns = [
     title:'月保本量',
     dataIndex: 'ybbl',
     width:100,
+    render:(text)=>String(text)?Number(text).toFixed(2):''
   },
   {
     title:'总收入',
@@ -97,13 +98,13 @@ const columns = [
     title:'利润率',
     dataIndex: 'ylrl',
     width:100,
-    render:(text)=>String(text)?`${text}%`:''
+    render:(text)=>String(text)?`${Number(text).toFixed(2)}%`:''
   },
   {
     title:'投资收益率',
     dataIndex: 'tzsyl',
     width:100,
-    render:(text)=>String(text)?`${text}%`:''
+    render:(text)=>String(text)?`${Number(text).toFixed(2)}%`:''
   },
   {
     title:'投资回收年限',
@@ -190,9 +191,14 @@ class DeptBenefitQuery extends PureComponent{
   formatData = (data,dataField) => {
     if(data && data.length){
       data.map(item=>{
+        item.tzsyl= Number(item.tzsyl).toFixed(2)-0;
+        item.ylrl= Number(item.ylrl).toFixed(2)-0;
         let name = item.equipmentStandardName.split('-')[0];
-        return item.equipmentStandardName=`${name}-${item.assetsRecord}`;
+        item.equipmentStandardName=`${name}-${item.assetsRecord}`
+        return item;
       })
+      console.log(data)
+
       return data;
     }else{
       return [];
