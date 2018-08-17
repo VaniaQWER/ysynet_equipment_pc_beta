@@ -199,8 +199,12 @@ class NewRegister extends Component {
                         <Row>
                             <Col span={8}>
                                 <FormItem label={`巡检结果`} {...formItemLayout}>
-                                    {getFieldDecorator(`checkResult`)(
-                                        <TextArea rows={4} placeholder="请输入巡检结果" />
+                                    {getFieldDecorator(`checkResult`, {
+                                        rules: [{
+                                            max: 200, message: "最多不能超过200个汉字"
+                                        }]
+                                    })(
+                                        <TextArea rows={4} placeholder="请输入巡检结果, 不能超过200个汉字" />
                                     )}
                                 </FormItem>
                             </Col>

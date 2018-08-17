@@ -364,15 +364,20 @@ class NewTransfer extends PureComponent {
   }
   // 假删除
   deleteProRow =(isParent,record)=>{
+    let { ProductModalCallBackKeys } = this.state;
     let a =_.cloneDeep(this.state.ProductTabledata);
     if(isParent){//如果是删除父级
       _.remove(a,function(n){
+        ProductModalCallBackKeys = ProductModalCallBackKeys.filter((sub)=>{
+          return sub !== record.assetsRecordGuid
+        })
         return n.assetsRecord===record.assetsRecord
       })
     }
     this.setState({
       ProductTabledata: a,
-      CacheProductTabledata: a
+      CacheProductTabledata: a,
+      ProductModalCallBackKeys
     })
   }
 

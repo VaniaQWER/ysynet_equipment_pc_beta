@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
-import {Layout, Icon, Button, Row} from 'antd';
+import {Layout, Icon, Button, Row, Tooltip} from 'antd';
 
 import {Link} from 'react-router-dom';
 
+import './style.css';
 
 import InspectionForm from './component/inspectionForm';
 
@@ -51,29 +52,59 @@ class InspectionRecord extends Component {
             {
                 title: '巡检单号',
                 dataIndex: 'checkNo',
+                width: 150,
                 render: (text, record) => <Link to={{ pathname: `/inspectionMgt/inspectionRecord/detail/${record.checkGuid}` }}>{text}</Link>
             },
             {
                 title: '巡检科室',
-                dataIndex: 'deptNames'
+                width: 150,
+                dataIndex: 'deptNames',
+                className: "ellipsis",
+                render: (text) => {
+                    return (
+                        <Tooltip placement="topLeft" title={text}>
+                            <span className="ellipsis">{text}</span>
+                        </Tooltip>
+                    )
+                }
             },
             {
                 title: '巡检结果',
-                dataIndex: 'checkResult'
+                width: 240,
+                dataIndex: 'checkResult',
+                className: "ellipsis",
+                render: (text) => {
+                    return (
+                        <Tooltip placement="topLeft" title={text}>
+                            <span className="ellipsis">{text}</span>
+                        </Tooltip>
+                    )
+                }
             },
             {
                 title: '巡检日期',
+                width: 170,
                 dataIndex: 'checkDate',
                 sorter: (a, b) => this.checkDate(a,b)
             },
             {
                 title: '操作时间',
+                width: 170,
                 dataIndex: 'createTime',
                 sorter: (a, b) => this.createTime(a,b)
             },
             {
                 title: '巡检人',
-                dataIndex: 'userNames'
+                width: 200,
+                dataIndex: 'userNames',
+                className: "ellipsis",
+                render: (text) => {
+                    return (
+                        <Tooltip placement="topLeft" title={text}>
+                            <span className="ellipsis">{text}</span>
+                        </Tooltip>
+                    )
+                }
             },
         ];
         return (

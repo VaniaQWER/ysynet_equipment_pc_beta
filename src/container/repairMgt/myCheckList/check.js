@@ -193,6 +193,7 @@ class MyCheckListCheckIn extends PureComponent {
             JSON.stringify(this.state.selectRrpairDetailIsCall) === '{}' ? null 
             :
             <AssignInfo ref='assignInfo' 
+              wxrEditable={this.state.selectRrpairDetail==={} ? null : this.state.selectRrpairDetail.orderFstate}
               rrpairType={this.state.selectRrpairDetailIsCall.rrpairType} 
               data={this.state.selectRrpairDetailIsCall} isEdit={true
             }/>

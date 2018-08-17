@@ -46,7 +46,7 @@ class InsideRepairForm extends PureComponent {
   }
 
   render() {
-    const { isEdit, data } = this.props;
+    const { isEdit, data , wxrEditable} = this.props;
     const { getFieldDecorator } = this.props.form;
     return (
       <Form>
@@ -68,9 +68,11 @@ class InsideRepairForm extends PureComponent {
           </Col>
           <Col {...gridStyle.label}>维修人：</Col>
           <Col {...gridStyle.content}>
-
+            {
+                wxrEditable==="50"  ? <span> { data.inRrpairUsername } </span> :
                 <Select 
                 showSearch
+                defaultValue={data.inRrpairUserid}
                 placeholder={'请选择'}
                 optionFilterProp="children"
                 filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
@@ -88,6 +90,7 @@ class InsideRepairForm extends PureComponent {
                     })
                   }
                 </Select>
+              }
           </Col>
           <Col {...gridStyle.label}>预期完成时间：</Col>
           <Col span={20} style={gridStyle.content.style}>
@@ -274,10 +277,11 @@ class AssignInfo extends PureComponent {
   }
   render() {
     const { rrpairType, FormWrapper } = this.state;
-    const { isEdit, data } = this.props;
+    const { isEdit, data , wxrEditable } = this.props;
     const props = {
       isEdit,
       data,
+      wxrEditable,
       setOtherState: OtherState=> {
         console.log(OtherState)
         this.setState({ OtherState })
