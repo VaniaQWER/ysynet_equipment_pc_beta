@@ -109,7 +109,8 @@ const columns = [
   {
     title:'投资回收年限',
     dataIndex: 'tzhsq',
-    width:100
+    width:100,
+    render:(text)=>String(text)?Number(text).toFixed(2):''
   }
 ];
 
@@ -193,6 +194,7 @@ class DeptBenefitQuery extends PureComponent{
       data.map(item=>{
         item.tzsyl= Number(item.tzsyl).toFixed(2)-0;
         item.ylrl= Number(item.ylrl).toFixed(2)-0;
+        item.tzhsq = Number(item.tzhsq).toFixed(2)-0;
         let name = item.equipmentStandardName.split('-')[0];
         item.equipmentStandardName=`${name}-${item.assetsRecord}`
         return item;
