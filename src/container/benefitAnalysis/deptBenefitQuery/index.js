@@ -197,8 +197,6 @@ class DeptBenefitQuery extends PureComponent{
         item.equipmentStandardName=`${name}-${item.assetsRecord}`
         return item;
       })
-      console.log(data)
-
       return data;
     }else{
       return [];
