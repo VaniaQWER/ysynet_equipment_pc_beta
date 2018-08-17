@@ -32,37 +32,44 @@ class Workplace extends Component {
     }
   };
 
-  componentDidMount = () => {
-    request(workplace.commissionList, {
-      headers:{
-              'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: (data) => {
-        if(data.status) {
-           let matterData = this.dataDispose(data.result[0]);
-          // console.log(matterData)
-          this.setState({ matterData });
-        }else {
-          message(data.msg);
-        }
-        
-      },
-      error: err => console.log(err)
+  componentDidMount() {
+    const commissionList = new Promise((resolve, reject) => {
+      request(workplace.commissionList, {
+        headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: (data) => {
+          if(data.status) {
+            resolve(data.result[0])
+          }else {
+            message(data.msg);
+          }
+        },
+        error: err => reject(err)
+      });
     });
-    request(workplace.billTypeList, {
-      headers:{
-              'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: (data) => {
-        if(data.status) {
-          this.setState({
-            documentData: data.result
-          });
-        }else {
-          message(data.msg);
-        }
-      },
-      error: err => console.log(err)
+    const billTypeList = new Promise((resolve, reject) => {
+      request(workplace.billTypeList, {
+        headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: (data) => {
+          if(data.status) {
+            resolve(data.result);
+          }else {
+            message(data.msg);
+          }
+        },
+        error: err => reject(err)
+      });
+    });
+    Promise.all([commissionList, billTypeList])
+    .then((posts) => {
+      let matterData = this.dataDispose(posts[0]);
+      this.setState({
+        matterData,
+        documentData: posts[1]
+      });
     });
   }
 
@@ -130,7 +137,7 @@ class Workplace extends Component {
       success: (data) => {
         if(data.status) {
           this.setState({
-            billList: data.result.rows,  
+            billList: data.result.rows,
             code
           });
         }else {
@@ -141,8 +148,8 @@ class Workplace extends Component {
     })
   }
 
-  
-  
+
+
   render() {
     let {matterData, billList, documentData, code, textMap} = this.state;
     matterData = matterData.map( (item, i) => {
@@ -195,7 +202,14 @@ class Workplace extends Component {
         </Card>
         <Row style={{background: '#fff', padding: '0 20px'}}>
           <Col style={{lineHeight: '40px'}} span={8}>
-            <span style={{fontSize: 16, fontWeight: 'bold'}}>最新单据</span>
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                borderBottom: '5px solid rgb(36, 143, 252)',
+                paddingBottom: 6,
+              }}
+            >最新单据</span>
           </Col>
           <Col style={{float: 'right'}} span={8}>
             <div className="ant-row ant-form-item" style={{marginBottom: 0}}>
@@ -204,7 +218,7 @@ class Workplace extends Component {
                 </div>
                 <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-18">
                   <div className="ant-form-item-control">
-                    <Select 
+                    <Select
                       showSearch
                       placeholder={'请选择'}
                       style={{width: '100%'}}

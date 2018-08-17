@@ -4,6 +4,8 @@ import React, { Component } from 'react';
 
 import {Layout, Tabs, Tree, message} from 'antd';
 
+import _ from 'lodash';
+
 import queryString from 'querystring';
 
 import request from '../../../utils/request';
@@ -21,7 +23,7 @@ class WorkplaceConfig extends Component{
     state = {
         userList: [],                                   //用户组数据
         warnKeys: [],                                   //代办默认勾选
-        docuKeys: [],                                   //提醒默认勾选
+        docuKeys: [],                                   //单据默认勾选
         handleRemind: [],                               //待办提醒
         newOrder: [],                                   //最新单据
         warnExpanded: ['代办提醒'],
@@ -30,66 +32,87 @@ class WorkplaceConfig extends Component{
     }
 
     componentDidMount() {
-        request(basicdata.findGroupList, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            success: (data) => {
-                if(data.status) {
-                    this.setList(data.result.rows[0].groupId);
-                    this.setState({ userList: data.result.rows, groupId: data.result.rows[0].groupId });
-                }else {
-                    message.error(data.msg);
-                }
-            },
-            error: err => console.log(err)
+        new Promise((resolve, reject) => {
+            request(basicdata.findGroupList, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                success: (data) => {
+                    if(data.status) {
+                        resolve(data.result);
+                    }else {
+                        message.error(data.msg);
+                    }
+                },
+                error: err => reject(err)
+            })
+        }).then((data) => {
+            this.setState({ userList: data.rows, groupId: data.rows[0].groupId });
+            this.setList(data.rows[0].groupId);
         })
+
     }
 
-    setList = (code) => {
-        request(basicdata.documentTypeList, {
-            body: queryString.stringify({
-                queryType: 'handleRemind',
-                groupId: code
-            }),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            success: (data) => {
-                if(data.status) {
-                    let handleRemind = data.result;
-                    let warnKeys = handleRemind.filter( (item) => item.tick === "01" );
-                    warnKeys = warnKeys.map( item => item.code );
-                    handleRemind = this.dataDispose(handleRemind);
-                    this.setState({ handleRemind, warnKeys });
-                }else {
-                    message.error(data.msg);
-                }
-            },
-            error: err => console.log(err)
+    setList = (groupId) => {
+        const documentTypeList = new Promise((resolve, reject) => {
+            request(basicdata.documentTypeList, {
+                body: queryString.stringify({
+                    queryType: 'handleRemind',
+                    groupId
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                success: (data) => {
+                    if(data.status) {
+                        let handleRemind = data.result;
+                        let warnKeys = handleRemind.filter( (item) => item.tick === "01" );
+                        warnKeys = warnKeys.map( item => item.code );
+                        handleRemind = this.dataDispose(handleRemind);
+                        resolve({ handleRemind, warnKeys })
+                    }else {
+                        message.error(data.msg);
+                    }
+                },
+                error: err => reject(err)
+            });
         });
-        request(basicdata.documentTypeList, {
-            body: queryString.stringify({
-                queryType: 'newOrder',
-                groupId: code,
-                type: '02'
-            }),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            success: (data) => {
-                if(data.status) {
-                    let newOrder = data.result;
-                    let docuKeys = newOrder.filter( (item) => item.tick === "01" );
-                    docuKeys = docuKeys.map( item => item.code );
-                    newOrder = this.dataDispose(newOrder);
-                    this.setState({ newOrder,  docuKeys });
-                }else {
-                    message.error(data.msg);
-                }
-            },
-            error: err => console.log(err)
+        const documentTypeList2 = new Promise((resolve, reject) => {
+            request(basicdata.documentTypeList, {
+                body: queryString.stringify({
+                    queryType: 'newOrder',
+                    groupId,
+                    type: '02'
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                success: (data) => {
+                    if(data.status) {
+                        let newOrder = data.result;
+                        let docuKeys = newOrder.filter( (item) => item.tick === "01" );
+                        docuKeys = docuKeys.map( item => item.code );
+                        newOrder = this.dataDispose(newOrder);
+                        resolve({ newOrder,  docuKeys });
+                    }else {
+                        message.error(data.msg);
+                    }
+                },
+                error: err => reject(err)
+            });
         });
+
+        Promise.all([documentTypeList, documentTypeList2])
+        .then((posts) => {
+            let {handleRemind, warnKeys} = posts[0];
+            let {newOrder,  docuKeys} = posts[1];
+            this.setState({
+                handleRemind,
+                warnKeys,
+                newOrder,
+                docuKeys
+            });
+        })
     }
 
     dataDispose = (data) => {
@@ -142,10 +165,13 @@ class WorkplaceConfig extends Component{
         }else {
             if(checkedKeys.length > 5) {
                 codes = checkedKeys.filter( item => item !== "最新单据" );
+                codes = _.difference(codes, this.state.docuKeys);
+            }else if(checkedKeys.length === 0) {
+                codes = this.state.docuKeys.filter( item => item !== "最新单据" );
             }
             this.setState({docuKeys: checkedKeys});
         };
-        
+
         request(basicdata.insertOrgConfig, {
             body: queryString.stringify({
                 groupId,
@@ -177,26 +203,26 @@ class WorkplaceConfig extends Component{
         this.setState({ groupId: activeKey });
         this.setList(activeKey);
     }
-    
+
     render() {
         const {userList, warnKeys, docuKeys, handleRemind, newOrder, warnExpanded, docuExpanded} = this.state;
         return (
             <Content style={{padding: 24}} className="ysynet-content ysynet-common-bgColor">
-                <Tabs 
-                    size="large" 
+                <Tabs
+                    size="large"
                     tabPosition={`left`}
                     onChange = {this.tabsChange}
                 >
                     {
                         userList.map((item) => {
                             return (
-                                <TabPane 
-                                    style={{paddingLeft: 80}} 
-                                    tab={item.groupName} 
+                                <TabPane
+                                    style={{paddingLeft: 80}}
+                                    tab={item.groupName}
                                     key={item.groupId}
                                 >
                                     <Tree               //代办提醒
-                                        showLine    
+                                        showLine
                                         checkable
                                         onExpand={(warnExpanded) => {this.onExpand(warnExpanded, 'warnExpanded')}}
                                         expandedKeys={warnExpanded}
@@ -206,7 +232,7 @@ class WorkplaceConfig extends Component{
                                         {this.renderTreeNodes(handleRemind)}
                                     </Tree>
                                     <Tree               //最新单据
-                                        showLine    
+                                        showLine
                                         checkable
                                         onExpand={(docuExpanded) => {this.onExpand(docuExpanded, 'docuExpanded')}}
                                         expandedKeys={docuExpanded}
