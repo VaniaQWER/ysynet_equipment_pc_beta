@@ -73,8 +73,7 @@ class NewRegister extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if(!err) {
-                // values.accessoryList = this.state.fileList.map( (item) => item.thumbUrl );
-                values.accessoryList = [];
+                values.accessoryList = this.state.fileList.map( (item) => item.thumbUrl );
                 values.checkDate = values.checkDate.format('YYYY-MM-DD');
                 values.checkResult = values.checkResult === undefined? '' : values.checkResult;
                 request(inspectionMgt.insertCheckInfo, {
@@ -145,7 +144,7 @@ class NewRegister extends Component {
         }
             return true;
         });
-        this.setState({ fileList })
+        this.setState({ fileList });
     }
     render() {
         let {getFieldDecorator} = this.props.form;

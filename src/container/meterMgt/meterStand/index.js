@@ -102,14 +102,14 @@ class SearchFormWrapper extends Component {
           <Col span={8}>
             <FormItem label={`资产名称`} {...formItemLayout}>
               {getFieldDecorator('assetName', {})(
-                <Input placeholder="请输入资产名称" style={{width: 200}} />
+                <Input placeholder="请输入资产名称" />
               )}
             </FormItem>
           </Col>
           <Col span={8}>
             <FormItem label={`资产编号`} {...formItemLayout}>
               {getFieldDecorator('assetsRecord', {})(
-                <Input placeholder="请输入资产编号" style={{width: 200}} />
+                <Input placeholder="请输入资产编号" />
               )}
             </FormItem>
           </Col>
@@ -122,7 +122,6 @@ class SearchFormWrapper extends Component {
                 defaultActiveFirstOption={false}
                 allowClear={true}
                 filterOption={false}
-                style={{width: 200}}
                 placeholder={`请搜索选择管理科室`}
               >
                 {this.state.mgtDeptData.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
@@ -139,7 +138,6 @@ class SearchFormWrapper extends Component {
                 defaultActiveFirstOption={false}
                 allowClear={true}
                 filterOption={false}
-                style={{width: 200}}
                 placeholder={`请搜索选择转出科室`}
               >
                 {this.state.useDeptData.map(d => <Option value={d.value} key={d.value}>{d.text}</Option>)}
@@ -150,11 +148,11 @@ class SearchFormWrapper extends Component {
           <Col span={8} style={{display: display}}>
             <FormItem label={`待检日期`} {...formItemLayout}>
               {getFieldDecorator('createDate', {})(
-                <RangePicker style={{width: 200}} />
+                <RangePicker/>
               )}
             </FormItem>
           </Col>
-          <Col span={8} style={{float:'right', textAlign: 'center', marginTop: 4}} >
+          <Col span={8} style={{float:'right', textAlign: 'right', marginTop: 4}} >
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
             <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>

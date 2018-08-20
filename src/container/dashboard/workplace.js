@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 
-import { Layout, Card, Select, Row, Col, message } from 'antd';
+import { Layout, Card, Select, Row, Col, message, Icon } from 'antd';
 
 import workplace from '../../api/workplace';
 
@@ -29,7 +29,18 @@ class Workplace extends Component {
       "03": "计量台账",
       "04": "维修单",
       "05": "报废申请单"
-    }
+    },
+    nameMap: {
+      awaitCheck: '维修验收',
+      notTurned: '转科审批',
+      maintainNumber: '保养到期',
+      awaitDispatch: '维修派工',
+      meter: '计量到期',
+      awaitRepair: '等待维修',
+      scrapNumber: '报废申请',
+      maintenance: '维修处理'
+    },
+    code: ''
   };
 
   componentDidMount() {
@@ -66,59 +77,21 @@ class Workplace extends Component {
     Promise.all([commissionList, billTypeList])
     .then((posts) => {
       let matterData = this.dataDispose(posts[0]);
+      this.upDateDocu(posts[1][0].code);
       this.setState({
         matterData,
-        documentData: posts[1]
+        documentData: posts[1],
+        code: posts[1][0].code
       });
     });
   }
 
   dataDispose = (data) => {
     let arr = [],
-        name = '',
-        color = '';
+        {nameMap} = this.state;
     for (const key in data) {
-      switch (key) {
-        case 'awaitCheck':
-          name = '维修验收';
-          color = 'rgb(149, 99, 234)';
-          break;
-        case 'notTurned':
-          name = '转科审批';
-          color = 'rgb(149, 99, 234)';
-          break;
-        case 'maintainNumber':
-          name = '保养到期';
-          color = 'rgb(36, 143, 252)';
-          break;
-        case 'awaitDispatch':
-          name = '维修派工';
-          color = 'rgb(36, 143, 252)';
-          break;
-        case 'meter':
-          name = '计量到期';
-          color = 'rgb(39, 184, 190)';
-          break;
-        case 'awaitRepair':
-          name = '等待维修';
-          color = 'rgb(39, 184, 190)';
-          break;
-        case 'scrapNumber':
-          name = '报废申请';
-          color = 'rgb(36, 147, 252)';
-          break;
-        case 'maintenance':
-          name = '维修处理';
-          color = 'rgb(39, 184, 190)';
-          break;
-        default:
-          name = '';
-          color = '';
-          break;
-      };
       arr.push({
-        color,
-        name,
+        name: nameMap[key],
         anotherName: key,
         num: data[key]
       });
@@ -126,7 +99,7 @@ class Workplace extends Component {
     return arr;
   }
 
-  upDateDocu = (code, key) => {
+  upDateDocu = (code) => {
     request(workplace.queryBillList, {
       body: queryString.stringify({
         code
@@ -151,43 +124,52 @@ class Workplace extends Component {
 
 
   render() {
-    let {matterData, billList, documentData, code, textMap} = this.state;
-    matterData = matterData.map( (item, i) => {
-      return (
-        <Col key={i} span={4}>
-          <div style={{borderColor: item.color}} className={`${S[item.anotherName]} ${S['matter-card']}`}>
-            <div className={S['matter-card-img']}><img src={require(`./Icon/${item.anotherName}.png`)} alt={item.name}/></div>
-            <div className={S['matter-card-text']}>
-              <h1 style={{color: item.color}} >{item.num}</h1>
-              <div>
-                <span>{item.name}</span>
+    let {matterData, billList, documentData, code, textMap,} = this.state;
+    if(matterData.length > 0) {
+      matterData = matterData.map( (item, i) => {
+        return (
+          <Col key={i} span={4}>
+            <div className={`${S[item.anotherName]} ${S['matter-card']}`}>
+              <div className={S['matter-card-img']}><img src={require(`./Icon/${item.anotherName}.png`)} alt={item.name}/></div>
+              <div className={S['matter-card-text']}>
+                <h1 className={S[`${item.anotherName}-text`]} >{item.num}</h1>
+                <div>
+                  <span>{item.name}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </Col>
-      )
-    });
-    billList = billList.map((item, i) => {
-      return (
-        <Col key={i} style={{ marginBottom: 16 }} span={6}>
-            <Card>
-              <Row>
-                <Col span={18}>
-                  <img alt="" src={require(`./Icon/0${code}.png`)} />
-                  <span style={{paddingLeft: 10}} className={S['bill-text']}>{item.billNo}</span>
-                </Col>
-                <Col span={6} className={S['bill-text']} style={{textAlign: 'right'}}>{item.fstate}</Col>
-              </Row>
-              <Row style={{margin: '20px 0 14px', fontSize: '14px', color: 'rgba(0, 0, 0, .25)'}}>
-                <Col span={12}>
-                  <span>{textMap[code]}</span>
-                </Col>
-                <Col span={12} style={{textAlign: 'right'}}>{item.time}</Col>
-              </Row>
-            </Card>
           </Col>
-      )
-    });
+        )
+      });
+    }else {
+      matterData = (<h3 style={{margin: 0, color: "rgb(36, 143, 252)"}}><Icon type="frown" />暂无待办事项</h3>)
+    };
+    if(billList.length> 0) {
+      billList = billList.map((item, i) => {
+        return (
+          <Col key={i} style={{ marginBottom: 16 }} span={6}>
+              <Card>
+                <Row>
+                  <Col span={18}>
+                    <img alt="" src={require(`./Icon/0${code}.png`)} />
+                    <span style={{paddingLeft: 10}} className={S['bill-text']}>{item.billNo}</span>
+                  </Col>
+                  <Col span={6} className={S['bill-text']} style={{textAlign: 'right'}}>{item.fstate}</Col>
+                </Row>
+                <Row style={{margin: '20px 0 14px', color: 'rgba(0, 0, 0, .25)'}}>
+                  <Col span={12}>
+                    <span>{textMap[code]}</span>
+                  </Col>
+                  <Col span={12} style={{textAlign: 'right'}}>{item.time}</Col>
+                </Row>
+              </Card>
+            </Col>
+        )
+      });
+    }else {
+      billList = (<Col span={24} style={{ textAlign: 'center' }}><span style={{fontSize: 20, color: "rgb(39, 184, 190)"}}><Icon type="frown" />该类型暂无最新单据</span></Col>);
+    };
+
     documentData = documentData.map((item, i) => {
       return (
         <Option key={item.code} value={item.code}>{item.name}</Option>
@@ -223,10 +205,9 @@ class Workplace extends Component {
                       placeholder={'请选择'}
                       style={{width: '100%'}}
                       onSelect={this.upDateDocu}
+                      value = {code}
                     >
                       {documentData}
-                      {/* <Option key="1" value="00">你猜</Option>
-                      <Option key="01" value="01">我不猜</Option> */}
                     </Select>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 /*计量查询- 详情*/
 import React , { Component } from 'react';
 import { Layout, Card, Col, Row, message, Upload} from 'antd';
+import {FTP} from '../../../api/local';
 import queryString from 'querystring';
 import request from '../../../utils/request';
 import meterStand from '../../../api/meterStand';
@@ -16,7 +17,15 @@ class MeterQueryDetails extends Component{
       name: 'xxx.png',
       status: 'done',
       url: 'http://www.baidu.com/xxx.png',
-    }]
+    }],
+    productType: {
+      "01": "通用设备",
+      "02": "电气设备",
+      "03": "电子产品及通信设备",
+      "04": "仪器仪表及其他",
+      "05": "专业设备",
+      "06": "其他"
+    }
   }
   componentDidMount() {
     const recordInfoGuid = this.props.match.params.id;
@@ -26,86 +35,38 @@ class MeterQueryDetails extends Component{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: (data) => {
-        let assetsInfo = data.result.rows[0];
-        switch (assetsInfo.productType) {
-          case "01":
-            assetsInfo.productType = "通用设备";
-            break;
-          case "02":
-            assetsInfo.productType = "电气设备";
-            break;
-          case "03":
-            assetsInfo.productType = "电子产品及通信设备";
-            break;
-          case "04":
-            assetsInfo.productType = "仪器仪表及其他";
-            break;
-          case "05":
-            assetsInfo.productType = "专业设备";
-            break;
-          case "06":
-            assetsInfo.productType = "其他";
-            break;
-          default:
-            assetsInfo.productType = '';
+        if(data.status) {
+          let assetsInfo = data.result.rows[0];
+          let fileList = [];
+          if(assetsInfo.accessory) {
+            fileList = assetsInfo.accessory.split(';');
+            if(fileList.length === 2 && fileList[1] === "") {
+              fileList = [fileList[0]];
+            };
+            fileList = fileList.map((item, i) => {
+              return {
+                uid: (i + 1) * -1,
+                name: item.split('/')[item.split('/').length - 1],
+                status: 'done',
+                url: `${FTP}${item}`,
+                thumbUrl: `${FTP}${item}`,
+              }
+            });
+          }
+          
+          this.setState({ assetsInfo, fileList });
+        }else {
+          message.error(data.msg);
         }
-        this.setState({ assetsInfo });
       },
       error: (err) => console.log(err)
     })
   }
-  handleChange = (fileListObj) => {
-    let { fileList } = fileListObj ;
-    // 1. Limit the number of uploaded files
-    //    Only to show two recent uploaded files, and old ones will be replaced by the new
-    fileList = fileList.slice(-2);
-
-    for(let i = 0;i<fileList.length;i++){
-      switch (fileList[i].type){
-        case "application/x-rar-compressed":
-          break;
-        case "application/zip":
-          break;
-        case "application/x-zip-compressed":
-          break;
-        case "application/msword":
-          break;
-        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          break;
-        case "application/pdf":
-          break;
-        case "image/jpeg":
-          break;
-        default:
-          message.warning('仅支持扩展名：.rar .zip .doc .docx .pdf .jpg！',3)
-        return;
-      }
-    }
-
-    // 2. read from response and show file link
-    fileList = fileList.map((file) => {
-      if (file.response) {
-        // Component will show file.url as link
-        file.url = file.response.url;
-      }
-      return file;
-    });
-
-    // 3. filter successfully uploaded files according to response from server
-    fileList = fileList.filter((file) => {
-      if (file.response) {
-        return file.response.result === "success";
-      }
-      return true;
-    });
-    this.setState({fileList})
-  }
   render(){
-    const { assetsInfo } = this.state;
+    const { assetsInfo, fileList } = this.state;
     const props = {
       action: assets.picUploadUrl,
-      fileList: assets.accessory,
-      multiple: true,
+      fileList,
     };
     return(
       <Content className='ysynet-content'>
@@ -331,7 +292,6 @@ class MeterQueryDetails extends Component{
                       <div className="ant-form-item-control">
                           <Upload 
                             {...props} 
-                            withCredentials={true}
                             showUploadList={{showRemoveIcon:false}}
                           >
                           </Upload>
