@@ -8,7 +8,7 @@ import queryString from 'querystring';
 
 import request from '../../../utils/request';
 
-import {Layout, Card, Row, Col, Form, DatePicker, Select, Upload, Button, Input, Icon, message} from 'antd';
+import {Layout, Card, Row, Col, Form, DatePicker, Select, Upload, Button, Input, Icon, message, Modal} from 'antd';
 
 const {Content} = Layout;
 
@@ -35,7 +35,9 @@ class NewRegister extends Component {
     state = {
         userDeptData: [],
         checkUserData: [],
-        fileList: []
+        fileList: [],
+        previewVisible: false,
+        previewImage: ''
     }
     componentDidMount() {
         request(inspectionMgt.selectUseDeptList, {
@@ -97,10 +99,9 @@ class NewRegister extends Component {
 
     handleChange = (fileListObj) => {   //上传附件
         let { fileList } = fileListObj ; 
-        fileList = fileList.slice(-2);
-        
-        for(let i = 0;i<fileList.length;i++){
-            switch (fileList[i].type){
+        if(fileList.length > 0) {
+            let newFileList = fileList[fileList.length - 1]
+            switch (newFileList.type){
                 case "application/x-rar-compressed":        //rar
                     break;
                 case "application/zip":                     //zip
@@ -110,7 +111,7 @@ class NewRegister extends Component {
                 case "application/msword":                  //DOC
                     break;
                 case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":     //docx
-                    if( fileList[i].size === 0 ) {
+                    if( newFileList.size === 0 ) {
                         message.warning('无法上传没有内容的DOCX文件',3)
                         return;
                     }
@@ -129,8 +130,8 @@ class NewRegister extends Component {
                     message.warning('仅支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .gif .jpeg！',3)
                     return;
             }
-        }
-
+        };
+        
         fileList = fileList.map((file) => {
             if (file.response) {
                 file.url = file.response.url;
@@ -146,17 +147,27 @@ class NewRegister extends Component {
         });
         this.setState({ fileList });
     }
+
+    handlePreview = (data) => {
+        this.setState({
+          previewVisible: true,
+          previewImage: data.thumbUrl
+        });
+    }
+    
     render() {
         let {getFieldDecorator} = this.props.form;
-        let {userDeptData, checkUserData, fileList} = this.state;
+        let {userDeptData, checkUserData, fileList, previewVisible, previewImage} = this.state;
         const props = {
             action: assets.picUploadUrl,
             onChange: this.handleChange,
             fileList,
+            listType: "picture-card",
             multiple: true,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
+            onPreview: this.handlePreview
         };
         return (
             <Content>
@@ -232,12 +243,22 @@ class NewRegister extends Component {
                                 <FormItem label={`附件`} {...formItemLayout}>
                                     {getFieldDecorator(`accessoryList`)(
                                         <div>
-                                            <Upload listType="picture" {...props} withCredentials={true}>
+                                            <Upload {...props} withCredentials={true}>
                                                 <Button>
                                                     <Icon type="upload" /> 上传文件
                                                 </Button>
                                             </Upload>
-                                            <small>支持扩展名：.rar .zip .doc .docx .pdf .jpg</small>
+                                            <Modal 
+                                                visible={previewVisible} 
+                                                footer={null} 
+                                                maskClosable={false}
+                                                onCancel = {() => {
+                                                    this.setState({previewVisible: false})
+                                                }}
+                                                style={{wordBreak: 'break-all',padding:5}}>
+                                                {`复制地址到地址栏查看附件：\n${previewImage}`}
+                                            </Modal>
+                                            <small>支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .gif .jpeg</small>
                                         </div>
                                     )}
                                 </FormItem>

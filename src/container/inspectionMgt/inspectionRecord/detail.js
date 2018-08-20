@@ -4,6 +4,8 @@ import inspectionMgt from '../../../api/inspectionMgt';
 
 import queryString from 'querystring';
 
+import {FTP} from '../../../api/local';
+
 import request from '../../../utils/request';
 
 import {Layout, Card, Row, Col,Upload} from 'antd';
@@ -27,16 +29,23 @@ class Detail extends Component {
             success: (data) => {
                 if(data.status) {
                     let fileList = [];
-                    if( data.result.rows[0].tfAccessory ) {
-                        fileList = data.result.rows.map( (item, index) => ({
-                            uid: index,
-                            name: '陈文君.png',
-                            status: 'done',
-                            url: item.tfAccessory,
-                            thumbUrl: item.tfAccessory,
-                        }) )
-                    }
-                    this.setState({inspectionInfo: data.result.rows[0], fileList});
+                    let inspectionInfo = data.result.rows[0]
+                    if(inspectionInfo.tfAccessory) {
+                        fileList = inspectionInfo.tfAccessory.split(';');
+                        if(fileList.length === 2 && fileList[1] === "") {
+                            fileList = [fileList[0]];
+                        };
+                        fileList = fileList.map((item, i) => {
+                            return {
+                                uid: (i + 1) * -1,
+                                name: item.split('/')[item.split('/').length - 1],
+                                status: 'done',
+                                url: `${FTP}${item}`,
+                                thumbUrl: `${FTP}${item}`,
+                            }
+                        });
+                    };
+                    this.setState({inspectionInfo, fileList});
                 }
             },
             error: err => console.log(err)

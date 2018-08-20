@@ -158,7 +158,7 @@ class Workplace extends Component {
                   </Col>
                   <Col span={6} className={S['bill-text']} style={{textAlign: 'right'}}>{item.fstate}</Col>
                 </Row>
-                <Row style={{margin: '20px 0 14px', color: 'rgba(0, 0, 0, .25)'}}>
+                <Row style={{margin: '20px 0 14px', color: 'rgba(0, 0, 0, .8)'}}>
                   <Col span={12}>
                     <span>{textMap[code]}</span>
                   </Col>

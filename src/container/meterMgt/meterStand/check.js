@@ -1,6 +1,6 @@
 /*计量台账- 检测*/
 import React , { Component } from 'react';
-import { Layout, Card, Button, Affix, Form, Icon ,  Col, Row, Input, Select, DatePicker, message , Upload} from 'antd';
+import { Layout, Card, Button, Affix, Form, Icon ,  Col, Row, Input, Select, DatePicker, message , Upload, Modal} from 'antd';
 import { Link } from 'react-router-dom';
 import queryString from 'querystring';
 import moment from 'moment';
@@ -28,7 +28,9 @@ class CheckMeterStand extends Component{
         assetsInfo:{},    //本条数据信息
         fileList:[],      
         nextMeasureDate: '',     //下次待检日期
-        measureDate: ''         //本次待检日期
+        measureDate: '',         //本次待检日期
+        previewVisible: false,
+        previewImage: ''
       }
       componentDidMount() {
         const assetsRecordGuid = this.props.match.params.id;
@@ -64,7 +66,7 @@ class CheckMeterStand extends Component{
             values.type = assetsInfo.type;
             values.measureCycly = assetsInfo.measureCycly;
             request(meterStand.insertMeterRecordInfo, {
-              body: queryString.stringify({...values, accessoryList: fileList}),
+              body: queryString.stringify({...values, accessoryList: fileList }),
               headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
               },
@@ -74,7 +76,7 @@ class CheckMeterStand extends Component{
                 }
               },
               error: err => console.log(err)
-            })
+            });
           }
         })
       }
@@ -130,28 +132,32 @@ class CheckMeterStand extends Component{
 
       handleChange = (fileListObj) => {   //上传附件
         let { fileList } = fileListObj ; 
-        // 1. Limit the number of uploaded files
-        //    Only to show two recent uploaded files, and old ones will be replaced by the new
-        fileList = fileList.slice(-2);
-        
-        for(let i = 0;i<fileList.length;i++){
-          switch (fileList[i].type){
+        if(fileList.length > 0) {
+          switch(fileList[fileList.length - 1].type){
             case "application/png":
-              break;
+                break;
             case "application/gif":
               break;
             case "application/jpg":
               break;
+            case "application/jpeg":
+              break;
             case "application/pdf":
+              break;
+            case "image/gif":
+              break;
+            case "image/jpg":
+              break;
+            case "image/png":
               break;
             case "image/jpeg":
               break;
             default:
               message.warning('仅支持扩展名：.pdf .jpg .png .gif .jpeg！',3)
-            return;
-          }
+              return;
+          };
         }
-
+        
         // 2. read from response and show file link
         fileList = fileList.map((file) => {
           if (file.response) {
@@ -160,7 +166,8 @@ class CheckMeterStand extends Component{
           }
           return file;
         });
-
+        console.log(fileList);
+  
         // 3. filter successfully uploaded files according to response from server
         fileList = fileList.filter((file) => {
           if (file.response) {
@@ -168,17 +175,27 @@ class CheckMeterStand extends Component{
           }
           return true;
         });
+        
         this.setState({fileList})
+      }
+
+      handlePreview = (data) => {
+        this.setState({
+          previewVisible: true,
+          previewImage: data.thumbUrl
+        })
       }
 
       render(){
         const { getFieldDecorator } = this.props.form;
-        const { assetsInfo } = this.state;
+        const { assetsInfo, previewImage, previewVisible } = this.state;
         const props = {
           action: assets.picUploadUrl,
           fileList:this.state.fileList,
           onChange: this.handleChange,
           multiple: true,
+          listType: "picture-card",
+          onPreview: this.handlePreview
         };
         return(
           <Content className='ysynet-content'>
@@ -403,11 +420,21 @@ class CheckMeterStand extends Component{
                         <FormItem label='附件' {...formItemLayout}>
                           {getFieldDecorator('accessoryList', )(
                             <div>
-                              <Upload listType="picture" {...props} withCredentials={true}>
+                              <Upload {...props} withCredentials={true}>
                                 <Button>
                                   <Icon type="upload" /> 上传文件
                                 </Button>
                               </Upload>
+                              <Modal 
+                                visible={previewVisible} 
+                                footer={null} 
+                                maskClosable={false}
+                                onCancel = {() => {
+                                  this.setState({previewVisible: false})
+                                }}
+                                style={{wordBreak: 'break-all',padding:5}}>
+                                {`复制地址到地址栏查看附件：\n${previewImage}`}
+                              </Modal>
                               <small>支持扩展名：.pdf .jpg .png .gif .jpeg</small>
                             </div>
                           )}
