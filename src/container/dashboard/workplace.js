@@ -77,11 +77,13 @@ class Workplace extends Component {
     Promise.all([commissionList, billTypeList])
     .then((posts) => {
       let matterData = this.dataDispose(posts[0]);
-      this.upDateDocu(posts[1][0].code);
+      if(posts[1].length > 0) {
+        this.upDateDocu(posts[1][0].code);
+      };
       this.setState({
         matterData,
         documentData: posts[1],
-        code: posts[1][0].code
+        code: posts[1].length > 0? posts[1][0].code : ''
       });
     });
   }
