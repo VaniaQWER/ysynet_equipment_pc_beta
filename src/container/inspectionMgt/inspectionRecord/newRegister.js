@@ -4,11 +4,13 @@ import inspectionMgt from '../../../api/inspectionMgt';
 
 import assets from '../../../api/assets';
 
+import {FTP} from '../../../api/local';
+
 import queryString from 'querystring';
 
 import request from '../../../utils/request';
 
-import {Layout, Card, Row, Col, Form, DatePicker, Select, Upload, Button, Input, Icon, message, Modal} from 'antd';
+import {Layout, Card, Row, Col, Form, DatePicker, Select, Upload, Button, Input, Icon, message} from 'antd';
 
 const {Content} = Layout;
 
@@ -35,9 +37,7 @@ class NewRegister extends Component {
     state = {
         userDeptData: [],
         checkUserData: [],
-        fileList: [],
-        previewVisible: false,
-        previewImage: ''
+        accessoryList: [],
     }
     componentDidMount() {
         request(inspectionMgt.selectUseDeptList, {
@@ -75,7 +75,7 @@ class NewRegister extends Component {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if(!err) {
-                values.accessoryList = this.state.fileList.map( (item) => item.thumbUrl );
+                values.accessoryList = this.state.accessoryList;
                 values.checkDate = values.checkDate.format('YYYY-MM-DD');
                 values.checkResult = values.checkResult === undefined? '' : values.checkResult;
                 request(inspectionMgt.insertCheckInfo, {
@@ -98,76 +98,81 @@ class NewRegister extends Component {
     }
 
     handleChange = (fileListObj) => {   //上传附件
-        let { fileList } = fileListObj ; 
-        if(fileList.length > 0) {
-            let newFileList = fileList[fileList.length - 1]
-            switch (newFileList.type){
-                case "application/x-rar-compressed":        //rar
-                    break;
-                case "application/zip":                     //zip
-                    break;
-                case "application/x-zip-compressed":        //zip
-                    break;
-                case "application/msword":                  //DOC
-                    break;
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":     //docx
-                    if( newFileList.size === 0 ) {
-                        message.warning('无法上传没有内容的DOCX文件',3)
-                        return;
-                    }
-                    break;
-                case "application/png":         
-                    break;
-                case "application/gif":
-                    break;
-                case "application/jpg":
-                    break;
-                case "application/pdf":
-                    break;
-                case "image/jpeg":
-                    break;
-                default:
-                    message.warning('仅支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .gif .jpeg！',3)
-                    return;
-            }
-        };
-        
-        fileList = fileList.map((file) => {
-            if (file.response) {
-                file.url = file.response.url;
-            }
-            return file;
-            });
+        let { fileList } = fileListObj;
 
+        fileList = fileList.map((file) => {   //修改预览地址
+          if (file.response) {
+            file.url = FTP + file.response.result;
+          }
+          return file;
+        });
+
+        // 3. 过滤上传失败的文件
         fileList = fileList.filter((file) => {
-        if (file.response) {
-            return file.response.result === "success";
-        }
-            return true;
+          if (file.response) {
+            return file.response.status;
+          }
+          return false;
         });
-        this.setState({ fileList });
+
+
+        let accessoryList = fileList.map(item => item.response.result);
+
+        this.setState({accessoryList});
     }
 
-    handlePreview = (data) => {
-        this.setState({
-          previewVisible: true,
-          previewImage: data.thumbUrl
-        });
+    beforeUpload = (file) => {
+        switch (file.type){
+            case "application/png":
+                return true;
+            case "application/gif":
+                return true;
+            case "application/jpg":
+                return true;
+            case "application/jpeg":
+                return true;
+            case "application/pdf":
+                return true;
+            case "image/gif":
+                return true;
+            case "image/jpg":
+                return true;
+            case "image/png":
+                return true;
+            case "image/jpeg":
+                return true;
+            default:
+                message.error('仅支持扩展名：.pdf .jpg .png .gif .jpeg！', 3);
+        };
+        return false;
     }
-    
-    render() {
-        let {getFieldDecorator} = this.props.form;
-        let {userDeptData, checkUserData, fileList, previewVisible, previewImage} = this.state;
-        const props = {
-            action: assets.picUploadUrl,
-            onChange: this.handleChange,
-            fileList,
-            listType: "picture-card",
-            multiple: true,
-            headers: {
+
+    removeFile = (file) => {
+        request(assets.deleteFile, {
+            body: queryString.stringify({filePath: file.response.result}),
+            headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            onPreview: this.handlePreview
+            success: (data) => {
+                if(data.status) {
+                    message.success('移除成功');
+                }
+            },
+            error: err => console.log(err)
+        })
+      }
+
+    render() {
+        let {getFieldDecorator} = this.props.form;
+        let {userDeptData, checkUserData} = this.state;
+        const props = {
+            action: assets.uploadFile,
+            data: (flie)=>({uploadFile: flie}),
+            onChange: this.handleChange,
+            onRemove: this.removeFile,
+            beforeUpload: this.beforeUpload,
+            listType: "picture-card",
+            multiple: true
         };
         return (
             <Content>
@@ -195,10 +200,10 @@ class NewRegister extends Component {
                                             required:true,message:"请选择巡检科室!"
                                         }]
                                     })(
-                                        <Select 
+                                        <Select
                                             placeholder="请选择巡检科室"
                                             mode="multiple"
-                                            style={{width: '100%'}} 
+                                            style={{width: '100%'}}
                                         >
                                             {userDeptData.map( (item) => <Option key={item.value} value={item.value} >{item.text}</Option> )}
                                         </Select>
@@ -227,8 +232,8 @@ class NewRegister extends Component {
                                             required:true,message:"请输入巡检人!"
                                         }]
                                     })(
-                                        <Select 
-                                            style={{width: '100%'}} 
+                                        <Select
+                                            style={{width: '100%'}}
                                             placeholder="请输入巡检人"
                                             mode="multiple"
                                         >
@@ -248,17 +253,7 @@ class NewRegister extends Component {
                                                     <Icon type="upload" /> 上传文件
                                                 </Button>
                                             </Upload>
-                                            <Modal 
-                                                visible={previewVisible} 
-                                                footer={null} 
-                                                maskClosable={false}
-                                                onCancel = {() => {
-                                                    this.setState({previewVisible: false})
-                                                }}
-                                                style={{wordBreak: 'break-all',padding:5}}>
-                                                {`复制地址到地址栏查看附件：\n${previewImage}`}
-                                            </Modal>
-                                            <small>支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .gif .jpeg</small>
+                                            <small>支持扩展名：.pdf .jpg .png .gif .jpeg</small>
                                         </div>
                                     )}
                                 </FormItem>

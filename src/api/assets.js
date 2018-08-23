@@ -2,6 +2,8 @@ import { _local, FTP } from './local';
 export default {
  userLogin: `${_local}/login/userLogin`,//登录
  picUploadUrl: `${_local}/ftp/post`,//图片上传
+ uploadFile: `${_local}/checkInfoController/uploadFile`, //文件上传
+ deleteFile: `${_local}/checkInfoController/deleteFile`, //文件删除
  YSYPATH:`${_local}/ftp`,//项目地址
  selectFOrgList:`${_local}/StaticDataController/selectFOrgList`,//获取供应商列表
  selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框

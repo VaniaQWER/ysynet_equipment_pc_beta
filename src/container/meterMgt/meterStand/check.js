@@ -1,12 +1,14 @@
 /*计量台账- 检测*/
 import React , { Component } from 'react';
-import { Layout, Card, Button, Affix, Form, Icon ,  Col, Row, Input, Select, DatePicker, message , Upload, Modal} from 'antd';
+import { Layout, Card, Button, Affix, Form, Icon ,  Col, Row, Input, Select, DatePicker, message , Upload} from 'antd';
 import { Link } from 'react-router-dom';
 import queryString from 'querystring';
 import moment from 'moment';
 import request from '../../../utils/request';
 import assets from '../../../api/assets';
+import {FTP} from '../../../api/local';
 import meterStand from '../../../api/meterStand';
+import {validMoney} from '../../../utils/tools';     //验证方法
 const { Content } = Layout;
 const {TextArea} = Input;
 const FormItem = Form.Item;
@@ -29,8 +31,6 @@ class CheckMeterStand extends Component{
         fileList:[],      
         nextMeasureDate: '',     //下次待检日期
         measureDate: '',         //本次待检日期
-        previewVisible: false,
-        previewImage: ''
       }
       componentDidMount() {
         const assetsRecordGuid = this.props.match.params.id;
@@ -61,12 +61,11 @@ class CheckMeterStand extends Component{
               values[key] = values[key] === undefined? '' : values[key];
             };
             values.assetsRecordGuid = this.state.assetsInfo.assetsRecordGuid;
-            let {fileList, assetsInfo} = this.state;
-            fileList = fileList.map( (item) => item.thumbUrl );
+            let {accessoryList, assetsInfo} = this.state;
             values.type = assetsInfo.type;
             values.measureCycly = assetsInfo.measureCycly;
             request(meterStand.insertMeterRecordInfo, {
-              body: queryString.stringify({...values, accessoryList: fileList }),
+              body: queryString.stringify({...values, accessoryList }),
               headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
               },
@@ -132,70 +131,78 @@ class CheckMeterStand extends Component{
 
       handleChange = (fileListObj) => {   //上传附件
         let { fileList } = fileListObj ; 
-        if(fileList.length > 0) {
-          switch(fileList[fileList.length - 1].type){
-            case "application/png":
-                break;
-            case "application/gif":
-              break;
-            case "application/jpg":
-              break;
-            case "application/jpeg":
-              break;
-            case "application/pdf":
-              break;
-            case "image/gif":
-              break;
-            case "image/jpg":
-              break;
-            case "image/png":
-              break;
-            case "image/jpeg":
-              break;
-            default:
-              message.warning('仅支持扩展名：.pdf .jpg .png .gif .jpeg！',3)
-              return;
-          };
-        }
-        
-        // 2. read from response and show file link
-        fileList = fileList.map((file) => {
+        fileList = fileList.map((file) => {   //修改预览地址
           if (file.response) {
-            // Component will show file.url as link
-            file.url = file.response.url;
+            file.url = FTP + file.response.result;
           }
           return file;
         });
-        console.log(fileList);
-  
-        // 3. filter successfully uploaded files according to response from server
+        
+        // 3. 过滤上传失败的文件
         fileList = fileList.filter((file) => {
           if (file.response) {
-            return file.response.result === "success";
+            return file.response.status;
           }
-          return true;
+          return false;
         });
         
-        this.setState({fileList})
+        let accessoryList = fileList.map(item => item.response.result);
+        
+        this.setState({accessoryList});
       }
 
-      handlePreview = (data) => {
-        this.setState({
-          previewVisible: true,
-          previewImage: data.thumbUrl
+      beforeUpload = (file) => {
+        switch(file.type){
+          case "application/png":
+            return true;
+          case "application/gif":
+            return true;
+          case "application/jpg":
+            return true;
+          case "application/jpeg":
+            return true;
+          case "application/pdf":
+            return true;
+          case "image/gif":
+            return true;
+          case "image/jpg":
+            return true;
+          case "image/png":
+            return true;
+          case "image/jpeg":
+            return true;
+          default:
+            message.error('仅支持扩展名：.pdf .jpg .png .gif .jpeg！',3);
+            break;
+        };
+        return false;
+      }
+
+      removeFile = (file) => {
+        request(assets.deleteFile, {
+          body: queryString.stringify({filePath: file.response.result}),
+          headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: (data) => {
+            if(data.status) {
+              message.success('移除成功');
+            }
+          },
+          error: err => console.log(err)
         })
       }
-
       render(){
         const { getFieldDecorator } = this.props.form;
-        const { assetsInfo, previewImage, previewVisible } = this.state;
+        const { assetsInfo } = this.state;
         const props = {
-          action: assets.picUploadUrl,
-          fileList:this.state.fileList,
+          action: assets.uploadFile,
+          data: (flie)=>({uploadFile: flie}),
           onChange: this.handleChange,
           multiple: true,
           listType: "picture-card",
-          onPreview: this.handlePreview
+          onRemove: this.removeFile,
+          beforeUpload: this.beforeUpload
         };
         return(
           <Content className='ysynet-content'>
@@ -388,7 +395,11 @@ class CheckMeterStand extends Component{
                   <Row>
                     <Col span={8}>
                       <FormItem {...formItemLayout} label='计量费用'>
-                        {getFieldDecorator('measurePay', )(
+                        {getFieldDecorator('measurePay', {
+                           rules: [
+                            { validator: validMoney }
+                          ],
+                        })(
                           <Input placeholder="请输入计量费用" addonAfter='元' style={{width:200}}/>
                         )}
                       </FormItem>
@@ -425,16 +436,6 @@ class CheckMeterStand extends Component{
                                   <Icon type="upload" /> 上传文件
                                 </Button>
                               </Upload>
-                              <Modal 
-                                visible={previewVisible} 
-                                footer={null} 
-                                maskClosable={false}
-                                onCancel = {() => {
-                                  this.setState({previewVisible: false})
-                                }}
-                                style={{wordBreak: 'break-all',padding:5}}>
-                                {`复制地址到地址栏查看附件：\n${previewImage}`}
-                              </Modal>
                               <small>支持扩展名：.pdf .jpg .png .gif .jpeg</small>
                             </div>
                           )}

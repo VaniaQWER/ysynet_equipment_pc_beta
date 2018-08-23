@@ -150,7 +150,7 @@ class Workplace extends Component {
       billList = billList.map((item, i) => {
         return (
           <Col key={i} style={{ marginBottom: 16 }} span={6}>
-              <Card>
+              <div style={{padding: 20, background: '#fff', border: '1px solid rgba(0, 0, 0, 0.2)'}}>
                 <Row>
                   <Col span={18}>
                     <img alt="" src={require(`./Icon/0${code}.png`)} />
@@ -164,7 +164,7 @@ class Workplace extends Component {
                   </Col>
                   <Col span={12} style={{textAlign: 'right'}}>{item.time}</Col>
                 </Row>
-              </Card>
+              </div>
             </Col>
         )
       });

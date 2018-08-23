@@ -66,7 +66,7 @@ class MeterQueryDetails extends Component{
     const { assetsInfo, fileList } = this.state;
     const props = {
       action: assets.picUploadUrl,
-      fileList,
+      fileList
     };
     return(
       <Content className='ysynet-content'>

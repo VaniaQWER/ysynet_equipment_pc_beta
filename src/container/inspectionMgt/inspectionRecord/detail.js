@@ -53,7 +53,6 @@ class Detail extends Component {
     }
     render() {
         let {inspectionInfo, fileList} = this.state;
-        console.log(fileList)
         return (
             <Content>
                 <Card style={{ margin: '16px 16px 0' }}>
