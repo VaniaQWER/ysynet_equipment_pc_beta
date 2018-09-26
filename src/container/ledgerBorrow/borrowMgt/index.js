@@ -38,6 +38,7 @@ const FormItem = Form.Item;
 class BorrowMgt extends Component {
     state = {
         query: {
+            borrowType:"01",
             assetName: '',
             deptGuid: '',
             assetsRecord: '',
@@ -74,7 +75,8 @@ class BorrowMgt extends Component {
         this.setState({visible: true});
     }
     setQuery = (query) => {
-        this.setState({ query }, ()=>{ this.refs.table.fetch() })
+        let ret = Object.assign({borrowType:"01"},query)
+        this.setState({ query:ret } , ()=>{ this.refs.table.fetch() })
     }
     handleOk = () => {
         this.refs.modalForm.validateFields((err, values) => {

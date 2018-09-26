@@ -94,6 +94,7 @@ class Loan extends Component {
             for (const key in values) {
                 values[key] = values[key] === undefined? '' : values[key];
             };
+            values.borrowType="01";
             values.estimateBack = values.estimateBack.format('YYYY-MM-DD HH:mm:ss');
             values.assetsRecordGuids = dataSource.map( (item) => item.assetsRecordGuid );
             this.saveRequest(values);

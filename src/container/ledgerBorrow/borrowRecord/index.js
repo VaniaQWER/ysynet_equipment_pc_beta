@@ -234,18 +234,18 @@ class BorrowRecord extends Component {
     super(props);
     this.state = {
       loading: false,
-      query:{},
+      query:{borrowType:"01"},
       messageError:"",
       tableRecords:0
     }
   }
   queryHandler = (query) => {
-    let q = Object.assign({},query);//"deptType":"MANAGEMENT"
+    let q = Object.assign({borrowType:"01"},query);//"deptType":"MANAGEMENT"
     this.refs.table.fetch(q);
     this.setState({ q })
   }
   query = (val) => {
-    this.refs.table.fetch(val)
+    this.refs.table.fetch({...val,borrowType:"01"})
   }
   render() {
     return (

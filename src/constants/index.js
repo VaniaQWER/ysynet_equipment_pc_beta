@@ -460,3 +460,17 @@ export const haveNo = {
   "01":"有",
   "00":"无",
 }
+
+//资产借用
+export const borrowSelect =[
+  {text:'借出中',value:"00"},
+  {text:'已归还',value:"01"},
+  {text:'待审核',value:"03"},
+  {text:'驳回借出',value:"09"},
+]
+export const borrowFstate ={
+  "00":"借出中",
+  "01":"已归还",
+  "03":"待审核",
+  "09":"驳回借出"
+}
