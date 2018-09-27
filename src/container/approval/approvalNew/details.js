@@ -187,22 +187,42 @@ class EquipProcurementDetails extends Component {
             <div className="ant-col-12">经费来源 : {fillBackData?fillBackData.fundsSource?fundsSourceStatus[fillBackData.fundsSource]:'':""}</div>
           </div>
           <div className="ant-row" style={style.mb}>
-            <div className="ant-col-12">产品名称 :  {fillBackData?fillBackData.materialName:''}</div>
+            {/* <div className="ant-col-12">产品名称 :  {fillBackData?fillBackData.materialName:''}</div> */}
             <div className="ant-col-12">单位 : {fillBackData?fillBackData.purchaseName:''}</div>
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">申购数量 : {fillBackData?fillBackData.amount:''}</div>
             <div className="ant-col-12">预算金额 : {fillBackData?fillBackData.totalBudgetPrice?Number(fillBackData.totalBudgetPrice).toFixed(2):'':""}</div>
           </div>
-          <div className="ant-row" style={style.mb}>
-            <div className="ant-col-12">预算单价 : {fillBackData?fillBackData.budgetPrice?Number(fillBackData.budgetPrice).toFixed(2):'':""}</div>
-          </div>
-          <div className="ant-row" style={style.mb}>
+
+          {
+            fillBackData && fillBackData.detaliList ?
+            fillBackData.detaliList.map((item,index)=>(
+              <div key={index} style={{padding:'10px 0'}}>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">推荐产品 : {item.materialName}</div>
+                </div>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">推荐型号 : {item.recommendFmodel}</div>
+                </div>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">预算单价 : {Number(item.budgetPrice)?Number(item.budgetPrice).toFixed(2):''}</div>
+                </div>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">推荐厂商 : {item.recommendProduct}</div>
+                </div>
+              </div>
+            ))
+            :null
+          }
+
+       
+          {/* <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">推荐型号 :  {fillBackData?fillBackData.recommendFmodel:''}</div>
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">推荐厂商 : {fillBackData?fillBackData.recommendProduct:''}</div>
-          </div>
+          </div> */}
         </div>
         <Row>
           <hr className={styleCss.hr}/>

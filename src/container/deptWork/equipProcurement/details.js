@@ -208,7 +208,7 @@ class EquipProcurementDetails extends Component {
             <div className="ant-col-12">经费来源 : {baseInfo?fundsSourceStatus[baseInfo.fundsSource]:""}</div>
           </div>
           <div className="ant-row" style={style.mb}>
-            <div className="ant-col-12">产品名称 :  {baseInfo?baseInfo.materialName:""}</div>
+            {/* <div className="ant-col-12">产品名称 :  {baseInfo?baseInfo.materialName:""}</div> */}
             <div className="ant-col-12">单位 : {baseInfo?baseInfo.purchaseName || baseInfo.purchaseUnit:""}</div>
           </div>
           <div className="ant-row" style={style.mb}>
@@ -218,12 +218,29 @@ class EquipProcurementDetails extends Component {
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">预算单价 : {baseInfo?Number(baseInfo.budgetPrice).toFixed(2):""}</div>
           </div>
-          <div className="ant-row" style={style.mb}>
-            <div className="ant-col-12">推荐型号 : {baseInfo?baseInfo.recommendFmodel:""}</div>
-          </div>
-          <div className="ant-row" style={style.mb}>
-            <div className="ant-col-12">推荐厂商 : {baseInfo?baseInfo.recommendProduct:""}</div>
-          </div>
+          {
+            baseInfo && baseInfo.detaliList ?
+            baseInfo.detaliList.map((item,index)=>(
+              <div key={index} style={{padding:'10px 0'}}>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">推荐产品 : {item.materialName}</div>
+                </div>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">推荐型号 : {item.recommendFmodel}</div>
+                </div>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">预算单价 : {Number(item.budgetPrice)?Number(item.budgetPrice).toFixed(2):''}</div>
+                </div>
+                <div className="ant-row" style={style.mb}>
+                  <div className="ant-col-12">推荐厂商 : {item.recommendProduct}</div>
+                </div>
+              </div>
+            ))
+            :null
+          }
+
+
+          
         </div>
           {//fstate  只有通过状态或不通过状态显示一下内容 (baseInfo.fstate==="20" ||  baseInfo.fstate==="80") 
             baseInfo.commentList?

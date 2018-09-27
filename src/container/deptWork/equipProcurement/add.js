@@ -4,12 +4,13 @@
 * @Last Modified time: 2018-07-11 11:33:17 
  */
 import React, { Component } from 'react';
-import { Row,Col,Input, Layout,Button,message,Form,Select} from 'antd';
+import { Row,Col,Input, Layout,Button,message,Form,Select,Icon} from 'antd';
 import deptwork from '../../../api/deptwork';
 import { CommonData , validMoney , validAmount } from '../../../utils/tools';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import { fundsSourceSelect } from '../../../constants';
+import Style from './styles.css'; 
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -43,6 +44,7 @@ const formItemLayoutLine2 = {
     sm: { span: 12 },
   },
 };
+let uuid = 1;
 class AddEquipProcurement extends Component {
   state={
     query:{},
@@ -81,7 +83,7 @@ class AddEquipProcurement extends Component {
     this.getManageSelect();
     this.outDeptSelect();
     CommonData('UNIT', (data) => {
-      this.setState({unitList:data.rows})
+      this.setState({unitList:data.rows || data})
     })
   }
   getManageSelect = () => {
@@ -101,7 +103,6 @@ class AddEquipProcurement extends Component {
     })
   }
   outDeptSelect = () => {
-
     request(deptwork.queryDeptListByUserId,{
       body:queryString.stringify({}),
       headers: {
@@ -119,40 +120,42 @@ class AddEquipProcurement extends Component {
   }
   handleSubmit = () =>{
     this.props.form.validateFieldsAndScroll((err,values)=>{
-      
-      let url = deptwork.insertApplyZc ; 
-      if(this.state.editStatus){//编辑状态
-        url = deptwork.updateApplyZc;
-        values = Object.assign(this.state.fillBackData,values);
-        delete values.createTime;
-        delete values.purchaseName;
-        values.fstate="00";
-        values.allowType="00";
-      }else{//新增
-        values.bDeptName=this.state.bDeptName;
-        values.fstate="00";
-        values.allowType="00";
+      if(!err){
+        let url = deptwork.insertApplyZc ; 
+        if(this.state.editStatus){//编辑状态
+          url = deptwork.updateApplyZc;
+          values = Object.assign(this.state.fillBackData,values);
+          delete values.createTime;
+          delete values.purchaseName;
+          values.fstate="00";
+          values.allowType="00";
+        }else{//新增
+          values.bDeptName=this.state.bDeptName;
+          values.fstate="00";
+          values.allowType="00";
+          values.applyDetailZclist = values.applyDetailZclist.filter(item=>item);//动态表单
+          delete values['keys']
+        }
+        console.log(JSON.stringify(values))
+        request(url,{
+          body:JSON.stringify(values),
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          success: data => {
+            if(data.status){
+              message.success('保存成功！');
+              const {history} = this.props;
+              history.push('/deptWork/equipProcurement')
+            }else{
+              message.error(data.msg)
+            }
+          },
+          error: err => {console.log(err)}
+        })
       }
-      console.log(JSON.stringify(values))
-      request(url,{
-        body:JSON.stringify(values),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        success: data => {
-          if(data.status){
-            message.success('保存成功！');
-            const {history} = this.props;
-            history.push('/deptWork/equipProcurement')
-          }else{
-            message.error(data.msg)
-          }
-        },
-        error: err => {console.log(err)}
-      })
     })
   }
-
   goBack = ()=>{
     const { history } = this.props;
     history.push('/deptWork/equipProcurement');
@@ -165,10 +168,100 @@ class AddEquipProcurement extends Component {
     return false
   }
 
+  remove = (k) => {
+    const { form } = this.props;
+    // can use data-binding to get
+    const keys = form.getFieldValue('keys');
+    // We need at least one passenger
+    if (keys.length === 1) {
+      return;
+    }
+
+    // can use data-binding to set
+    form.setFieldsValue({
+      keys: keys.filter(key => key !== k),
+    });
+  }
+
+  add = () => {
+    const { form } = this.props;
+    // can use data-binding to get
+    const keys = form.getFieldValue('keys');
+    const nextKeys = keys.concat(uuid);
+    uuid++;
+    // can use data-binding to set
+    // important! notify form to detect changes
+    form.setFieldsValue({
+      keys: nextKeys,
+    });
+  }
+
+  getTmp = () =>{
+    const { getFieldDecorator , getFieldValue } = this.props.form;
+    getFieldDecorator('keys', { initialValue: [0] });
+    const keys = getFieldValue('keys');
+    const formItems = keys.map((k, index) => {
+      return (
+        <div key={index}>
+          <h4 style={{padding: '0 17% 0 11.5%'}}>
+            推荐产品{index?index:''}
+            <span className={Style.fr}>
+             { k>keys[0]?
+              <a onClick={()=>this.remove(k)}>删除</a>
+              :null}
+            </span>
+          </h4>
+          <FormItem
+            {...formItemLayout}
+            label="产品名称"
+            >
+            {getFieldDecorator(`applyDetailZclist[${k}].materialName`,{
+              rules:[{required:true,message:'请选择产品名称'}]
+            })(
+              <Input/>
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="推荐型号"
+            >
+            {getFieldDecorator(`applyDetailZclist[${k}].recommendFmodel`)(
+              <Input.TextArea rows={2} maxLength={200}>
+              </Input.TextArea>
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="预算单价"
+            >
+            {getFieldDecorator(`applyDetailZclist[${k}].budgetPrice`,{
+              rules:[{required:true,message:'请填写预算单价'}]
+            })(
+              <Input style={{width:200}}/>
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="推荐厂商"
+            >
+            {getFieldDecorator(`applyDetailZclist[${k}].recommendProduct`)(
+              <Input.TextArea rows={2} maxLength={200}>
+              </Input.TextArea>
+            )}
+          </FormItem>
+          <hr className={Style.hr} style={{margin:' 0 16% 0 10%'}}/>
+        </div>
+      );
+    });
+    return formItems
+  }
+
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator , getFieldValue } = this.props.form;
+    const keys = getFieldValue('keys');
     const { unitList , editStatusText , fillBackData , editStatus  } = this.state; //  editStatus 编辑状态 true为编辑  false 为新增
     const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
+    
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <h3 style={{padding:'24px'}}>{editStatusText}  
@@ -230,6 +323,8 @@ class AddEquipProcurement extends Component {
                   )}
                 </FormItem>
               </Col>
+            </Row>
+            <Row>
               <Col span={12}> 
                 <FormItem
                   {...formItemLayoutLine}
@@ -263,101 +358,64 @@ class AddEquipProcurement extends Component {
                   )}
                 </FormItem>
               </Col>
-              </Row>
-              <Row>
-                <Col span={12}> 
-                  <FormItem
-                    {...formItemLayoutLine}
-                    label="申购数量"
-                  >
-                    {getFieldDecorator('amount',{
-                      initialValue:fillBackData.amount||'',
-                      rules:[{required:true,message:'请填写申购数量'},{validator:validAmount}]
-                    })(
-                      <Input />
-                    )}
-                  </FormItem>
-                </Col>
-                <Col span={12}> 
-                  <FormItem
-                    {...formItemLayoutLine2}
-                    label="预算单价"
-                  >
-                    {getFieldDecorator('budgetPrice',{
-                      initialValue:fillBackData.budgetPrice||'',
-                      rules:[{required:true,message:'请选择预算单价'},{validator: validMoney}]
-                    })(
-                      <Input />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={12}> 
-                  <FormItem
-                    {...formItemLayoutLine}
-                    label="经费来源"
-                  >
-                    {getFieldDecorator('fundsSource',{
-                      initialValue:fillBackData.fundsSource||'',
-                      rules:[{required:true,message:'请填写经费来源'}]
-                    })(
-                      <Select>
-                      {
-                        fundsSourceSelect.map((item)=>(<Option key={item.value} value={item.value}>{item.text}</Option>))
-                      }
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-                <Col span={12}> 
-                  <FormItem
-                    {...formItemLayoutLine2}
-                    label="预算总金额"
-                  >
-                    {getFieldDecorator('totalBudgetPrice',{
-                      initialValue:fillBackData.totalBudgetPrice||'',
-                      rules:[{validator:validMoney}]
-                    })(
-                      <Input />
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-            <FormItem
-              {...formItemLayout}
-              label="产品名称"
-              >
-              {getFieldDecorator('materialName',{
-                initialValue:fillBackData.materialName||'',
-                rules:[{required:true,message:'请选择产品名称'}]
-              })(
-                <Input/>
-              )}
-            </FormItem>
+            </Row>
+            <Row>
+              <Col span={12}> 
+                <FormItem
+                  {...formItemLayoutLine}
+                  label="申购数量"
+                >
+                  {getFieldDecorator('amount',{
+                    initialValue:fillBackData.amount||'',
+                    rules:[{required:true,message:'请填写申购数量'},{validator:validAmount}]
+                  })(
+                    <Input />
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={12}> 
+                <FormItem
+                  {...formItemLayoutLine2}
+                  label="预算总金额"
+                >
+                  {getFieldDecorator('totalBudgetPrice',{
+                    initialValue:fillBackData.totalBudgetPrice||'',
+                    rules:[{validator:validMoney}]
+                  })(
+                    <Input />
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}> 
+                <FormItem
+                  {...formItemLayoutLine}
+                  label="经费来源"
+                >
+                  {getFieldDecorator('fundsSource',{
+                    initialValue:fillBackData.fundsSource||'',
+                  })(
+                    <Select>
+                    {
+                      fundsSourceSelect.map((item)=>(<Option key={item.value} value={item.value}>{item.text}</Option>))
+                    }
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
 
-            <FormItem
-              {...formItemLayout}
-              label="推荐型号"
-              >
-              {getFieldDecorator('recommendFmodel',{
-                initialValue:fillBackData.recommendFmodel||'',
-              })(
-                <Input.TextArea rows={5} maxLength={200}>
-                </Input.TextArea>
-              )}
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="推荐厂商"
-              >
-              {getFieldDecorator('recommendProduct',{
-                initialValue:fillBackData.recommendProduct||'',
-              })(
-                <Input.TextArea rows={5} maxLength={200}>
-                </Input.TextArea>
-              )}
-            </FormItem>
+            {/* 动态表单 */}
+            {this.getTmp()}
+            {
+              keys&&keys.length>=8?null:
+              (
+                <Row style={{textAlign: 'center',padding: 12}}>
+                <Button  onClick={this.add}> <Icon type="plus" theme="outlined"/>增加推荐产品</Button>
+              </Row>  
+              )
+            }
             <FormItem
               {...formItemLayout}
               label="申购理由"
