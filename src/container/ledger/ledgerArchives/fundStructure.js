@@ -168,7 +168,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`originalValue['01']`,{
                       initialValue: this.getBackData('01','originalValue')
                     })(
-                        <Input/>
+                        <Input type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="自筹资金原值">{this.getBackData('01','originalValue')}</ShowDomInfo>
@@ -181,7 +181,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`originalValue['02']`,{
                       initialValue: this.getBackData('02','originalValue')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="财政拨款原值">{this.getBackData('02','originalValue')}</ShowDomInfo>
@@ -194,7 +194,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`originalValue['03']`,{
                       initialValue: this.getBackData('03','originalValue')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="科研经费原值">{this.getBackData('03','originalValue')}</ShowDomInfo>
@@ -208,7 +208,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`totalDepreciationPrice['01']`,{
                       initialValue:  this.getBackData('01','totalDepreciationPrice')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="自筹资金累计折旧">{ this.getBackData('01','totalDepreciationPrice')}</ShowDomInfo>
@@ -221,7 +221,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`totalDepreciationPrice['02']`,{
                       initialValue: this.getBackData('02','totalDepreciationPrice')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="财政拨款累计折旧">{this.getBackData('02','totalDepreciationPrice')}</ShowDomInfo>
@@ -234,7 +234,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`totalDepreciationPrice['03']`,{
                       initialValue: this.getBackData('03','totalDepreciationPrice')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="科研经费累计折旧">{ this.getBackData('03','totalDepreciationPrice')}</ShowDomInfo>
@@ -247,7 +247,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`originalValue['04']`,{
                       initialValue: this.getBackData('04','originalValue')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="教学资金原值">{this.getBackData('04','originalValue')}</ShowDomInfo>
@@ -260,7 +260,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`originalValue['05']`,{
                       initialValue: this.getBackData('05','originalValue')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="接受捐赠原值">{this.getBackData('05','originalValue')}</ShowDomInfo>
@@ -273,7 +273,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`originalValue['06']`,{
                       initialValue: this.getBackData('06','originalValue')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="其他原值">{this.getBackData('06','originalValue')}</ShowDomInfo>
@@ -286,7 +286,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`totalDepreciationPrice['04']`,{
                       initialValue: this.getBackData('04','totalDepreciationPrice')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="教学资金累计折旧">{ this.getBackData('04','totalDepreciationPrice')}</ShowDomInfo>
@@ -299,7 +299,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`totalDepreciationPrice['05']`,{
                       initialValue: this.getBackData('05','totalDepreciationPrice')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="接收捐赠累计折旧">{ this.getBackData('05','totalDepreciationPrice')}</ShowDomInfo>
@@ -312,7 +312,7 @@ class FundStructure extends Component {
                     {getFieldDecorator(`totalDepreciationPrice['06']`,{
                       initialValue: this.getBackData('06','totalDepreciationPrice')
                     })(
-                        <Input/>
+                        <Input  type='number'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="其他累计折旧">{ this.getBackData('06','totalDepreciationPrice')}</ShowDomInfo>

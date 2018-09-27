@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import { Row , Col , message , Card , Button, Input ,Icon , Form , Select , DatePicker , Modal} from 'antd';
 import request from '../../../utils/request';
+import { clearNull } from '../../../utils/tools';
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../service';
@@ -353,7 +354,7 @@ class AssetInfo extends Component {
         }
         console.log('整体编辑或保存', values);
         request(assets.insertAssetsRecord,{
-          body:JSON.stringify({assetsRecord:values,equipmentPayList:[]}),
+          body:JSON.stringify({assetsRecord:clearNull(values),equipmentPayList:[]}),
           headers: {
             'Content-Type': 'application/json'
           },
@@ -583,7 +584,17 @@ class AssetInfo extends Component {
               }
             </Col>   
             <Col span={8}>
-              <ShowDomInfo name="购买金额">{AssetInfoData.buyPrice}</ShowDomInfo>
+              {
+                editable? 
+                  <FormItem label={`购买金额`} {...formItemLayout}>
+                    {getFieldDecorator(`buyPrice`,{
+                      initialValue: AssetInfoData.buyPrice
+                    })(
+                      <Input type='number'/>
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="购买金额">{AssetInfoData.buyPrice}</ShowDomInfo>
+              }
             </Col>
             <Col span={8}>
               {
@@ -702,7 +713,7 @@ class AssetInfo extends Component {
                     {getFieldDecorator(`rentingPrice`,{
                       initialValue: AssetInfoData.rentingPrice
                     })(
-                        <Input addonAfter='元/小时'/>
+                        <Input  type='number' addonAfter='元/小时'/>
                     )}
                   </FormItem>
                   :<ShowDomInfo name="借用单价">{AssetInfoData && AssetInfoData.rentingPrice?`${AssetInfoData.rentingPrice}元/小时`:''}</ShowDomInfo>
