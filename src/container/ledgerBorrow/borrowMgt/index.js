@@ -114,51 +114,65 @@ class BorrowMgt extends Component {
         const columns = [
             {
                 title: '借用单号',
+                width:160,
                 dataIndex: 'borrowNo'
             },
             {
                 title: '资产编号',
+                width:160,
                 dataIndex: 'assetsRecord'
             },{
                 title: '资产名称',
+                width:160,
                 dataIndex: 'equipmentStandardName'
             },{
                 title: '借用人',
+                width:120,
                 dataIndex: 'borrowUserName'
             },{
                 title: '借用科室',
+                width:120,
                 dataIndex: 'deptName'
             },{
                 title: '借用时间',
+                width:200,
                 dataIndex: 'createTime',
-                sorter: (a, b) => this.sortTime(a, b, 'createTime'),
+                sorter: true,
             },{
                 title: '预计归还时间',
+                width:200,
                 dataIndex: 'estimateBack',
-                sorter: (a, b) => this.sortTime(a, b, 'estimateBack'),
+                sorter: true,
             },{
                 title: '实际归还时间',
+                width:200,
                 dataIndex: 'actualBack',
-                sorter: (a, b) => this.sortTime(a, b, 'actualBack'),
+                sorter: true,
             },{
                 title: '借用原因',
+                width:200,
                 dataIndex: 'borrowCause'
             },{
                 title: '费用',
-                dataIndex: 'cost'
+                width:150,
+                dataIndex: 'cost',
+                render:(text)=>text?Number(text).toFixed(2):text
             },{
                 title: '备注',
+                width:120,
                 dataIndex: 'remark'
             },{
                 title: '操作员',
+                width:200,
                 dataIndex: 'createUserId'
             },{
                 title: '单据状态',
+                width:120,
                 dataIndex: 'borrowFstate',
                 render: (text) => {
                     return <span>{text === "00"? "已借出" : "已归还"}</span>
                 }
-            },
+            }
         ];
         return (
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
