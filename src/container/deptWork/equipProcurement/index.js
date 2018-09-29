@@ -166,11 +166,6 @@ class EquipProcurement extends Component {
         render:(text)=>text?equipProcurementStatus[text]:''
       },
       {
-        title: '产品名称',
-        dataIndex: 'materialName',
-        width:100
-      },
-      {
         title: '申请人',
         dataIndex: 'applyUserId',
         width:100,

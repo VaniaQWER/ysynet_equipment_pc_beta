@@ -31,13 +31,13 @@ const formItemLayout = {
 class BorrowApply extends PureComponent {
 
   state={
-    query:{borrowType:'02'}
+    query:{borrowType:'02',menuFstate:'borrowApply'}
   }
 
   fetchTable = (data)=>{
 
-    console.log(JSON.stringify({query:{...data,borrowType:"02"}}))
-    this.refs.table.fetch({...data,borrowType:"02"})
+    console.log(JSON.stringify({query:{...data,borrowType:"02",menuFstate:'borrowApply'}}))
+    this.refs.table.fetch({...data,borrowType:"02",menuFstate:'borrowApply'})
   }
 
   render(){
@@ -129,7 +129,7 @@ class BorrowApply extends PureComponent {
         </Row>  
         <RemoteTable
           ref="table"
-          query={query?query:{borrowType:"02"}}
+          query={query?query:{borrowType:"02",menuFstate:'borrowApply'}}
           url={ledgerBorrow.BorrowRecordList}
           scroll={{x: '150%'}}
           showHeader={true}

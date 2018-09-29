@@ -158,11 +158,6 @@ class ApplyList extends Component {
         width:100
       },
       {
-        title:"产品名称",
-        dataIndex:"materialName",
-        width:100
-      },
-      {
         title:"申请科室",
         dataIndex:"deptName",
         width:100
@@ -192,11 +187,6 @@ class ApplyList extends Component {
       {
         title:"管理科室",
         dataIndex:"bDeptName",
-        width:100
-      },
-      {
-        title:"产品名称",
-        dataIndex:"materialName",
         width:100
       },
       {
@@ -299,7 +289,6 @@ class ApplyList extends Component {
                 <div className="ant-col-12">经费来源 : {baseInfo?fundsSourceStatus[baseInfo.fundsSource]:""}</div>
               </div>
               <div className="ant-row" style={style.mb}>
-                <div className="ant-col-12">产品名称 :  {baseInfo?baseInfo.materialName:""}</div>
                 <div className="ant-col-12">单位 : {baseInfo?baseInfo.purchaseName:""}</div>
               </div>
               <div className="ant-row" style={style.mb}>
@@ -309,9 +298,26 @@ class ApplyList extends Component {
               <div className="ant-row" style={style.mb}>
                 <div className="ant-col-12">预算单价 : {baseInfo?baseInfo.budgetPrice?Number(baseInfo.budgetPrice).toFixed(2):"":""}</div>
               </div>
-              <div className="ant-row" style={style.mb}>
-                <div className="ant-col-12">推荐型号 : {baseInfo?baseInfo.recommendFmodel:""}</div>
-              </div>
+              {
+                baseInfo && baseInfo.detaliList ?
+                baseInfo.detaliList.map((item,index)=>(
+                  <div key={index} style={{padding:'10px 0'}}>
+                    <div className="ant-row" style={style.mb}>
+                      <div className="ant-col-12">推荐产品 : {item.materialName}</div>
+                    </div>
+                    <div className="ant-row" style={style.mb}>
+                      <div className="ant-col-12">推荐型号 : {item.recommendFmodel}</div>
+                    </div>
+                    <div className="ant-row" style={style.mb}>
+                      <div className="ant-col-12">预算单价 : {Number(item.budgetPrice)?Number(item.budgetPrice).toFixed(2):''}</div>
+                    </div>
+                    <div className="ant-row" style={style.mb}>
+                      <div className="ant-col-12">推荐厂商 : {item.recommendProduct}</div>
+                    </div>
+                  </div>
+                ))
+                :null
+              }
               <div className="ant-row" style={style.mb}>
                 <div className="ant-col-12">推荐厂商 : {baseInfo?baseInfo.recommendProduct:""}</div>
               </div>

@@ -23,7 +23,6 @@ class BorrowHandleForm extends Component {
         display: 'none',
         mgtDeptData: [],  //管理科室保存数据
         outSelect: [],     //借出科室数据
-        useSelect:[] //借用
     }
     componentDidMount() {
         request(ledgerBorrow.selectUseDeptList, {     //借出科室
@@ -34,16 +33,6 @@ class BorrowHandleForm extends Component {
             success: (data) => {
                 let outSelect = [{text: "全部", value: ""}, ...data.result];
                 this.setState({ outSelect });
-            },
-            error: (err) => console.log(err)
-        });
-        request(ledgerBorrow.queryUserDeptListByUserId, {     //借用
-            headers:{
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            success: (data) => {
-                let useSelect = [...data.result];
-                this.setState({ useSelect });
             },
             error: (err) => console.log(err)
         });
@@ -92,7 +81,7 @@ class BorrowHandleForm extends Component {
     }
     render() {
         let {getFieldDecorator} = this.props.form;
-        let {display,  mgtDeptData , useSelect , outSelect } = this.state;// mgtDeptData,
+        let {display,  mgtDeptData , outSelect } = this.state;// mgtDeptData,
         return (
             <Form onSubmit={this.handleSearch}>
                 <Row gutter={30}>
@@ -133,7 +122,7 @@ class BorrowHandleForm extends Component {
                                     allowClear={true}  
                                     filterOption={false}
                                 >
-                                    {useSelect.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
+                                    {outSelect.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>
                             )}
                         </FormItem>

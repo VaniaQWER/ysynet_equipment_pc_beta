@@ -40,12 +40,12 @@ const sigleFormItemLayout ={
 }
 class BorrowApplyDetails extends PureComponent {
 
-
   state={
     useSelect:[],//借用科室
     outSelect:[],//借出科室
     dataSource:[],
     visible:false,
+    modalQuery:null//弹窗查询条件 - 借出科室guid
   }
 
   componentDidMount(){
@@ -94,10 +94,11 @@ class BorrowApplyDetails extends PureComponent {
             },
             success: data => {
               if(data.status){
-                debugger
                 message.success('操作成功')
                 const { history } = this.props;
                 history.push('/ledgerBorrow/borrowApply')
+             }else{
+               message.warning(data.msg)
              }
             },
             error: err => {console.log(err)}
@@ -128,12 +129,22 @@ class BorrowApplyDetails extends PureComponent {
       dataSource:retDs
     })
   }
+  //打开选择资产弹窗前
+  openAssetModal = () => {
+    this.props.form.validateFieldsAndScroll(['lendDeptGuid'],(err,values)=>{
+      if(!err){
+        this.setState({visible:true,modalQuery:values});
+      }else{
+        message.warning('请先选择借出科室！')
+      }
+    })
+  }
 
 
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { dataSource , visible , outSelect ,useSelect } = this.state;
+    const { dataSource , visible , outSelect ,useSelect ,modalQuery } = this.state;
     const columns =[
       {
         title: '序号',
@@ -263,7 +274,7 @@ class BorrowApplyDetails extends PureComponent {
         </Form>
         <h3>借用资产信息</h3>     
         <Row>
-          <Button type='primary' style={{marginBottom: 12}} onClick={()=>this.setState({visible:true})}>选择资产</Button>
+          <Button type='primary' style={{marginBottom: 12}} onClick={()=>this.openAssetModal()  }>选择资产</Button>
         </Row>   
         <Table
           rowKey='RN'
@@ -275,9 +286,16 @@ class BorrowApplyDetails extends PureComponent {
           width={980}
           onCancel={()=>this.setState({visible:false})}
           visible={visible}>
-          <SearchFormWapper ref='searchWapper' 
-          onCancel={()=>this.setState({visible:false})}
-          cb={(data)=>this.onAddDataSource(data)}></SearchFormWapper>
+          {
+            visible?
+            (
+              <SearchFormWapper ref='searchWapper' 
+              modalQuery={modalQuery}
+              onCancel={()=>this.setState({visible:false})}
+              cb={(data)=>this.onAddDataSource(data)}></SearchFormWapper>
+            )
+            :null
+          }
         </Modal>
               
       </Content>
@@ -292,7 +310,7 @@ class SearchForm extends PureComponent {
 
 
   state={
-    query:{},
+    query:this.props.modalQuery,
     selectedRowKeys:[],
     selectedRows:[],
     toggle:false

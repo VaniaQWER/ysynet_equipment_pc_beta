@@ -34,6 +34,7 @@ class BorrowHandle extends Component {
   state = {
     query: {
         borrowType:'02',
+        menuFstate:'borrowHandle',
         assetName: '',
         deptGuid: '',
         assetsRecord: '',
@@ -74,7 +75,7 @@ class BorrowHandle extends Component {
       this.setState({visible: true});
   }
   setQuery = (query) => {
-      this.setState({ query:{...query,borrowType:"02"} }, ()=>{ this.refs.table.fetch() })
+      this.setState({ query:{...query,borrowType:"02",menuFstate:'borrowHandle',} }, ()=>{ this.refs.table.fetch() })
   }
   handleOk = () => {
       this.refs.modalForm.validateFields((err, values) => {

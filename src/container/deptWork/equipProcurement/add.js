@@ -125,7 +125,9 @@ class AddEquipProcurement extends Component {
         if(this.state.editStatus){//编辑状态
           url = deptwork.updateApplyZc;
           values = Object.assign(this.state.fillBackData,values);
+          values.applyDetailZclist = values.applyDetailZclist.filter(item=>item);//动态表单
           delete values.createTime;
+          delete values.detaliList;//删除动态数据
           delete values.purchaseName;
           values.fstate="00";
           values.allowType="00";
@@ -176,7 +178,15 @@ class AddEquipProcurement extends Component {
     if (keys.length === 1) {
       return;
     }
+    let { fillBackData } = this.state;
+    if(fillBackData){ //如果在编辑状态中新增动态表单  对detaliList的K个进行删除
+      let newActionList =  fillBackData.detaliList;
+      newActionList.slice(k,1);
+      let newActionData =  Object.assign(fillBackData,{detaliList:newActionList})
+      this.setState({fillBackData:JSON.parse(JSON.stringify(newActionData))})
+    }
 
+    console.log( keys.filter(key => key !== k))
     // can use data-binding to set
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
@@ -189,6 +199,19 @@ class AddEquipProcurement extends Component {
     const keys = form.getFieldValue('keys');
     const nextKeys = keys.concat(uuid);
     uuid++;
+    let { fillBackData } = this.state;
+    if(fillBackData){ //如果在编辑状态中新增动态表单  对detaliList的K个进行初始赋值
+      let newItem = {
+        "materialName":"",
+        "budgetPrice":'',
+        "recommendProduct":"",
+        "recommendFmodel":""
+      }
+      let newActionList =  fillBackData.detaliList;
+      newActionList.push(newItem);
+      let newActionData =  Object.assign(fillBackData,{detaliList:newActionList})
+      this.setState({fillBackData:JSON.parse(JSON.stringify(newActionData))})
+    }
     // can use data-binding to set
     // important! notify form to detect changes
     form.setFieldsValue({
@@ -197,8 +220,22 @@ class AddEquipProcurement extends Component {
   }
 
   getTmp = () =>{
+    const { fillBackData } = this.state;
     const { getFieldDecorator , getFieldValue } = this.props.form;
-    getFieldDecorator('keys', { initialValue: [0] });
+    if(this.props.match.params.id){
+      const { detaliList } = this.state.fillBackData;
+      if(detaliList){
+        uuid = detaliList.length;
+        //回显编辑的时候
+        let initArr = detaliList.map((item,index)=>{return index})
+        this.props.form.getFieldDecorator('keys', { initialValue: initArr });
+        // this.props.form.getFieldDecorator('applyDetailZclist', { initialValue: detaliList });
+      }else{
+        getFieldDecorator('keys', { initialValue: [0] });
+      }
+    }else{
+      getFieldDecorator('keys', { initialValue: [0] });
+    }
     const keys = getFieldValue('keys');
     const formItems = keys.map((k, index) => {
       return (
@@ -216,6 +253,7 @@ class AddEquipProcurement extends Component {
             label="产品名称"
             >
             {getFieldDecorator(`applyDetailZclist[${k}].materialName`,{
+              initialValue:fillBackData&&fillBackData.detaliList?fillBackData.detaliList[k].materialName:'',
               rules:[{required:true,message:'请选择产品名称'}]
             })(
               <Input/>
@@ -225,7 +263,9 @@ class AddEquipProcurement extends Component {
             {...formItemLayout}
             label="推荐型号"
             >
-            {getFieldDecorator(`applyDetailZclist[${k}].recommendFmodel`)(
+            {getFieldDecorator(`applyDetailZclist[${k}].recommendFmodel`,{
+              initialValue:fillBackData&&fillBackData.detaliList?fillBackData.detaliList[k].recommendFmodel:'',
+            })(
               <Input.TextArea rows={2} maxLength={200}>
               </Input.TextArea>
             )}
@@ -235,7 +275,8 @@ class AddEquipProcurement extends Component {
             label="预算单价"
             >
             {getFieldDecorator(`applyDetailZclist[${k}].budgetPrice`,{
-              rules:[{required:true,message:'请填写预算单价'}]
+              initialValue:fillBackData&&fillBackData.detaliList?fillBackData.detaliList[k].budgetPrice:'',
+              rules:[{required:true,message:'请填写预算单价'},{validator:validMoney}]
             })(
               <Input style={{width:200}}/>
             )}
@@ -244,7 +285,9 @@ class AddEquipProcurement extends Component {
             {...formItemLayout}
             label="推荐厂商"
             >
-            {getFieldDecorator(`applyDetailZclist[${k}].recommendProduct`)(
+            {getFieldDecorator(`applyDetailZclist[${k}].recommendProduct`,{
+              initialValue:fillBackData&&fillBackData.detaliList?fillBackData.detaliList[k].recommendProduct:'',
+            })(
               <Input.TextArea rows={2} maxLength={200}>
               </Input.TextArea>
             )}
@@ -277,7 +320,7 @@ class AddEquipProcurement extends Component {
                   label="申请科室"
                 >
                   {getFieldDecorator('deptGuid',{
-                    initialValue:fillBackData.deptGuid||this.state.outDeptOptions.length>0?this.state.outDeptOptions[0].value:'',
+                    initialValue:fillBackData.deptGuid||'',//this.state.outDeptOptions.length>0?this.state.outDeptOptions[0].value:'
                     rules:[{required:true,message:'请选择申请科室'}]
                   })(
                     <Select 
