@@ -55,7 +55,7 @@ class AddEquipProcurement extends Component {
     editStatus:false,
     editStatusText:'新建设备采购申请',
     bDeptName:"",
-    fillBackData:{},//编辑的时候填充
+    fillBackData:null,//编辑的时候填充
   }
   componentDidMount = () => {
     console.log('this.props')
@@ -222,7 +222,7 @@ class AddEquipProcurement extends Component {
   getTmp = () =>{
     const { fillBackData } = this.state;
     const { getFieldDecorator , getFieldValue } = this.props.form;
-    if(this.props.match.params.id){
+    if(fillBackData&&fillBackData.detaliList){
       const { detaliList } = this.state.fillBackData;
       if(detaliList){
         uuid = detaliList.length;
@@ -320,7 +320,7 @@ class AddEquipProcurement extends Component {
                   label="申请科室"
                 >
                   {getFieldDecorator('deptGuid',{
-                    initialValue:fillBackData.deptGuid||'',//this.state.outDeptOptions.length>0?this.state.outDeptOptions[0].value:'
+                    initialValue:fillBackData?fillBackData.deptGuid:'',//this.state.outDeptOptions.length>0?this.state.outDeptOptions[0].value:'
                     rules:[{required:true,message:'请选择申请科室'}]
                   })(
                     <Select 
@@ -344,7 +344,7 @@ class AddEquipProcurement extends Component {
                   label="管理科室"
                 >
                   {getFieldDecorator('bDeptGuid',{
-                    initialValue:fillBackData.bDeptGuid|| '',
+                    initialValue:fillBackData?fillBackData.bDeptGuid:'',
                     rules:[{required:true,message:'请选择管理科室'}]
                   })(
                     <Select 
@@ -374,7 +374,7 @@ class AddEquipProcurement extends Component {
                   label="申请人"
                 >
                   {getFieldDecorator('applyUserId',{
-                    initialValue:fillBackData.applyUserId||'',
+                    initialValue:fillBackData?fillBackData.applyUserId:'',
                     rules:[{required:true,message:'请填写申请人'}]
                   })(
                     <Input />
@@ -387,7 +387,7 @@ class AddEquipProcurement extends Component {
                   label="单位"
                 >
                   {getFieldDecorator('purchaseUnit',{
-                    initialValue:fillBackData.purchaseUnit||'',
+                    initialValue:fillBackData?fillBackData.purchaseUnit:'',
                     rules:[{required:true,message:'请选择单位'}]
                   })(
                     <Select 
@@ -409,7 +409,7 @@ class AddEquipProcurement extends Component {
                   label="申购数量"
                 >
                   {getFieldDecorator('amount',{
-                    initialValue:fillBackData.amount||'',
+                    initialValue:fillBackData?fillBackData.amount:'',
                     rules:[{required:true,message:'请填写申购数量'},{validator:validAmount}]
                   })(
                     <Input />
@@ -422,7 +422,7 @@ class AddEquipProcurement extends Component {
                   label="预算总金额"
                 >
                   {getFieldDecorator('totalBudgetPrice',{
-                    initialValue:fillBackData.totalBudgetPrice||'',
+                    initialValue:fillBackData?fillBackData.totalBudgetPrice:'',
                     rules:[{validator:validMoney}]
                   })(
                     <Input />
@@ -437,7 +437,7 @@ class AddEquipProcurement extends Component {
                   label="经费来源"
                 >
                   {getFieldDecorator('fundsSource',{
-                    initialValue:fillBackData.fundsSource||'',
+                    initialValue:fillBackData?fillBackData.fundsSource:'',
                   })(
                     <Select>
                     {
@@ -464,7 +464,7 @@ class AddEquipProcurement extends Component {
               label="申购理由"
               >
               {getFieldDecorator('buyReason',{
-                initialValue:fillBackData.buyReason||'',
+                initialValue:fillBackData?fillBackData.buyReason:'',
               })(
                 <Input.TextArea rows={5} maxLength={500}>
                 </Input.TextArea>

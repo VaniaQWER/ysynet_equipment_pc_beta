@@ -152,6 +152,7 @@ class EquipProcurementDetails extends Component {
     if(bool){
       let values = this.state.baseInfo;
       console.log(JSON.stringify(values))
+      delete values.detaliList;//删除产品数据
       values.fstate="10";
       this.sendAjax(values);
     }else{
@@ -159,6 +160,7 @@ class EquipProcurementDetails extends Component {
         if(!err){
           let values = Object.assign(this.state.baseInfo,value);
           console.log(JSON.stringify(values))
+          delete values.detaliList;//删除产品数据
           values.fstate="10";
           values.userName=this.state.userName;
           this.sendAjax(values)
@@ -174,7 +176,7 @@ class EquipProcurementDetails extends Component {
       },
       success: data => {
         if(data.status){
-          message.warn('提交成功！');
+          message.success('提交成功！');
           const {history} = this.props;
           history.push('/deptWork/equipProcurement')
         }else{

@@ -10,7 +10,6 @@ import ledgerBorrow from '../../../api/ledgerBorrow';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import Style from './style.css';
-import {Link} from 'react-router-dom';
 import _ from 'lodash';
 import moment from 'moment';
 const { RemoteTable } = TableGrid;
@@ -123,8 +122,9 @@ class BorrowApplyDetails extends PureComponent {
 
   //删除
   deleteDSource  = (index)=> {
-    const { dataSource } = this.state;
-    let retDs = dataSource.slice(index,1);
+    let { dataSource } = this.state;
+    let retDs = [].concat(dataSource);
+    retDs.splice(index,1)
     this.setState({
       dataSource:retDs
     })
@@ -164,10 +164,10 @@ class BorrowApplyDetails extends PureComponent {
         dataIndex: 'spec',
       },{
         title: '管理科室',
-        dataIndex: 'mDeptName',
+        dataIndex: 'bDeptName',
       },{
         title: '租赁单价',
-        dataIndex: 'cost',
+        dataIndex: 'rentingPrice',
         render:(text)=>text?Number(text)?Number(text).toFixed(2):text:text
       },{
         title: '操作',
@@ -341,11 +341,10 @@ class SearchForm extends PureComponent {
       console.log(values)
       if(!err){
         console.log(values)
-        this.refs.table.fetch(values)
+        this.refs.table.fetch({...values,...this.props.modalQuery})
       }
     })
   }
-
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -365,18 +364,11 @@ class SearchForm extends PureComponent {
           dataIndex: 'spec'
       },{
           title: '管理科室',
-          dataIndex: 'borrowCause'
+          dataIndex: 'bDeptName'
       },{
           title: '租赁单价',
-          dataIndex: 'cost',
+          dataIndex: 'rentingPrice',
           render:(text)=>text?Number(text).toFixed(2):text
-      },{
-        title:'操作',
-        dataIndex:'action',
-        render:(text,record)=>{
-          //待审核 驳回借出 则显示以下
-          return (<Link to={{pathname:`/ledgerBorrow/borrowApply/details/${record.RN}`}}>编辑</Link>)
-        }
       }
     ];
     return(
