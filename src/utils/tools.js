@@ -262,3 +262,32 @@ export const validMonth = (rule, value, callback,source,options) => {
       callback(new Error('请输入非0正数！'));
   }
 }
+
+
+/**
+ * json obj 比较
+ * @param {*} obj1 
+ * @param {*} obj2 
+ * @param {*} except 不比较项
+ */
+export const objCompare = (obj1, obj2) => {
+  if (typeof obj1 !== 'object' || obj1 === null) {
+    return false;
+  }
+  if (typeof obj2 !== 'object' || obj2 === null) {
+    return false;
+  }
+  // get all key
+  var aProps = Object.getOwnPropertyNames(obj1);  
+  var bProps = Object.getOwnPropertyNames(obj2);
+  if (aProps.length !== bProps.length) {  
+    return false;  
+  }  
+  for (let i = 0; i < aProps.length; i++) {  
+    let propName = aProps[i];  
+    if ((obj1[propName] !== obj2[propName])) {  
+      return false;  
+    }  
+  }  
+  return true;
+}

@@ -13,7 +13,8 @@ const setSearchMapper = (path, condition) => ({
 
 // 清除查询参数
 const clearSearchMapper = (path, condition) => ({
-  type: CLEAR_SEARCH_MAPPER
+  type: CLEAR_SEARCH_MAPPER,
+  path, condition
 })
 
 export const setSearch = (path, value) => (
@@ -22,8 +23,8 @@ export const setSearch = (path, value) => (
   )
 )
 
-export const clearSearch = () => (
+export const clearSearch = (path, value) => (
   dispatch => dispatch(
-    clearSearchMapper()
+    clearSearchMapper(path, value)
   )
 )

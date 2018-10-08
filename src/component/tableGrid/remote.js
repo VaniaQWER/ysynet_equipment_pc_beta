@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, message } from 'antd';
 import querystring from 'querystring';
 import request from '../../utils/request'
-import {sortUpByKey , sortDownByKey } from '../../utils/tools';
+import {sortUpByKey , sortDownByKey , objCompare} from '../../utils/tools';
 class RemoteTable extends Component {
   constructor(props) {
     super(props)
@@ -14,7 +14,18 @@ class RemoteTable extends Component {
       searchParams: {}
     }
   }
+  componentWillReceiveProps = (nextProps) => {
+    if ((nextProps.url !== this.props.url) || 
+      (typeof nextProps.query === 'string' ? nextProps.query !== this.props.query : !objCompare(nextProps.query, this.props.query))) {
+        this.fetch(nextProps.query, nextProps.url)
+    };
+    if(typeof this.props.cb !== typeof nextProps.cb && typeof nextProps.cb === 'function') {
+      nextProps.cb(this.state.data);
+    };
+  }
+
   handleTableChange = (pagination, filters, sorter) => {
+    const { onChange } = this.props;
     const pager = this.state.pagination;
     pager.pageSize = pagination.pageSize;
     pager.current = pagination.current;
@@ -22,17 +33,23 @@ class RemoteTable extends Component {
       pagination: pager,
     });
     const postData = Object.assign({}, this.state.searchParams, {
-      results: pagination.pagesize,
+      pageSize: pagination.pagesize,
       page: pagination.current,
       sortField: sorter.field,
       sortOrder: sorter.order,
       ...filters
     })
     this.fetch(postData);
+    if(onChange && typeof onChange === 'function'){
+      postData.current=pagination.current;
+      onChange({...postData})
+    }
   }
   fetch = (params = {...this.props.query}, url = this.props.url,catchData={...this.props.catchData}) => {
     this.setState({ loading: true, searchParams: params });
     if(url){
+      delete params['current']
+      delete params['toggle']
       let pagination = this.state.pagination;
       const body = querystring.stringify({
         pagesize: pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || this.defaultPageSize ),
@@ -56,8 +73,10 @@ class RemoteTable extends Component {
           pagination.pageSize = pagination.pageSize ?  pagination.pageSize : ( this.props.pagesize || this.defaultPageSize );
           if(!params.page) {
             pagination.current = 1;
+          }else{
+            pagination.current = params.page;
           }
-
+          
           if(data.result.rows && this.props.subrowKey){
             data.result.rows.forEach(element => {
               if(element.children){
@@ -73,7 +92,7 @@ class RemoteTable extends Component {
             data: data.result.rows || data.result,
             pagination
           });
-          if(this.props.callback){//获取请求回来的数据
+          if(typeof this.props.callback ==='function'){//获取请求回来的数据
             this.props.callback(data)
           }
           if(this.props.sortByTime){//根据时间排序

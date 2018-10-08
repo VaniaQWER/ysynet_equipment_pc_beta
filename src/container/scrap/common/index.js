@@ -19,7 +19,7 @@ const getStatus = text => {
       return { text: '待鉴定', value: 'warning'}
   }
 }
-export const scrapColumns = [
+export let scrapColumns = [
   { title: '报废单号', width: 200, dataIndex: 'scrapNo' },
   { title: '单据状态', width: 100, dataIndex: 'fstate', 
   filters: checkStateSel,

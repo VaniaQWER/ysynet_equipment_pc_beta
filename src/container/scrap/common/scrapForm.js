@@ -36,13 +36,22 @@ class ScrapForm extends PureComponent {
       query: {}
     }
   }
+  /* 过滤redux中不需要的数据 */
   async componentDidMount() {
     const { search, form, history } = this.props;
     const pathname = history.location.pathname;
+    console.log('this.props',this.props)
+    console.log('search',search)
     if (search[pathname]) {
-      form.setFieldsValue({
-        ...search[pathname]
-      })
+      //找出表单的name 然后set
+      let values = form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      let value = {};
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      form.setFieldsValue(value)
     }
     const data = await queryScrapList();
     if (data.status) {
@@ -51,12 +60,12 @@ class ScrapForm extends PureComponent {
       })
     }
   }
-  
   /** 查询方法  并往redux中插入查询参数 */
   onSubmit = e => {
     e.preventDefault();
-    const { form, setSearch, history } = this.props;
+    const { form, setSearch, history ,search } = this.props;
     form.validateFieldsAndScroll((err, values) => {
+      values = Object.assign({...values},{...search[history.location.pathname]})
       setSearch(history.location.pathname, values);
       const postData = {
         equipmentStandardName: values.equipmentStandardName,
@@ -73,12 +82,46 @@ class ScrapForm extends PureComponent {
       })
     });
   }
+  /* 重置时清空redux */
+  handleReset = ()=>{
+    this.props.form.resetFields();
+    const { clearSearch , history ,search} = this.props;
+    const pathname = history.location.pathname;
+    let setToggleSearch = {};
+    if(search[pathname]){
+      setToggleSearch = { toggle:search[pathname].toggle};
+    }else{
+      setToggleSearch = { toggle: false };
+    }
+    clearSearch(pathname,setToggleSearch);
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
+  }
+  /* 记录展开状态 */
+  changeQueryToggle = () =>{
+    const { search , setSearch , history} = this.props;
+    const pathname = history.location.pathname;
+    let hasToggleSearch = {};
+    if(search[pathname]){
+        hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+    }else{
+        hasToggleSearch = { toggle: true };
+    }
+    setSearch(pathname,hasToggleSearch)
+  }
   
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { isShow, deptOption } = this.state;
-    const { columns, defaultParams, search, history } = this.props; 
+    const { deptOption } = this.state;
+    let { columns, defaultParams, search, history } = this.props; 
     const pathname = history.location.pathname;
+    const isShow = search[pathname] ? search[pathname].toggle:false;
+    columns[2].filteredValue = search[pathname]&&search[pathname].fstate&&search[pathname].fstate.length?search[pathname].fstate:null;
+    console.log(columns)
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
         <Form style={{padding: 8, background: '#fff'}} onSubmit={this.onSubmit}>
@@ -100,13 +143,9 @@ class ScrapForm extends PureComponent {
             <Col span={8}>
               <Button type='primary' htmlType='submit'>查询</Button>
               <Button style={{marginLeft: 5, marginRight: 25}}
-                onClick={() => this.props.form.resetFields()}
+                onClick={() => this.handleReset()}
               >重置</Button>
-              <a style={{userSelect: 'none'}} onClick={() => {
-                this.setState({
-                  isShow: !isShow
-                })
-              }}><Icon type={isShow ? 'up' : 'down'}/> { isShow ? '收起' : '展开' } </a>
+              <a style={{userSelect: 'none'}} onClick={() => this.changeQueryToggle()}><Icon type={isShow ? 'up' : 'down'}/> { isShow ? '收起' : '展开' } </a>
             </Col>
           </Row>
           <Row style={{display: isShow ? 'block' : 'none'}}>  
@@ -148,6 +187,7 @@ class ScrapForm extends PureComponent {
         </Form>
         <Row style={{padding: 8, background: '#fff', marginTop: 4}}>
           <RemoteTable
+            onChange={this.changeQueryTable}
             query={{...search[pathname]}}  
             url={this.props.defaultParams ? `${scrapListUrl}?${defaultParams}` : scrapListUrl}
             columns={columns}
@@ -163,5 +203,6 @@ class ScrapForm extends PureComponent {
   }
 }
 export default withRouter(connect(state => state, dispatch => ({
-  setSearch: (key, value) => dispatch(search.setSearch(key, value))
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
 }))(Form.create()(ScrapForm)));

@@ -10,7 +10,15 @@ const search = (state = initialState , action) => {
         }
       }
     case 'CLEAR_SEARCH_MAPPER':
-      return {}  
+      if(action.path || action.condition){
+        return {
+          [action.path]: {
+            ...action.condition
+          }
+        } 
+      }else{
+        return {}
+      }
     default:
       return state
   }
