@@ -672,12 +672,9 @@ class LedgerArchivesList extends Component {
     const { history, search } = this.props;
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
-    if(search[pathname]&&search[pathname].useFstate&&search[pathname].useFstate.length){
+    if(search[pathname]&&search[pathname].useFstate){
       columns[2].filteredValue = search[pathname].useFstate;
-    }else{
-      columns[2].filteredValue = null;
     }
-    //ref='form'
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
