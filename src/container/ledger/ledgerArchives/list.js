@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Row,Col,DatePicker,Input,Icon, Layout,Upload,Button,Table,Tag,message,Radio,Menu,Dropdown,Alert, Form,Select, Modal,Progress} from 'antd';
 import TableGrid from '../../../component/tableGrid';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import { Link } from 'react-router-dom'
 import assets from '../../../api/assets';
 import styles from './style.css';
@@ -14,7 +17,7 @@ const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RemoteTable } = TableGrid;
-const columns = [
+let columns = [
   {
     title: '操作',
     dataIndex: 'RN',
@@ -88,7 +91,7 @@ const formItemLayout = {
 class SearchForm extends Component {
 
   state={
-    display: 'none',
+    display: this.props.isShow?'block':'none',
     manageSelect:[],
     outDeptOptions: []
   }
@@ -132,6 +135,7 @@ class SearchForm extends Component {
 
   toggle = () => {
     const { display, expand } = this.state;
+    this.props.changeQueryToggle()
     this.setState({
       display: display === 'none' ? 'block' : 'none',
       expand: !expand
@@ -152,10 +156,12 @@ class SearchForm extends Component {
   handleReset = () => {
     this.props.form.resetFields();
     this.props.query({});
+    this.props.handleReset();
   }
   render(){
     const { getFieldDecorator } = this.props.form;
     const { display } = this.state;
+    console.log(this.props);
     return (
       <Form  onSubmit={this.handleSearch}>
         <Row>
@@ -283,7 +289,43 @@ class SearchForm extends Component {
     )
   }
 }
-const SearchFormWapper = Form.create()(SearchForm);
+const SearchFormWapper = Form.create()(SearchForm); 
+
+/* const SearchFormWapper = withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(Form.create(
+  // 即时保存form表单中的值到redux中去 - 但使用refs将获取不到form.create的原生方法
+  {
+    onFieldsChange(props, changedFields) {
+      // const { history, search, setSearch } = props;
+      // const pathname = history.location.pathname;
+      // setSearch(pathname,values)
+      // props.onChange(changedFields);
+    },
+    mapPropsToFields(props) {
+      const { history, search } = props;
+      const pathname = history.location.pathname;
+      let a = {...search[pathname]};
+      if(search[pathname]){
+        for( let item in a  ){
+          let base = a[item];
+          a[item]=Form.createFormField({
+            "value": base,
+          })
+        }
+      }
+      console.log(a)
+      return a
+    },
+    onValuesChange(_, value) {
+      const { history, search, setSearch } = _;
+      const pathname = history.location.pathname;
+      let values = Object.assign({...search[pathname]},value);
+      setSearch(pathname,values)
+    },
+  }
+)(SearchForm))); */
 
 const importModalColumns =[
   {
@@ -485,25 +527,50 @@ const accessoriesModalColumns = [
 class LedgerArchivesList extends Component {
   constructor(props) {
     super(props);
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
     this.state = {
       loading: false,
       showProgress:false,//导入模态框的
       importModalType:"01",//导入模态框选择的导入类型
       progressPercent:0,
       importDataSource:[],//导入数据的table数据
-      query:{},//"deptType":"MANAGEMENT"
+      query:{...search[pathname]},//"deptType":"MANAGEMENT"
       messageError:"",
       selectedRowKeys:[],
       tableRecords:0
     }
   }
+  /* 回显返回条件 */
+  async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      let value = {};
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
+  /* 查询时向redux中插入查询参数 */
   query = (val) => {
+    const { setSearch, history ,search } = this.props;
+    const pathname = history.location.pathname;
+    let values = Object.assign({...val},{...search[pathname]})
+    setSearch(pathname, values);
     this.refs.table.fetch(val)
   }
   //打印所有
   printAll = () =>{
     if(this.state.tableRecords<=100){
-      let v = this.refs.form.getFieldsValue();
+      let v = this.form.props.form.getFieldsValue();
       window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(v))
       this.setState({selectedRowKeys:[]})
     }else{
@@ -521,7 +588,6 @@ class LedgerArchivesList extends Component {
       message.warn('请选择相关资产信息打印')
     }
   }
-
   sendPrintAjax = (json) => {
     Confirm({
       title:'您是否需要打印资产配件的标签?',
@@ -539,7 +605,7 @@ class LedgerArchivesList extends Component {
   }
   //导出资产
   exportAssets = () => {
-    let json = this.refs.form.getFieldsValue();
+    let json = this.form.props.form.getFieldsValue();
     window.open(assets.exportApplyList+'?'+queryString.stringify(json))
   }
   //保存
@@ -568,12 +634,62 @@ class LedgerArchivesList extends Component {
       message.warn('请先导入模板！')
     }
   }
+
+  /* 重置时清空redux */
+  handleReset = ()=>{
+    this.form.props.form.resetFields();
+    const { clearSearch , history ,search} = this.props;
+    const pathname = history.location.pathname;
+    let setToggleSearch = {};
+    if(search[pathname]){
+      setToggleSearch = { toggle:search[pathname].toggle};
+    }else{
+      setToggleSearch = { toggle: false };
+    }
+    clearSearch(pathname,setToggleSearch);
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
+  }
+  /* 记录展开状态 */
+  changeQueryToggle = () =>{
+    const { search , setSearch , history} = this.props;
+    const pathname = history.location.pathname;
+    let hasToggleSearch = {};
+    if(search[pathname]){
+        hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+    }else{
+        hasToggleSearch = { toggle: true };
+    }
+    setSearch(pathname,hasToggleSearch)
+  }
+
   render() {
     const { selectedRowKeys , importDataSource } = this.state;
+    const { history, search } = this.props;
+    const pathname = history.location.pathname;
+    const isShow = search[pathname] ? search[pathname].toggle:false;
+    if(search[pathname]&&search[pathname].useFstate&&search[pathname].useFstate.length){
+      columns[2].filteredValue = search[pathname].useFstate;
+    }else{
+      columns[2].filteredValue = null;
+    }
+    //ref='form'
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
-          <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
+          <SearchFormWapper
+            query={query=>{this.query(query)}} 
+            handleReset={()=>this.handleReset()}
+            changeQueryToggle={()=>this.changeQueryToggle()}
+            isShow={isShow}
+            // ref='form'
+            wrappedComponentRef={(form) => this.form = form}
+          />
+
           <Row style={{marginTop : 10}}>
             <Col span={12}></Col>
             <Col span={8} className={styles['text-align-right']}>
@@ -596,6 +712,7 @@ class LedgerArchivesList extends Component {
             </Col>
           </Row>
           <RemoteTable
+            onChange={this.changeQueryTable}
             loading={ this.state.loading}
             ref='table'
             query={this.state.query}
@@ -612,11 +729,9 @@ class LedgerArchivesList extends Component {
                 this.setState({selectedRowKeys})
               }
             }}
-            callback={
-              (data)=>{
-                this.setState({tableRecords:data.result.records})
-              }
-            }
+            callback={(data)=>{
+              this.setState({tableRecords:data.result.records})
+            }}
           />
           <Modal
             title='导入数据'
@@ -713,10 +828,11 @@ class LedgerArchivesList extends Component {
             </Table>
 
           </Modal>
-
-
         </Content>
     )
   }
 }
-export default LedgerArchivesList;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(LedgerArchivesList));

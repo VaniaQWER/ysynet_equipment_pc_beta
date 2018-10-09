@@ -6,6 +6,9 @@
 import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,Modal} from 'antd';
 import TableGrid from '../../../component/tableGrid';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import { Link } from 'react-router-dom';
 import ledger from '../../../api/ledger';
 import request from '../../../utils/request';
@@ -60,10 +63,6 @@ class SearchForm extends Component {
     this.props.form.validateFields((err, values) => {
       this.props.query(values);
     });
-  }
-  handleReset = () => {
-    this.props.form.resetFields();
-    this.props.query({});
   }
   filterOption = (input, option) => {
     if(option.props.children){
@@ -134,11 +133,44 @@ const SearchFormWapper = Form.create()(SearchForm);
 
 class Contract extends Component {
   
-  state={
-    query:{}
+  constructor(props) {
+    super(props);
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    this.state = {
+      query:{...search[pathname]},
+    }
   }
+  /* 回显返回条件 */
+  async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      let value = {};
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
+  /* 查询时向redux中插入查询参数 */
   searchTable = (val) => {
+    const { setSearch, history ,search } = this.props;
+    const pathname = history.location.pathname;
+    let values = Object.assign({...search[pathname]},{...val})
+    setSearch(pathname, values);
     this.refs.table.fetch(val)
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
   }
   //删除合同
   deleteRow = (record) =>{
@@ -226,10 +258,13 @@ class Contract extends Component {
                 <Link to={{pathname:`/ledger/contract/add`}} style={{color:'#fff'}}> 新建</Link>
               </Button>
             </Col>
-            <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
+            <SearchFormWapper 
+            query={(val)=>this.searchTable(val)} 
+            wrappedComponentRef={(form) => this.form = form}></SearchFormWapper>
         </Row>
         <RemoteTable
             ref='table'
+            onChange={this.changeQueryTable}
             query={this.state.query}
             url={ledger.queryContractList}
             scroll={{x: '100%', y : document.body.clientHeight - 311}}
@@ -244,4 +279,8 @@ class Contract extends Component {
     )
   }
 }
-export default Contract;
+
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(Contract));
