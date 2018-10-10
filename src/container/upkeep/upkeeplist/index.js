@@ -7,6 +7,9 @@ import React from 'react';
 import { Row, Col, Input, Button , Form , Icon , DatePicker , Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import { upkeepState , upkeepMainTainType ,upkeepStateSel } from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
@@ -31,7 +34,7 @@ const formItemLayout = {
     sm: { span: 16 },
   },
 };
-const columns=[
+let columns=[
   { title: '操作', 
   dataIndex: 'maintainGuid', 
   key: 'x', 
@@ -39,8 +42,8 @@ const columns=[
   render: (text,record) =>
     <span>
       { (record.fstate==="00") ? 
-        <span><Link to={{pathname:`/upkeep/UpKeepDetail/finish/${record.maintainGuid}`}}>完成</Link></span>
-        :<span><Link to={{pathname:`/upkeep/UpKeepDetail/details/${record.maintainGuid}`}}>详情</Link></span>
+        <span><Link to={{pathname:`/upkeep/upkeeplist/finish/${record.maintainGuid}`}}>完成</Link></span>
+        :<span><Link to={{pathname:`/upkeep/upkeeplist/details/${record.maintainGuid}`}}>详情</Link></span>
       }
     </span>
   },
@@ -147,10 +150,11 @@ const columns=[
 
 class SearchFormWrapper extends React.Component {
   state = {
-    display: 'none',
+    display: this.props.isShow?'block':'none',
   }
   toggle = () => {
     const { display, expand } = this.state;
+    this.props.changeQueryToggle()
     this.setState({
       display: display === 'none' ? 'block' : 'none',
       expand: !expand
@@ -181,6 +185,7 @@ class SearchFormWrapper extends React.Component {
   //重置
   handleReset = () => {
     this.props.form.resetFields();
+    this.props.handleReset();
     this.props.query({});
   }
 
@@ -261,22 +266,104 @@ const SearchForm = Form.create()(SearchFormWrapper);
 
 class UpKeepList extends React.Component{
 
-    state = {
-      query:'',
-    };
+    constructor(props) {
+      super(props);
+      /* 设置redux前置搜索条件 */
+      const { search, history } = this.props;
+      const pathname = history.location.pathname;
+      this.state = {
+        query:search[pathname]?{...search[pathname]}:''
+      }
+    }
+    /* 回显返回条件 */
+    async componentDidMount () {
+      const { search, history } = this.props;
+      const pathname = history.location.pathname;
+      console.log(search[pathname])
+      if (search[pathname]) {
+        //找出表单的name 然后set
+        let value = {};
+        let values = this.form.props.form.getFieldsValue();
+        values = Object.getOwnPropertyNames(values);
+        values.map(keyItem => {
+          value[keyItem] = search[pathname][keyItem];
+          return keyItem;
+        });
+        if(search[pathname].startPlanTime&&search[pathname].endPlanTime){
+          value.PlanTime=[moment(search[pathname].startPlanTime,'YYYY-MM-DD'),moment(search[pathname].endPlanTime,'YYYY-MM-DD')]
+        }
+        if(search[pathname].startUpkeepTime&&search[pathname].endUpkeepTime){
+          value.UpkeepTime=[moment(search[pathname].startUpkeepTime,'YYYY-MM-DD'),moment(search[pathname].endUpkeepTime,'YYYY-MM-DD')]
+        }
+        if(search[pathname].startUpkeepEndTime&&search[pathname].endUpkeepEndTime){
+          value.UpkeepEndTime=[moment(search[pathname].startUpkeepEndTime,'YYYY-MM-DD'),moment(search[pathname].endUpkeepEndTime,'YYYY-MM-DD')]
+        }
+        this.form.props.form.setFieldsValue(value)
+      }
+    }
+    /* 查询时向redux中插入查询参数 */
     queryHandler = (query) => {
-      debugger
+      const { setSearch, history ,search } = this.props;
+      const pathname = history.location.pathname;
+      let values = Object.assign({...query},{...search[pathname]},)
+      setSearch(pathname, values);
       this.refs.table.fetch(query);
       this.setState({ query })
+    }
+    /* 重置时清空redux */
+    handleReset = ()=>{
+      this.form.props.form.resetFields();
+      const { clearSearch , history ,search} = this.props;
+      const pathname = history.location.pathname;
+      let setToggleSearch = {};
+      if(search[pathname]){
+        setToggleSearch = { toggle:search[pathname].toggle};
+      }else{
+        setToggleSearch = { toggle: false };
+      }
+      clearSearch(pathname,setToggleSearch);
+    }
+    /* 记录table过滤以及分页数据 */
+    changeQueryTable = (values) =>{
+      const { setSearch, history ,search} = this.props;
+      values = Object.assign({...search[history.location.pathname]},{...values})
+      setSearch(history.location.pathname, values);
+    }
+    /* 记录展开状态 */
+    changeQueryToggle = () =>{
+      const { search , setSearch , history} = this.props;
+      const pathname = history.location.pathname;
+      let hasToggleSearch = {};
+      if(search[pathname]){
+          hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+      }else{
+          hasToggleSearch = { toggle: true };
+      }
+      setSearch(pathname,hasToggleSearch)
     }
     handleChange = (pagination, filters, sorter)=>{
     }
     render(){
-        return(
+      const { search , history } = this.props;
+      const pathname = history.location.pathname;
+      const isShow = search[pathname] ? search[pathname].toggle:false;
+      if(search[pathname]&&search[pathname].fstate&&search[pathname].fstate.length){
+        columns[2].filteredValue = search[pathname].fstate;
+      }else{
+        columns[2].filteredValue = [];
+      }
+      return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-              <SearchForm query={(query)=>this.queryHandler(query)}></SearchForm>
+              <SearchForm 
+              query={(query)=>this.queryHandler(query)}
+              handleReset={()=>this.handleReset()}
+              changeQueryToggle={()=>this.changeQueryToggle()}
+              isShow={isShow}
+              wrappedComponentRef={(form) => this.form = form}
+              ></SearchForm>
               <RemoteTable
                   ref='table'
+                  onChange={this.changeQueryTable}  
                   query={this.state.query}
                   url={assets.selectMaintainOrderList}
                   scroll={{x: '200%', y : document.body.clientHeight - 110 }}
@@ -291,4 +378,7 @@ class UpKeepList extends React.Component{
     }
 }
 
-export default UpKeepList;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(UpKeepList));

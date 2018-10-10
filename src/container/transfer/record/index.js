@@ -7,11 +7,13 @@ import React, { PureComponent } from 'react';
 import { Layout, Card, Form, Row, Col, Input, Button, Icon, Select, DatePicker, Tabs} from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import './style.css';
-import { Link } from 'react-router-dom';
+import { Link , withRouter } from 'react-router-dom';
 import querystring from 'querystring';
 import request from '../../../utils/request';
 import transfer from '../../../api/transfer';
-
+import { connect } from 'react-redux';
+import { search } from '../../../service';
+import moment from 'moment';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -90,7 +92,7 @@ const formItemLayout = {
 };
 class SearchFormWrapper extends PureComponent {
   state={
-    display: 'none',
+    display: this.props.isShow?'block':'none',
     dataOut: [],
     dataInto: [],
     deptName: '',
@@ -105,6 +107,7 @@ class SearchFormWrapper extends PureComponent {
   }
   toggle = () => {
     const { display, expand } = this.state;
+    this.props.changeQueryToggle()
     this.setState({
       display: display === 'none' ? 'block' : 'none',
       expand: !expand
@@ -124,6 +127,7 @@ class SearchFormWrapper extends PureComponent {
   //重置
   handleReset = () => {
     this.props.form.resetFields();
+    this.props.handleReset();
   }
   render() {
     const { display } = this.state;
@@ -206,16 +210,90 @@ class SearchFormWrapper extends PureComponent {
 }
 const SearchForm = Form.create()(SearchFormWrapper);
 class TransferRecord extends PureComponent {
-  state = {
-    query: '',
-    activeKey: '1'
+  // state = {
+  //   query: '',
+  //   activeKey: '1'
+  // }
+  constructor(props) {
+    super(props);
+    /* 设置redux前置搜索条件 */
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    this.state = {
+      query:search[pathname]?{...search[pathname]}:'',
+      activeKey: search[pathname]&&search[pathname].activeKey?search[pathname].activeKey:'1'
+    }
   }
+  /* 回显返回条件 */
+  async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let value = {};
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      if(search[pathname].startCreateDate&&search[pathname].endCreateDate){
+        value.createDate=[moment(search[pathname].startCreateDate,'YYYY-MM-DD'),moment(search[pathname].endCreateDate,'YYYY-MM-DD')]
+      }
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
+  /* 查询时向redux中插入查询参数 */
   queryHandle = (query) => {
+    /* 存储搜索条件 */
+    const { setSearch, history ,search } = this.props;
+    const pathname = history.location.pathname;
+    let values = Object.assign({...query},{...search[pathname]},)
+    setSearch(pathname, values);
     this.refs.table.fetch(query);
     this.setState({query});
   }
+  /* 重置时清空redux */
+  handleReset = ()=>{
+    this.form.props.form.resetFields();
+    const { clearSearch , history ,search} = this.props;
+    const pathname = history.location.pathname;
+    let setToggleSearch = {};
+    if(search[pathname]){
+      setToggleSearch = { toggle:search[pathname].toggle};
+    }else{
+      setToggleSearch = { toggle: false };
+    }
+    clearSearch(pathname,setToggleSearch);
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
+  }
+  /* 记录展开状态 */
+  changeQueryToggle = () =>{
+    const { search , setSearch , history} = this.props;
+    const pathname = history.location.pathname;
+    let hasToggleSearch = {};
+    if(search[pathname]){
+        hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+    }else{
+        hasToggleSearch = { toggle: true };
+    }
+    setSearch(pathname,hasToggleSearch)
+  }
+  /* 在切换tab的时候记录值 */
+  changeTabPane = (activeKey)=>{
+    const { search , setSearch , history} = this.props;
+    const pathname = history.location.pathname;
+    let condition = Object.assign({...search[pathname]},{activeKey})
+    setSearch(pathname,condition)
+    this.setState({activeKey: activeKey})
+  }
   callback = (e) => {};
-
   sorterTransferNo = (a,b,key) =>{
     let reg = /[a-zA-Z]/g;
     let numberA = a[key].replace(reg,'');
@@ -225,6 +303,9 @@ class TransferRecord extends PureComponent {
     }
   }
   render() {
+    const { search , history } = this.props;
+    const pathname = history.location.pathname;
+    const isShow = search[pathname] ? search[pathname].toggle:false;
     const columns = [
       {
         title: '操作',
@@ -295,13 +376,20 @@ class TransferRecord extends PureComponent {
       <Content className='ysynet-content'>
         {/* 转科记录查询部分 */}
         <Card bordered={false} className="min_card">
-          <SearchForm query={this.queryHandle} activeKey={this.state.activeKey}/>
+          <SearchForm 
+          handleReset={()=>this.handleReset()}
+          changeQueryToggle={()=>this.changeQueryToggle()}
+          isShow={isShow}
+          wrappedComponentRef={(form) => this.form = form}
+          query={this.queryHandle} 
+          activeKey={this.state.activeKey}/>
         </Card>
         <Card style={{marginTop: 4}}>
-          <Tabs defaultActiveKey="1" onChange={(activeKey) =>{this.setState({activeKey: activeKey})}} animated={false}>
+          <Tabs defaultActiveKey={this.state.activeKey} onChange={(activeKey) =>{this.changeTabPane(activeKey)}} animated={false}>
             <TabPane tab="转出科室" key="1">
               <RemoteTable
                 query={query}
+                onChange={this.changeQueryTable}
                 showHeader={true}
                 ref='table'
                 url={transfer.getSelectTransferList}
@@ -314,6 +402,7 @@ class TransferRecord extends PureComponent {
             </TabPane>
             <TabPane tab="转入科室" key="2">
               <RemoteTable
+                onChange={this.changeQueryTable}
                 query={query}
                 showHeader={true}
                 ref='table'
@@ -331,4 +420,7 @@ class TransferRecord extends PureComponent {
     )
   }
 }
-export default TransferRecord;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(TransferRecord));
