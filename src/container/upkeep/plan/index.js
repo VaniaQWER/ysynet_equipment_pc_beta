@@ -1,6 +1,9 @@
 /**保养登记--列表*/
 import React from 'react';
 import { Modal ,message , Row, Col, Input, Layout , Popover} from 'antd';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import TableGrid from '../../../component/tableGrid';
 import upkeep from '../../../api/upkeep';
 import querystring from 'querystring';
@@ -14,24 +17,34 @@ const Search = Input.Search;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
 
-
 class MaintainPlan extends React.Component{
 
-    state = {
-      query:'',
-      visible: false ,
-      modalContent:'',
-      record:{},
-      isDelete:false
-    };
+    constructor(props){
+      super(props);
+      /* 设置redux前置搜索条件 */
+      const { search, history } = this.props;
+      const pathname = history.location.pathname;
+      this.state = {
+        query:search[pathname]?{...search[pathname]}:'',
+        visible: false ,
+        modalContent:'',
+        record:{},
+        isDelete:false
+      };
+    }
     sortTime = (a,b,key) =>{
       if(a[key] && b[key]){
         return timeToStamp(a[key]) - timeToStamp(b[key])
       }
     }
-    queryHandler = (query) => {
-      this.refs.table.fetch(query);
-      this.setState({ query })
+    /* 查询时向redux中插入查询参数 */
+    queryHandler = (val) => {
+      const { setSearch, history ,search } = this.props;
+      const pathname = history.location.pathname;
+      let values = Object.assign({...search[pathname]},{...val})
+      setSearch(pathname, values);
+      this.refs.table.fetch(val)
+      this.setState({ query:val })
     }
     deletePlanDetails = (record)=>{//删除
       confirm({
@@ -89,9 +102,18 @@ class MaintainPlan extends React.Component{
       
     }
 
+    /* 记录table过滤以及分页数据 */
+    changeQueryTable = (values) =>{
+      const { setSearch, history ,search} = this.props;
+      values = Object.assign({...search[history.location.pathname]},{...values})
+      setSearch(history.location.pathname, values);
+    }
     render(){
       const { modalContent }= this.state;
-      const columns=[
+      const { search , history } = this.props;
+      const pathname = history.location.pathname;
+      const defaultValue = search[pathname]&&search[pathname].maintainPlanNo?search[pathname].maintainPlanNo:null;
+      let columns=[
         { title: '操作', 
         dataIndex: 'maintainPlanDetailId', 
         className:'col-1',
@@ -190,11 +212,15 @@ class MaintainPlan extends React.Component{
           render: text => <span title={text}>{text}</span>
         }
       ]
+      if(search[pathname]&&search[pathname].fstate){
+        columns[2].filteredValue = search[pathname].fstate;
+      }
       return(
           <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20,backgroundColor:'none'}}>
             <Row>
                 <Col span={12}>
                 <Search
+                    defaultValue={defaultValue}
                     placeholder="请输入计划单号/资产名称/资产编码"
                     onSearch={value =>  {this.queryHandler({'maintainPlanNo':value})}}
                     style={{ width: 400 }}
@@ -205,6 +231,7 @@ class MaintainPlan extends React.Component{
             <RemoteTable
                 ref='table'
                 query={this.state.query}
+                onChange={this.changeQueryTable}
                 url={upkeep.planList}
                 scroll={{x: '140%', y : document.body.clientHeight - 110 }}
                 columns={columns}
@@ -226,4 +253,7 @@ class MaintainPlan extends React.Component{
     }
 }
 
-export default MaintainPlan;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(MaintainPlan));

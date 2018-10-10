@@ -120,7 +120,7 @@ class ScrapForm extends PureComponent {
     let { columns, defaultParams, search, history } = this.props; 
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
-    columns[2].filteredValue = search[pathname]&&search[pathname].fstate&&search[pathname].fstate.length?search[pathname].fstate:null;
+    columns[2].filteredValue = search[pathname]&&search[pathname].fstate&&search[pathname].fstate.length?search[pathname].fstate:[];
     console.log(columns)
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
