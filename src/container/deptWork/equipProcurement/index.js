@@ -6,7 +6,9 @@
 import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,Modal} from 'antd';
 import TableGrid from '../../../component/tableGrid';
-import { Link } from 'react-router-dom';
+import { Link , withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import deptwork from '../../../api/deptwork';
 import request from '../../../utils/request';
 import queryString from 'querystring';
@@ -107,11 +109,46 @@ const SearchFormWapper = Form.create()(SearchForm);
 
 class EquipProcurement extends Component {
   
-  state={
-    query:{}
+  constructor(props) {
+    super(props);
+    /* 设置redux前置搜索条件 */
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    this.state = {
+      query:search[pathname]?{...search[pathname]}:{}
+    }
   }
+  /* 回显返回条件 */
+  async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let value = {};
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
+  /* 查询时向redux中插入查询参数 */
   searchTable = (val) => {
+    /* 存储搜索条件 */
+    const { setSearch, history ,search } = this.props;
+    const pathname = history.location.pathname;
+    let values = Object.assign({...search[pathname]},{...val})
+    setSearch(pathname, values);
     this.refs.table.fetch(val)
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
   }
   //删除申请
   deleteRow = (record) =>{
@@ -125,7 +162,7 @@ class EquipProcurement extends Component {
           },
           success: data => {
             if(data.status){
-              let values = this.refs.form.getFieldsValue();
+              let values = this.form.props.form.getFieldsValue();
               this.refs.table.fetch(values);
               message.success('删除成功！');
             }else{
@@ -195,11 +232,15 @@ class EquipProcurement extends Component {
                 <Link to={{pathname:`/deptWork/equipProcurement/add`}} style={{color:'#fff'}}> 新建</Link>
               </Button>
             </Col>
-            <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
+            <SearchFormWapper 
+              query={(val)=>this.searchTable(val)} 
+              wrappedComponentRef={(form) => this.form = form}
+            ></SearchFormWapper>
         </Row>
         <RemoteTable
             ref='table'
             query={this.state.query}
+            onChange={this.changeQueryTable}
             url={deptwork.queryApplyZcList}
             scroll={{x: '100%', y : document.body.clientHeight - 311}}
             columns={columns}
@@ -211,4 +252,7 @@ class EquipProcurement extends Component {
     )
   }
 }
-export default EquipProcurement;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(EquipProcurement));

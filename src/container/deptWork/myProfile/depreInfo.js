@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../service';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
-import moment from 'moment';
+import moment , { isMoment }from 'moment';
 import _ from 'lodash';
 import { depreciationTypeData } from '../../../constants';
 
@@ -89,7 +89,7 @@ class DepreInfo extends Component {
         </Col>
         <Col span={4} className={styles['table-span']}>计提开始时间</Col>
         <Col span={8} className={styles['table-span']}>
-          {AssetInfoData.depreciationBeginDate ?  moment(AssetInfoData.depreciationBeginDate,'YYYY-MM') :null}
+          {AssetInfoData.depreciationBeginDate ? isMoment(AssetInfoData.depreciationBeginDate)? moment(AssetInfoData.depreciationBeginDate,'YYYY-MM'):AssetInfoData.depreciationBeginDate :null}
         </Col>
 
         <Col span={24} className={styles['table-span']} style={{textAlign:'left',textIndent:'15px'}}>资金结构 </Col>

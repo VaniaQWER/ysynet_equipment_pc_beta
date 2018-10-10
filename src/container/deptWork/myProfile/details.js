@@ -18,7 +18,7 @@ class LedgerArchivesDetail extends Component {
     }
   }
   //获取id 根据id号查详情
-  componentWillMount = () =>{
+  componentDidMount = () =>{
     this.getDetails()
   }
 
@@ -49,6 +49,6 @@ class LedgerArchivesDetail extends Component {
   }
 }
 
-export default withRouter(connect(null, dispatch => ({
+export default withRouter(connect(state=>state, dispatch => ({
   getSelectAssetsRecordDetail: (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
 }))(LedgerArchivesDetail));

@@ -5,9 +5,13 @@ import TextArea from 'antd/lib/input/TextArea';
 import TableGrid from '../../../component/tableGrid';
 import inventory from '../../../api/inventory';
 import request from '../../../utils/request';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import { checkState ,checkStateSel , checkType } from '../../../constants';
 import { Link } from 'react-router-dom';
 import querystring from 'querystring';
+import moment from 'moment';
 const Option = Select.Option;
 const Search = Input.Search;
 const { Content } = Layout;
@@ -209,12 +213,26 @@ const ModalFormWapper = Form.create()(ModalForm);
 
 class inventoryRecord extends React.Component{
     
-    state = {
-      query:{},
-			visible:false,
-			modalFormData:{}
-    };
-    queryHandler = (query) => {
+
+    constructor(props) {
+      super(props);
+      /* 设置redux前置搜索条件 */
+      const { search, history } = this.props;
+      const pathname = history.location.pathname;
+      this.state = {
+        query:search[pathname]?{...search[pathname]}:{},
+        visible:false,
+        modalFormData:{}
+      }
+    }
+    /* 查询时向redux中插入查询参数 */
+    queryHandler = () => {
+      let { query } = this.state;
+      const { setSearch, history ,search } = this.props;
+      const pathname = history.location.pathname;
+      let values = Object.assign({...search[pathname]},{...query})
+      setSearch(pathname, values);
+      debugger
       this.refs.table.fetch(this.state.query);
     }
     onChange = (date, dateString) => {
@@ -265,18 +283,34 @@ class inventoryRecord extends React.Component{
       }
       request(inventory.submitInventoryOrders, options)
     }
+    /* 记录table过滤以及分页数据 */
+    changeQueryTable = (values) =>{
+      const { setSearch, history ,search} = this.props;
+      values = Object.assign({...search[history.location.pathname]},{...values})
+      setSearch(history.location.pathname, values);
+    }
     render(){
         const { query , visible , modalFormData } = this.state;
+        const { search , history } = this.props;
+        const pathname = history.location.pathname;
+        const defaultValue = search[pathname]&&search[pathname].stockCountNo?search[pathname].stockCountNo:null;
+        let timeDefaultValue = null;
+        if(search[pathname]&&search[pathname].startTime&&search[pathname].endTime){
+          timeDefaultValue = [moment(search[pathname].startTime,'YYYY-MM-DD'),moment(search[pathname].endTime,'YYYY-MM-DD')]
+        }
         return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
               <Row>
                   <Col span={18}>
                     <Search
                         placeholder="请输入清查单号"
+                        defaultValue={defaultValue}
                         onChange={(e) =>{  this.setState({'query':Object.assign(query,{'stockCountNo':e.target.value}) })   }}
                         style={{ width: 200 ,marginRight:15}}
                     />
-                    <RangePicker onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM-DD'/>
+                    <RangePicker 
+                    defaultValue={timeDefaultValue}
+                    onChange={this.onChange}  style={{ marginRight:15}} format='YYYY-MM-DD'/>
                     <Button type='primary' size='default' onClick={this.queryHandler}>查询</Button>
                   </Col> 
                   <Col span={6} style={{textAlign:'right'}}>
@@ -285,6 +319,7 @@ class inventoryRecord extends React.Component{
               </Row>
               <RemoteTable
                   ref='table'
+                  onChange={this.changeQueryTable}
                   query={this.state.query}
                   url={inventory.queryStockCountList}
                   scroll={{x: '100%', y : document.body.clientHeight - 110 }}
@@ -308,4 +343,7 @@ class inventoryRecord extends React.Component{
 }
 
 
-export default inventoryRecord;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(inventoryRecord));

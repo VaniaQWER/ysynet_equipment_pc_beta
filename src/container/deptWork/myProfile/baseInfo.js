@@ -24,7 +24,7 @@ class BaseInfo extends Component {
           </Panel>
           <Panel header="折旧信息" key="4">
             <DepreInfo  AssetInfoData={AssetInfoData} freshDetail={freshDetail}/>
-          </Panel>
+          </Panel> 
         </Collapse>
       </div>  
     )
