@@ -67,6 +67,11 @@ class Home extends React.Component {
     return a
   }
 
+  resetLogin=()=>{
+    const { history } = this.props;
+    history.push('/login')
+  }
+
   render () {
   
     const { routes, menu, user } = this.props;
@@ -90,7 +95,7 @@ class Home extends React.Component {
             />
             <div style={{display: 'flex'}}>
              {/* <Notice/>*/}
-              <Profile userName={user.userInfo.userName || user.userName }/>
+              <Profile userName={user.userInfo.userName || user.userName } resetLogin={this.resetLogin}/>
             </div>  
           </Header>
           <BreadcrumbGroup className='ysynet-breadcrumb' routes={routes}>
