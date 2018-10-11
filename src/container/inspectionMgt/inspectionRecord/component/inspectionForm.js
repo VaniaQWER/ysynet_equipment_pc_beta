@@ -29,7 +29,7 @@ const formItemLayout = {
 
 class InspectionForm extends Component {
     state = {
-        display: 'none',
+        display: this.props.isShow?'block':'none',
         userDeptData: []
     }
     componentDidMount() {
@@ -49,6 +49,7 @@ class InspectionForm extends Component {
         })
     }
     toggle = () => {
+        this.props.changeQueryToggle()
         this.setState({
             display: this.state.display === 'none'? 'block' : 'none'
         })
@@ -104,7 +105,7 @@ class InspectionForm extends Component {
                     </Col>
                     <Col span={ display === 'none'? 8 : 16 } style={{ textAlign: 'right' }} >
                         <Button type="primary" htmlType="submit" >查询</Button>
-                        <Button style={{ margin: '0 8px' }} onClick={() => { this.props.form.resetFields(); }}>重置</Button>
+                        <Button style={{ margin: '0 8px' }} onClick={() => { this.props.form.resetFields();this.props.setQuery({});this.props.handleReset(); }}>重置</Button>
                         <a onClick={this.toggle}>{ display === 'none'? '展开' : '收起' }<Icon type={ display === 'none'? 'down' : 'up' } /></a>
                     </Col>
                 </Row>
