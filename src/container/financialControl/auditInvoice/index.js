@@ -6,11 +6,13 @@
 import React, { Component } from 'react';
 import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,DatePicker,Modal } from 'antd';
 import TableGrid from '../../../component/tableGrid';
-import { Link } from 'react-router-dom';
+import { Link , withRouter } from 'react-router-dom';
 import financialControl from '../../../api/financialControl';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import moment from 'moment';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import { equipmentInvoiceStatus,  equipmentInvoiceSelect } from '../../../constants';
 const {TextArea} = Input;
 const {RangePicker} = DatePicker;
@@ -85,7 +87,7 @@ const formItemLayout = {
 class SearchForm extends Component {
 
   state={
-    display: 'none',
+    display: this.props.isShow?'block':'none',
     manageSelect:[],
     outDeptOptions: []
   }
@@ -129,6 +131,7 @@ class SearchForm extends Component {
 
   toggle = () => {
     const { display, expand } = this.state;
+    this.props.changeQueryToggle()
     this.setState({
       display: display === 'none' ? 'block' : 'none',
       expand: !expand
@@ -149,6 +152,7 @@ class SearchForm extends Component {
   handleReset = () => {
     this.props.form.resetFields();
     this.props.query({});
+    this.props.handleReset();
   }
   filterOption = (input, option) => {
     if(option.props.children){
@@ -299,13 +303,44 @@ const SearchFormWapper = Form.create()(SearchForm);
 
 class AuditInvoice extends Component {
   
-  state = {
-    visible:false,
-    selectedRowKeys:[],
-    reason:'',//审核不通过原因
+  constructor(props) {
+    super(props);
+    /* 设置redux前置搜索条件 */
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    this.state = {
+      query:search[pathname]?{...search[pathname]}:{},
+      visible:false,
+      selectedRowKeys:[],
+      reason:'',//审核不通过原因
+    }
   }
-  searchTable = (val) => {
-    this.refs.table.fetch(val)
+   /* 回显返回条件 */
+  async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let value = {};
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      if(search[pathname].startTime&&search[pathname].endTime){
+        value.Time=[moment(search[pathname].startTime,'YYYY-MM-DD'),moment(search[pathname].endTime,'YYYY-MM-DD')]
+      }
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
+  searchTable = (query) => {
+    const { setSearch, history ,search } = this.props;
+    const pathname = history.location.pathname;
+    let values = Object.assign({...query},{...search[pathname]},)
+    setSearch(pathname, values);
+    this.refs.table.fetch(query)
   }
   //审核通过
   pass = () => {
@@ -376,16 +411,57 @@ class AuditInvoice extends Component {
       error: err => {console.log(err)}
     })
   }
+  /* 重置时清空redux */
+  handleReset = ()=>{
+    this.form.props.form.resetFields();
+    const { clearSearch , history ,search} = this.props;
+    const pathname = history.location.pathname;
+    let setToggleSearch = {};
+    if(search[pathname]){
+      setToggleSearch = { toggle:search[pathname].toggle};
+    }else{
+      setToggleSearch = { toggle: false };
+    }
+    clearSearch(pathname,setToggleSearch);
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
+  }
+  /* 记录展开状态 */
+  changeQueryToggle = () =>{
+    const { search , setSearch , history} = this.props;
+    const pathname = history.location.pathname;
+    let hasToggleSearch = {};
+    if(search[pathname]){
+        hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+    }else{
+        hasToggleSearch = { toggle: true };
+    }
+    setSearch(pathname,hasToggleSearch)
+  }
   render() {
+    const { search , history } = this.props;
+    const pathname = history.location.pathname;
+    const isShow = search[pathname] ? search[pathname].toggle:false;
     const { selectedRowKeys , visible , reason} = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
-        <SearchFormWapper query={(val)=>this.searchTable(val)} ref='form'></SearchFormWapper>
+        <SearchFormWapper 
+          query={(val)=>this.searchTable(val)} 
+          handleReset={()=>this.handleReset()}
+          changeQueryToggle={()=>this.changeQueryToggle()}
+          isShow={isShow}
+          wrappedComponentRef={(form) => this.form = form}
+         ></SearchFormWapper>
         <Row style={{textAlign:'right'}}>
           <Button type='primary' onClick={()=>this.pass()}>审核通过</Button>
           <Button type='primary' style={{marginLeft:15}} onClick={()=>this.noPass()}>审核不通过</Button>
         </Row>
         <RemoteTable
+            onChange={this.changeQueryTable}
             size="small"
             loading={ this.state.loading}
             ref='table'
@@ -415,4 +491,7 @@ class AuditInvoice extends Component {
     )
   }
 }
-export default AuditInvoice;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(AuditInvoice));
