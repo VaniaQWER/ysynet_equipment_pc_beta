@@ -10,6 +10,10 @@ import { Form, Row, Col, Input, DatePicker,Button,Select,message} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import storage from '../../../api/storage';
 import queryString from 'querystring';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import { search } from '../../../service';
 const { RemoteTable } = TableGrid;
 
 const FormItem = Form.Item;
@@ -72,11 +76,6 @@ class SearchForm extends Component{
             console.log(values,"搜索数据")
             this.props.query(values); 
        });
-    }
-    //重置
-    handleReset = () => {
-        this.props.form.resetFields();
-        this.props.query({});
     }
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -167,11 +166,65 @@ class OutRecord extends Component{
     state = {
         query:{}
     }
+    constructor(props) {
+        super(props);
+        /* 设置redux前置搜索条件 */
+        const { search, history } = this.props;
+        const pathname = history.location.pathname;
+        this.state = {
+        query:search[pathname]?{...search[pathname]}:{}
+        }
+    }
+   /* 回显返回条件 */
+   async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let value = {};
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      if(search[pathname].startTime&&search[pathname].endTime){
+        value.Time=[moment(search[pathname].startTime,'YYYY-MM-DD'),moment(search[pathname].endTime,'YYYY-MM-DD')]
+      }
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
     queryHandler = (query) => {
+        const { setSearch, history ,search } = this.props;
+        const pathname = history.location.pathname;
+        let values = Object.assign({...search[pathname]},{...query})
+        setSearch(pathname, values);
         this.refs.table.fetch(query);
         this.setState({ query })
     }
+    /* 记录table过滤以及分页数据 */
+    changeQueryTable = (values) =>{
+        const { setSearch, history ,search} = this.props;
+        values = Object.assign({...search[history.location.pathname]},{...values})
+        setSearch(history.location.pathname, values);
+    }
+    /* 记录展开状态 */
+    changeQueryToggle = () =>{
+        const { search , setSearch , history} = this.props;
+        const pathname = history.location.pathname;
+        let hasToggleSearch = {};
+        if(search[pathname]){
+            hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+        }else{
+            hasToggleSearch = { toggle: true };
+        }
+        setSearch(pathname,hasToggleSearch)
+    }
     render(){
+        const { search , history } = this.props;
+        const pathname = history.location.pathname;
+        const isShow = search[pathname] ? search[pathname].toggle:false;
         const columns = [
             {
                 title : '操作',
@@ -231,7 +284,12 @@ class OutRecord extends Component{
         ];
         return(
             <div>
-                <SearchBox query={this.queryHandler}/>
+                <SearchBox 
+                    query={this.queryHandler}
+                    changeQueryToggle={()=>this.changeQueryToggle()}
+                    isShow={isShow}
+                    wrappedComponentRef={(form) => this.form = form}
+                />
                 <Row>
                     <Button type="primary" style={{marginLeft:8,marginRight:8}}>
                     <Link to={{pathname:`/storage/outMgt/receive`}}>领用</Link></Button>
@@ -241,6 +299,7 @@ class OutRecord extends Component{
                 </Row>
                 
                 <RemoteTable
+                    onChange={this.changeQueryTable}
                     url={storage.queryOutportAssetList}
                     ref='table'
                     query={this.state.query}
@@ -255,4 +314,7 @@ class OutRecord extends Component{
         )
     }
 }
-export default OutRecord;
+export default withRouter(connect(state => state, dispatch => ({
+    setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+    clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+  }))(OutRecord));

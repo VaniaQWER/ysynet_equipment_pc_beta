@@ -9,6 +9,9 @@ import { Layout , Form, Row, Col, Input, Select, Button ,message ,DatePicker } f
 import request from '../../../utils/request';
 import { Link } from 'react-router-dom';
 import queryString from 'querystring';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { search } from '../../../service';
 import moment  from 'moment';
 import TableGrid from '../../../component/tableGrid';
 import storage from '../../../api/storage';
@@ -97,14 +100,22 @@ class SearchForm extends React.Component {
   searchFrom = () => {
     let values = this.props.form.getFieldsValue();
     console.log(values)
-    if(values.SendDate){
+    if(values.SendDate && values.SendDate.length){
       values.startSendDate=moment(values.SendDate[0]).format('YYYY-MM-DD');
       values.endSendDate=moment(values.SendDate[1]).format('YYYY-MM-DD');
+      delete values['SendDate'];
+    }else{
       delete values['SendDate'];
     }
     this.props.query(values)
   }
 
+  changeRangePicker = (dates,dateStrings)=>{
+    console.log(dateStrings)
+    this.props.form.setFieldsValue({
+      SendDate:dates
+    })
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
     const { orgSelect , managementDeptSelect , } =this.state ;//deptSelect
@@ -152,7 +163,7 @@ class SearchForm extends React.Component {
           <Col span={8}>
             <FormItem label={`制单时间`} {...formItemLayout}>
               {getFieldDecorator(`SendDate`)(
-                <RangePicker></RangePicker>
+                <RangePicker onChange={this.changeRangePicker}></RangePicker>
               )}
             </FormItem>
           </Col>
@@ -183,20 +194,57 @@ class SearchForm extends React.Component {
 const SearchFormWapper = Form.create()(SearchForm);
 
 class EquipmentDelivery extends React.Component {
-  state = {
-    dataSource:[],
-    query:{}
-  }
 
+  constructor(props) {
+    super(props);
+    /* 设置redux前置搜索条件 */
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    this.state = {
+      dataSource:[],
+      query:search[pathname]?{...search[pathname]}:{}
+    }
+  }
+/* 回显返回条件 */
+async componentDidMount () {
+  const { search, history } = this.props;
+  const pathname = history.location.pathname;
+  console.log(search[pathname])
+  if (search[pathname]) {
+    //找出表单的name 然后set
+    let value = {};
+    let values = this.form.props.form.getFieldsValue();
+    values = Object.getOwnPropertyNames(values);
+    values.map(keyItem => {
+      value[keyItem] = search[pathname][keyItem];
+      return keyItem;
+    });
+    if(search[pathname].startSendDate&&search[pathname].endSendDate){
+      value.SendDate=[moment(search[pathname].startSendDate,'YYYY-MM-DD'),moment(search[pathname].endSendDate,'YYYY-MM-DD')]
+    }
+    this.form.props.form.setFieldsValue(value)
+  }
+}
   //搜索表单
-  query = (values) => {
-    console.log('搜索操作发出的',values)
-    this.refs.table.fetch(values);
-    this.setState({query:values})
+  query = (value) => {
+    console.log('搜索操作发出的',value)
+    const { setSearch, history ,search } = this.props;
+    const pathname = history.location.pathname;
+    let values = Object.assign({...search[pathname]},{...value})
+    setSearch(pathname, values);
+    this.refs.table.fetch(value);
+    this.setState({query:value})
+  }
+  /* 记录table过滤以及分页数据 */
+  changeQueryTable = (values) =>{
+    const { setSearch, history ,search} = this.props;
+    values = Object.assign({...search[history.location.pathname]},{...values})
+    setSearch(history.location.pathname, values);
   }
   render(){
-    // const { dataSource } = this.state; 
-    const columns = [
+    const { search , history } = this.props;
+    const pathname = history.location.pathname;
+    let columns = [
       {
         title:"操作",
         dataIndex:"actions",
@@ -212,7 +260,7 @@ class EquipmentDelivery extends React.Component {
         dataIndex: 'fstate',
         width:120,
         filters: fStateSel,
-        onFilter: (value, record) => (record && record.fstate===value),
+        onFilter: (value, record) => record.fstate.indexOf(value) === 0,//(record && record.fstate===value),
         render: (text,record,index) => {
           return(
             <span>{text ? fstateStatus[text] :''}</span>
@@ -277,13 +325,21 @@ class EquipmentDelivery extends React.Component {
         render:(text)=>text?text.substr(0,10):""
       }
     ]
-
+    if(search[pathname]&&search[pathname].fstate&&search[pathname].fstate.length){
+      columns[1].filteredValue = search[pathname].fstate;
+    }else{
+      columns[1].filteredValue = [];
+    }
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-        <SearchFormWapper query={values=>this.query(values)}/>
+        <SearchFormWapper 
+          query={values=>this.query(values)}
+          wrappedComponentRef={(form) => this.form = form}
+          />
         <RemoteTable
           url={storage.selectZCDeliveryList}
           ref='table'
+          onChange={this.changeQueryTable}
           query={this.state.query}
           scroll={{x: '150%', y : document.body.clientHeight - 110 }}
           columns={columns}
@@ -298,4 +354,7 @@ class EquipmentDelivery extends React.Component {
   }
 }
 
-export default EquipmentDelivery;
+export default withRouter(connect(state => state, dispatch => ({
+  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+}))(EquipmentDelivery));
