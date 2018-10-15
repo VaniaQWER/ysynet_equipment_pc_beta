@@ -112,10 +112,10 @@ class BorrowMgtForm extends Component {
                         <FormItem label={`管理科室`} {...formItemLayout}>
                             {getFieldDecorator(`bDeptGuid`)(
                                 <Select 
-                                    placeholder="请选择管理科室" 
-                                    defaultActiveFirstOption = {false}
-                                    allowClear={true}  
-                                    filterOption={false}
+                                    showSearch
+                                    placeholder={'请选择管理科室'}
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     {mgtDeptData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>
@@ -127,9 +127,9 @@ class BorrowMgtForm extends Component {
                             {getFieldDecorator(`deptGuid`)(
                                 <Select
                                     placeholder="请选择借用科室"
-                                    defaultActiveFirstOption = {false}
-                                    allowClear={true}  
-                                    filterOption={false}
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                    showSearch
                                 >
                                     {loanData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>

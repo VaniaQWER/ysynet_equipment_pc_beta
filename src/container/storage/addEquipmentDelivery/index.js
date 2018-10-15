@@ -444,7 +444,7 @@ class AddEquimentDelivery extends Component{
 
   render(){
     const { dataSource , unitList ,tfBrandList } = this.state;  
-    const unitOption =  unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
+    const unitOption =  unitList?unitList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>)):null;
     const tfBrandOption = tfBrandList.map(item=>(<Option key={item.TF_CLO_CODE} value={item.TF_CLO_CODE}>{item.TF_CLO_NAME}</Option>))
     const columns = [
       {

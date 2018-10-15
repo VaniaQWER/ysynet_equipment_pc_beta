@@ -93,7 +93,12 @@ class SearchForm extends Component{
                         {getFieldDecorator('bDeptId',{
                             initialValue: ""
                         })(
-                            <Select placeholder={'请选择管理部门'}>
+                            <Select
+                                showSearch
+                                placeholder={'请选择'}
+                                optionFilterProp="children"
+                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                            >
                                 <Option value="" key={-1}>全部</Option>
                                 {
                                     this.state.manageSelect.map((item,index) => {
@@ -109,7 +114,12 @@ class SearchForm extends Component{
                         {getFieldDecorator('fOrgId',{
                             initialValue:""
                         })(
-                            <Select placeholder={'请选择'}>
+                            <Select 
+                                showSearch
+                                placeholder={'请选择'}
+                                optionFilterProp="children"
+                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                            >
                                 <Option value="" key={-1}>全部</Option>
                                 {
                                     this.state.storageOptions.map((item,index) => {

@@ -116,9 +116,9 @@ class SearchFormWrapper extends Component {
                 showSearch
                 onSearch={this.handleChangeMagtDept}
                 defaultActiveFirstOption={false}
-                showArrow={false}
                 allowClear={true}
-                filterOption={false}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 style={{width: 200}}
                 placeholder={`请搜索选择管理科室`}
               >
@@ -133,10 +133,9 @@ class SearchFormWrapper extends Component {
               <Select
                 showSearch
                 onSearch={this.handleChangeUseDept}
-                defaultActiveFirstOption={false}
-                showArrow={false}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear={true}
-                filterOption={false}
                 style={{width: 200}}
                 placeholder={`请搜索选择转出科室`}
               >

@@ -165,6 +165,12 @@ class AddEquipProcurement extends Component {
       }
     })
   }
+  filterOption = (input, option) => {
+    if(option.props.children){
+      return option.props.children.indexOf(input) >= 0
+    }
+    return false
+  }
   goBack = ()=>{
     const { history } = this.props;
     history.push('/basicdata/approvalSetting');

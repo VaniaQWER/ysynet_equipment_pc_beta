@@ -77,10 +77,11 @@ class InspectionForm extends Component {
                         <FormItem label={`巡检科室`} {...formItemLayout}>
                             {getFieldDecorator(`deptGuid`)(
                                 <Select
+                                    showSearch
                                     placeholder="请选择巡检科室"
-                                    defaultActiveFirstOption = {false}
                                     allowClear={true}  
-                                    filterOption={false}
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     { userDeptData.map((item) => <Option key={item.value} value={item.value} >{item.text}</Option> ) }
                                 </Select>

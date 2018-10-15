@@ -64,9 +64,9 @@ class LoanForm extends Component{
                             })(
                                 <Select
                                     placeholder="请选择借用科室"
-                                    defaultActiveFirstOption = {false}
-                                    allowClear={true}  
-                                    filterOption={false}
+                                    showSearch
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     {loanData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>

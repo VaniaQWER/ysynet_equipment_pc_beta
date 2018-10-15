@@ -155,6 +155,13 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
+          <Col span={6}>
+              <FormItem label={`资产编码`} {...formItemLayout}>
+                  {getFieldDecorator(`assetsRecord`)(
+                      <Input placeholder="请输入资产编码" />
+                  )}
+              </FormItem>
+          </Col>
           <Col span={6}> 
             <FormItem
               {...formItemLayout}
@@ -179,7 +186,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6} style={{display: display}}> 
             <FormItem
               {...formItemLayout}
               label="申请时间"
@@ -189,16 +196,14 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6} style={{textAlign:'right', paddingTop:5}}> 
+          <Col span={6} style={{textAlign:'right', paddingTop:5,float: 'right'}}> 
               <Button type="primary" htmlType="submit">搜索</Button>
               <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
               <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
                 {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
           </Col>
-        </Row>
-        <Row style={{display: display}}>
-          <Col span={6}> 
+          <Col span={6} style={{display: display}}> 
             <FormItem
               {...formItemLayout}
               label="借用单号"
@@ -208,7 +213,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={6} style={{display: display}}> 
             <FormItem
               {...formItemLayout}
               label="归还状态"
@@ -223,7 +228,7 @@ class SearchForm extends Component {
             </FormItem>
           </Col>
         </Row>
-      </Form>
+       </Form>
     )
   }
 }

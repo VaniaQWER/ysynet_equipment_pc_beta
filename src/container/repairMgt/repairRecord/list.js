@@ -54,8 +54,9 @@ class SearchFormWrapper extends React.Component {
   //重置
   handleReset = () => {
     this.props.form.resetFields();
-    this.props.handleReset();
     this.props.query({});
+    this.props.handleReset();
+
   }
 
   render() {

@@ -470,10 +470,9 @@ class SelectAssetForm extends Component{
               {getFieldDecorator('useDeptGuid', {})(
               <Select
                 showSearch
-                defaultActiveFirstOption={false}
-                showArrow={false}
                 allowClear={true}
-                filterOption={false}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 style={{width: 200}}
                 placeholder={`请搜索选择使用科室`}
               >
@@ -487,10 +486,9 @@ class SelectAssetForm extends Component{
               {getFieldDecorator('manageDeptGuid', {})(
               <Select
                 showSearch
-                defaultActiveFirstOption={false}
-                showArrow={false}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear={true}
-                filterOption={false}
                 style={{width: 200}}
                 placeholder={`请搜索选择管理科室`}
               >
