@@ -42,7 +42,7 @@ submitEquipmentPay:`${_local}/equipmentDepreciation/insertEquipmentPay`,//提交
  selectRrpairDetailList: `${_local}/rrpairOrderController/selectRrpairDetailList`, //查询设备维修详情列表
  selectEqOperationList: `${_local}/rrpairOrderController/selectEqOperationList`, //维修单详情操作记录
  updateRrpairOrderFstate: `${_local}/rrpairOrderController/updateRrpairOrderFstate`, //维修工单状态扭转
-
+ printAssectRrpair:`${_local}/rrpairOrderController/printAssectRrpair`,//维修单详情-打印
  //验收
  insertRrpairOrderAcce: `${_local}/rrpairOrderController/insertRrpairOrderAcce`, //验收维修单
 

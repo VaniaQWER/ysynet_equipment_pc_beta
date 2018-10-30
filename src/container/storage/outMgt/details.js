@@ -5,7 +5,7 @@
  */
 
 import React , { Component } from 'react';
-import { Layout , Row,  } from 'antd';//message
+import { Layout , Row , Button  } from 'antd';//message
 // import { fetchData } from '../../../utils/tools';
 // import querystring from 'querystring';
 import TableGrid from '../../../component/tableGrid';
@@ -89,11 +89,17 @@ class WareHouseDetails extends Component {
     console.log(this.props.location.state)
   }  
 
+  onPrint = () => {
+    window.open(`${storage.outputImport}?outId=${this.props.location.state.outId}`)
+  } 
+
   render(){
     const baseInfo = this.props.location.state || '' ; 
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-        <Row>单据信息</Row>
+        <Row>单据信息
+          <Button type='primary' style={{float: 'right'}} onClick={this.onPrint}>打印</Button>
+        </Row>
         <Row>
           <div className="ant-col-6">
             <div className="ant-row ant-form-item">

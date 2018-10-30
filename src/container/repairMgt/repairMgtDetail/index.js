@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { ledger as ledgerService } from '../../../service';
 import assets from '../../../api/assets';
 import querystring from 'querystring';
+import { Button } from 'antd';
 class AllDetail extends PureComponent {
   constructor(props) {
     super(props);
@@ -38,13 +39,29 @@ class AllDetail extends PureComponent {
     })
   }
 
+  onPrint = () => {
+    const { rrpairOrderGuid } = this.state.BaseInfoInfoData;
+    window.open(`${assets.printAssectRrpair}?rrpairOrderGuid=${rrpairOrderGuid}`)
+  }
   render() {
+    console.log(this.state.BaseInfoInfoData.rrpairOrderGuid)
+    const state = this.state.BaseInfoInfoData.orderFstate;
+    const stateToggle = state==="50" || state==="90";
     return (
       <div>
           {
             JSON.stringify(this.state.BaseInfoInfoData) === '{}'? null
             :
-            <BaseInfo BaseInfoInfoData = {this.state.BaseInfoInfoData}/>
+            (
+              <div>
+                {stateToggle?(
+                  <div style={{textAlign: 'right',padding: 10}}>
+                    <Button type='primary' onClick={this.onPrint}> 打印</Button>
+                  </div>
+                ):null}
+                <BaseInfo BaseInfoInfoData = {this.state.BaseInfoInfoData}/>
+              </div>
+            )
           }
       </div>
     )

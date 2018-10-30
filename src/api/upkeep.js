@@ -9,6 +9,8 @@ const upkeep = {
   queryAllProject:`${_local}/maintainOrderController/searchMaintainType`,//查询引用新增-------------
   //保养计划列表
   planList:`${_local}/maintainOrderController/selectMaintainPlanList`,//保养计划列表
+  //保养工单详情 - 打印
+  printMaintain:`${_local}/maintainOrderController/printMaintain`,//打印
   //计划列表进详情
   queryPlanDetails:`${_local}/maintainOrderController/selectMaintainPlanDetail`,//查询单条明细
   editPlanDetails:`${_local}/maintainOrderController/updateMaintainPlan`,//修改保存计划

@@ -87,6 +87,26 @@ const initSearch = {
 	equipmentStandardName:""
 }
 
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
+const formItemRowLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 4 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 14 },
+    },
+};
 export default class AddUpKeepForm extends React.Component {
     state = {
       selectDropData:[],//项目弹出层 下拉框内容
@@ -424,6 +444,9 @@ export default class AddUpKeepForm extends React.Component {
     onEndChange = (value) => {
       this.onChange('endMaintainDate', value);
     }
+    onPrint = () => {
+      window.open(`${upkeep.printMaintain}?maintainGuid=${this.props.maintainGuid}`)
+    } 
     render() {
       const { getFieldDecorator } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
@@ -490,31 +513,14 @@ export default class AddUpKeepForm extends React.Component {
           <div className="ant-upload-text">Upload</div>
         </div>
       );
-      
-      const formItemLayout = {
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 8 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
-      };
-      const formItemRowLayout = {
-          labelCol: {
-            xs: { span: 24 },
-            sm: { span: 4 },
-          },
-          wrapperCol: {
-            xs: { span: 24 },
-            sm: { span: 14 },
-          },
-      };
-
-        return (
+      const { showPrint } = this.props;//已完成状态 显示打印按钮
+      const showPrintToggle = showPrint && data.fstate==='01';
+      return (
         <Form>
-          <Card title="资产信息" bordered={false} >
+          <Card title="资产信息" bordered={false} 
+          extra={showPrintToggle?(
+            <Button type='primary' style={{float: 'right'}} onClick={this.onPrint}>打印</Button>
+          ):null}>
               <Row>
                   <Col span={8} >
                       {editState ? 

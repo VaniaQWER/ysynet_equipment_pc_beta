@@ -13,6 +13,7 @@ const storage = {
   selectZCDeliveryAndDetail:`${_local}/delivery/selectZCDeliveryAndDetail`,//查询送货单和明细
   updateDeliveryZc:`${_local}/delivery/updateDeliveryZc`,//验收送货单
   //入库管理
+  inputImport:`${_local}/import/inputImport`,//入库单详情打印
   insertImport:`${_local}/import/insertImport`,//添加入库单
   searchStaticZc:`${_local}/staticInfoZcController/searchStaticZc`,//查询财务分类
   selectImportList:`${_local}/import/selectImportList`,//查询设备入库单列表
@@ -21,6 +22,7 @@ const storage = {
   selectOutImportDetail:`${_local}/import/selectOutImportDetail`,//入库管理
   insertOutImport:`${_local}/import/insertOutImport`,//新增入库退货单
   //出库管理
+  outputImport:`${_local}/outportAsset/printOutPort`,//出库单打印
   queryOutportAssetList:`${_local}/outportAsset/queryOutportAssetList`,//查询设备出库单列表
   queryOutportAssetDetailList:`${_local}/outportAsset/queryOutportAssetDetailList` ,//查询设备出库单详情
   queryOutportAssetDetails:`${_local}/outportAsset/queryOutportAssetDetails`,//查询设备明细列表

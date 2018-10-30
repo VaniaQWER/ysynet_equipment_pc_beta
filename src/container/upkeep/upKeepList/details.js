@@ -25,6 +25,7 @@ class UpKeepDetails extends React.Component{
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
                 <WrappedAdvancedSearchForm  
+                showPrint={true}
                 formInfo={formInfo} 
                 maintainGuid = {maintainGuid} 
                 editState = {false}

@@ -5,7 +5,7 @@
  */
 
 import React , { Component } from 'react';
-import { Layout , Row,  } from 'antd';//message
+import { Layout , Row, Button,  } from 'antd';//message
 // import request from '../../../utils/request';
 // import querystring from 'querystring';
 import TableGrid from '../../../component/tableGrid';
@@ -75,12 +75,18 @@ class WareHouseDetails extends Component {
     console.log(this.props.location.state)
     console.log(this.props.match.params.id);
   }  
+  onPrint = () => {
+    // console.log('123')
+    window.open(`${storage.inputImport}?InId=${this.props.location.state.inId}`)
+  } 
 
   render(){
     const baseInfo = this.props.location.state || '';
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-        <Row>单据信息</Row>
+        <Row>单据信息
+          <Button type='primary' style={{float: 'right'}} onClick={this.onPrint}>打印</Button>
+        </Row>
         <Row>
           <div className="ant-col-8">
             <div className="ant-row ant-form-item">
