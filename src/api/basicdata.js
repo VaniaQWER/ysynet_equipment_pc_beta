@@ -36,6 +36,15 @@ const basicdata = {
   //工作台配置
   findGroupList: `${_local}/user/findGroupList`,        //查询当前机构用户组
   documentTypeList: `${_local}/StaticDataController/documentTypeList`,        //单据类型和 最新单据列表
-  insertOrgConfig: `${_local}/orgConfigController/insertOrgConfig`            //添加或修改工作台配置
+  insertOrgConfig: `${_local}/orgConfigController/insertOrgConfig`,            //添加或修改工作台配置
+
+  //打印配置管理
+  selectStoragePrintConfigList:`${_local}/storagePrintConfigController/selectStoragePrintConfigList`,//查询库房配置列表
+  updateStoragePrintConfig:`${_local}/storagePrintConfigController/updateStoragePrintConfig`,//修改管理科室打印配置
+
+  //编码规则
+  insertCpbmConfigZc:`${_local}/cpbmConfigZcController/insertCpbmConfigZc`,//新增/编辑编码规则
+  selectCpbmConfigZc:`${_local}/cpbmConfigZcController/selectCpbmConfigZc`,//查询编码规则
+  previewCpbmConfigZc:`${_local}/cpbmConfigZcController/previewCpbmConfigZc`,//预览编码
 }
 export default basicdata;
