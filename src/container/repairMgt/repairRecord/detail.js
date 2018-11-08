@@ -6,7 +6,7 @@ import AllDetail from '../repairMgtDetail';
 class RepairRecordDetail extends PureComponent {
   render() {
     return (
-      <AllDetail />
+      <AllDetail showPrint={true}/>
     )
   }
 }

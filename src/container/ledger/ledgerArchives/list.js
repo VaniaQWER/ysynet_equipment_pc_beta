@@ -666,6 +666,10 @@ class LedgerArchivesList extends Component {
     }
     setSearch(pathname,hasToggleSearch)
   }
+  //生成编码
+  createCode = () => {
+    console.log('生成编码')
+  }
 
   render() {
     const { selectedRowKeys , importDataSource } = this.state;
@@ -697,10 +701,11 @@ class LedgerArchivesList extends Component {
                   <Menu.Item key="1"> 全部打印</Menu.Item>
                 </Menu>
                 }>
-                <Button onClick={()=>this.printSelect()}>
+                <Button onClick={()=>this.printSelect()} style={{marginRight:8}} >
                   打印 <Icon type="ellipsis" />
                 </Button>
               </Dropdown>
+              <Button type='primary' style={{marginRight:8}} onClick={()=>this.createCode()}>生成编码</Button>
             </Col>
             <Col span={4} style={{textAlign:'right'}}>
               <Button type='primary' style={{ marginRight: 16 }}>

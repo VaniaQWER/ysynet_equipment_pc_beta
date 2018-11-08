@@ -232,7 +232,6 @@ class inventoryRecord extends React.Component{
       const pathname = history.location.pathname;
       let values = Object.assign({...search[pathname]},{...query})
       setSearch(pathname, values);
-      debugger
       this.refs.table.fetch(this.state.query);
     }
     onChange = (date, dateString) => {

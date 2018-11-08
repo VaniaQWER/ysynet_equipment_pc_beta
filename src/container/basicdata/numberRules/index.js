@@ -2,7 +2,7 @@
  *  基础数据 - 编码规则
  */
 import React , { PureComponent } from 'react';
-import { Layout , Card , Form, Radio ,Input , Select , Row , Col , Tooltip , Icon , Affix, Button , message } from 'antd';
+import { Layout , Card , Form, Radio ,Input , Select , Row , Col , Tooltip , Icon , Affix, Button , message , Tag} from 'antd';
 import request from '../../../utils/request';
 import basicdata from '../../../api/basicdata';
 import queryString from 'querystring';
@@ -39,7 +39,8 @@ const styles ={
 class NumberRules extends PureComponent {
 
     state={
-      backData:null
+      backData:null,
+      preViewData:null,
     }
 
     componentDidMount () {
@@ -75,7 +76,36 @@ class NumberRules extends PureComponent {
       })
       return list
     }
-
+    //预览
+    _previewCode = () => {
+      this.props.form.validateFieldsAndScroll((err,values)=>{
+          if(!err){
+              const { backData } = this.state;
+              const { detailList , ...cpbmConfigZc } = values;
+              let postData = { detailList:this._formatDetailList(detailList) , cpbmConfigZc}
+              if(backData&&backData.cpbmConfigGuid){//编辑状态参数添加cpbmConfigGuid
+                postData.cpbmConfigZc.cpbmConfigGuid = backData.cpbmConfigGuid ;
+              }
+              console.log(JSON.stringify(postData),'postData')
+              request(basicdata.previewCpbmConfigZc,{
+                body:JSON.stringify(postData),
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                success: data => {
+                  if(data.status){
+                    console.log(JSON.stringify(data),"_previewCode")
+                    this.setState({preViewData:data.result})
+                  }else{
+                    message.error(data.msg)
+                  }
+                },
+                error: err => {console.log(err)}
+              })
+          }
+      })
+    }
+    //保存
     onSubmit = () => {
         this.props.form.validateFieldsAndScroll((err,values)=>{
             if(!err){
@@ -85,6 +115,7 @@ class NumberRules extends PureComponent {
                 if(backData&&backData.cpbmConfigGuid){//编辑状态参数添加cpbmConfigGuid
                   postData.cpbmConfigZc.cpbmConfigGuid = backData.cpbmConfigGuid ;
                 }
+                this.setState({backData:postData})
                 console.log(JSON.stringify(postData),'postData')
                 request(basicdata.insertCpbmConfigZc,{
                   body:JSON.stringify(postData),
@@ -332,7 +363,7 @@ class NumberRules extends PureComponent {
 
     render(){
         const { getFieldDecorator } = this.props.form;
-        const { backData } = this.state;
+        const { backData , preViewData } = this.state;
         console.log(backData)
         return (
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
@@ -444,8 +475,15 @@ class NumberRules extends PureComponent {
                         {this.getTemplate()}
                     </Card>
                     <Affix offsetBottom={0} style={styles.bgf}>
-                        <div style={{float: 'right'}}>
-                          预览
+                        <div style={{float: 'left',padding:15}}>
+                          <Button onClick={this._previewCode}>预览</Button>
+                          {preViewData?preViewData.prefix?<Tag style={{marginLeft:8}}>{preViewData.prefix}</Tag>:<Tag style={{marginLeft:8}}>暂无前缀</Tag>:null } 
+                          {preViewData?preViewData.suffix?<Tag style={{marginLeft:8}}>{preViewData.suffix}</Tag>:<Tag style={{marginLeft:8}}>暂无后缀</Tag>:null }
+                          {
+                            preViewData&&preViewData.detail&&preViewData.detail.map((item,index)=>(
+                                <Tag key={index} style={{marginLeft:8}}>{item.value}</Tag>
+                            ))
+                          }
                         </div>              
                         <div style={styles.wapper}>
                             <Button type='primary' onClick={this.onSubmit} style={styles.buttonGap}>保存</Button>

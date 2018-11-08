@@ -200,12 +200,20 @@ class AddWareHouse extends Component {
               baseInfo:{},
               dataSource:[]
             })
+            this._configPrint(json,data.result)
         }else{
           message.error(data.msg)
         }
       },
       error: err => {console.log(err)}
     })
+  }
+  //打印配置
+  _configPrint = (json,data) => {
+    console.log(data)
+    if(data&&data.storagePrintConfig==="01"){//调用自动打印
+      window.open(`${storage.inputImport}?InId=${data.InId}`)
+    }
   }
 
   query = (values) => {
@@ -429,7 +437,7 @@ class EditableCell extends Component {
   }
   componentWillMount (){
     CommonData('UNIT', (data) => {
-      this.setState({unitList:data.rows})
+      this.setState({unitList:data.rows||data})
     })
   }
   handleChange = (e) => {

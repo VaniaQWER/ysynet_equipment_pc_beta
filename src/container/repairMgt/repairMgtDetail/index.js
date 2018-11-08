@@ -14,6 +14,7 @@ class AllDetail extends PureComponent {
     super(props);
     this.state = {
       BaseInfoInfoData:{} ,
+      showPrint:props.showPrint
     }
   }
 
@@ -46,7 +47,8 @@ class AllDetail extends PureComponent {
   render() {
     console.log(this.state.BaseInfoInfoData.rrpairOrderGuid)
     const state = this.state.BaseInfoInfoData.orderFstate;
-    const stateToggle = state==="50" || state==="90";
+    const { showPrint } = this.state;
+    const stateToggle = showPrint && (state==="50" || state==="90");
     return (
       <div>
           {

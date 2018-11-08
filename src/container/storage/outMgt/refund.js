@@ -214,12 +214,20 @@ class Refund extends Component {
               selectedRowKeys: [],
               selectedRows:[],
             })
+            this._configPrint({manageDeptGuid,assetsRecords},data)
         }else{
             message.error(data.msg)
         }
       },
       error: err => {console.log(err)}
     })
+  }
+  //自动打印配置
+  _configPrint = (json,data) => {
+    console.log(data)
+    if(data&&data.storagePrintConfig==="01"){//调用自动打印
+      window.open(`${storage.outputImport}?outId=${data.outId}`)
+    }
   }
   render(){
     const { dataSource } = this.state;

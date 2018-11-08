@@ -1,5 +1,5 @@
 /*
- * @Author: yuwei - 领用 -receive 
+ * @Author: yuwei - 领用 (出库)-receive 
  * @Date: 2018-06-12 18:34:31 
 * @Last Modified time: 2018-06-12 18:34:31 
  */
@@ -331,6 +331,7 @@ class Receive extends Component {
               modalSelectedRowsCaChe:[],//弹窗选中的keyRow
               modalSelectedRowKeysCaChe:[],//弹窗选中的key
             })
+            this._configPrint(json,data.result)
         }else{
             message.error(data.msg)
         }
@@ -338,7 +339,13 @@ class Receive extends Component {
       error: err => {console.log(err)}
     })
   }
-
+  //自动配置打印
+  _configPrint = (json,data) => {
+    console.log(data)
+    if(data&&data.storagePrintConfig==="01"){//调用自动打印
+      window.open(`${storage.outputImport}?outId=${data.outId}`)
+    }
+  }
   //弹窗handleOk
   handleOk = () => {
     let dataSource = (this.state.modalSelectedRowsCaChe).concat(this.state.modalSelectedRows);

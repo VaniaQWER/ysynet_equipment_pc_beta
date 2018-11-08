@@ -45,19 +45,23 @@ class ConfigCtrl extends PureComponent {
       this.setState({query:val})
     }
     changeTableRow = (value,record) => {
-        console.log("changeTableRow",value,record)
+        // console.log("changeTableRow",value,record)
         const { query } = this.state;
+        record.tfCloValue=value;
+        record.bDeptId=query.bDeptId;
+        console.log(JSON.stringify({"list":[record]}),'changeTableRow')
         Modal.confirm({
             title:'您正在修改参数的配置',
             content:'修改参数配置会使影响自动打印，您还要继续吗？',
             onOk:()=>{
                 request(basicdata.updateStoragePrintConfig,{
-                  body:JSON.stringify({"list":record}),
+                  body:JSON.stringify({"list":[record]}),
                   headers: {
                     'Content-Type': 'application/json'
                   },
                   success: data => {
                     if(data.status){
+                      message.success('修改成功')
                       this.refs.table.fetch(query);
                     }else{
                       message.error(data.msg)
@@ -84,8 +88,9 @@ class ConfigCtrl extends PureComponent {
                 render:(text,record,index)=>{
                     return (
                         <Select 
-                        value={record.key}
-                        style={{width:100}}
+                        // defaultValue='02'
+                        value={text==="01"?"01":"02"}
+                        style={{width:150}}
                         onSelect={(value)=>this.changeTableRow(value,record)}>
                             <Option value='02'>否</Option>
                             <Option value='01'>是</Option>
@@ -155,7 +160,9 @@ class SearchForm extends PureComponent {
       });
     }
     handleReset = ()=>{
-        this.props.form.resetFields(['searchName']);
+        this.props.form.resetFields(['tfCloName']);
+        let  bDeptId = this.props.form.getFieldsValue(['bDeptId']);
+        this.props.query(bDeptId)
     }
     render(){
       const { getFieldDecorator } = this.props.form;
@@ -190,7 +197,7 @@ class SearchForm extends PureComponent {
                 {...formItemLayout}
                 label="参数名"
               >
-                {getFieldDecorator('searchName')(
+                {getFieldDecorator('tfCloName')(
                   <Input placeholder='请输入'/>
                 )}
               </FormItem>

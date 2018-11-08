@@ -267,6 +267,7 @@ class WareHouseRefund extends Component {
           if(data.status){
             message.success('退货成功');
             const { history } = this.props;
+            this._configPrint(json,data.result);
             history.push({pathname:'/storage/wareHouseMgt'})
           }else{
               message.error(data.msg)
@@ -274,6 +275,13 @@ class WareHouseRefund extends Component {
       },
       error: err => {console.log(err)}
     })
+  }
+  //自动打印配置
+  _configPrint = (json,data) => {
+    console.log(data)
+    if(data&&data.storagePrintConfig==="01"){//调用自动打印
+      window.open(`${storage.inputImport}?InId=${data.InId}`)
+    }
   }
   //弹窗- 单行编辑
   setRow = (val,index) =>{
