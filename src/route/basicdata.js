@@ -15,5 +15,7 @@ export default {
       { exact: true, hasBread: true, path: '/basicdata/approvalSetting/add/:id', name: '编辑审批配置', component: asyncComponent(() => import("../container/basicdata/approvalSetting/add"))},
       { exact: true, hasBread: true, path: '/basicdata/approvalSetting/details/:id', name: '审批配置详情', component: asyncComponent(() => import("../container/basicdata/approvalSetting/details"))},
       { exact: true, hasBread: true, path: '/basicdata/workplaceConfig', name: '工作台配置', component: asyncComponent(() => import("../container/basicdata/workplaceConfig"))},
+      { exact: true, hasBread: true, path: '/basicdata/numberRules', name: '编码规则', component: asyncComponent(() => import("../container/basicdata/numberRules"))},
+      { exact: true, hasBread: true, path: '/basicdata/configCtrl', name: '打印配置', component: asyncComponent(() => import("../container/basicdata/configCtrl"))},
     ]
 }
