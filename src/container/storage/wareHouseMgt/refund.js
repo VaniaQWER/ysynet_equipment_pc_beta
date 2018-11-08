@@ -280,7 +280,12 @@ class WareHouseRefund extends Component {
   _configPrint = (json,data) => {
     console.log(data)
     if(data&&data.storagePrintConfig==="01"){//调用自动打印
-      window.open(`${storage.inputImport}?InId=${data.InId}`)
+      debugger
+      //打印多个入库单
+      data.InIdList&&data.InIdList.map((item)=>{
+        window.open(`${storage.inputImport}?InId=${item}`)
+        return item
+      })
     }
   }
   //弹窗- 单行编辑

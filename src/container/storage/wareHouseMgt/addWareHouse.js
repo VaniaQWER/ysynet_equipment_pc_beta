@@ -211,8 +211,23 @@ class AddWareHouse extends Component {
   //打印配置
   _configPrint = (json,data) => {
     console.log(data)
-    if(data&&data.storagePrintConfig==="01"){//调用自动打印
-      window.open(`${storage.inputImport}?InId=${data.InId}`)
+    /* 
+    {
+     "in":{
+        "storagePrintConfig":"storagePrintConfig",  --01打印，02不打印
+        "InId": "InId"--入库单ID
+     } ,
+     "out":{
+       "storagePrintConfig":"storagePrintConfig",  --01打印，02不打印
+        "outId": "outId"--出库单ID
+     }
+   }
+    */
+    if(data&&data.in&&data.in.storagePrintConfig==="01"){//调用自动打印
+      window.open(`${storage.inputImport}?InId=${data.in.InId}`)
+    }
+    if(data&&data.out&&data.out.storagePrintConfig==="01"){//调用自动打印
+      window.open(`${storage.outputImport}?outId=${data.out.outId}`)
     }
   }
 
