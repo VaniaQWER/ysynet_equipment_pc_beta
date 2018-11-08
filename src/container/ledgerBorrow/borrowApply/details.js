@@ -72,7 +72,6 @@ class BorrowApplyDetails extends PureComponent {
         },
         success: data => {
           if(data.status){
-            debugger
             message.success('操作成功')
             const { history } = this.props;
             history.push('/ledgerBorrow/borrowApply')

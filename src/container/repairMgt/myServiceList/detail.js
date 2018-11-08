@@ -7,7 +7,7 @@ import AllDetail from '../repairMgtDetail';
 class MyServiceDetail extends PureComponent {
   render() {
     return (
-      <AllDetail state={this.props.location.state}/>
+      <AllDetail state={this.props.location.state} showPrint={true}/>
     )
   }
 }
