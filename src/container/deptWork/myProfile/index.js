@@ -333,7 +333,7 @@ const SearchForm = Form.create()(SearchFormWrapper);
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
     return (
-      <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
+      <Content className='ysynet-content ysynet-common-bgColor myProfile' style={{padding: 24}}>
           <SearchForm 
             query={this.queryHandler}
             handleReset={()=>this.handleReset()}
@@ -347,7 +347,7 @@ const SearchForm = Form.create()(SearchFormWrapper);
             ref='table'
             query={this.state.query}
             url={deptwork.selectAssetsList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311}}
+            // scroll={{x: '100%', y : document.body.clientHeight - 311}}
             columns={columns}
             showHeader={true}
             rowKey={'assetsRecordGuid'}

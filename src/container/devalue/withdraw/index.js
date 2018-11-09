@@ -250,7 +250,8 @@ class WithDraw extends React.Component{
               ref='table'
               query={{bDeptId:'000'}}
               url={devalue.getDevalueList}
-              scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+              isList={true}
+              scroll={{x: '100%', y : document.body.clientHeight}}
               columns={columns}
               rowKey={'equipmentDepreciationGuid'}
               showHeader={true}

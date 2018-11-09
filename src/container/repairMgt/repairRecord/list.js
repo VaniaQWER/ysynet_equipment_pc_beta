@@ -282,7 +282,8 @@ class RepairRecordList extends Component {
             ref='table'
             showHeader={true}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
+            isList={true}
+            scroll={{x: '150%', y : document.body.clientHeight}}
             columns={columns}
             rowKey={'RN'}
             style={{marginTop: 10}}

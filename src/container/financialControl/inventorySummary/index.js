@@ -372,7 +372,8 @@ class InventorySummary extends Component {
             query={query}
             ref='table'
             columns={columns}
-            scroll={{ x: '150%' }}
+            isList={true}
+            scroll={{ x: '150%' ,y : document.body.clientHeight}}
             url={financialControl.selectInventoryCollect}
             rowKey={'guid'}
             footer={footer}

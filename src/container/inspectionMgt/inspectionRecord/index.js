@@ -188,6 +188,7 @@ class InspectionRecord extends Component {
                     }}
                     query={query}
                     url={inspectionMgt.queryCheckInfoList}
+                    isList={true}
                     scroll={{x: '100%'}}
                     showHeader={true}
                     columns={columns}

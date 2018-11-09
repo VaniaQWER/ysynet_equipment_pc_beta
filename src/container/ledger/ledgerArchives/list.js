@@ -680,7 +680,7 @@ class LedgerArchivesList extends Component {
       columns[2].filteredValue = search[pathname].useFstate;
     }
     return (
-      <Content className='ysynet-content ysynet-common-bgColor' style={{padding:24}}>
+      <Content className='ysynet-content ysynet-common-bgColor ledgerArchives' style={{padding:24}}>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
           <SearchFormWapper
             query={query=>{this.query(query)}} 
@@ -719,7 +719,8 @@ class LedgerArchivesList extends Component {
             ref='table'
             query={this.state.query}
             url={assets.selectAssetsList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311}}
+            isList={true}
+            scroll={{x: '100%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'assetsRecordGuid'}

@@ -98,7 +98,8 @@ class MyCheckList extends Component {
             onChange={this.changeQueryTable}
             query={this.state.query}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 311 }}
+            isList={true}
+            scroll={{x: '150%', y : document.body.clientHeight}}
             columns={columns}
             rowKey={'RN'}
             showHeader={true}

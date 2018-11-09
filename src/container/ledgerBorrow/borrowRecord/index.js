@@ -261,11 +261,12 @@ class BorrowRecord extends Component {
             ref='table'
             query={this.state.query}
             url={ledgerBorrow.findBorrowRecordList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311}}
+            isList={true}
+            scroll={{x: '100%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'RN'}
-            style={{marginTop: 10}}
+            // style={{marginTop: 10}}
             size="small"
           /> 
         </Content>

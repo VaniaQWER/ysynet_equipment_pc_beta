@@ -262,11 +262,12 @@ class Tender extends Component {
             onChange={this.changeQueryTable}
             query={this.state.query}
             url={ledger.selectZCTenderList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311}}
+            isList={true}
+            scroll={{x: '100%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'tenderGuid'}
-            style={{padding:24}}
+            style={{padding:'0px 24px'}}
             size="small"
           /> 
          

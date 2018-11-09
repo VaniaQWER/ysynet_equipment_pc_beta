@@ -308,6 +308,8 @@ class WarehouseSummary extends Component {
             query={query}
             ref='table'
             columns={columns}
+            isList={true}
+            scroll={{x: '100%', y : document.body.clientHeight}}
             url={financialControl.selectImportCollect}
             rowKey={'ROWNUM'}
           /> : null

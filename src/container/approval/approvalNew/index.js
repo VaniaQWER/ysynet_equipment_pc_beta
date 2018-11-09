@@ -303,7 +303,8 @@ class ApprovalNew extends Component {
             onChange={this.changeQueryTable}
             query={this.state.query}
             url={approval.queryApprovalList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311}}
+            isList={true}
+            scroll={{x: '100%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'RN'}

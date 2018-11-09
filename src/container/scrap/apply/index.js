@@ -314,7 +314,8 @@ class ScrapApply extends PureComponent {
             rowKey={'assetsRecordGuid'}
             style={{marginTop: 10}}
             size="small"
-            scroll={{x: '100%'}}
+            isList={true}
+            scroll={{x: '100%',y : document.body.clientHeight}}
             rowSelection={rowSelection}
           /> 
         </Modal>

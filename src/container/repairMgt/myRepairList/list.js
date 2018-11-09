@@ -100,7 +100,8 @@ class MyRepairList extends Component {
             onChange={this.changeQueryTable}
             query={this.state.query}
             url={assets.selectRrpairList}
-            scroll={{x: '150%', y : document.body.clientHeight - 111 }}
+            isList={true}
+            scroll={{x: '150%', y : document.body.clientHeight}}
             columns={columns}
             rowKey={'RN'}
             showHeader={true}

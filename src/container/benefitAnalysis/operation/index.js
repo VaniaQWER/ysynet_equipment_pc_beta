@@ -262,7 +262,8 @@ class OperationData extends Component {
             ref='table'
             query={this.state.query}
             url={benefitAnalysis.selectBenefitRunList}
-            scroll={{x: '100%', y : document.body.clientHeight - 311}}
+            isList={true}
+            scroll={{x: '100%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'RN'}

@@ -99,8 +99,9 @@ class MyServiceList extends Component {
             ref='table'
             onChange={this.changeQueryTable}
             query={this.state.query}
+            isList={true}
             url={assets.selectRrpairList}
-            scroll={{x: '150%'}}
+            scroll={{x: '150%', y : document.body.clientHeight}}
             columns={columns}
             rowKey={'RN'}
             showHeader={true}
