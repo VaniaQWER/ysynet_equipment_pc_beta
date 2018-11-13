@@ -577,8 +577,8 @@ export default class AddUpKeepPlanForm extends React.Component {
                       <Col>
                         <Select
                           mode="combobox"
+                          placeholder='请搜索选择保养项目'
                           defaultActiveFirstOption={false}
-                          showArrow={false}
                           filterOption={false}
                           onSearch={this.getOneModule}
                           onSelect={this.changeOneModule}

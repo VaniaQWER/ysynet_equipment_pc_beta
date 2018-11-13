@@ -651,6 +651,22 @@ class AssetInfo extends Component {
             <Col span={8}>
               {
                 editable? 
+                  <FormItem label={`购入方式`} {...formItemLayout}>
+                    {getFieldDecorator(`buyType`,{
+                      initialValue: AssetInfoData.buyType?AssetInfoData.buyType==="00"?'招标采购':'议价采购':null
+                    })(
+                        <Select>
+                          <Option value='00'>招标采购</Option>
+                          <Option value='01'>议价采购</Option>
+                        </Select>
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="购入方式">{AssetInfoData.buyType?AssetInfoData.buyType==="00"?'招标采购':'议价采购':''}</ShowDomInfo>
+              }
+            </Col> 
+            <Col span={8}>
+              {
+                editable? 
                   <FormItem label={`合同编号`} {...formItemLayout}>
                     {getFieldDecorator(`contractNo`,{
                       initialValue: AssetInfoData.contractNo

@@ -828,9 +828,10 @@ class MaintainPlan extends PureComponent {
             <Col className={styles.mbLarge}>
               <Select
                 mode="combobox"
+                placeholder='请搜索选择保养项目'
+                showArrow={true}
                 className={styles.mrLarge}
                 defaultActiveFirstOption={false}
-                showArrow={false}
                 filterOption={false}
                 value={prjSelect}
                 onSearch={this.getOneModule}

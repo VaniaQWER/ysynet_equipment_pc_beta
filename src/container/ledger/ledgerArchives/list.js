@@ -284,6 +284,32 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
+          <Col span={6}>
+            <FormItem
+              {...formItemLayout}
+              label="购买金额"
+            >
+             <Col span={11}>
+              <FormItem>
+              {getFieldDecorator('buyPriceStart')(
+                <Input type='number'/>
+              )}
+              </FormItem>
+            </Col>
+            <Col span={2}>
+              <span style={{ display: 'inline-block', width: '100%', textAlign: 'center' }}>
+                -
+              </span>
+            </Col>
+            <Col span={11}>
+              <FormItem>
+              {getFieldDecorator('buyPriceEnd')(
+                <Input type='number'/>
+              )}
+              </FormItem>
+            </Col>
+            </FormItem>
+          </Col>
         </Row>
       </Form>
     )
