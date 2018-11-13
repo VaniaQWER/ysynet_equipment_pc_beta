@@ -559,12 +559,14 @@ const codeColumns = [
       //"resultType" --反馈状态 01成功  02失败
       if(record.resultType==='02'){
         return (<span style={{color:'red'}}>{text}</span>)
+      }else{
+        return (<span>{text}</span>)
       }
     }
   },
   {
     title:'资产编号',
-    width: 150,
+    width: 200,
     dataIndex:'assetsRecord'
   },
   {
@@ -609,7 +611,8 @@ class LedgerArchivesList extends Component {
       messageError:"",
       selectedRowKeys:[],
       tableRecords:0,
-      codeModal:false
+      codeModal:false,
+      codeData:[],//生成编码-数据源
     }
   }
   /* 回显返回条件 */
@@ -739,19 +742,31 @@ class LedgerArchivesList extends Component {
   //生成编码
   createCode = () => {
     console.log('生成编码')
-    this.setState({codeModal:true})
-  }
-  //保存编码
-  _saveCode=()=>{
-    request(assets.insertCreateAssetsRecord,{
-      body:JSON.stringify({name:'yuwei'}),
+    request(assets.createAssetsRecord,{
+      body:JSON.stringify({}),
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success:data=>{
         if(data.status){
+          this.setState({codeModal:true,codeData:data.result.rows})
+        }else{
+          message.error(data.msg)
+        }
+      }
+    })
+  }
+  //保存编码
+  _saveCode=()=>{
+    request(assets.insertCreateAssetsRecord,{
+      body:JSON.stringify({list:this.state.codeData}),
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      success:data=>{
+        if(data.status){
           message.success('保存成功')
-          this.setState({codeModal:false})
+          this.setState({codeModal:false,codeData:[]})
         }else{
           message.error(data.msg)
         }
@@ -927,18 +942,13 @@ class LedgerArchivesList extends Component {
             <Row>
               <Button type='primary' onClick={this._saveCode}>保存有效编码</Button>
             </Row>
-            <RemoteTable
-              ref='table'
-              query={{}}
-              url={assets.createAssetsRecord}
-              isList={true}
-              scroll={{x: '100%', y : document.body.clientHeight}}
-              columns={codeColumns}
-              showHeader={true}
+            <Table
               rowKey={'assetsRecordGuid'}
-              style={{marginTop: 10}}
-              size="small"
-            />
+              columns={codeColumns}
+              scroll={{x: '100%', y : document.body.clientHeight}}
+              dataSource={this.state.codeData}>
+            </Table>
+            
           </Modal>
         </Content>
     )

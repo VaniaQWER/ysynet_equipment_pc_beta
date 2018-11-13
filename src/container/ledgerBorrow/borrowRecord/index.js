@@ -155,16 +155,6 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
-            <FormItem
-              {...formItemLayout}
-              label="资产编号"
-            >
-              {getFieldDecorator('assetsRecord')(
-                <Input placeholder='请输入资产编号'/>
-              )}
-            </FormItem>
-          </Col>
           <Col span={6}>
               <FormItem label={`资产编码`} {...formItemLayout}>
                   {getFieldDecorator(`assetsRecord`)(

@@ -135,7 +135,7 @@ class RemoteTable extends Component {
       console.log('screenHeight',screenHeight)
       console.log('T',T)
       console.log('domHeight',domHeight)
-      document.querySelector('.ant-table').querySelector('.ant-table-body').style.height=domHeight+'px';
+      document.querySelector('.ant-table').querySelector('.ant-table-body').style['max-height']=domHeight+'px';
     }
   }
   render () {
