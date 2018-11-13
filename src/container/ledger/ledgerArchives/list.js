@@ -524,6 +524,49 @@ const accessoriesModalColumns = [
     render:(text)=> text ? (text-0).toFixed(2) :''
   },
 ]
+const codeColumns = [
+  {
+    title:'反馈信息',
+    dataIndex:'result',
+    width: 150,
+    render:(text,record)=>{
+      //"resultType" --反馈状态 01成功  02失败
+      if(record.resultType==='02'){
+        return (<span style={{color:'red'}}>{text}</span>)
+      }
+    }
+  },
+  {
+    title:'资产编号',
+    width: 150,
+    dataIndex:'assetsRecord'
+  },
+  {
+    title:'资产名称',
+    width: 150,
+    dataIndex:'equipmentStandardName'
+  },
+  {
+    title:'型号',
+    width: 150,
+    dataIndex:'fmodel'
+  },
+  {
+    title:'规格',
+    width: 150,
+    dataIndex:'spec'
+  },
+  {
+    title:'管理科室',
+    width: 150,
+    dataIndex:'bDeptName'
+  },
+  {
+    title:'使用科室',
+    width: 150,
+    dataIndex:'useDeptName'
+  }
+]
 class LedgerArchivesList extends Component {
   constructor(props) {
     super(props);
@@ -539,7 +582,8 @@ class LedgerArchivesList extends Component {
       query:{...search[pathname]},//"deptType":"MANAGEMENT"
       messageError:"",
       selectedRowKeys:[],
-      tableRecords:0
+      tableRecords:0,
+      codeModal:false
     }
   }
   /* 回显返回条件 */
@@ -669,13 +713,32 @@ class LedgerArchivesList extends Component {
   //生成编码
   createCode = () => {
     console.log('生成编码')
+    this.setState({codeModal:true})
+  }
+  //保存编码
+  _saveCode=()=>{
+    request(assets.insertCreateAssetsRecord,{
+      body:JSON.stringify({name:'yuwei'}),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success:data=>{
+        if(data.status){
+          message.success('保存成功')
+          this.setState({codeModal:false})
+        }else{
+          message.error(data.msg)
+        }
+      }
+    })
   }
 
   render() {
-    const { selectedRowKeys , importDataSource } = this.state;
+    const { selectedRowKeys , importDataSource , tableRecords } = this.state;
     const { history, search } = this.props;
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
+    console.log(tableRecords)
     if(search[pathname]&&search[pathname].useFstate){
       columns[2].filteredValue = search[pathname].useFstate;
     }
@@ -705,7 +768,7 @@ class LedgerArchivesList extends Component {
                   打印 <Icon type="ellipsis" />
                 </Button>
               </Dropdown>
-              {/* <Button type='primary' style={{marginRight:8}} onClick={()=>this.createCode()}>生成编码</Button> */}
+              <Button type='primary' style={{marginRight:8}} onClick={()=>this.createCode()}>生成编码</Button>
             </Col>
             <Col span={4} style={{textAlign:'right'}}>
               <Button type='primary' style={{ marginRight: 16 }}>
@@ -830,6 +893,26 @@ class LedgerArchivesList extends Component {
               dataSource={importDataSource}>
             </Table>
 
+          </Modal>
+          
+          
+          {/* 生成编码弹窗 */}
+          <Modal visible={this.state.codeModal} width={980} onCancel={()=>this.setState({codeModal:false})} footer={null}>
+            <Row>
+              <Button type='primary' onClick={this._saveCode}>保存有效编码</Button>
+            </Row>
+            <RemoteTable
+              ref='table'
+              query={{}}
+              url={assets.createAssetsRecord}
+              isList={true}
+              scroll={{x: '100%', y : document.body.clientHeight}}
+              columns={codeColumns}
+              showHeader={true}
+              rowKey={'assetsRecordGuid'}
+              style={{marginTop: 10}}
+              size="small"
+            />
           </Modal>
         </Content>
     )

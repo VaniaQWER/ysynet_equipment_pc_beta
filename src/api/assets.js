@@ -68,4 +68,8 @@ querySelectRrpairList:`${_local}/rrpairOrderController/selectRrpairList`,//维�
 querySelectMaintainOrderList:`${_local}/maintainOrderController/selectMaintainOrderList`,//保养
 selectTransferDetailList:`${_local}/transferController/selectAssertTransferList`,//转科
 selectEquimentDepreciationPayList:`${_local}/equipmentDepreciation/selectEquimentDepreciationPayList`,//折旧
+
+//资产档案 - 生成编码
+createAssetsRecord:`${_local}/assetsRecordController/createAssetsRecord`,//生成编码
+insertCreateAssetsRecord:`${_local}/assetsRecordController/insertCreateAssetsRecord`,//保存编码
 };

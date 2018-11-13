@@ -76,13 +76,24 @@ class NumberRules extends PureComponent {
       })
       return list
     }
+    _formatCpb = (obj)=>{
+      if(obj['suffix']==='1'){
+        obj['suffix']=obj['suffix_Value']
+        delete obj['suffix_Value']
+      }
+      if(obj['prefix']==='1'){
+        obj['prefix']=obj['prefix_Value'];
+        delete obj['prefix_Value']
+      }
+      return obj
+    }
     //预览
     _previewCode = () => {
       this.props.form.validateFieldsAndScroll((err,values)=>{
           if(!err){
               const { backData } = this.state;
               const { detailList , ...cpbmConfigZc } = values;
-              let postData = { detailList:this._formatDetailList(detailList) , cpbmConfigZc}
+              let postData = { detailList:this._formatDetailList(detailList) , cpbmConfigZc:this._formatCpb(cpbmConfigZc) }
               if(backData&&backData.cpbmConfigGuid){//编辑状态参数添加cpbmConfigGuid
                 postData.cpbmConfigZc.cpbmConfigGuid = backData.cpbmConfigGuid ;
               }
@@ -111,7 +122,7 @@ class NumberRules extends PureComponent {
             if(!err){
                 const { backData } = this.state;
                 const { detailList , ...cpbmConfigZc } = values;
-                let postData = { detailList:this._formatDetailList(detailList) , cpbmConfigZc}
+                let postData = { detailList:this._formatDetailList(detailList) , cpbmConfigZc:this._formatCpb(cpbmConfigZc)}
                 if(backData&&backData.cpbmConfigGuid){//编辑状态参数添加cpbmConfigGuid
                   postData.cpbmConfigZc.cpbmConfigGuid = backData.cpbmConfigGuid ;
                 }
@@ -344,8 +355,8 @@ class NumberRules extends PureComponent {
                             (
                                 <Col span={6}>
                                     <FormItem {...formItemLayout} label='起始数'>
-                                        {getFieldDecorator(`detailList[${k}].configValue`,{
-                                          initialValue:detailList&&detailList[k]?detailList[k].configValue:'',
+                                        {getFieldDecorator(`detailList[${k}].num`,{
+                                          initialValue:detailList&&detailList[k]?detailList[k].num:'',
                                           rules:[{required:true,message:'请输入起始数'}]
                                         })(
                                             <Input/>
@@ -374,7 +385,7 @@ class NumberRules extends PureComponent {
                          style={{marginBottom: 0}}
                         >
                         {getFieldDecorator('fstate',{
-                            initialValue: backData?backData.fstate : '00'
+                            initialValue: backData&&backData.fstate?backData.fstate : '01'
                         })(
                             <RadioGroup>
                                 <Radio value="01">启用规则</Radio>
@@ -405,7 +416,7 @@ class NumberRules extends PureComponent {
                                 (
                                     <Col span={6}>
                                         <FormItem {...formItemLayout} label=' ' colon={false}>
-                                            {getFieldDecorator('prefixValue',{
+                                            {getFieldDecorator('prefix_Value',{
                                                 rules:[{required:true,message:'请输入字符'},{min:1,max:4,message:'请输入1-4字符'}]
                                             })(
                                                 <Input placeholder='请输入前缀字符'/>
@@ -437,7 +448,7 @@ class NumberRules extends PureComponent {
                                 (
                                     <Col span={6}>
                                         <FormItem {...formItemLayout} label=' ' colon={false}>
-                                            {getFieldDecorator('suffixValue',{
+                                            {getFieldDecorator('suffix_Value',{
                                                 rules:[{required:true,message:'请输入字符'},{min:1,max:4,message:'请输入1-4字符'}]
                                             })(
                                                 <Input placeholder='请输入后缀字符'/>
