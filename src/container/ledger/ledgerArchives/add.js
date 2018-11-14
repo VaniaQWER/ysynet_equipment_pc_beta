@@ -330,7 +330,7 @@ class LedgerArchivesAdd extends PureComponent {
     poatData.equipmentPayList = this.state.submitList;
     // 基本数据
     const { publicEquipment , rentingPrice , contractNo, productCountry, product, bDeptCode, deposit, productionDate, useLimit, buyDate, depreciationType, residualValueV,
-       custodian, installPrice, useDeptCode, buyPrice, inDate, spare, tfBrand, monthDepreciationV, depreciationBeginDate } = values; 
+       custodian, installPrice, useDeptCode, buyPrice, inDate, spare, tfBrand, monthDepreciationV, depreciationBeginDate , buyType} = values; 
     poatData.assetsRecord = {
       assetsRecordGuid: this.state.assetsRecordGuid,
       assetsRecord: this.state.assetsRecord,
@@ -356,7 +356,7 @@ class LedgerArchivesAdd extends PureComponent {
       tfBrand: tfBrand,
       monthDepreciationV: monthDepreciationV,
       depreciationBeginDate: depreciationBeginDate,
-      publicEquipment , rentingPrice 
+      publicEquipment , rentingPrice , buyType
     };
     let options = {
       body: JSON.stringify(poatData),
@@ -594,6 +594,7 @@ class LedgerArchivesAdd extends PureComponent {
         >
           <NewAddDictionaryModal ref='formDictionary' data={{record: this.state.record}} />
         </Modal>
+        
         <Card title={`基础信息`}  bordered={false} className="min_card">
           <Row>
             <Col span={24} style={{marginLeft: 56, marginBottom: 10}}>
@@ -805,6 +806,18 @@ class LedgerArchivesAdd extends PureComponent {
                   <Option value={`02`}>进口</Option>
                 </Select>)}
               </FormItem>
+            </Col>
+            <Col span={8}>
+                <FormItem label={`购入方式`} {...formItemLayout}>
+                    {getFieldDecorator(`buyType`,{
+                      initialValue: data.buyType?data.buyType==="00"?'招标采购':'议价采购':null
+                    })(
+                        <Select>
+                          <Option value='00'>招标采购</Option>
+                          <Option value='01'>议价采购</Option>
+                        </Select>
+                    )}
+                </FormItem>
             </Col>
           </Row>
         </Card>

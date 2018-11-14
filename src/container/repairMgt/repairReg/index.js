@@ -46,6 +46,10 @@ class RepairReg extends Component {
       selectPartsData.map((item) => {
         return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
       })
+      if(!this.assetsInfo.state.data){
+        message.error('请填写正确的资产信息！')
+        return false
+      }
       params= {
         assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
@@ -60,6 +64,10 @@ class RepairReg extends Component {
       if(this.state.isAssets){
         if(JSON.stringify(this.state.assetsInfo) === '{}'){
           return message.warning("请先搜索正确的资产信息,谢谢!")
+        }
+        if(!this.assetsInfo.state.data){
+          message.error('请填写正确的资产信息！')
+          return false
         }
         params= {
           assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
@@ -78,6 +86,10 @@ class RepairReg extends Component {
         console.log(params,"无资产报修...使用科室")
       }
     }else{
+      if(!this.assetsInfo.state.data){
+        message.error('请填写正确的资产信息！')
+        return false
+      }
       params= {
         assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
@@ -121,7 +133,12 @@ class RepairReg extends Component {
               <ServiceInfo isEdit={true} ref='serviceInfo' callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
             </Card>
             <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
+            {
+              this.state.assetsInfo?
               <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}} isAddParts={false}/>
+              :
+              <PartsInfo ref='partsInfo' data={{assetsRecordGuid:''}} isAddParts={false}/>
+            }
             </Card>
           </div>
           :

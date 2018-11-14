@@ -78,10 +78,10 @@ class AssetParts extends Component {
 
   componentWillMount (){
     CommonData('UNIT', (data) => {
-      this.setState({unitList:data.rows})
+      this.setState({unitList:data.rows || data })
     })
     CommonData('TF_BRAND', (data) => {
-      this.setState({tfbrandList:data.rows})
+      this.setState({tfbrandList:data.rows || data })
     })
   }
 

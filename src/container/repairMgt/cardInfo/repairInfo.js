@@ -2,9 +2,12 @@
  * @file 报修信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Row, Col, Select, Input, Form } from 'antd';
+import { Row, Col, Select, Input, Form , message} from 'antd';
 import PicWall from '../../../component/picWall'; 
 import PropTypes from 'prop-types';
+import assets from '../../../api/assets';
+import request from '../../../utils/request';
+import queryString from 'querystring';
 import { selectOption,faultDescribeData } from '../../../constants';
 const { Option } = Select;
 const { TextArea } = Input;
@@ -32,8 +35,27 @@ class RepairInfoForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      picList: []
+      picList: [],
+      useDeptList:[]
     }
+  }
+
+  componentDidMount=()=>{
+    //用户关联的使用科室
+    request(assets.queryUserDeptListByUserId,{
+      body:queryString.stringify({}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({useDeptList:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
   }
 
   postData = () => {
@@ -58,9 +80,32 @@ class RepairInfoForm extends PureComponent {
   render() {
     const { isEdit, data } = this.props;
     const { getFieldDecorator } = this.props.form;
+    const { useDeptList } = this.state;
     return (
-      <Row type="flex">
-        <Col {...gridStyle.label}>紧急度：</Col>
+      <div>
+        <Row>
+          <Col {...gridStyle.label}>报修科室：</Col>
+          <Col {...gridStyle.content}>
+            {
+              getFieldDecorator('useDeptGuid',{
+                initialValue: isEdit ? data.useDeptGuid : null
+              })(
+                isEdit ? 
+                  <Select style={{width: '100%'}} allowClear>
+                    {
+                      useDeptList.map((item, index) => (
+                        <Option value={item.value} key={index}> { item.text } </Option>
+                      ))
+                    }
+                  </Select>  
+                  :
+                  <span> { useDeptList.map((item,index)=>item.value===data.useDeptGuid?item.text:'')}  </span> 
+            )} 
+          </Col>
+        </Row>
+      
+        <Row type="flex">
+       <Col {...gridStyle.label}>紧急度：</Col>
         <Col {...gridStyle.content}>
           {
             getFieldDecorator('urgentFlag',{
@@ -78,6 +123,7 @@ class RepairInfoForm extends PureComponent {
                 <span> { selectOption.urgentFlag.map((item,index)=>item.value===data.urgentFlag?item.text:'')}  </span> 
           )} 
         </Col>
+        
         <Col {...gridStyle.label}>是否送修：</Col>
         <Col {...gridStyle.content}>
           { 
@@ -197,6 +243,7 @@ class RepairInfoForm extends PureComponent {
         
         </Col>
       </Row>
+      </div>
     )
   }
 }

@@ -1,5 +1,6 @@
 import { _local, FTP } from './local';
 export default {
+ queryUserDeptListByUserId:`${_local}/dept/queryUserDeptListByUserId` ,//用户关联的使用科室
  userLogin: `${_local}/login/userLogin`,//登录
  picUploadUrl: `${_local}/ftp/post`,//图片上传
  uploadFile: `${_local}/checkInfoController/uploadFile`, //文件上传
@@ -9,6 +10,7 @@ export default {
  selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
  selectAssetsList: `${_local}/assetsRecordController/selectAssetsList`, //查询资产列表
  selectAssetsRecordDetail: `${_local}/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
+ selectRrpairAssetsRecordDetail: `${_local}/rrpairOrderController/selectRrpairAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
  updateAssetsRecordInfo: `${_local}/assetsRecordController/updateAssetsRecordInfo`, // 修改资产档案信息 
  insertAssetsRecord:`${_local}/assetsRecordController/insertAssetsRecord`,//新增/编辑资产档案信息 
  selectEquipmentDeptList:`${_local}/equipmentDepreciation/selectEquipmentDeptList`,//查询共用科室 - 资产折旧分摊比例
@@ -27,6 +29,8 @@ export default {
  accessoriesModalTemplate: `${FTP}/meqmFile/accessoriesModalTemplate.xlsx`, // 下载配件模板
 getDepreciateDetails:`${_local}/equipmentDepreciation/selectEquipmentPayList`,//获取资产档案-这就信息
 submitEquipmentPay:`${_local}/equipmentDepreciation/insertEquipmentPay`,//提交资产档案的资金结构 
+insertCustomFieldZc:`${_local}/assetsRecordController/insertCustomFieldZc`,//资产添加用户自定义字段
+selectCustomFieldZcList:`${_local}/assetsRecordController/selectCustomFieldZcList`,//查询资产的用户自定义字段
 //报修登记
  insertOrUpdateRrpair: `${_local}/rrpairOrderController/insertOrUpdateRrpair`,
  selectRrpairFittingList: `${_local}/rrpairOrderController/selectRrpairFittingList`, //查询维修配件使用列表

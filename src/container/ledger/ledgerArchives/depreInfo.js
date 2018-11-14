@@ -2,7 +2,7 @@
  * 档案管理-资产档案-详情-基本信息-资产信息
  */
 import React, { Component } from 'react';
-import { Form , Card , Input , Row, Col,message,Tooltip ,DatePicker , Button , Select} from 'antd';
+import { Form , Card , Input , Row, Col,message,Tooltip ,DatePicker , Button , Select , Modal ,Icon} from 'antd';
 import './style.css';
 import request from '../../../utils/request';
 import { withRouter } from 'react-router'
@@ -13,8 +13,13 @@ import querystring from 'querystring';
 import moment, { isMoment } from 'moment';
 import _ from 'lodash';
 import { clearNull , limitNum , validMonth } from '../../../utils/tools';
-
 import { depreciationTypeData } from '../../../constants';
+const formItemLayoutWithOutLabel = {
+  wrapperCol: {
+    xs: { span: 24, offset: 0 },
+    sm: { span: 24, offset: 0 },
+  },
+};
 const FormItem = Form.Item;
 const { Option } = Select;
 const formItemLayout = {
@@ -43,6 +48,7 @@ class DepreInfo extends Component {
     submitList:[],
     value:1,
     editable:false,
+    definedMoreModal:false,
   }
 
   componentWillMount () {
@@ -177,16 +183,48 @@ class DepreInfo extends Component {
       this.setState({editable:!this.state.editable})
     }
   }
+
+  //更多自定义弹窗 -
+  definedMore = ()=>{
+    this.setState({definedMoreModal:true})
+  }
   
+  //自定义表单提交
+  _submitDefineMore = ()=>{
+    let values = this.defineForm.props.form.getFieldsValue();
+    delete values['keys'];
+    let postData ={
+      assetsRecordGuid:this.props.match.params.id,
+      list:values.list.filter(item=>item)
+    }
+    console.log(JSON.stringify(postData))
+    request(assets.insertCustomFieldZc,{
+      body:JSON.stringify(postData),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      success: data => {
+        if(data.status){
+          message.success('保存成功！')
+          this.setState({definedMoreModal:false})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+
   render () {
     const { getFieldDecorator } = this.props.form;
     const { AssetInfoData } = this.props;
-    const { editable } = this.state;
+    const { editable , definedMoreModal } = this.state;
     const header= (
       <Row>
         <Col span={12}>折旧信息</Col>
         <Col span={12} style={{textAlign:'right'}}>
           <Button type='primary' style={{marginRight:15}} onClick={()=>this.handleSubmit()}>{editable? '保存':'编辑'}</Button>
+          <Button style={{marginRight:15}} onClick={this.definedMore}>更多自定义字段</Button>
         </Col>
       </Row>
     )
@@ -283,6 +321,13 @@ class DepreInfo extends Component {
             </Col>  
           </Row>
         </Form>
+        <Modal title='自定义字段' visible={definedMoreModal} onOk={this._submitDefineMore} onCancel={()=>this.setState({definedMoreModal:false})}>
+              {
+                definedMoreModal?
+                <DefineFiledsWapper assetsRecordGuid={this.props.match.params.id} wrappedComponentRef={(form) => this.defineForm = form} ></DefineFiledsWapper>
+                :null
+              }
+        </Modal>      
       </Card>
     )
   }
@@ -293,4 +338,132 @@ class DepreInfo extends Component {
   updateAssetsRecordInfo: (url,values,success,type) => ledgerService.getInfo(url,values,success,type),
 }))(Form.create()(DepreInfo)));
 
+class DefineFileds extends Component{
 
+  state={
+    backData:null
+  }
+  componentDidMount(){
+    //查询自定义字段
+    request(assets.selectCustomFieldZcList,{
+      body:querystring.stringify({assetsRecordGuid:this.props.assetsRecordGuid}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          if(data.result.length){
+
+            this.setState({backData:
+              {
+                list:data.result
+              }
+            })
+          }
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+  remove = (k) => {
+    const { form } = this.props;
+    // can use data-binding to get
+    const keys = form.getFieldValue('keys');
+    const list = form.getFieldValue('list');
+    // We need at least one passenger
+    if (keys.length === 1) {
+      return;
+    }
+    // can use data-binding to set
+    form.setFieldsValue({
+      keys: keys.filter(key => key !== k),
+      list:list.filter((item,index) => index !== k),
+    });
+
+  }
+  add = () => {
+    const { form } = this.props;
+    // can use data-binding to get
+    const keys = form.getFieldValue('keys');
+    const nextKeys = keys.concat(keys[keys.length-1]+1);
+    // can use data-binding to set
+    // important! notify form to detect changes
+    form.setFieldsValue({
+      keys: nextKeys,
+    });
+  }
+  
+  getTep = ()=>{
+    const { backData } = this.state;
+    const { getFieldDecorator , getFieldValue } = this.props.form;
+    const keys = getFieldValue('keys');
+    if(keys.length){
+      let items =  keys.map((k, index) => {
+        return (
+          <Row 
+          key={index}
+          >
+            <Col span={10}>
+              <FormItem
+              {...formItemLayoutWithOutLabel}
+              >
+                  {getFieldDecorator(`list[${index}].columnName`,{
+                    initialValue:backData&&backData.list[k]?backData.list[k].columnName:''//k.columnName//
+                  })(
+                    <Input placeholder="请输入字段名" style={{ width: '80%' }} />
+                  )}
+              </FormItem>
+            </Col>
+            <Col span={14}>
+              <FormItem
+              {...formItemLayoutWithOutLabel}
+              >
+              {getFieldDecorator(`list[${index}].columnValue`,{
+                initialValue:backData&&backData.list[k]?backData.list[k].columnValue:''//k.columnValue///backData&&backData.list[k]?backData.list[k].columnValue:''
+              })(
+                <Input placeholder="请输入字段值" style={{ width: '70%', marginRight: 8 }} />
+              )}
+  
+              {/* 新增按钮 */}
+              { index === keys.length -1 && index<=20 ? (
+                <Icon
+                  style={{marginRight: 8}}
+                  className="dynamic-delete-button"
+                  type="plus-circle-o"
+                  onClick={() => this.add(index)}
+                />
+              ) : null}
+              {/* 删除按钮 */}
+              {keys.length > 1 ? (
+                <Icon
+                  style={{marginRight: 8}}
+                  className="dynamic-delete-button"
+                  type="minus-circle-o"
+                  disabled={keys.length === 1}
+                  onClick={() => this.remove(index)}
+                />
+              ) : null}
+            </FormItem>
+            </Col>
+          </Row>
+        );
+      });
+      return items;
+    }
+   
+  }
+  render(){
+    const { getFieldDecorator } = this.props.form;
+    const { backData } = this.state;
+    getFieldDecorator('keys', { initialValue: backData&&backData.list? backData.list.map((item,index)=>index):[0] });
+    return(
+      <div>
+        {this.getTep()}
+      </div>
+    )
+  }
+}
+
+const DefineFiledsWapper = Form.create()(DefineFileds)

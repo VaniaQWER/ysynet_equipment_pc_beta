@@ -35,8 +35,9 @@ class AssetsInfoForm extends PureComponent {
     }
     this.onSearch = this.onSearch.bind(this);
   }
+  
   async onSearch (val) {
-    operationService.getInfo(assets.selectAssetsRecordDetail,querystring.stringify({assetsRecord: val}),(data)=>{
+    operationService.getInfo(assets.selectRrpairAssetsRecordDetail,querystring.stringify({assetsRecord: val}),(data)=>{
       if(data.status){
         this.setState({
           data: data.result
@@ -44,6 +45,10 @@ class AssetsInfoForm extends PureComponent {
         this.props.callBack(data.result,true)
       }
       else{
+        this.props.callBack( null ,false)
+        this.setState({
+          data: null
+        });
         message.error(data.msg)
       }
     },{
@@ -67,6 +72,7 @@ class AssetsInfoForm extends PureComponent {
     const { isAssets, data } = this.state;
     const { isEdit, form } = this.props;
     const { getFieldDecorator } = form;
+    console.log(data,'assetsInfodata')
     return (
       <Row type="flex">
         <Col span={4} style={{textAlign: 'right', height: 50, lineHeight: '50px' }}>资产编码/二维码：</Col>
@@ -98,7 +104,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('equipmentStandardName')(
-            <span>{ data.equipmentStandardName }</span>
+            <span>{ data?data.equipmentStandardName :''}</span>
           )
         }
         </Col>
@@ -106,7 +112,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('fmodel')(
-            <span>{ data.fmodel }</span>
+            <span>{ data?data.fmodel :''}</span>
           )
         }
         </Col>
@@ -114,7 +120,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('spec')(
-            <span>{ data.spec }</span>
+            <span>{ data?data.spec :''}</span>
           )
         }
         </Col>
@@ -122,7 +128,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('productType')(
-            <span>{ data.productType === null || data.productType === undefined ? '': data.productType === "01" ? "医疗设备" : "其他" }</span>
+            <span>{ data?data.productType === null || data.productType === undefined ? '': data.productType === "01" ? "医疗设备" : "其他" :''}</span>
           )
         }
         </Col>
@@ -130,7 +136,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('useDept')(
-            <span>{ data.useDept }</span>
+            <span>{ data?data.useDept:'' }</span>
           )
         }
         </Col>
@@ -138,7 +144,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('custodian')(
-            <span>{ data.custodian }</span>
+            <span>{ data?data.custodian:'' }</span>
           )
         }
         </Col>
@@ -146,7 +152,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('bDept')(
-            <span>{ data.bDept }</span>
+            <span>{ data?data.bDept:'' }</span>
           )
         }
         </Col>
@@ -154,7 +160,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('deposit')(
-            <span>{ data.deposit }</span>
+            <span>{ data?data.deposit:'' }</span>
           )
         }
         </Col>
@@ -162,7 +168,7 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.content}>
         {
           getFieldDecorator('guaranteeFlag')(
-            <span>{ data.guaranteeFlag===null || data.guaranteeFlag === undefined ?  '': data.guaranteeFlag === "00" ? "出保" : "在保" }</span>
+            <span>{ data?data.guaranteeFlag===null || data.guaranteeFlag === undefined ?  '': data.guaranteeFlag === "00" ? "出保" : "在保" :''}</span>
           )
         }
         </Col>

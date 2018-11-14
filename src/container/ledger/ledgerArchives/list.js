@@ -11,6 +11,7 @@ import { ledgerData,productTypeData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import moment from 'moment';
+import _ from 'lodash';
 const Confirm = Modal.confirm;
 const RangePicker = DatePicker.RangePicker;
 const { Content } = Layout;
@@ -95,6 +96,10 @@ class SearchForm extends Component {
     manageSelect:[],
     outDeptOptions: []
   }
+  constructor(props){
+    super(props)
+    this.fetchSelect = _.debounce(this.fetchSelect,500)
+  }
   componentDidMount = () => {
     this.getManageSelect();
     this.outDeptSelect();
@@ -157,6 +162,26 @@ class SearchForm extends Component {
     this.props.form.resetFields();
     this.props.query({});
     this.props.handleReset();
+  }
+
+  //管理科室
+  fetchSelect = (input, option)=>{
+    debugger
+    request(assets.selectUseDeptList,{
+      body:queryString.stringify({deptType:"01",deptName:input}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({manageSelect:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+    return false//option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
   }
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -223,10 +248,9 @@ class SearchForm extends Component {
                 initialValue:""
               })(
                 <Select
+                onSearch={this.fetchSelect}
                 showSearch
                 placeholder={'请选择'}
-                optionFilterProp="children"
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     <Option value="" key={-1}>全部</Option>
                     {
