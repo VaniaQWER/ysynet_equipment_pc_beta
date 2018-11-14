@@ -44,6 +44,18 @@ class LoanForm extends Component{
             error: (err) => console.log(err)
         });
     }
+    fetchSelect=(input)=>{
+      request(ledgerBorrow.selectUseDeptList, {     //借出科室
+        body: queryString.stringify({ deptType: "00" , deptName:input}),
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: (data) => {
+            this.setState({ loanData: data.result });
+        },
+        error: (err) => console.log(err)
+    });
+    }
     
     render() {
         const {loanData} = this.state;
@@ -63,10 +75,12 @@ class LoanForm extends Component{
                                 }]
                             })(
                                 <Select
+                                    onSearch={this.fetchSelect}
                                     placeholder="请选择借用科室"
                                     showSearch
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                    filterOption={false}
+                                    // optionFilterProp="children"
+                                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     {loanData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>

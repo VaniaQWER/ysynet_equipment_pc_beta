@@ -171,6 +171,22 @@ class AddContract extends Component {
     }
     return false
   }
+  fetchSelect=(input)=>{
+    request(ledger.selectUseDeptList,{
+      body:queryString.stringify({deptType:"01",deptName:input}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({manageSelect:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
   
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -278,10 +294,14 @@ class AddContract extends Component {
                     rules:[{required:true,message:'请选择管理科室'}]
                   })(
                     <Select 
+                      // showSearch
+                      // placeholder={'请选择'}
+                      // optionFilterProp="children"
+                      // filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                      onSearch={this.fetchSelect}
                       showSearch
                       placeholder={'请选择'}
-                      optionFilterProp="children"
-                      filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                      filterOption={false}
                       onSelect={(value, option)=>{
                         console.log(option.props.children)
                         if(option.props.children){

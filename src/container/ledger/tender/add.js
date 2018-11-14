@@ -153,7 +153,22 @@ class AddTender extends Component {
     }
     return false
   }
-
+  fetchSelect = (input)=>{
+    request(ledger.selectUseDeptList,{
+      body:queryString.stringify({deptType:"01",deptName:input}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({manageSelect:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
     const { editStatusText , fillBackData } = this.state; //  editStatus 编辑状态 true为编辑  false 为新增
@@ -189,10 +204,14 @@ class AddTender extends Component {
                     rules:[{required:true,message:'请选择管理科室'}]
                   })(
                     <Select 
+                      // showSearch
+                      // placeholder={'请选择'}
+                      // optionFilterProp="children"
+                      // filterOption={(input, option)=>this.filterOption(input, option)}
+                      onSearch={this.fetchSelect}
                       showSearch
                       placeholder={'请选择'}
-                      optionFilterProp="children"
-                      filterOption={(input, option)=>this.filterOption(input, option)}
+                      filterOption={false}
                       >
                           <Option value="" key={-1}>全部</Option>
                           {

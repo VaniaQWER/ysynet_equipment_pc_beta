@@ -118,6 +118,19 @@ class Loan extends Component {
             error: err => console.log(err)
         })
     }
+    fetchSelect=(input)=>{
+      request(ledgerBorrow.mgtDeptList, {     //管理科室
+          body:queryString.stringify({deptName:input}),
+          headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: (data) => {
+              let manageDeptGuid = data.result.length === 1? data.result[0].value : '';
+              this.setState({ mgtDeptData: data.result, manageDeptGuid });
+          },
+          error: (err) => console.log(err)
+      });
+    }
 
     render() {
         let {visible, dataSource, mgtDeptData, manageDeptGuid, clearOff} = this.state;
@@ -197,11 +210,13 @@ class Loan extends Component {
                             <div className="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-17">
                                 <div className="ant-form-item-control">
                                     <Select
+                                        showSearch
                                         onChange={(value) => { this.setState({ manageDeptGuid: value }) }}
+                                        onSearch={this.fetchSelect}
                                         placeholder="请选择管理科室" 
                                         value = {manageDeptGuid}
-                                        defaultActiveFirstOption = {false}
-                                        allowClear={true}  
+                                        // defaultActiveFirstOption = {false}
+                                        // allowClear={true}  
                                         filterOption={false}
                                     >
                                         {mgtDeptData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}

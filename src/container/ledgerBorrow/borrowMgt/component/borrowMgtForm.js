@@ -88,6 +88,32 @@ class BorrowMgtForm extends Component {
         };
         return [startTime, endTime];
     }
+    fetchSelect=(input)=>{
+      request(ledgerBorrow.mgtDeptList, {     //管理科室
+          headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body:queryString.stringify({deptName:input}),
+          success: (data) => {
+              let mgtDeptData = [{text: "全部", value: ""}, ...data.result];
+              this.setState({ mgtDeptData });
+          },
+          error: (err) => console.log(err)
+      });
+    }
+    fetchUseSelect = (input)=>{
+      request(ledgerBorrow.selectUseDeptList, {     //借出科室
+        body: queryString.stringify({ deptType: "00" ,deptName:input}),
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: (data) => {
+            let loanData = [{text: "全部", value: ""}, ...data.result];
+            this.setState({ loanData });
+        },
+        error: (err) => console.log(err)
+    });
+    }
     render() {
         let {getFieldDecorator} = this.props.form;
         let {display, mgtDeptData, loanData} = this.state;
@@ -112,10 +138,13 @@ class BorrowMgtForm extends Component {
                         <FormItem label={`管理科室`} {...formItemLayout}>
                             {getFieldDecorator(`bDeptGuid`)(
                                 <Select 
-                                    showSearch
+                                onSearch={this.fetchSelect}
+                                showSearch
+                                filterOption={false}
+                                    // showSearch
                                     placeholder={'请选择管理科室'}
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                    // optionFilterProp="children"
+                                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     {mgtDeptData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>
@@ -126,10 +155,12 @@ class BorrowMgtForm extends Component {
                         <FormItem label={`借用科室`} {...formItemLayout}>
                             {getFieldDecorator(`deptGuid`)(
                                 <Select
-                                    placeholder="请选择借用科室"
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                    showSearch
+                                  onSearch={this.fetchUseSelect}
+                                  placeholder="请选择借用科室"
+                                  filterOption={false}
+                                  showSearch
+                                    // optionFilterProp="children"
+                                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                 >
                                     {loanData.map( d => <Option value={d.value} key={d.text} >{d.text}</Option> )}
                                 </Select>

@@ -99,7 +99,39 @@ class SearchForm extends Component {
       error: err => {console.log(err)}
     })
   }
+  fetchSelect=(input)=>{
+    request(storage.selectUseDeptList,{
+      body:queryString.stringify({deptType:"01",deptName:input}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+                this.setState({manageSelect:data.result})
+        }else{
+                message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
 
+  fetchUseSelect=(input)=>{
+    request(storage.selectUseDeptList,{
+      body:queryString.stringify({deptType:"00",deptName:input}),
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+              if(data.status){
+                      this.setState({outDeptOptions:data.result})
+              }else{
+                      message.error(data.msg)
+              }
+      },
+      error: err => {console.log(err)}
+    })
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
     return (
@@ -111,10 +143,14 @@ class SearchForm extends Component {
                       initialValue: ""
                   })(
                     <Select  
-                        showSearch
-                        placeholder={'请选择'}
-                        optionFilterProp="children"
-                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    onSearch={this.fetchSelect}
+                    showSearch
+                    placeholder={'请选择'}
+                    filterOption={false}
+                        // showSearch
+                        // placeholder={'请选择'}
+                        // optionFilterProp="children"
+                        // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
                         <Option value="" key={-1}>全部</Option>
                         {
@@ -132,10 +168,14 @@ class SearchForm extends Component {
                       initialValue: ""
                   })(
                     <Select 
+                        onSearch={this.fetchUseSelect}
                         showSearch
                         placeholder={'请选择'}
-                        optionFilterProp="children"
-                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        filterOption={false}
+                        // showSearch
+                        // placeholder={'请选择'}
+                        // optionFilterProp="children"
+                        // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                         onSelect={(val)=>this.getAdress(val)}
                       >
                       <Option value="" key={-1}>全部</Option>

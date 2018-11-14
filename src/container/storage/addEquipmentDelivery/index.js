@@ -129,7 +129,15 @@ class SearchForm extends Component {
     }
     return false
   }
-
+  fetchSelect = (input)=>{
+    fetchData(storage.selectUseDeptList,querystring.stringify({deptType:"01",deptName:input}),(data) => {
+      if(data){
+        this.setState({
+          managementDeptSelect:data.result
+        })
+      }
+    })
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
     const { orgSelect , managementDeptSelect , deptSelect , adressSelect} =this.state ;
@@ -168,10 +176,14 @@ class SearchForm extends Component {
                 }]
               })(
                 <Select
+                  onSearch={this.fetchSelect}
                   showSearch
-                  placeholder={'请选择管理部门'}
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>this.filterOption(input, option)}
+                  placeholder={'请选择'}
+                  filterOption={false}
+                  // showSearch
+                  // placeholder={'请选择管理部门'}
+                  // optionFilterProp="children"
+                  // filterOption={(input, option) =>this.filterOption(input, option)}
                   // onSelect={()=>this.props.form.setFieldsValue({tfAddress:""})}
                 >
                   {managementDeptOptions}

@@ -391,6 +391,10 @@ class NewTransfer extends PureComponent {
     this.setState({newAddressEdit:false, outDeptguid:val, outDeptname: option.props.children })
   }
 
+  //转出科室
+  fetchSelect = (input)=>{
+
+  }
 
   render() {
     const { productVisible, ProductType, mobile, ProductModalCallBackKeys, ProductTabledata, data } = this.state;
@@ -458,8 +462,9 @@ class NewTransfer extends PureComponent {
                 })(
                   <Select
                   showSearch
-                  // onSearch={this.handleChangeRollOut}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filterOption={false}
+                  onSearch={this.handleChangeRollOut}
+                  // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   style={{width: 200}}
                   onSelect={(val,option)=>this.setRollOut(val,option)}
                   placeholder={`请搜索选择转出科室`}
@@ -480,8 +485,9 @@ class NewTransfer extends PureComponent {
                 })(
                   <Select
                   showSearch
-                  // onSearch={this.handleChangeInto}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  filterOption={false}
+                  onSearch={this.handleChangeInto}
+                  // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   style={{width: 200}}
                   placeholder={`请搜索选择转入科室`}
                   disabled={this.state.outDeptguid?false:true}
