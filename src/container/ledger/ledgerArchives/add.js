@@ -812,7 +812,7 @@ class LedgerArchivesAdd extends PureComponent {
                     {getFieldDecorator(`buyType`,{
                       initialValue: data.buyType?data.buyType==="00"?'招标采购':'议价采购':null
                     })(
-                        <Select>
+                        <Select style={{width:200}}>
                           <Option value='00'>招标采购</Option>
                           <Option value='01'>议价采购</Option>
                         </Select>

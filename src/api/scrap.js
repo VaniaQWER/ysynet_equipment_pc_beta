@@ -28,3 +28,12 @@ export const scrapListUrl = `${_local}/scrap/findScrapList`;
 export async function queryScrapDetailById(options) {
   return promiseRequest(`${_local}/scrap/findScrapDetail`, options);
 }
+
+// 报废详情 - 打印 
+export async function printScrapDetailById(options) {
+  return promiseRequest(`${_local}/scrap/printScrapInfo`, options);
+}
+
+export const scrap ={
+  printScrapInfo:`${_local}/scrap/printScrapInfo`,//打印报修记录详情
+}

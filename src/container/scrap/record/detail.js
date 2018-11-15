@@ -2,7 +2,7 @@
  * @file 报废 - 报废管理 - 报废详情
  */
 import React, { PureComponent } from 'react';
-import { Layout, Tabs, Card } from 'antd';
+import { Layout, Tabs, Card , Button} from 'antd';
 import AssetsInfo from '../common/assetsInfo';  
 import ScrapInfo from '../common/scrapInfo';  
 import AppraisalInfo from '../common/appraisalInfo';
@@ -10,7 +10,7 @@ import ImplementInfo from '../common/implementInfo';
 import { withRouter } from 'react-router-dom';
 import querystring from 'querystring';
 import { productTypeData } from '../../../constants';
-import { queryScrapDetailById } from '../../../api/scrap';
+import { queryScrapDetailById , scrap } from '../../../api/scrap';
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
 class ScrapRecordDetail extends PureComponent {
@@ -55,11 +55,17 @@ class ScrapRecordDetail extends PureComponent {
       this.setState({ assetsData, scrapData, appraisalData, executeData })
     }
   }
+  printDetail = ()=>{
+    console.log(scrap.printScrapInfo)
+    let id = this.props.match.params.id;
+    window.open(`${scrap.printScrapInfo}?scrapGuid=${id}`)
+  }
   render() {
     const { assetsData, scrapData, appraisalData, executeData } = this.state;
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
-        <Card title='资产信息'><AssetsInfo data={assetsData}/></Card>
+        <Card title='资产信息' extra={<Button type='primary' onClick={this.printDetail}>打印</Button>}>
+        <AssetsInfo data={assetsData}/></Card>
         <Tabs defaultActiveKey="2">
           <TabPane tab="报废信息" key="2">
             <ScrapInfo data={scrapData}/>

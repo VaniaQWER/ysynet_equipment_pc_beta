@@ -40,9 +40,12 @@ class EquipProcurementDetails extends Component {
     params:this.props.match.params.id,
     visible:false,
     userName:"",//指定人姓名
-    validInfo:""
+    validInfo:"",
+    showPrintSelect:false,//打印选择下拉框
+    printList:[],
+    printId:null
   }
-  componentWillMount(){
+  componentDidMount(){
     console.log(this.props.match.params.id)
     request(deptwork.queryApplyZc,{
       body:JSON.stringify({applyId:this.props.match.params.id}),
@@ -74,12 +77,33 @@ class EquipProcurementDetails extends Component {
       },
       error: err => {console.log(err)}
     })
+
+    request(deptwork.selectApplyDetailComboBox,{
+      body:queryString.stringify({ applyId:this.props.match.params.id}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({
+            printList:data.result
+          })
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
   }
   filterButtonOption = () =>{
     const { baseInfo , params } = this.state;
     const {fstate} = baseInfo;
-    if(fstate==="20"||fstate==="10"||fstate==="90"){//审批通过
-      return null
+    if(fstate==="20"||fstate==="10"||fstate==="90"){//审批通过d
+      return (
+        <span style={{float:'right'}}>
+          <Button type='primary' onClick={()=>this.setState({showPrintSelect:true})}>选择打印</Button>
+        </span>
+      )
     }else if(fstate==="80"){//审批不通过
       return (
         <span>
@@ -186,6 +210,12 @@ class EquipProcurementDetails extends Component {
       error: err => {console.log(err)}
     })
   }
+  //打印详情页面
+  printDetail = ()=>{
+    console.log('print')
+    const { printId } = this.state;
+    window.open(`${deptwork.printApplyZc}?applyDetailId=${printId}`)
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
     const { baseInfo , userList , visible , validInfo } = this.state;
@@ -240,9 +270,6 @@ class EquipProcurementDetails extends Component {
             ))
             :null
           }
-
-
-          
         </div>
           {//fstate  只有通过状态或不通过状态显示一下内容 (baseInfo.fstate==="20" ||  baseInfo.fstate==="80") 
             baseInfo.commentList?
@@ -308,6 +335,23 @@ class EquipProcurementDetails extends Component {
               </FormItem>
             </Form>
         </Modal>
+      
+          <Modal title='选择打印' visible={this.state.showPrintSelect} onCancel={()=>this.setState({showPrintSelect:false})}
+          onOk={this.printDetail}>
+            {
+              this.state.showPrintSelect &&
+              <FormItem label='打印申请单' {...formItemLayout}>
+                <Select onSelect={(value)=>this.setState({printId:value})} style={{width:200}}>
+                  {
+                    this.state.printList&& 
+                    this.state.printList.map((item,index)=>(
+                      <Option key={index} value={item.applyDetailId}>{item.materialName}{item.recommendFmodel?`-${item.recommendFmodel}`:null}</Option>
+                    ))
+                  }
+                </Select>
+              </FormItem>
+            }
+          </Modal>
       </Content>
     )
   }

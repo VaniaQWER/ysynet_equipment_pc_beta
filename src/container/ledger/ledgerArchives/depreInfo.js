@@ -191,28 +191,31 @@ class DepreInfo extends Component {
   
   //自定义表单提交
   _submitDefineMore = ()=>{
-    let values = this.defineForm.props.form.getFieldsValue();
-    delete values['keys'];
-    let postData ={
-      assetsRecordGuid:this.props.match.params.id,
-      list:values.list.filter(item=>item)
-    }
-    console.log(JSON.stringify(postData))
-    request(assets.insertCustomFieldZc,{
-      body:JSON.stringify(postData),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      success: data => {
-        if(data.status){
-          message.success('保存成功！')
-          this.setState({definedMoreModal:false})
-        }else{
-          message.error(data.msg)
+    this.defineForm.props.form.validateFields((errs,values)=>{
+      if(!errs){
+        delete values['keys'];
+        let postData ={
+          assetsRecordGuid:this.props.match.params.id,
+          list:values.list.filter(item=>item)
         }
-      },
-      error: err => {console.log(err)}
-    })
+        console.log(JSON.stringify(postData))
+        request(assets.insertCustomFieldZc,{
+          body:JSON.stringify(postData),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          success: data => {
+            if(data.status){
+              message.success('保存成功！')
+              this.setState({definedMoreModal:false})
+            }else{
+              message.error(data.msg)
+            }
+          },
+          error: err => {console.log(err)}
+        })
+      }
+    });
   }
 
   render () {
@@ -369,17 +372,18 @@ class DefineFileds extends Component{
   }
   remove = (k) => {
     const { form } = this.props;
-    // can use data-binding to get
     const keys = form.getFieldValue('keys');
     const list = form.getFieldValue('list');
-    // We need at least one passenger
     if (keys.length === 1) {
       return;
     }
-    // can use data-binding to set
+    // debuggerlet keyList =  let retList = 
+    keys.splice(k,1);//keys.filter(key => key !== k); 
+    list.splice(k,1);//list.filter((item,index) => index !== k);
+    console.log('remove before list', list)
     form.setFieldsValue({
-      keys: keys.filter(key => key !== k),
-      list:list.filter((item,index) => index !== k),
+      keys,
+      list,
     });
 
   }
@@ -399,6 +403,10 @@ class DefineFileds extends Component{
     const { backData } = this.state;
     const { getFieldDecorator , getFieldValue } = this.props.form;
     const keys = getFieldValue('keys');
+    // const list = getFieldValue('list');
+    console.log('form keys' , keys)
+    console.log('form list' , this.props.form.getFieldsValue() )
+
     if(keys.length){
       let items =  keys.map((k, index) => {
         return (
@@ -410,7 +418,7 @@ class DefineFileds extends Component{
               {...formItemLayoutWithOutLabel}
               >
                   {getFieldDecorator(`list[${index}].columnName`,{
-                    initialValue:backData&&backData.list[k]?backData.list[k].columnName:''//k.columnName//
+                    initialValue:backData&&backData.list[index]?backData.list[index].columnName:''//k.columnName//
                   })(
                     <Input placeholder="请输入字段名" style={{ width: '80%' }} />
                   )}
@@ -421,7 +429,8 @@ class DefineFileds extends Component{
               {...formItemLayoutWithOutLabel}
               >
               {getFieldDecorator(`list[${index}].columnValue`,{
-                initialValue:backData&&backData.list[k]?backData.list[k].columnValue:''//k.columnValue///backData&&backData.list[k]?backData.list[k].columnValue:''
+                initialValue:backData&&backData.list[index]?backData.list[index].columnValue:'',//k.columnValue///backData&&backData.list[k]?backData.list[k].columnValue:''
+                rules:[{required:true,message:'请输入字段值'}]
               })(
                 <Input placeholder="请输入字段值" style={{ width: '70%', marginRight: 8 }} />
               )}
@@ -458,6 +467,7 @@ class DefineFileds extends Component{
     const { getFieldDecorator } = this.props.form;
     const { backData } = this.state;
     getFieldDecorator('keys', { initialValue: backData&&backData.list? backData.list.map((item,index)=>index):[0] });
+    // getFieldDecorator('list', { initialValue: backData&&backData.list? backData.list:[{columnName: "1", columnValue: "1"}] });
     return(
       <div>
         {this.getTep()}

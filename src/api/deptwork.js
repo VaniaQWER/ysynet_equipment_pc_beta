@@ -11,5 +11,7 @@ const deptwork = {
   queryApplyZc:`${_local}/applyZcController/queryApplyZc`,//申请详情
   checkApproval:`${_local}/applyZcController/checkApproval`,//验证是否需要制定审批人
   updateApplyZc:`${_local}/applyZcController/updateApplyZc`,//修改申请
+  printApplyZc:`${_local}/applyZcController/printApplyZc`,//打印申请单详情
+  selectApplyDetailComboBox:`${_local}/applyZcController/selectApplyDetailComboBox`,//查询可以打印的申请单明细下拉框
 }
 export default deptwork;
