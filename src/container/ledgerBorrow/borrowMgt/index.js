@@ -198,8 +198,7 @@ class BorrowMgt extends Component {
                     }}
                     query={query}
                     url={ledgerBorrow.BorrowRecordList}
-                    isList={true}
-                    scroll={{x: '150%',y : document.body.clientHeight}}
+                    scroll={{x: '150%'}}
                     showHeader={true}
                     columns={columns}
                     size="small"

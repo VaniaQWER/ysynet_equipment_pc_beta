@@ -100,6 +100,8 @@ class AppraisalDetail extends PureComponent {
               message.success('鉴定完成, 即将跳回至鉴定选择页面', 1, () => {
                 this.props.history.push({pathname: '/scrap/scrapAppraisal'})
               })
+            }else{
+              message.warning(data.msg)
             }
             this.setState({ isLoading: false })
           },

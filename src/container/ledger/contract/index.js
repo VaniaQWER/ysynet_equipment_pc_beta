@@ -267,8 +267,7 @@ class Contract extends Component {
             onChange={this.changeQueryTable}
             query={this.state.query}
             url={ledger.queryContractList}
-            isList={true}
-            scroll={{x: '100%', y : document.body.clientHeight}}
+            scroll={{x: '100%'}}
             columns={columns}
             showHeader={true}
             rowKey={'contractId'}

@@ -197,8 +197,7 @@ class EnginCount extends PureComponent{
               ref='table'
               query={query.bDeptId?query:{}}
               url={operation.selectEngineerCount}
-              isList={true}
-              scroll={{x: '100%', y : document.body.clientHeight}}
+              scroll={{x: '100%'}}
               columns={columns}
               showHeader={true}
               rowKey={'RN'}

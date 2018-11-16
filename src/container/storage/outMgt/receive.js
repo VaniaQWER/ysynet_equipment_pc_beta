@@ -345,8 +345,8 @@ class Receive extends Component {
     let adressItem  = this.state.adressOptions.filter((item)=>{
       return item.deptGuid===values.addressGuid
     })
-    let assetsRecords = this.state.dataSource.map((item)=> {return item.assetsRecord})
-    let json = {...values,assetsRecords,tfAddress: adressItem.length>0 ? adressItem[0].address:''};
+    let assetsRecordGuids = this.state.dataSource.map((item)=> {return item.assetsRecordGuid})
+    let json = {...values,assetsRecordGuids,tfAddress: adressItem.length>0 ? adressItem[0].address:''};
 
     console.log('出库数据内容',JSON.stringify(json))
     request(storage.addOutportAsset,{

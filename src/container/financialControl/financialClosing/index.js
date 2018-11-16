@@ -303,8 +303,7 @@ class FinancialClosing extends Component{
                     columns={columns}
                     url={financialControl.selectInvoiceByMonth}
                     rowKey='invoiceId'
-                    isList={true}
-                    scroll={{ x: '100%' , y : document.body.clientHeight}}
+                    scroll={{ x: '100%' }}
                 />:null
 								}
 								

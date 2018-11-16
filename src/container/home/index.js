@@ -79,9 +79,9 @@ class Home extends React.Component {
     const sortMenu = this.sortMenu(menu.menuList);
     return (
       <Spin spinning={this.state.isLoading} size="large">
-      <Layout style={{minHeight: '100vh'}}>
-        <BasicLayout menuList={sortMenu} collapsed={this.state.collapsed}/>
-        <Layout>
+      <Layout > {/* style={{minHeight: '100vh',position: 'relative'}} */}
+        <BasicLayout  menuList={sortMenu} collapsed={this.state.collapsed}/> {/* style={{height:'100vh',overflowY: 'scroll'}} */}
+        <Layout >{/* style={{height: '100vh',overflowY: 'scroll'}} */}
           <Header style={{ background: '#fff', padding: '0 20px 0 0' }} className='ysynet-header'>
             <Icon 
               onClick={() => {
@@ -112,7 +112,8 @@ class Home extends React.Component {
             </Switch>
           }
           <Footer style={{ textAlign: 'center', padding:'5px 0' }}>
-            <div className={'ysynet-footer-link'}>
+          {/*  */}
+            {/* <div className={'ysynet-footer-link'}>
               <ul>
                 <li><a>医商云官网</a></li>
                 <li><a>医商云供应链平台</a></li>
@@ -120,6 +121,8 @@ class Home extends React.Component {
               </ul>
             </div>
             <div className={'ysynet-footer-copyright'}>医商云设备平台 ©2017 Created by 普华信联前端部</div>
+          */}
+         {/*  */}
           </Footer>
         </Layout>  
       </Layout>

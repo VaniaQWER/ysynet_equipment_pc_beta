@@ -865,7 +865,7 @@ class LedgerArchivesList extends Component {
             ref='table'
             query={this.state.query}
             url={assets.selectAssetsList}
-            isList={true}
+            // isList={true}
             scroll={{x: '100%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}

@@ -296,8 +296,7 @@ class Expenses extends Component {
             ref='table'
             query={this.state.query}
             url={benefitAnalysis.selectBenefitPayList}
-            isList={true}
-            scroll={{x: '120%', y : document.body.clientHeight}}
+            scroll={{x: '120%'}}
             columns={columns}
             showHeader={true}
             rowKey={'RN'}

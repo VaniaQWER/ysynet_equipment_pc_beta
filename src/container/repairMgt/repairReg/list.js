@@ -100,8 +100,7 @@ class RepairRegList extends Component {
             onChange={this.changeQueryTable}
             query={this.state.query}
             url={assets.selectRrpairList}
-            isList={true}
-            scroll={{x: '150%', y : document.body.clientHeight - 110 }}
+            scroll={{x: '150%'}}
             columns={columns}
             rowKey={'RN'}
             pagesize={20}

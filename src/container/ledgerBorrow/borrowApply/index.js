@@ -131,8 +131,7 @@ class BorrowApply extends PureComponent {
           ref="table"
           query={query?query:{borrowType:"02",menuFstate:'borrowApply'}}
           url={ledgerBorrow.BorrowRecordList}
-          isList={true}
-          scroll={{x: '150%', y : document.body.clientHeight}}
+          scroll={{x: '150%'}}
           showHeader={true}
           columns={columns}
           size="small"

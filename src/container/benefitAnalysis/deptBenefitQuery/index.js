@@ -303,8 +303,7 @@ class DeptBenefitQuery extends PureComponent{
               ref='table'
               query={query.bDeptId?query:{}}
               url={benefitAnalysis.selectBenefitByMonth}
-              isList={true}
-              scroll={{x: '120%', y : document.body.clientHeight }}
+              scroll={{x: '120%'}}
               columns={columns}
               showHeader={true}
               rowKey={'RN'}

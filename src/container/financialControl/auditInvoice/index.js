@@ -467,8 +467,7 @@ class AuditInvoice extends Component {
             ref='table'
             query={this.state.query}
             url={financialControl.selectZCInvoiceList}
-            isList={true}
-            scroll={{x: '100%', y : document.body.clientHeight }}
+            scroll={{x: '100%'}}
             columns={columns}
             showHeader={true}
             rowKey={'invoiceId'}

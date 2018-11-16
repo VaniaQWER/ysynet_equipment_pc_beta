@@ -245,8 +245,7 @@ class ApprovalSetting extends Component {
           ref='table'
           query={this.state.query}
           url={basicdata.selectZCApprovalList}
-          isList={true}
-          scroll={{x: '100%', y : document.body.clientHeight }}
+          scroll={{x: '100%' }}
           columns={columns}
           showHeader={true}
           rowKey={'approvalGuid'}

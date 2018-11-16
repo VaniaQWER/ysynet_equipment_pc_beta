@@ -380,8 +380,7 @@ class meterStandList extends Component{
             showHeader={true}
             ref={ (node) => { this.tabs = node } }
             url={meterStand.meterRecordList}
-            isList={true}
-            scroll={{x: '120%', y : document.body.clientHeight }}
+            scroll={{x: '120%'}}
             columns={columns}
             size="small"
             rowKey={'RN'}

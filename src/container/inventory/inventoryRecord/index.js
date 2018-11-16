@@ -321,8 +321,7 @@ class inventoryRecord extends React.Component{
                   onChange={this.changeQueryTable}
                   query={this.state.query}
                   url={inventory.queryStockCountList}
-                  isList={true}
-                  scroll={{x: '100%', y : document.body.clientHeight}}
+                  scroll={{x: '100%'}}
                   columns={columns}
                   rowKey={'stockCountId'}
                   showHeader={true}

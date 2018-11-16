@@ -93,7 +93,7 @@ class MaintainTmpModal extends React.Component{
               ref='table'
               url={url}
               query={this.state.query}
-              scroll={{x: '100%', y : document.body.clientHeight - 110 }}
+              scroll={{x: '100%'}}
               columns={columns}
               rowKey={'id'}
               rowSelection={rowSelection}

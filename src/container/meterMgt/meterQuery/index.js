@@ -347,8 +347,7 @@ changeQueryToggle = () =>{
             size: 'small',
             showTotal: (total, range) => `总共${total}个项目`
           }}
-          isList={true}
-          scroll={{x: '120%', y : document.body.clientHeight}}
+          scroll={{x: '120%'}}
           columns={columns}
           size="small"
           rowKey={'RN'}

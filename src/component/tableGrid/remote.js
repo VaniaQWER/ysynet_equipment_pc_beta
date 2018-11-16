@@ -121,23 +121,23 @@ class RemoteTable extends Component {
   }
   componentDidMount() {
     this.fetch();
-    if(this.props.isList){
-      this.setDomHeight()
-    }
+    // if(this.props.isList){
+    //   this.setDomHeight()
+    // }
   }
-  setDomHeight = () =>{
-    const screenHeight = document.body.clientHeight;//当前屏幕高度
-    const dom = document.querySelector('.ant-table');
-    if(dom){
-      //设置高度
-      const T =  document.querySelector('.ant-table-wrapper').offsetTop ;
-      const domHeight = screenHeight - T - 100 - 72;
-      console.log('screenHeight',screenHeight)
-      console.log('T',T)
-      console.log('domHeight',domHeight)
-      document.querySelector('.ant-table').querySelector('.ant-table-body').style['max-height']=domHeight+'px';
-    }
-  }
+  // setDomHeight = () =>{
+  //   const screenHeight = document.body.clientHeight;//当前屏幕高度
+  //   const dom = document.querySelector('.ant-table');
+  //   if(dom){
+  //     //设置高度
+  //     const T =  document.querySelector('.ant-table-wrapper').offsetTop ;
+  //     const domHeight = screenHeight - T - 100 - 72;
+  //     console.log('screenHeight',screenHeight)
+  //     console.log('T',T)
+  //     console.log('domHeight',domHeight)
+  //     document.querySelector('.ant-table').querySelector('.ant-table-body').style['max-height']=domHeight+'px';
+  //   }
+  // }
   render () {
     const { columns, rowKey, rowClassName, 
             rowSelection, scroll, footer,showHeader,title, pagination } = this.props;   

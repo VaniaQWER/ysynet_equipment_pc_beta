@@ -644,8 +644,7 @@ class SuppliesClassify extends Component {
                   url={basicdata.queryAssetsTypeList}
                   ref='table'
                   query={query}
-                  isList={true}
-                  scroll={{x: '180%',y : document.body.clientHeight}}
+                  scroll={{x: '180%'}}
                   columns={[...columns]}
                   rowKey={'assetsRecordGuid'}
                   showHeader={true}
