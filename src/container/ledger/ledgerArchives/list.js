@@ -678,7 +678,7 @@ class LedgerArchivesList extends Component {
   query = (val) => {
     const { setSearch, history ,search } = this.props;
     const pathname = history.location.pathname;
-    let values = Object.assign({...val},{...search[pathname]})
+    let values = Object.assign({...search[pathname]},{...val})
     setSearch(pathname, values);
     this.refs.table.fetch(val)
   }
