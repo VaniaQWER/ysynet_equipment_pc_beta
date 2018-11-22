@@ -78,9 +78,10 @@ class RepairInfoForm extends PureComponent {
     return str;
   }
   render() {
-    const { isEdit, data } = this.props;
+    const { isEdit, data , partEdit } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { useDeptList } = this.state;
+    console.log('data',data)
     return (
       <div>
         <Row>
@@ -91,7 +92,7 @@ class RepairInfoForm extends PureComponent {
                 initialValue: isEdit ? data.useDeptGuid : null
               })(
                 isEdit ? 
-                  <Select style={{width: '100%'}} allowClear>
+                  <Select style={{width: '100%'}} allowClear disabled={partEdit}>
                     {
                       useDeptList.map((item, index) => (
                         <Option value={item.value} key={index}> { item.text } </Option>

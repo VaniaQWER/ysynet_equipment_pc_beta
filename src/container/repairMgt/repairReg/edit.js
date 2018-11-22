@@ -124,7 +124,7 @@ class RepairReg extends Component {
           {
             JSON.stringify(this.state.selectRrpairDetailIsOrder) === '{}' ? null 
             :
-            <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.selectRrpairDetailIsOrder}/>
+            <RepairInfo isEdit={true} partEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst} data={this.state.selectRrpairDetailIsOrder}/>
           } 
         
         </Card>
