@@ -72,13 +72,30 @@ class SearchForm extends Component {
     orgSelect:[],//医疗机构
     managementDeptSelect:[],//管理部门
     deptSelect:[],//收货科室
-    adressSelect:[]
+    adressSelect:[],
+    contractSelect: []// 合同编号
   }
 
   componentWillMount(){
     this.setOrgSelect();
   }
-
+  // 获取合同编号下拉框
+  genContract = (value) => {
+    this.props.form.setFieldsValue({ 'contractNo': '' });
+    fetchData(storage.selectContractCheckList,querystring.stringify({ fOrgId: value }), data => {
+      if(data.status){
+        if(data.result.length){
+            this.setState({ 
+              contractSelect: data.result
+            });
+        }else{
+          this.setState({
+            contractSelect: [{ text: '暂无合同', value: '' }]
+          })
+        }
+      }
+    })
+  }
   //获取供应商下拉框
   setOrgSelect = () => {
     fetchData(storage.selectFOrgList,querystring.stringify({}),(data) => {
@@ -140,12 +157,12 @@ class SearchForm extends Component {
   }
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { orgSelect , managementDeptSelect , deptSelect , adressSelect} =this.state ;
+    const { orgSelect , managementDeptSelect , deptSelect , adressSelect, contractSelect } =this.state ;
     const options = orgSelect.map(d => <Option value={d.orgId.toString()} key={d.orgId}>{d.orgName}</Option>);
     const managementDeptOptions = managementDeptSelect.map(d => <Option value={d.value.toString()} key={d.value}>{d.text}</Option>);
     const deptSelectOptions = deptSelect.length>0 ? deptSelect.map(d => <Option value={d.value.toString()} key={d.value}>{d.text}</Option>):null;
     const adressSelectOptions = adressSelect.length>0 ? adressSelect.map(d => <Option value={d.text.toString()} key={d.value}>{d.text}</Option>):null;
-   
+    const contractOptions = contractSelect.length ? contractSelect.map(d => <Option value={d.value.toString()} key={d.value}>{d.text}</Option>):[]
     return  (
       <Form>
         <Row>
@@ -161,7 +178,7 @@ class SearchForm extends Component {
                   placeholder={'请选择供应商'}
                   optionFilterProp="children"
                   filterOption={(input, option) =>this.filterOption(input, option)}
-                  // onSelect={(e)=>this.getNextSelect(e)}
+                  onSelect={(value)=>this.genContract(value)}
                   >
                   {options}
                 </Select>
@@ -195,7 +212,14 @@ class SearchForm extends Component {
             <FormItem label={`合同编号`} {...formItemLayout}>
               {getFieldDecorator(`contractNo`, {
               })(
-                <Input placeholder="请输入合同编号"/>
+                <Select
+                  showSearch
+                  placeholder={'请选择'}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>this.filterOption(input, option)}
+                >
+                  {contractOptions}
+                </Select>
               )}
             </FormItem>
           </Col>

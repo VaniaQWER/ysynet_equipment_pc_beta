@@ -216,6 +216,66 @@ const columns_4 = [
   }
 ];
 
+const columns_5 = [
+  {
+    title:'序号',
+    dataIndex:'index',
+    width:50,
+    render:(text,record,index)=>`${index+1}`
+  },
+  {
+    title: '计量检测编号',
+    dataIndex: 'recordNo',
+    width: 200
+  },
+  {
+    title: '检测日期',
+    dataIndex: 'measureDate',
+    width: 200
+  },
+  {
+    title: '检测结果',
+    dataIndex: 'results',
+    width: 200,
+    render: (text) =>{
+      return text === '00' ? <span style={{ color: 'green' }}>合格</span>: text === '01'? <span style={{ color: 'red' }}>不合格</span>:''
+    }
+  },
+  {
+    title: '检定人',
+    dataIndex: 'verdictUserName',
+    width: 200
+  }
+];
+const columns_6 = [
+  {
+    title:'序号',
+    dataIndex:'index',
+    width:50,
+    render:(text,record,index)=>`${index+1}`
+  },
+  {
+    title: '合同编号',
+    dataIndex: 'contractNo',
+    width: 200
+  },
+  {
+    title: "合同名称",
+    dataIndex: "contractName",
+    width: 250
+  },
+  {
+    title: '供应商名称',
+    dataIndex: 'fOrgName',
+    width: 200
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    width: 200
+  }
+];
+
 class Lifecycle extends Component {
     render(){
       return(
@@ -241,6 +301,22 @@ class Lifecycle extends Component {
               rowKey={'guid'}
               query={{assetsRecordGuid:this.props.match.params.id}}
               subrowKey={'equipmendepreciationPayGuid'}/>
+            </TabPane>
+            <TabPane tab="计量信息" key="5">
+              <TabTable 
+              url={assets.selectMeterRecordList} 
+              columns={columns_5} 
+              rowKey={'recordInfoGuid'}
+              query={{assetsRecordGuid:this.props.match.params.id}}
+              />
+            </TabPane>
+            <TabPane tab="合同信息" key="6">
+              <TabTable 
+              url={assets.selectContractRecordList} 
+              columns={columns_6} 
+              rowKey={'contractId'}
+              query={{assetsRecordGuid:this.props.match.params.id}}
+              />
             </TabPane>
           </Tabs>
         </Content>

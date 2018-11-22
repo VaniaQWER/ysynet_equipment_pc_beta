@@ -5,14 +5,14 @@ import { withRouter } from 'react-router-dom';
 import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
-// import ServiceInfo from '../cardInfo/serviceInfo';
-// import PartsInfo from '../cardInfo/partsInfo'; 
+import ServiceInfo from '../cardInfo/serviceInfo';
+import PartsInfo from '../cardInfo/partsInfo'; 
 import assets from '../../../api/assets';
 import { operation as operationService } from '../../../service';
 /**
- * @file 资产运维-维修管理-报修登记
+ * @file 资产运维-维修管理-维修录入
  */
-class RepairReg extends Component {
+class RepairInput extends Component {
   state = {
     assetsInfo: {},
     isAssets:true, //判断有资产报修 还缺无资产报修的状态
@@ -41,11 +41,11 @@ class RepairReg extends Component {
         return message.warning("请先搜索正确的资产信息,谢谢!")
       }
       //配件信息提交参数
-      /* const selectPartsData = this.refs.partsInfo.state.dataSource;      
+      const selectPartsData = this.refs.partsInfo.state.dataSource;      
       const assetsExtendGuids = [];
       selectPartsData.map((item) => {
         return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
-      }) */
+      })
       if(!this.assetsInfo.state.data){
         message.error('请填写正确的资产信息！')
         return false
@@ -55,9 +55,9 @@ class RepairReg extends Component {
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
         isRepairs:true,
         orderFstate:this.state.orderFstate,
+        assetsExtendGuids:assetsExtendGuids,
         ...this.repairInfo.postData(),    //报修信息提交数据
-        // assetsExtendGuids:assetsExtendGuids,
-        // ...this.refs.serviceInfo.postData() //使用科室没有维修信息  维修信息提交数据
+        ...this.refs.serviceInfo.postData() //使用科室没有维修信息  维修信息提交数据
       };
       console.log(params,"有资产报修...管理科室")
     }else if(type === "syks") { // 使用科室
@@ -110,7 +110,7 @@ class RepairReg extends Component {
   }
 
   render() {
-    // const { type } = this.state;
+    const { type } = this.state;
     return (
       <div className='ysynet-repair ysynet-content '>
         <Card title="报修进度" extra={[
@@ -127,7 +127,7 @@ class RepairReg extends Component {
           <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
         </Card>
         {
-         /*  type === "glks" ? 
+          type === "glks" ? 
           <div>
             <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
               <ServiceInfo isEdit={true} ref='serviceInfo' callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
@@ -142,7 +142,7 @@ class RepairReg extends Component {
             </Card>
           </div>
           :
-          null */
+          null
         }
         <BackTop />
       </div>  
@@ -150,8 +150,7 @@ class RepairReg extends Component {
   }
 }
 
-//export default connect(state => state)(RepairReg);
 
 export default withRouter(connect(state => state, dispatch => ({
   insertOrRrpair: (url,values,success,type) => operationService.getInfo(url,values,success,type),
-}))(RepairReg));
+}))(RepairInput));

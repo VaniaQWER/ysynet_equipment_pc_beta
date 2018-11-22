@@ -6,6 +6,7 @@ const storage = {
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
   selectDeliveryForgList:`${_local}/delivery/selectDeliveryForgList`,//供应商下拉框
   getAdress:`${_local}/dept/selectDeptAddress`,//科室选择后获取下拉框
+  selectContractCheckList: `${_local}/contractController/selectContractCheckList`,//查询合同下拉框
   //我的送货单
   selectZCDeliveryList:`${_local}/delivery/selectZCDeliveryList`,//查询我的送货单列表
   selectZCDeliveryDetail:`${_local}/delivery/selectZCDeliveryDetail`,//查询我的送货单详情
