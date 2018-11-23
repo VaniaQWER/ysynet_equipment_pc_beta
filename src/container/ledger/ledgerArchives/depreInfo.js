@@ -418,7 +418,7 @@ class DefineFileds extends Component{
               {...formItemLayoutWithOutLabel}
               >
                   {getFieldDecorator(`list[${index}].columnName`,{
-                    initialValue:backData&&backData.list[index]?backData.list[index].columnName:''//k.columnName//
+                    initialValue:backData&&backData.list[index]?backData.list[index].columnName:''
                   })(
                     <Input placeholder="请输入字段名" style={{ width: '80%' }} />
                   )}
@@ -429,8 +429,8 @@ class DefineFileds extends Component{
               {...formItemLayoutWithOutLabel}
               >
               {getFieldDecorator(`list[${index}].columnValue`,{
-                initialValue:backData&&backData.list[index]?backData.list[index].columnValue:'',//k.columnValue///backData&&backData.list[k]?backData.list[k].columnValue:''
-                rules:[{required:true,message:'请输入字段值'}]
+                initialValue:backData&&backData.list[index]?backData.list[index].columnValue:'',
+                // rules:[{required:true,message:'请输入字段值'}]
               })(
                 <Input placeholder="请输入字段值" style={{ width: '70%', marginRight: 8 }} />
               )}
