@@ -135,6 +135,7 @@ class NumberRules extends PureComponent {
                   },
                   success: data => {
                     if(data.status){
+                      this.setState({backData:data.result})
                       message.success('保存成功！')
                     }else{
                       message.error(data.msg)
@@ -489,12 +490,12 @@ class NumberRules extends PureComponent {
                         <div style={{float: 'left',padding:15}}>
                           <Button onClick={this._previewCode}>预览</Button>
                           {preViewData?preViewData.prefix?<Tag style={{marginLeft:8}}>{preViewData.prefix}</Tag>:<Tag style={{marginLeft:8}}>暂无前缀</Tag>:null } 
-                          {preViewData?preViewData.suffix?<Tag style={{marginLeft:8}}>{preViewData.suffix}</Tag>:<Tag style={{marginLeft:8}}>暂无后缀</Tag>:null }
                           {
                             preViewData&&preViewData.detail&&preViewData.detail.map((item,index)=>(
                                 <Tag key={index} style={{marginLeft:8}}>{item.value}</Tag>
                             ))
                           }
+                          {preViewData?preViewData.suffix?<Tag style={{marginLeft:8}}>{preViewData.suffix}</Tag>:<Tag style={{marginLeft:8}}>暂无后缀</Tag>:null }
                         </div>              
                         <div style={styles.wapper}>
                             <Button type='primary' onClick={this.onSubmit} style={styles.buttonGap}>保存</Button>
