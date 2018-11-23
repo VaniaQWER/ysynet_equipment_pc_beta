@@ -5,5 +5,6 @@ module.exports = function override(config, env) {
   // config = rewireLess.withLoaderOptions({
   //   //modifyVars: { "@primary-color": "red" },
   // })(config, env);
+          },
   return config;
 };
