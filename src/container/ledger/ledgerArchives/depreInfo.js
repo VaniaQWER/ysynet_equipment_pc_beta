@@ -377,9 +377,8 @@ class DefineFileds extends Component{
     if (keys.length === 1) {
       return;
     }
-    // debuggerlet keyList =  let retList = 
-    keys.splice(k,1);//keys.filter(key => key !== k); 
-    list.splice(k,1);//list.filter((item,index) => index !== k);
+    keys.splice(k,1);
+    list.splice(k,1);
     console.log('remove before list', list)
     form.setFieldsValue({
       keys,
@@ -389,11 +388,8 @@ class DefineFileds extends Component{
   }
   add = () => {
     const { form } = this.props;
-    // can use data-binding to get
     const keys = form.getFieldValue('keys');
     const nextKeys = keys.concat(keys[keys.length-1]+1);
-    // can use data-binding to set
-    // important! notify form to detect changes
     form.setFieldsValue({
       keys: nextKeys,
     });
@@ -403,10 +399,6 @@ class DefineFileds extends Component{
     const { backData } = this.state;
     const { getFieldDecorator , getFieldValue } = this.props.form;
     const keys = getFieldValue('keys');
-    // const list = getFieldValue('list');
-    console.log('form keys' , keys)
-    console.log('form list' , this.props.form.getFieldsValue() )
-
     if(keys.length){
       let items =  keys.map((k, index) => {
         return (
@@ -436,7 +428,7 @@ class DefineFileds extends Component{
               )}
   
               {/* 新增按钮 */}
-              { index === keys.length -1 && index<=20 ? (
+              { index === keys.length -1 && index<19 ? (
                 <Icon
                   style={{marginRight: 8}}
                   className="dynamic-delete-button"
