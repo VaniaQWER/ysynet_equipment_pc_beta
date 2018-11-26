@@ -216,6 +216,7 @@ class SearchForm extends Component {
                   showSearch
                   placeholder={'请选择'}
                   optionFilterProp="children"
+                  onSelect={(value,option) => this.props.callback(option.props.children)}
                   filterOption={(input, option) =>this.filterOption(input, option)}
                 >
                   {contractOptions}
@@ -262,6 +263,7 @@ class AddEquimentDelivery extends Component{
     orgSelect:[],//医疗机构
     managementDeptSelect:[],//管理部门
     deptSelect:[],//收货科室
+    contractNo: null,// 合同编号
     dataSource:[
       {editState:"00",guid:-2,
       materialName:null,//产品名称
@@ -320,6 +322,7 @@ class AddEquimentDelivery extends Component{
           values.lxr = linkman;
           values.lxdh = linktel;
         }
+        values.contractNo = this.state.contractNo;
         let dataSource = [].concat(this.state.dataSource);
         for(let i=0;i<dataSource.length;i++){
           if(dataSource[i].guid === -2){
@@ -739,7 +742,10 @@ class AddEquimentDelivery extends Component{
 
     return (
         <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-            <WrapperForm ref='form'/>
+            <WrapperForm 
+              ref='form'
+              callback={(contractNo) => this.setState({ contractNo })}
+            />
             <Table 
               columns={columns}
               dataSource={dataSource}
