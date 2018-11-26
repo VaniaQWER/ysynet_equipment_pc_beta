@@ -17,5 +17,6 @@ export default {
       { exact: true, hasBread: true, path: '/basicdata/workplaceConfig', name: '工作台配置', component: asyncComponent(() => import("../container/basicdata/workplaceConfig"))},
       { exact: true, hasBread: true, path: '/basicdata/numberRules', name: '编码规则', component: asyncComponent(() => import("../container/basicdata/numberRules"))},
       { exact: true, hasBread: true, path: '/basicdata/configCtrl', name: '打印配置', component: asyncComponent(() => import("../container/basicdata/configCtrl"))},
+      { exact: true, hasBread: true, path: '/basicdata/serviceProvider', name: '我的服务商', component: asyncComponent(() => import("../container/basicdata/serviceProvider"))},
     ]
 }

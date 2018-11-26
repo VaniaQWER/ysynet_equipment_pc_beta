@@ -37,7 +37,13 @@ class AssetsInfoForm extends PureComponent {
   }
   
   async onSearch (val) {
-    operationService.getInfo(assets.selectRrpairAssetsRecordDetail,querystring.stringify({assetsRecord: val}),(data)=>{
+    let values = {
+      assetsRecord: val
+    }
+    if(this.props.repairInput){
+      values.repairInput = true;
+    }
+    operationService.getInfo(assets.selectRrpairAssetsRecordDetail,querystring.stringify(values),(data)=>{
       if(data.status){
         this.setState({
           data: data.result
@@ -135,8 +141,8 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>使用科室：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('deptName')(
-            <span>{ data?data.deptName:'' }</span>
+          getFieldDecorator('useDept')(
+            <span>{ data?data.useDept:'' }</span>
           )
         }
         </Col>
@@ -151,16 +157,16 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>管理科室：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('mDeptName')(
-            <span>{ data?data.mDeptName:'' }</span>
+          getFieldDecorator('bDept')(
+            <span>{ data?data.bDept:'' }</span>
           )
         }
         </Col>
         <Col {...gridStyle.label}>存放地址：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('deposit')(
-            <span>{ data?data.deposit:'' }</span>
+          getFieldDecorator('address')(
+            <span>{ data?data.address:'' }</span>
           )
         }
         </Col>
