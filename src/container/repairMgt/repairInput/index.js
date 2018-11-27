@@ -95,7 +95,7 @@ class RepairInput extends Component {
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
         isRepairs:true,
         orderFstate:'10',
-        ...this.repairInfo.postData()
+        ...this.repairInfo.postData(),
       };
     }
     console.log("报修登记接口数据",params)
@@ -124,7 +124,7 @@ class RepairInput extends Component {
           <AssetsInfo type={this.state.type} repairInput={true} wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data,isAssets)=>this.setState({ assetsInfo : data,isAssets:isAssets})}/>
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
-          <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
+          <RepairInfo isEdit={true} assetsInfo={this.state.assetsInfo} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
         </Card>
         {
           type === "glks" ? 

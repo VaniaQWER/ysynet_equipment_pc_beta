@@ -33,8 +33,8 @@ export const repairCommonDataSource = [
     width: 100
   },
   {
-    title: '使用科室',
-    dataIndex: 'deptName',
+    title: '报修科室',
+    dataIndex: 'useDeptName',
     width: 100,
   },
   {

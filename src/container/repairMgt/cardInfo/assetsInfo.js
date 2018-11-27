@@ -78,7 +78,7 @@ class AssetsInfoForm extends PureComponent {
     const { isAssets, data } = this.state;
     const { isEdit, form } = this.props;
     const { getFieldDecorator } = form;
-    console.log(data,'assetsInfodata')
+    // console.log(data,'assetsInfodata')
     return (
       <Row type="flex">
         <Col span={4} style={{textAlign: 'right', height: 50, lineHeight: '50px' }}>资产编码/二维码：</Col>

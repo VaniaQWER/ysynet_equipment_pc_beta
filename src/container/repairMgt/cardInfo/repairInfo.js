@@ -66,6 +66,7 @@ class RepairInfoForm extends PureComponent {
       })
     }
     const data = this.props.form.getFieldsValue();
+    data.useDeptCode = this.props.assetsInfo.useDeptCode;
     return {...data,tfAccessory:tfAccessory};
   }
   showText = (res)=>{
@@ -78,10 +79,11 @@ class RepairInfoForm extends PureComponent {
     return str;
   }
   render() {
-    const { isEdit, data , partEdit } = this.props;
+    const { isEdit, data , partEdit, assetsInfo } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { useDeptList } = this.state;
-    console.log('data',data)
+    // console.log('data',data);
+    console.log(assetsInfo,'assetInfo')
     return (
       <div>
         <Row>
@@ -89,10 +91,10 @@ class RepairInfoForm extends PureComponent {
           <Col {...gridStyle.content}>
             {
               getFieldDecorator('useDeptGuid',{
-                initialValue: isEdit ? data.useDeptGuid : null
+                initialValue: isEdit && assetsInfo.useDept ? assetsInfo.useDept: isEdit? data.useDeptGuid : null
               })(
                 isEdit ? 
-                  <Select style={{width: '100%'}} allowClear disabled={partEdit}>
+                  <Select style={{width: '100%'}} allowClear disabled={assetsInfo.useDept ? Boolean(assetsInfo.useDept) : partEdit}>
                     {
                       useDeptList.map((item, index) => (
                         <Option value={item.value} key={index}> { item.text } </Option>
