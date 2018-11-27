@@ -54,7 +54,7 @@ class RepairInput extends Component {
         assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
         isRepairs:true,
-        orderFstate:this.state.orderFstate,
+        orderFstate:'90',
         assetsExtendGuids:assetsExtendGuids,
         ...this.repairInfo.postData(),    //报修信息提交数据
         ...this.refs.serviceInfo.postData() //使用科室没有维修信息  维修信息提交数据
@@ -73,14 +73,14 @@ class RepairInput extends Component {
           assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
           equipmentCode:this.assetsInfo.state.data.equipmentCode,
           isRepairs:true,
-          orderFstate:'10',
+          orderFstate:'90',
           ...this.repairInfo.postData()
         };
         console.log(params,"有资产报修...使用科室")
       }else{
         params= {
           isRepairs:true,
-          orderFstate:'10',
+          orderFstate:'90',
           ...this.repairInfo.postData(),
         };
         console.log(params,"无资产报修...使用科室")
@@ -94,7 +94,7 @@ class RepairInput extends Component {
         assetsRecordGuid:this.assetsInfo.state.data.assetsRecordGuid,
         equipmentCode:this.assetsInfo.state.data.equipmentCode,
         isRepairs:true,
-        orderFstate:'10',
+        orderFstate:'90',
         ...this.repairInfo.postData(),
       };
     }
@@ -110,7 +110,7 @@ class RepairInput extends Component {
   }
 
   render() {
-    const { type } = this.state;
+    // const { type } = this.state;
     return (
       <div className='ysynet-repair ysynet-content '>
         <Card title="报修进度" extra={[
@@ -126,24 +126,17 @@ class RepairInput extends Component {
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
           <RepairInfo isEdit={true} assetsInfo={this.state.assetsInfo} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
         </Card>
+        <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
+          <ServiceInfo isEdit={true} ref='serviceInfo' repairInput={true} callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
+        </Card>
+        <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
         {
-          type === "glks" ? 
-          <div>
-            <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
-              <ServiceInfo isEdit={true} ref='serviceInfo' callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
-            </Card>
-            <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
-            {
-              this.state.assetsInfo?
-              <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}} isAddParts={false}/>
-              :
-              <PartsInfo ref='partsInfo' data={{assetsRecordGuid:''}} isAddParts={false}/>
-            }
-            </Card>
-          </div>
+          this.state.assetsInfo?
+          <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid}} isAddParts={false}/>
           :
-          null
+          <PartsInfo ref='partsInfo' data={{assetsRecordGuid:''}} isAddParts={false}/>
         }
+        </Card>
         <BackTop />
       </div>  
     )

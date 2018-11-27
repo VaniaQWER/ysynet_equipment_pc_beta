@@ -272,7 +272,7 @@ class ServiceInfo extends PureComponent {
   }
   render() {
     const { rrpairType } = this.state;
-    const { isEdit, data ,callBack} = this.props;
+    const { isEdit, data ,callBack, repairInput } = this.props;
     console.log(data,'1')
     const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
     return (
@@ -291,7 +291,7 @@ class ServiceInfo extends PureComponent {
               //this.props.setRrpairType(e.target.value);
             }}>
               <RadioButton value="00" disabled={!isEdit && rrpairType !== '00'}>内修</RadioButton>
-              <RadioButton value="01" disabled={!isEdit && rrpairType !== '01'}>外修</RadioButton>
+              <RadioButton value="01" disabled={ repairInput ? repairInput: !isEdit && rrpairType !== '01'}>外修</RadioButton>
             </RadioGroup>
           </Col>
         </Row>
