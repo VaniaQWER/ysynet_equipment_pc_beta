@@ -21,7 +21,9 @@ export default {
  selectCertInfoList: `${_local}/assetsRecordController/selectCertInfoList`, // 根据资产编号assetsRecord 查询资产附件列表
  selectEqOperationInfoList: `${_local}/assetsRecordController/selectEqOperationInfoList`, // 根据资产GUID 查询资产档案操作记录列表
  importEquipments: `${_local}/equipmentAdd/importEquipments`, // 资产信息导入
- assetsFileUpLoad: `${_local}/assetsRecordController/assetsFileUpLoad`, // 资产附件上传
+ assetsFileUpLoad: `${_local}/assetsRecordController/assetsFileUpLoad`, // 资产附件上传 
+ insertAssetsFile:`${_local}/assetsRecordController/insertAssetsFile`,// 新增资产附件- 弹窗
+ assetsUploadFile:`${_local}/assetsRecordController/uploadFile`,//资产附件上传-现用
  deleteAssetsFile: `${_local}/assetsRecordController/deleteAssetsFile`, // 删除资产附件信息
  printEquipmentQrcode: `${_local}/equipmentAdd/printEquipmentQrcode`, // 打码
  importAssetsTemplate: `${FTP}/meqmFile/importAssetsTemplate.xlsx`, // 下载模板

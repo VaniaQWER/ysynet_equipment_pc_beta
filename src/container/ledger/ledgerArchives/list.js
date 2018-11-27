@@ -202,7 +202,6 @@ class SearchForm extends Component {
   render(){
     const { getFieldDecorator } = this.props.form;
     const { display } = this.state;
-    console.log(this.props);
     return (
       <Form  onSubmit={this.handleSearch}>
         <Row>
@@ -642,7 +641,6 @@ class LedgerArchivesList extends Component {
     super(props);
     const { search, history } = this.props;
     const pathname = history.location.pathname;
-    console.log(search[pathname])
     this.state = {
       loading: false,
       showProgress:false,//导入模态框的
@@ -661,7 +659,6 @@ class LedgerArchivesList extends Component {
   async componentDidMount () {
     const { search, history } = this.props;
     const pathname = history.location.pathname;
-    console.log(search[pathname])
     if (search[pathname]) {
       //找出表单的name 然后set
       let values = this.form.props.form.getFieldsValue();
@@ -715,7 +712,6 @@ class LedgerArchivesList extends Component {
         window.open(assets.printEquipmentQrcode+"?"+queryString.stringify(json))
       }
     })
-    // console.log('发出的数据内容',JSON.stringify(json))
     this.setState({selectedRowKeys:[]})
   }
   //导出资产
@@ -727,7 +723,6 @@ class LedgerArchivesList extends Component {
   onSubmitImport = () => {
     let arr = this.state.importDataSource;
     let filed =  this.state.importModalType ==="01" ?  "assetsRecordImportList":"partsDtoList";
-    // console.log(JSON.stringify({[filed]:arr,}))
     if(arr.length){
       request(assets.addAssets+'?'+queryString.stringify({importType:this.state.importModalType}),{
         body:JSON.stringify({[filed]:arr}),
@@ -783,7 +778,6 @@ class LedgerArchivesList extends Component {
   }
   //生成编码
   createCode = () => {
-    console.log('生成编码')
     request(assets.createAssetsRecord,{
       body:JSON.stringify({}),
       headers:{
@@ -817,11 +811,10 @@ class LedgerArchivesList extends Component {
   }
 
   render() {
-    const { selectedRowKeys , importDataSource , tableRecords } = this.state;
+    const { selectedRowKeys , importDataSource } = this.state;
     const { history, search } = this.props;
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
-    console.log(tableRecords)
     if(search[pathname]&&search[pathname].useFstate){
       columns[2].filteredValue = search[pathname].useFstate;
     }

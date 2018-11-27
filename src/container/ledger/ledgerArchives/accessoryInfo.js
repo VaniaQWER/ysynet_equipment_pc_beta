@@ -2,55 +2,229 @@
  *  档案管理-资产档案-详情-附件信息
  */
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon,Upload,Button ,message,Menu,Dropdown,Alert} from 'antd';
+import { Row,Col,Icon,Upload,Button ,message,Alert,Select,Form,Modal,Divider} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
-import styles from './style.css';
-import { ledger as ledgerService } from '../../../service';
+import { FTP } from '../../../api/local';
+import { fetchData } from '../../../utils/tools';
 import { certCodeData } from "../../../constants";
 import querystring from 'querystring';
-
+const FormItem =Form.Item;
+const { Option } =  Select;
 const { RemoteTable } = TableGrid;
-const Search = Input.Search;
-
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 6 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 18 },
+  },
+};
 class AccessoryInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      messageError : ""
+      messageError : "",
+      showModal:false,//控制弹出层
+      certCode:'00',//默认选择的上传类型 / 将用于上传参数data
+      record:null,//当前正在编辑的附件信息
+      editable:true,//当前编辑状态
     }
   }
-  //上传前判断
-  beforeUpload = () => {
+
+  //上传附件之前过滤类型与大小
+  beforeUploadFilter = (file, fileList,config)=>{
     this.setState({loading: true});
+    //过滤文件大小
+    const isLt2M = file.size   < config.size * 1024 * 1024;
+    let type = false;
+    if (!isLt2M) {
+      message.error(`上传文件不能大于${config.size}MB!`);
+      return false
+    }
+    //过滤文件类型
+    for(let i =0;i<config.type.length;i++){
+        let strArr = file.name.split('.');
+        if(config.type[i] === `.${strArr[strArr.length-1]}` || config.type[i] === `.${strArr[strArr.length-1]}`.toLocaleLowerCase()){
+          type=true
+          return
+        }else{
+          type=false
+        }
+    }
+    if (!type) {
+      message.error('您只能上传该附件支持的文件类型');
+    }
+    
+    return type && isLt2M;
+  }
+  handleChange = (fileListObj,key) => {
+    let { file, fileList } = fileListObj;  
+    if(file.status === 'done') {
+      file.response && !file.response.status && message.error('上传失败，请重新上传');
+      fileList.filter((file) => file.response&&file.response.status);
+      fileList.map((file) => {   //修改预览地址
+        if (file.response && file.response.result) {
+          let url = file.response.result.filePath.split('/');
+          url.shift();
+          url = url.join('/');
+          file.url = FTP + '/' + url;
+        }
+        if(file.type==="application/pdf"|| file.type==="application/zip"){
+          file.thumbUrl = require('../../../assets/fujian.png')
+        }
+        return file;
+      });
+    }
   }
 
-  queryHandler = (query) => {
+  //搜索内容
+  queryHandler = () => {
+    let query = this.props.form.getFieldsValue(['certCode_search','accessoryName_search']);
+    const { certCode_search , accessoryName_search } = query;
+    const { assetsRecordGuid } = this.props;
+    query.certCode = certCode_search;
+    query.accessoryName = accessoryName_search;
+    query.assetsRecordGuid = assetsRecordGuid;
+    delete query['certCode_search']
+    delete query['accessoryName_search']
     this.refs.table.fetch(query);
     this.setState({ query })
   }
   //删除
-  handleDelete = (certId) => {
-    ledgerService.getInfo(assets.deleteAssetsFile,querystring.stringify({certId:certId}),(data) => {
+  handleDelete = (accessoryId) => {
+    fetchData(assets.deleteAssetsFile, querystring.stringify({accessoryId}), data => {
       if(data.status){
-        message.success("操作成功!");
-        this.refs.table.fetch();
+          message.success("操作成功!");
+          this.refs.table.fetch();
       }else{
         message.error(data.msg)
       }
     })
   }
+
+  /* 附件相关内容   */
+  normFile = (e) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  }
+  //回显附件格式
+  initAccessoryFormat =( backData , pathname , filename)=>{
+    if(backData){
+      let path=backData[pathname];
+      let file=backData[filename];
+      if(Array.isArray(path)){
+        return path
+      }else if(path){
+        let list = path.split(';');
+        let filenameList = file.split(';');
+        let retList = []
+        list.map((item,index)=>{
+          if(item!==""){
+            let Item =  {
+                  uid: index,
+                  key:index,
+                  name: filenameList[index],
+                  status: 'done',
+                  url: `${FTP}${item}`,
+                  thumbUrl: `${FTP}${item}`
+            }
+            if(`.${item.split('.')[item.split('.').length-1]}`===".pdf"){
+              Item.thumbUrl=require('../../../assets/fujian.png')
+            }
+            
+            retList.push(Item)
+          }
+          return item 
+        })
+        return retList
+      }else{
+        return []
+      }
+    }else{
+      return []
+    }
+  } 
+  //处理提交数据的格式
+  formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
+    if(fileList&&fileList.length){
+      let tfAccessoryFileList =[];
+      let accessoryNameList =[];
+      fileList.map(item=>{
+        if(item.response){
+          tfAccessoryFileList.push(item.response.result.filePath)
+          accessoryNameList.push(item.response.result.accessoryName)
+        }else{
+          tfAccessoryFileList.push(item.url.replace(FTP,''))
+          accessoryNameList.push(item.name)
+        }
+        return item
+      })
+      console.log(tfAccessoryFileList,accessoryNameList)
+      return {
+        tfAccessoryFile:tfAccessoryFileList.join(';'),
+        accessoryName:accessoryNameList.join(';'),
+      }
+    }else{
+      return null
+    }
+  }
+
+  // 提交弹窗中的数据 submit
+  submit = () => {
+    const { record } = this.state;
+    this.props.form.validateFieldsAndScroll((errs,values)=>{
+      if(!errs){
+        delete values['certCode_search']
+        delete values['accessoryName_search']
+        values.assetsRecordGuid = this.props.assetsRecordGuid;
+        values.certCode = this.state.certCode;
+        const { accessoryName , tfAccessoryFile} = this.formatAccessory(values.tfAccessoryFile);
+        values.accessoryName = accessoryName;     //附件名字字符串
+        values.tfAccessoryFile = tfAccessoryFile; //附件路径字符串
+        if(record&&record.accessoryId){
+          values.accessoryId=record.accessoryId
+        }
+        console.log('modal values', values)
+        fetchData(assets.insertAssetsFile, querystring.stringify(values), data => {
+          if(data.status){
+            this.setState({showModal:false,editable:true})
+            this.refs.table.fetch()
+          }else{
+            message.error(data.msg)
+          }
+        })
+      }
+    })
+  }
+
   render () {
     const columns = [
       {
-        title: '附件类型',
+        title:'序号',
+        dataIndex:'index',
+        width: 50,
+        render:(text,record,index)=>`${index+1}`
+      },
+      {
+        title:'文件名',
+        dataIndex:'accessoryName',
+        width:200
+      },
+      {
+        title: '文档类型',
         dataIndex: 'certCode',
         width: 100,
         render : text => certCodeData[text].text
       },
       {
-        title: '上传用户',
+        title: '上传者',
         dataIndex: 'createUserName',
         width: 100
       },
@@ -60,74 +234,34 @@ class AccessoryInfo extends Component {
         width: 100,
       },
       {
-        title: '备注',
-        dataIndex: 'tfRemark',
-        width: 100,
-      },
-      {
         title: '操作',
         dataIndex: 'certId',
         width: 80,
         render: (text, record) => 
           <span>
-            <a  href={assets.YSYPATH+record.tfAccessoryFile} target="_blank"><Icon type="file" />查看</a>
-            <span className="ant-divider" />
-            <a onClick={this.handleDelete.bind(null, record.certId)}><Icon type="delete" />删除</a>
+            <a  onClick={()=>this.setState({record,showModal:true,editable:false})}>查看</a>
+            <Divider type="vertical" />
+            <a  onClick={()=>this.setState({record,showModal:true})}>编辑</a>
+            <Divider type="vertical" />
+            <a onClick={this.handleDelete.bind(null, record.accessoryId)}>删除</a>
           </span>  
       },
     ];
+    const { record , editable , showModal} = this.state;
+    const { assetsRecordGuid } = this.props;
+    const { getFieldDecorator } = this.props.form;
+   
     const props = {
-      action: assets.assetsFileUpLoad,
-      showUploadList: false,
+      listType: 'picture',
+      action: assets.assetsUploadFile,
       withCredentials: true,
-      beforeUpload:this.beforeUpload,
-      onError:(error)=>{
-        this.setState({loading: false})
-        console.log(error)
+      showUploadList:{
+        showRemoveIcon:editable
       },
-      onSuccess:(result)=>{
-        this.setState({loading: false})
-        if(result.status){
-            this.refs.table.fetch();
-            this.setState({
-                messageError:""
-            })
-            message.success("上传成功")
-        }
-        else{
-            this.setState({
-                messageError:result.msg
-            })
-        }
-    }
-
+      beforeUpload:this.beforeUploadFilter,
+      data:{"assetsRecordGuid":this.props.assetsRecordGuid},
     };
-
-    const menu = (
-      <Menu>
-        <Menu.Item>
-        <Upload {...props}  data={{"certCode":"15","assetsRecordGuid":this.props.assetsRecordGuid}}>
-          <a><Icon type='export'/> 资产图片</a> 
-        </Upload>
-        </Menu.Item>
-        <Menu.Item>
-        <Upload {...props} data={{"certCode":"13","assetsRecordGuid":this.props.assetsRecordGuid}}>
-          <a><Icon type='export'/> 招标文件</a> 
-        </Upload>
-        </Menu.Item>
-        <Menu.Item>
-        <Upload {...props} data={{"certCode":"14","assetsRecordGuid":this.props.assetsRecordGuid}}>
-          <a><Icon type='export'/> 使用说明</a> 
-        </Upload>
-        </Menu.Item>
-        <Menu.Item>
-        <Upload {...props} data={{"certCode":"12","assetsRecordGuid":this.props.assetsRecordGuid}}>
-          <a><Icon type='export'/> 其他</a> 
-        </Upload>
-        </Menu.Item>
-      </Menu>
-    );
-    console.log( this.state.messageError,' this.state.messageError')
+    
     return (
       <div className='ysynet-content ysynet-common-bgColor' style={{padding:'12px 24px'}}>
           {
@@ -136,26 +270,34 @@ class AccessoryInfo extends Component {
               <Alert message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
           }
           <Row style={{marginTop:10}}>
-            <Col span={12}>
-              <Search
-                placeholder="请输入附件名称/类型"
-                onSearch={value =>  {this.queryHandler({'params':value})}}
-                style={{ width: 300 }}
-                enterButton="搜索"
-              />
+            <Col span={8}>
+              <FormItem label='文档类型' {...formItemLayout}>
+                {
+                  getFieldDecorator('certCode_search')(
+                    <Select style={{width: '100%'}}>
+                    {/* 00登记表，01验收表，02合同，03资产图片，04其他 */}
+                      <Option value='00'>登记表</Option>
+                      <Option value='01'>验收表</Option>
+                      <Option value='02'>合同</Option>
+                      <Option value='03'>资产图片</Option>
+                      <Option value='04'>其他</Option>
+                    </Select>
+                  )
+                }
+              </FormItem>
             </Col>
-            <Col span={12} className={styles['text-align-right']}>
-              <Dropdown overlay={menu} placement="bottomLeft">
-                <Button>上传</Button>
-              </Dropdown>
-    
+            <Col span={3}>
+                <Button type='primary' style={{float: 'right'}} onClick={this.queryHandler}>搜索</Button>
             </Col>
           </Row>
-         <RemoteTable
+          <Row>
+            <Button type='primary' onClick={()=>this.setState({showModal:true})}>新增文档</Button>
+          </Row>
+          <RemoteTable
             loading={ this.state.loading}
             ref='table'
             showHeader={true}
-            query={{ assetsRecord: this.props.assetsRecord }}
+            query={{ assetsRecordGuid }}
             url={assets.selectCertInfoList}
             scroll={{x: '100%', y : document.body.clientHeight - 341}}
             columns={columns}
@@ -163,8 +305,68 @@ class AccessoryInfo extends Component {
             style={{marginTop: 10}}
             size="small"
           /> 
+         
+          <Modal 
+            maskClosable={false}
+            destroyOnClose={true}
+            title={editable?'新增/编辑文档':'查看文档'}
+            footer={editable?(
+              <div>
+                  <Button type='primary' onClick={this.submit}>提交</Button>
+                  <Button onClick={()=>this.setState({showModal:false,editable:true,record:null})}>取消</Button>
+              </div>
+            ):null}
+            visible={showModal}
+            onCancel={()=>this.setState({showModal:false,editable:true,record:null})}
+            >
+            <FormItem {...formItemLayout} label='文档类型'>
+                {
+                  getFieldDecorator('certCode',{
+                    initialValue:record?record.certCode:'00'
+                  })(
+                    <Select style={{width: '100%'}}
+                      disabled={!editable}
+                      onSelect={(e)=>this.setState({certCode:e})}>
+                       {/* 00登记表，01验收表，02合同，03资产图片，04其他 */}
+                      <Option value='00'>登记表</Option>
+                      <Option value='01'>验收表</Option>
+                      <Option value='02'>合同</Option>
+                      <Option value='03'>资产图片</Option>
+                      <Option value='04'>其他</Option>
+                    </Select>
+                  )
+                }
+            </FormItem>
+            <FormItem {...formItemLayout} label='选择文件'
+              extra='支持扩展名：.jpeg、.jpg、.png、.pdf、.zip'>
+                {getFieldDecorator('tfAccessoryFile', {
+                  initialValue:this.initAccessoryFormat(record,'tfAccessoryFile','accessoryName')||[],
+                  valuePropName: 'fileList',
+                  getValueFromEvent: this.normFile,
+                })(
+                  <Upload {...props}
+                    onChange={(info)=>this.handleChange(info, 'tfAccessoryFile')}
+                    beforeUpload={(file, fileList)=>this.beforeUploadFilter(file, fileList,{type:['.jpeg','.jpg','.png','.pdf','.zip'],size:2})}
+                  >
+
+                  {
+                    !editable ? null:
+                    (this.props.form.getFieldValue('tfAccessoryFile')&&
+                    this.props.form.getFieldValue('tfAccessoryFile').length )
+                    >= 8 ? null : 
+                    (
+                      <Button>
+                        <Icon type="upload" />上传文件
+                      </Button>
+                    )
+                  }
+                    
+                  </Upload>
+                )}
+            </FormItem>
+          </Modal>
       </div>
     )
   }
 }
-export default AccessoryInfo 
+export default Form.create()(AccessoryInfo) 
