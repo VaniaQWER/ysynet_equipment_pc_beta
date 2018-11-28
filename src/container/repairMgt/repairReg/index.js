@@ -121,7 +121,7 @@ class RepairReg extends Component {
           <StepsInfo current={0}/>
         </Card>
         <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
-          <AssetsInfo type={this.state.type}  wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data,isAssets)=>this.setState({ assetsInfo : data,isAssets:isAssets})}/>
+          <AssetsInfo type={this.state.type} isRepair={true} wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data,isAssets)=>this.setState({ assetsInfo : data,isAssets:isAssets})}/>
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
           <RepairInfo isEdit={true} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
