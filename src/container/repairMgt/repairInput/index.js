@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
-import { Card, BackTop, Affix, Button,message } from 'antd';
+import { Card, BackTop, Affix, Button,message,Steps } from 'antd';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import StepsInfo from '../cardInfo/stepsInfo'
+// import StepsInfo from '../cardInfo/stepsInfo'
 import AssetsInfo from '../cardInfo/assetsInfo';   
 import RepairInfo from '../cardInfo/repairInfo'; 
 import ServiceInfo from '../cardInfo/serviceInfo';
 import PartsInfo from '../cardInfo/partsInfo'; 
 import assets from '../../../api/assets';
 import { operation as operationService } from '../../../service';
+const Step = Steps.Step;
 /**
  * @file 资产运维-维修管理-维修录入
  */
 class RepairInput extends Component {
   state = {
+    current: 0,
+    loading: false,
     assetsInfo: {},
+    rrpairOrderGuid: '',
     isAssets:true, //判断有资产报修 还缺无资产报修的状态
     type: this.props.user.groupName, //glks管理科室 syks使用科室 this.props.user.groupName
     orderFstate: '50', //管理科室默认的状态是完成50   关闭90  使用科室提交10
@@ -32,8 +36,10 @@ class RepairInput extends Component {
      return "提交";
    }
   }
+  
   onSubmit = () => {
-    const { insertOrRrpair, history } = this.props;
+    this.setState({ loading: true });
+    const { insertOrRrpair } = this.props;
     let params = {};
     const type = this.state.type ; //用户类型
     if(type === "glks"){ //管理科室
@@ -103,27 +109,65 @@ class RepairInput extends Component {
     }
     console.log("报修登记接口数据",params)
     insertOrRrpair(assets.insertOrUpdateRrpair,JSON.stringify(params),(data) => {
+      this.setState({ loading: false })
       if(data.status){
-        history.push("/repairMgt/repairRegList");
-        message.success("操作成功!")
+        message.success("操作成功!");
+        this.setState({ current: 1, rrpairOrderGuid: data.result.rrpairOrderGuid },() => window.scrollTo(0,0));
       }else{
         message.error(data.msg);
       }
     })
   }
 
+  showContent = (current) =>{
+    if(current === 0){
+      return (
+        <div>
+          <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
+          <AssetsInfo type={this.state.type} isRepair={true} repairInput={true} wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data,isAssets)=>this.setState({ assetsInfo : data,isAssets:isAssets})}/>
+          </Card>
+          <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
+            <RepairInfo isEdit={true} assetsInfo={this.state.assetsInfo} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
+          </Card>
+          <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
+            <ServiceInfo isEdit={true} ref='serviceInfo' repairInput={true} callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
+          </Card>
+          <div style={{ textAlign:'center',marginTop: 12 }}>
+            <Button type='primary' onClick={this.onSubmit} loading={this.state.loading}>下一步</Button>
+          </div>
+        </div>
+      )
+    }else{
+      return (
+        <Card title="配件信息" style={{marginTop: 16}} hoverable={false} key={6}>
+        {
+          this.state.assetsInfo?
+          <PartsInfo ref='partsInfo' data={{assetsRecordGuid:this.state.assetsInfo.assetsRecordGuid,rrpairOrderGuid: this.state.rrpairOrderGuid}} isAddParts={true}/>
+          :
+          <PartsInfo ref='partsInfo' data={{assetsRecordGuid:''}} isAddParts={false}/>
+        }
+        </Card>
+      )
+    }
+  }
+
   render() {
     // const { type } = this.state;
     return (
       <div className='ysynet-repair ysynet-content '>
-        <Card title="报修进度" extra={[
+        <Card title="维修进度" extra={[
           <Affix key={1}>
-            <Button type='primary' onClick={this.onSubmit} >{ this.handleButtonText(this.state.orderFstate) }</Button>
+            {/* <Button type='primary' onClick={this.onSubmit} >{ this.handleButtonText(this.state.orderFstate) }</Button> */}
           </Affix>
         ]} key={1}>
-          <StepsInfo current={0}/>
+          {/* <StepsInfo current={0}/> */}
+          <Steps current={this.state.current}>
+            <Step title="维修信息" />
+            <Step title="配件信息" />
+          </Steps>
         </Card>
-        <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
+        <div>{this.showContent(this.state.current)}</div>
+        {/* <Card title="资产信息" style={{marginTop: 16}} hoverable={false} key={2}>
           <AssetsInfo type={this.state.type} isRepair={true} repairInput={true} wrappedComponentRef={(inst) => this.assetsInfo = inst} callBack={(data,isAssets)=>this.setState({ assetsInfo : data,isAssets:isAssets})}/>
         </Card>
         <Card title="报修信息" style={{marginTop: 16}} hoverable={false} key={3}>
@@ -139,7 +183,7 @@ class RepairInput extends Component {
           :
           <PartsInfo ref='partsInfo' data={{assetsRecordGuid:''}} isAddParts={false}/>
         }
-        </Card>
+        </Card> */}
         <BackTop />
       </div>  
     )
