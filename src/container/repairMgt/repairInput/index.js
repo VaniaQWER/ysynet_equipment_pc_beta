@@ -74,7 +74,8 @@ class RepairInput extends Component {
           equipmentCode:this.assetsInfo.state.data.equipmentCode,
           isRepairs:true,
           orderFstate:'90',
-          ...this.repairInfo.postData()
+          ...this.repairInfo.postData(),
+          ...this.refs.serviceInfo.postData()
         };
         console.log(params,"有资产报修...使用科室")
       }else{
@@ -82,6 +83,7 @@ class RepairInput extends Component {
           isRepairs:true,
           orderFstate:'90',
           ...this.repairInfo.postData(),
+          ...this.refs.serviceInfo.postData()
         };
         console.log(params,"无资产报修...使用科室")
       }
@@ -96,6 +98,7 @@ class RepairInput extends Component {
         isRepairs:true,
         orderFstate:'90',
         ...this.repairInfo.postData(),
+        ...this.refs.serviceInfo.postData()
       };
     }
     console.log("报修登记接口数据",params)

@@ -161,6 +161,7 @@ class MyServiceComplete extends PureComponent {
             JSON.stringify(this.state.selectRrpairDetailIsRrpair) === '{}' ? null 
             :
             <ServiceInfo ref='serviceInfo'
+              repairInput={true}
               callBack={(val)=> this.setState({ repairFlag: val })}
               cb_rrpairType={(Rrtype => this.setState({ rrpairType : Rrtype==='20'?'01':'00' }))}             
               rrpairType={this.state.selectRrpairDetailIsRrpair.rrpairType}

@@ -179,10 +179,10 @@ class RepairRecordList extends Component {
     /* 存储搜索条件 */
     const { setSearch, history ,search } = this.props;
     const pathname = history.location.pathname;
-    let values = Object.assign({...query},{...search[pathname]},)
+    let values = Object.assign({...search[pathname]},{...query})
     setSearch(pathname, values);
-    this.refs.table.fetch(values);
-    this.setState({ query:values });
+    this.refs.table.fetch(query);
+    this.setState({ query });
   }
   /* 重置时清空redux */
   handleReset = ()=>{

@@ -141,8 +141,8 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>使用科室：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('useDept')(
-            <span>{ data?data.useDept:'' }</span>
+          getFieldDecorator('deptName')(
+            <span>{ data?data.deptName:'' }</span>
           )
         }
         </Col>
@@ -157,16 +157,16 @@ class AssetsInfoForm extends PureComponent {
         <Col {...gridStyle.label}>管理科室：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('bDept')(
-            <span>{ data?data.bDept:'' }</span>
+          getFieldDecorator('mDeptName')(
+            <span>{ data?data.mDeptName:'' }</span>
           )
         }
         </Col>
         <Col {...gridStyle.label}>存放地址：</Col>
         <Col {...gridStyle.content}>
         {
-          getFieldDecorator('address')(
-            <span>{ data?data.address:'' }</span>
+          getFieldDecorator('deposit')(
+            <span>{ data?data.deposit:'' }</span>
           )
         }
         </Col>

@@ -273,7 +273,6 @@ class ServiceInfo extends PureComponent {
   render() {
     const { rrpairType } = this.state;
     const { isEdit, data ,callBack, repairInput } = this.props;
-    console.log(data,'1')
     const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
     return (
       <div>
