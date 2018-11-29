@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment';
-import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button , Radio ,Select ,DatePicker ,Upload ,Modal} from 'antd'
+import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button ,Select ,DatePicker ,Upload ,Modal} from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import request from '../../../utils/request';
 import querystring from 'querystring';
@@ -100,7 +100,7 @@ const formItemLayout = {
 const formItemRowLayout = {
     labelCol: {
       xs: { span: 24 },
-      sm: { span: 4 },
+      sm: { span: 3 },
     },
     wrapperCol: {
       xs: { span: 24 },
@@ -448,7 +448,7 @@ export default class AddUpKeepForm extends React.Component {
       window.open(`${upkeep.printMaintain}?maintainGuid=${this.props.maintainGuid}`)
     } 
     render() {
-      const { getFieldDecorator } = this.props.form;
+      const { getFieldDecorator, getFieldsValue } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
       const { previewVisible, previewImage , upKeepPerson } = this.state;
       const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
@@ -581,17 +581,68 @@ export default class AddUpKeepForm extends React.Component {
           <Card title="保养信息" bordered={false} style={{marginTop:30}}>
               <Row>
                 <Col span={8}>
-                {editState ?
+                  {
+                    editState ?
+                    <FormItem label='保养模式' {...formItemLayout}>
+                    {getFieldDecorator(`maintanceModule`,{initialValue:data.maintanceModule?data.maintanceModule:'01'})(
+                      <Select placeholder='请选择' style={{ width: 200 }}>
+                        <Option value="01">管理科室保养</Option>
+                        <Option value="02">临床科室保养</Option>
+                        <Option value="03">服务商保养</Option>
+                      </Select>
+                    )}
+                    </FormItem>
+                    :
+                    UnStateText('保养模式','管理科室保养')
+                  }
+                </Col>
+                <Col span={8}>
+                  {
+                    UnStateText('保养类型',getFieldsValue(['maintanceModule']).maintanceModule === '03'?'外保': '内保')
+
+                    // UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
+                  }
+                </Col>
+                {/* <Col span={8}>
+                {
+                  editState ?
                   <FormItem label='保养类型' {...formItemLayout}>
                   {getFieldDecorator(`maintainType`,{initialValue:'00'})(
                     <Radio.Group>
-                      <Radio value='00' checked={true}>内保</Radio>
-                      {/*<Radio value='01' disabled={true}>外保</Radio>*/}
+                      {
+                        data.maintainType === '00'?
+                        <Radio value='00' checked={true}>内保</Radio>
+                        :
+                        <Radio value='01' checked={true}>外保</Radio>
+                      }
+                      <Radio value='01' disabled={true}>外保</Radio>
                     </Radio.Group>
                   )}
                   </FormItem>
-                  :UnStateText('保养类型','内保')
+                  :UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
                 }
+                </Col> */}
+                <Col span={8}>
+                  {
+                    UnStateText('保养执行科室','设备科')
+                  }
+                </Col>
+                </Row>
+                <Row>
+                <Col span={8}>
+                  {editState ? 
+                    <FormItem label='临床风险等级' {...formItemLayout}>
+                    {getFieldDecorator(`clinicalRisk`,{initialValue:data.clinicalRisk})(
+                      <Select placeholder='请选择' style={{ width: 200 }}>
+                        <Option value="">请选择</Option>
+                        <Option value="02">高</Option>
+                        <Option value="01">中</Option>
+                        <Option value="00">低</Option>
+                      </Select>
+                    )}
+                    </FormItem>
+                    : UnStateText('临床风险等级',data.clinicalRisk)
+                  }
                 </Col>
                 <Col span={8}>
                 {editState ? 
@@ -627,21 +678,7 @@ export default class AddUpKeepForm extends React.Component {
                   )}
                   </FormItem>
                 </Col>
-                <Col span={8}>
-                  {editState ? 
-                    <FormItem label='临床风险等级' {...formItemLayout}>
-                    {getFieldDecorator(`clinicalRisk`,{initialValue:data.clinicalRisk})(
-                      <Select placeholder='请选择'>
-                        <Option value="">请选择</Option>
-                        <Option value="02">高</Option>
-                        <Option value="01">中</Option>
-                        <Option value="00">低</Option>
-                      </Select>
-                    )}
-                    </FormItem>
-                    : UnStateText('临床风险等级',data.clinicalRisk)
-                  }
-                </Col>
+                
               </Row>
               <Row>
                 <Col span={8}>
@@ -657,6 +694,7 @@ export default class AddUpKeepForm extends React.Component {
                           disabledDate={this.disabledStartDate}
                           onChange={this.onStartChange}
                           format={"YYYY-MM-DD"}
+                          style={{ width: 200 }}
                           placeholder="请选择开始保养时间"
                         /> 
                       )}
@@ -676,6 +714,7 @@ export default class AddUpKeepForm extends React.Component {
                         disabledDate={this.disabledEndDate}
                         onChange={this.onEndChange}
                         format={"YYYY-MM-DD"}
+                        style={{ width: 200 }}
                         placeholder="请选择结束保养时间"
                       /> 
                     )}
@@ -698,7 +737,7 @@ export default class AddUpKeepForm extends React.Component {
                 </Col>
               </Row>
               <Row>
-                  <Col span={18}>
+                  <Col span={21}>
                     {editState ?
                       <FormItem label='备注（可选）' {...formItemRowLayout}>
                       {getFieldDecorator(`remark`,{initialValue:data.remark})(
@@ -710,7 +749,7 @@ export default class AddUpKeepForm extends React.Component {
                   </Col>
               </Row>
               <Row>
-                <Col className="clearfix" span={18}>
+                <Col className="clearfix" span={21}>
                     <FormItem label='上传附件' {...formItemRowLayout}>
                       {getFieldDecorator(`tfAccessoryList`,{initialValue:data.tfAccessoryList})(//
                           <Upload
@@ -753,7 +792,7 @@ export default class AddUpKeepForm extends React.Component {
                     <Row>
                       <Col>
                         <Select
-                          mode="combobox"
+                          // mode="combobox"
                           placeholder='请搜索选择保养项目'
                           defaultActiveFirstOption={false}
                           filterOption={false}
@@ -767,6 +806,7 @@ export default class AddUpKeepForm extends React.Component {
                     </Row>
                     <Table 
                       rowKey={'templateDetailGuid'}
+                      size={'small'}
                       rowSelection={{
                         selectedRowKeys:checkedKeyArray,
                         onChange: (selectedRowKeys, selectedRows) => {

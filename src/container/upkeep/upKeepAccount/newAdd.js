@@ -16,7 +16,7 @@ import assets from '../../../api/assets';
 import _ from 'lodash';
 import moment from 'moment';
 import { productTypeData } from '../../../constants';
-import styles from './style.css';
+import styles from '../newplan/style.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const Search = Input.Search;
@@ -765,7 +765,7 @@ class MaintainPlan extends PureComponent {
         </Card>
 
         <Card title='资产信息' bordered={false} style={{marginTop: 20}} className='min_card'>
-          <Button type='primary' style={{marginBottom: 2}} onClick={()=>this.showModal('productVisible')}>添加产品</Button>
+          <Button type='primary' style={{marginBottom: 12}} onClick={()=>this.showModal('productVisible')}>添加产品</Button>
           {/*资产信息表格*/}
           <Table 
             columns={columns} 

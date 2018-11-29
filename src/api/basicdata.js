@@ -46,5 +46,11 @@ const basicdata = {
   insertCpbmConfigZc:`${_local}/cpbmConfigZcController/insertCpbmConfigZc`,//新增/编辑编码规则
   selectCpbmConfigZc:`${_local}/cpbmConfigZcController/selectCpbmConfigZc`,//查询编码规则
   previewCpbmConfigZc:`${_local}/cpbmConfigZcController/previewCpbmConfigZc`,//预览编码
+
+  //我的服务商
+  selectServiceList: `${_local}/maintainOrderController/selectServiceList`,//我的服务商列表
+  selectStaticFOrgList: `${_local}/StaticDataController/selectStaticFOrgList`,//查询供应商字典列表
+  insertServiceInfo: `${_local}/maintainOrderController/insertServiceInfo`,//添加我的服务商
+  deleteServiceInfo: `${_local}/maintainOrderController/deleteServiceInfo`,//删除我的服务商
 }
 export default basicdata;

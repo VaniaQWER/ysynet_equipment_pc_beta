@@ -20,6 +20,9 @@ const upkeep = {
   insertMaintainPlan:`${_local}/maintainOrderController/insertMaintainPlan`,//新建计划添加
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室
   getAssetsListInfo:`${_local}/maintainOrderController/selectAssetsListGetMainType`,//根据资产的GUID获取资产表格给的内容
+
+  // 保养台账
+  selectMaintainParameterList:`${_local}/maintainOrderController/selectMaintainParameterList`,//查询保养台账列表
   
 }
 

@@ -4,7 +4,7 @@
 * @Last Modified time: 2018-07-26 11:30:17 
  */
 import React from 'react';
-import { Row, Col, Input, Button , Form , Icon , DatePicker , Layout , Popover, Select} from 'antd';
+import { Row, Col, Input, Button , Form , Icon , DatePicker , Layout , Popover} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
 import { withRouter } from 'react-router-dom';
@@ -16,7 +16,6 @@ import { timeToStamp } from '../../../utils/tools';
 // import './styles.css';
 import moment from 'moment';
 const { Content } = Layout;
-const { Option } = Select;
 const { RemoteTable } = TableGrid;
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -258,30 +257,13 @@ class SearchFormWrapper extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col span={8}  style={{display: display}}> 
+          <Col span={9}  style={{display: display}}> 
             <FormItem
               {...formItemLayout}
               label="本次计划保养时间"
             >
               {getFieldDecorator('PlanTime')(
                 <RangePicker allowClear={false}/>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}  style={{display: display}}> 
-            <FormItem
-              {...formItemLayout}
-              label="保养模式"
-            >
-              {getFieldDecorator('upkeepModule',{
-                initialValue: ''
-              })(
-                <Select>
-                  <Option value=''>全部</Option>
-                  <Option value='01'>模式一</Option>
-                  <Option value='02'>模式二</Option>
-                  <Option value='03'>模式三</Option>
-                </Select>
               )}
             </FormItem>
           </Col>

@@ -1,6 +1,6 @@
 /**保养登记--列表*/
 import React from 'react';
-import { Modal ,message , Row, Col, Input, Layout , Popover} from 'antd';
+import { Modal ,message , Row, Col, Input, Layout , Popover, Form, Select,Button } from 'antd';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
@@ -13,9 +13,99 @@ import { upkeepPlanLoopFlag , upkeepPlanStateSel ,upkeepPlanState , upkeepMainTa
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
 const confirm = Modal.confirm;
-const Search = Input.Search;
+// const Search = Input.Search;
+const FormItem = Form.Item;
+const { Option } = Select;
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
+
+class SearchForm extends React.Component{
+
+  handleSearch = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      console.log(values)
+      this.props.query(values);
+    });
+  }
+  handleReset = () => {
+    this.props.form.resetFields();
+    this.props.query({});
+  }
+  render(){
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form onSubmit={this.handleSearch}>
+        <Row>
+          <Col span={8}>
+            <FormItem {...formItemLayout} label={`计划单号`}>
+              {
+                getFieldDecorator(`planNo`,{
+                  initialValue: ''
+                })(
+                  <Input placeholder='请输入'/>
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem {...formItemLayout} label={`资产名称`}>
+              {
+                getFieldDecorator(`equipmentStandardName`,{
+                  initialValue: ''
+                })(
+                  <Input placeholder='请输入'/>
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem {...formItemLayout} label={`资产编号`}>
+              {
+                getFieldDecorator(`assetsRecord`,{
+                  initialValue: ''
+                })(
+                  <Input placeholder='请输入'/>
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem {...formItemLayout} label={`保养模式`}>
+              {
+                getFieldDecorator(`maintainModule`,{
+                  initialValue: ''
+                })(
+                  <Select placeholder='请选择'>
+                    <Option value='00'>模式一</Option>
+                    <Option value='01'>模式二</Option>
+                  </Select>
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col span={16} style={{ textAlign: 'right' }}>
+            <Button type="primary" htmlType='submit'>查询</Button>
+            <Button style={{marginLeft: 5, marginRight: 25}} onClick={()=> this.handleReset }>重置</Button>
+          </Col>
+        </Row>
+      </Form>
+    )
+  }
+}
+
+const SearchFormWapper = Form.create()(SearchForm);
 
 class MaintainPlan extends React.Component{
 
@@ -25,27 +115,46 @@ class MaintainPlan extends React.Component{
       const { search, history } = this.props;
       const pathname = history.location.pathname;
       this.state = {
-        query:search[pathname]?{...search[pathname]}:'',
+        query:search[pathname]?{...search[pathname]}:{},
         visible: false ,
         modalContent:'',
         record:{},
         isDelete:false
       };
     }
+    /* 回显返回条件 */
+  async componentDidMount () {
+    const { search, history } = this.props;
+    const pathname = history.location.pathname;
+    console.log(search[pathname])
+    if (search[pathname]) {
+      //找出表单的name 然后set
+      let value = {};
+      let values = this.form.props.form.getFieldsValue();
+      values = Object.getOwnPropertyNames(values);
+      values.map(keyItem => {
+        value[keyItem] = search[pathname][keyItem];
+        return keyItem;
+      });
+      this.form.props.form.setFieldsValue(value)
+    }
+  }
     sortTime = (a,b,key) =>{
       if(a[key] && b[key]){
         return timeToStamp(a[key]) - timeToStamp(b[key])
       }
     }
+    
     /* 查询时向redux中插入查询参数 */
-    queryHandler = (val) => {
+    searchTable = (val) => {
+      /* 存储搜索条件 */
       const { setSearch, history ,search } = this.props;
       const pathname = history.location.pathname;
       let values = Object.assign({...search[pathname]},{...val})
       setSearch(pathname, values);
       this.refs.table.fetch(val)
-      this.setState({ query:val })
     }
+    
     deletePlanDetails = (record)=>{//删除
       confirm({
         title: '是否确认删除？',
@@ -112,11 +221,11 @@ class MaintainPlan extends React.Component{
       const { modalContent }= this.state;
       const { search , history } = this.props;
       const pathname = history.location.pathname;
-      const defaultValue = search[pathname]&&search[pathname].maintainPlanNo?search[pathname].maintainPlanNo:null;
+      // const defaultValue = search[pathname]&&search[pathname].maintainPlanNo?search[pathname].maintainPlanNo:null;
       let columns=[
         { title: '操作', 
         dataIndex: 'maintainPlanDetailId', 
-        className:'col-1',
+        className:'col08',
         key: 'x', 
         render: (text,record) =>
           <span>
@@ -130,7 +239,7 @@ class MaintainPlan extends React.Component{
         },
         {
           title: '保养计划单号',
-          className:'col-1',
+          className:'col08',
           dataIndex: 'maintainPlanNo',
           render(text, record) {
             return <span title={text}>{text}</span>
@@ -189,25 +298,37 @@ class MaintainPlan extends React.Component{
         },
         {
           title: '循环方式',
-          className:'col08',
+          className:'col05',
           dataIndex: 'loopFlag',
           render: text => <span title={text}>{upkeepPlanLoopFlag[text].text}</span>
         },
         {
           title: '循环周期',
-          className:'col08',
+          className:'col05',
           dataIndex: 'tfCycle',
           render: text => <span title={text}>{text}</span>
         },
         {
+          title: '保养模式',
+          className:'col05',
+          dataIndex: 'maintanModule',
+          render: text => <span title={text}>{text}</span>
+        },
+        {
+          title: '保养执行科室',
+          className:'col08',
+          dataIndex: 'maintainDeptName',
+          render: text => <span title={text}>{text}</span>
+        },
+        {
           title: '操作员',
-          className:'col-1',
+          className:'col08',
           dataIndex: 'executeUsername',
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '创建时间',
-          className:'col-1',
+          className:'col08',
           dataIndex: 'createTime',
           render: text => <span title={text}>{text}</span>
         }
@@ -217,7 +338,12 @@ class MaintainPlan extends React.Component{
       }
       return(
           <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20,backgroundColor:'none'}}>
-            <Row>
+            <SearchFormWapper 
+              query={(val)=>this.searchTable(val)} 
+              wrappedComponentRef={(form) => this.form = form}
+            />
+            {/* <Row>
+
                 <Col span={12}>
                 <Search
                     defaultValue={defaultValue}
@@ -227,13 +353,13 @@ class MaintainPlan extends React.Component{
                     enterButton="搜索"
                 />
                 </Col>
-            </Row>
+            </Row> */}
             <RemoteTable
                 ref='table'
                 query={this.state.query}
                 onChange={this.changeQueryTable}
                 url={upkeep.planList}
-                scroll={{x: '140%', y : document.body.clientHeight - 110 }}
+                scroll={{x: '160%', y : document.body.clientHeight - 110 }}
                 columns={columns}
                 rowKey={'maintainPlanDetailId'}
                 showHeader={true}

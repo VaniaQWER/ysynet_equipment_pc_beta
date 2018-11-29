@@ -86,6 +86,7 @@ export default class AddUpKeepPlanForm extends React.Component {
       selectedKeys: [],
       selKey:[],
       cycleModule:'00',
+      afterSelectValue: '月'
     };
 
     componentWillMount =() =>{
@@ -302,9 +303,22 @@ export default class AddUpKeepPlanForm extends React.Component {
 
     }
 
+    genAfterSelect = () =>{
+      return (
+        <Select 
+          style={{ width: 70  }} 
+          defaultValue={this.state.afterSelectValue} 
+          onSelect={value => this.setState({ afterSelectValue: value })}
+        >
+          <Option value='月'>月</Option>
+          <Option value='天'>天</Option>
+        </Select>
+      )
+    }
+
     render() {
       const { getFieldDecorator } = this.props.form;
-      const {  selKey ,cycleModule , prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
+      const {  selKey  , prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
       const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
     
       const columns = [
@@ -346,97 +360,101 @@ export default class AddUpKeepPlanForm extends React.Component {
         },
       };
 
-      const cycleModuleFn =(val)=>{
-        if(val==='00'){
-          return(
-            <Col span={8}>
-              {editState ? 
-                <FormItem label='保养时间' {...formItemLayout}>
-                    {getFieldDecorator(`maintainDate`,{
-                      initialValue:data.maintainDate,
-                    })(
-                    <DatePicker  disabled/>
-                  )}
-                </FormItem>
-                :UnStateText('保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
-              }
-            </Col>
-          )
-        }else{
-          return(
-            <div>
-              <Col span={8}>
-              {editState ? 
-                <FormItem label={`循环周期`} {...formItemLayout}>
-                  {getFieldDecorator(`tfCycle`,{
-                    initialValue:data.tfCycle,
-                    rules:[{
-                      required:true,message:'请输入循环周期！'
-                    }]
-                  })(
-                    <Input placeholder="请输入循环周期" style={{width: 200}} addonAfter={'月'}/>
-                  )}
-                </FormItem>
-                :UnStateText('循环周期',data.tfCycle)
-              }
-              </Col>
-              <Col span={8}>
-                {editState ? 
-                  <FormItem label={`提前生成保养单`} {...formItemLayout}>
-                    {getFieldDecorator(`advancePlan`,{
-                      initialValue:data.advancePlan,
-                      rules:[{
-                        required:true,message:'请输入天数！'
-                      }]
-                    })(
-                      <Input placeholder="请输入天数" style={{width: 200}} addonAfter={'天'}/>
-                    )}
-                  </FormItem>
-                  :UnStateText('提前生成保养单',data.advancePlan)
-                }
-              </Col>
-              <Col span={8} >
-                {/* maintainDate - endMaintainDate*/}
-                  {editState ? 
-                    <FormItem
-                      {...formItemLayout}
-                      label="保养计划开始时间"
-                    >
-                      {getFieldDecorator('maintainDate',{
-                        initialValue:data.maintainDate,
-                      })(
-                        <DatePicker
-                          format="YYYY-MM-DD"
-                          disabled
-                          />
-                      )}
-                    </FormItem>
-                    :UnStateText('保养计划开始时间', moment(data.maintainDate).format('YYYY-MM-DD'))
-                  }
-              </Col>
-              <Col span={8} >
-                  {editState ? 
-                    <FormItem
-                      {...formItemLayout}
-                      label="保养失效时间"
-                    >
-                      {getFieldDecorator('endMaintainDate',{
-                        initialValue:data.endMaintainDate,
-                        rules:[{
-                          required:true,message:'请填写保养计划有效期！'
-                        }]
-                      })(<DatePicker
-                          format="YYYY-MM-DD"
-                          disabledDate={(current)=>{return current && current < moment().endOf('day');}}
-                        />)}
-                    </FormItem>
-                    :UnStateText('保养失效时间',moment(data.endMaintainDate).format('YYYY-MM-DD'))
-                  }
-              </Col>
-            </div>
-          )
-        }
-      }
+      // const cycleModuleFn =(val)=>{
+      //   if(val==='00'){
+      //     return(
+      //       <div>
+      //       <Col span={8}>
+      //         {editState ? 
+      //           <FormItem label={`循环周期`} {...formItemLayout}>
+      //             {getFieldDecorator(`tfCycle`,{
+      //               initialValue:data.tfCycle,
+      //               rules:[{
+      //                 required:true,message:'请输入循环周期！'
+      //               }]
+      //             })(
+      //               <Input placeholder="请输入循环周期" style={{width: 200}} addonAfter={'月'}/>
+      //             )}
+      //           </FormItem>
+      //           :UnStateText('循环周期',data.tfCycle)
+      //         }
+      //         </Col>
+      //         <Col span={8}>
+      //           {editState ? 
+      //             <FormItem label='保养时间' {...formItemLayout}>
+      //                 {getFieldDecorator(`maintainDate`,{
+      //                   initialValue:data.maintainDate,
+      //                 })(
+      //                 <DatePicker  disabled/>
+      //               )}
+      //             </FormItem>
+      //             :UnStateText('保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
+      //           }
+      //         </Col>
+      //       </div>
+      //     )
+      //   }else{
+      //     return(
+      //       <div>
+              
+      //         <Col span={8}>
+      //           {editState ? 
+      //             <FormItem label={`提前生成保养单`} {...formItemLayout}>
+      //               {getFieldDecorator(`advancePlan`,{
+      //                 initialValue:data.advancePlan,
+      //                 rules:[{
+      //                   required:true,message:'请输入天数！'
+      //                 }]
+      //               })(
+      //                 <Input placeholder="请输入天数" style={{width: 200}} addonAfter={'天'}/>
+      //               )}
+      //             </FormItem>
+      //             :UnStateText('提前生成保养单',data.advancePlan)
+      //           }
+      //         </Col>
+      //         <Col span={8} >
+      //           {/* maintainDate - endMaintainDate*/}
+      //             {editState ? 
+      //               <FormItem
+      //                 {...formItemLayout}
+      //                 label="保养计划开始时间"
+      //               >
+      //                 {getFieldDecorator('maintainDate',{
+      //                   initialValue:data.maintainDate,
+      //                 })(
+      //                   <DatePicker
+      //                     format="YYYY-MM-DD"
+      //                     disabled
+      //                     />
+      //                 )}
+      //               </FormItem>
+      //               :UnStateText('保养计划开始时间', moment(data.maintainDate).format('YYYY-MM-DD'))
+      //             }
+      //         </Col>
+      //         <Col span={8} >
+      //             {editState ? 
+      //               <FormItem
+      //                 {...formItemLayout}
+      //                 label="保养失效时间"
+      //               >
+      //                 {getFieldDecorator('endMaintainDate',{
+      //                   initialValue:data.endMaintainDate,
+      //                   rules:[{
+      //                     required:true,message:'请填写保养计划有效期！'
+      //                   }]
+      //                 })(<DatePicker
+      //                     format="YYYY-MM-DD"
+      //                     disabledDate={(current)=>{return current && current < moment().endOf('day');}}
+      //                   />)}
+      //               </FormItem>
+      //               :UnStateText('保养失效时间',moment(data.endMaintainDate).format('YYYY-MM-DD'))
+      //             }
+      //         </Col>
+      //       </div>
+      //     )
+      //   }
+      // }
+     
 
       return (
         <Form>
@@ -501,26 +519,30 @@ export default class AddUpKeepPlanForm extends React.Component {
           <Card title="计划信息" bordered={false} style={{marginTop:30}}>
               <Row>
                 <Col span={8}>
-                {editState ?
+                  {
+                    UnStateText('保养模式','管理科室保养')
+                  }
+                </Col>
+                <Col span={8}>
+                {/* {editState ? */}
                   <FormItem label='保养类型' {...formItemLayout}>
-                  {getFieldDecorator(`maintainType`,{initialValue:'00'})(
+                  {getFieldDecorator(`maintainType`,{initialValue: data.maintainType })(
                     <Radio.Group>
-                      <Radio value='00' checked={true}>内保</Radio>
-                      {/*<Radio value='01' disabled={true}>外保</Radio>*/}
+                      {
+                        data.maintainType === '00'?
+                        <Radio value='00' checked={true}>内保</Radio>
+                        :
+                        <Radio value='01' checked={true}>外保</Radio>
+                      }
                     </Radio.Group>
                   )}
                   </FormItem>
-                  :UnStateText('保养类型','内保')
-                }
                 </Col>
-                <FormItem>
-                 {getFieldDecorator(`maintainPlanId`,{initialValue:data.maintainPlanId})(<span>&nbsp;</span>)}
-                </FormItem>
                 <Col span={8}>
                   {editState ? 
                     <FormItem label='临床风险等级' {...formItemLayout}>
                     {getFieldDecorator(`clinicalRisk`,{initialValue:data.clinicalRisk})(
-                      <Select placeholder='请选择'>
+                      <Select placeholder='请选择' style={{ width: 200 }}>
                         <Option value="">请选择</Option>
                         <Option value="02">高</Option>
                         <Option value="01">中</Option>
@@ -531,8 +553,14 @@ export default class AddUpKeepPlanForm extends React.Component {
                     : UnStateText('临床风险等级',data.clinicalRisk)
                   }
                 </Col>
-              </Row>
-              <Row>
+                {/* <FormItem>
+                 {getFieldDecorator(`maintainPlanId`,{initialValue:data.maintainPlanId})(<span>&nbsp;</span>)}
+                </FormItem> */}
+                <Col span={8}>
+                  {
+                    UnStateText('保养执行科室','保养执行科室')
+                  }
+                </Col>
                 <Col span={8}>
                   {editState ? 
                     <FormItem label='循环方式' {...formItemLayout}>
@@ -551,8 +579,71 @@ export default class AddUpKeepPlanForm extends React.Component {
                     :UnStateText('循环方式',data.loopFlag)
                   }
                 </Col>
-                {cycleModuleFn(cycleModule)}
+                <Col span={8}>
+                  {editState ? 
+                    <FormItem label={`循环周期`} {...formItemLayout}>
+                      {getFieldDecorator(`tfCycle`,{
+                        initialValue:data.tfCycle,
+                        rules:[{
+                          required:true,message:'请输入循环周期！'
+                        }]
+                      })(
+                        <Input placeholder="请输入循环周期" style={{width: 200}} addonAfter={this.genAfterSelect()}/>
+                      )}
+                    </FormItem>
+                    :UnStateText('循环周期',data.tfCycle)
+                  }
+                </Col>
+                <Col span={8}>
+                  {editState ? 
+                    <FormItem label='保养时间' {...formItemLayout}>
+                        {getFieldDecorator(`maintainDate`,{
+                          initialValue:data.maintainDate,
+                        })(
+                        <DatePicker  disabled/>
+                      )}
+                    </FormItem>
+                    :UnStateText('保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
+                  }
+                </Col>
+                <Col span={8}>
+                {editState ? 
+                  <FormItem label={`提前生成保养单`} {...formItemLayout}>
+                    {getFieldDecorator(`advancePlan`,{
+                      initialValue:data.advancePlan,
+                      rules:[{
+                        required:true,message:'请输入天数！'
+                      }]
+                    })(
+                      <Input placeholder="请输入天数" style={{width: 200}} addonAfter={'天'}/>
+                    )}
+                  </FormItem>
+                  :UnStateText('提前生成保养单',data.advancePlan)
+                }
+              </Col>
+              <Col span={8} >
+                {/* maintainDate - endMaintainDate*/}
+                  {editState ? 
+                    <FormItem
+                      {...formItemLayout}
+                      label="保养计划开始时间"
+                    >
+                      {getFieldDecorator('maintainDate',{
+                        initialValue:data.maintainDate,
+                      })(
+                        <DatePicker
+                          format="YYYY-MM-DD"
+                          disabled
+                          />
+                      )}
+                    </FormItem>
+                    :UnStateText('保养计划开始时间', moment(data.maintainDate).format('YYYY-MM-DD'))
+                  }
+              </Col>
               </Row>
+              {/* <Row>
+                {cycleModuleFn(cycleModule)}
+              </Row> */}
           </Card>
           
           <Card title="项目信息" bordered={false} style={{marginTop:30}}>
@@ -576,7 +667,7 @@ export default class AddUpKeepPlanForm extends React.Component {
                     <Row>
                       <Col>
                         <Select
-                          mode="combobox"
+                          // mode="combobox"
                           placeholder='请搜索选择保养项目'
                           defaultActiveFirstOption={false}
                           filterOption={false}
@@ -590,6 +681,7 @@ export default class AddUpKeepPlanForm extends React.Component {
                     </Row>
                     <Table 
                       rowKey={'templateDetailGuid'}
+                      size={'small'}
                       rowSelection={{
                         selectedRowKeys:selKey,
                         onChange: (selectedRowKeys, selectedRows) => {
