@@ -18,6 +18,8 @@ const upkeep = {
   editPlanDetails:`${_local}/maintainOrderController/updateMaintainPlan`,//修改保存计划
   deletePlanDetails:`${_local}/maintainOrderController/deleteMaintainPlan`,//删除计划
   doPlanDetails:`${_local}/maintainOrderController/updateMaintainPlanFstate`,//执行计划
+  updateMaintainPlanDetailFstate:`${_local}/maintainOrderController/updateMaintainPlanDetailFstate`,//关闭计划
+
   //新建计划添加
   insertMaintainPlan:`${_local}/maintainOrderController/insertMaintainPlan`,//新建计划添加
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//资产弹窗选择科室

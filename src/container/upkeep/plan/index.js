@@ -9,11 +9,10 @@ import upkeep from '../../../api/upkeep';
 import querystring from 'querystring';
 import request from '../../../utils/request';
 import './styles.css';  
-import { upkeepPlanLoopFlag , upkeepPlanStateSel ,upkeepPlanState , upkeepMainTainType } from '../../../constants';
+import { upkeepPlanStateSel ,upkeepPlanState , upkeepMainTainType, maintainModeType } from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
 const confirm = Modal.confirm;
-// const Search = Input.Search;
 const FormItem = Form.Item;
 const { Option } = Select;
 const { Content } = Layout;
@@ -84,12 +83,14 @@ class SearchForm extends React.Component{
           <Col span={8}>
             <FormItem {...formItemLayout} label={`保养模式`}>
               {
-                getFieldDecorator(`maintainModule`,{
+                getFieldDecorator(`maintainMode`,{
                   initialValue: ''
                 })(
                   <Select placeholder='请选择'>
-                    <Option value='00'>模式一</Option>
-                    <Option value='01'>模式二</Option>
+                    <Option value=''>请选择</Option>
+                    <Option value='01'>管理科室保养</Option>
+                    <Option value='02'>临床科室保养</Option>
+                    <Option value='03'>服务商保养</Option>
                   </Select>
                 )
               }
@@ -211,6 +212,35 @@ class MaintainPlan extends React.Component{
       
     }
 
+    closePlan = (record)=>{//关闭
+      confirm({
+        title: '是否确认关闭此计划？',
+        content: `确定执行此操作？`,
+        onOk: async () => {
+          let options = {
+            body:querystring.stringify({maintainPlanDetailId: record.maintainPlanDetailId,fstate: '80'}),
+            headers:{
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: data => {
+              if(data.status){
+                message.success('关闭成功')
+                this.setState({visible: false},() => this.refs.table.fetch());
+              }else{
+                message.error(data.msg)
+              }
+            },
+            error: err => {console.log(err)}
+          }
+          request(upkeep.updateMaintainPlanDetailFstate, options)
+        },
+        onCancel: () => this.setState({visible: false})
+      })
+      
+    }
+
+
+
     /* 记录table过滤以及分页数据 */
     changeQueryTable = (values) =>{
       const { setSearch, history ,search} = this.props;
@@ -221,19 +251,27 @@ class MaintainPlan extends React.Component{
       const { modalContent }= this.state;
       const { search , history } = this.props;
       const pathname = history.location.pathname;
-      // const defaultValue = search[pathname]&&search[pathname].maintainPlanNo?search[pathname].maintainPlanNo:null;
       let columns=[
         { title: '操作', 
         dataIndex: 'maintainPlanDetailId', 
-        className:'col08',
+        className:'col-1',
         key: 'x', 
         render: (text,record) =>
           <span>
-            { (record.fstate==="20") ? 
+            {
+              record.fstate === '00'?
+              <span>
+                <Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link>
+                <a title='关闭' style={{ marginLeft: 8 }} onClick={()=>this.closePlan(record)}>关闭</a>
+              </span>
+              :
+              record.fstate === '20'?
               <span title='编辑'><Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>编辑</Link>&nbsp;&nbsp;
-              <a  title='删除' onClick={()=> this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
-              <a title='执行' onClick={()=>this.doPlanDetails(record)}>执行</a></span>
-              :<span><Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link></span>
+              <a title='删除' onClick={()=> this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
+              <a title='执行' onClick={()=>this.doPlanDetails(record)}>执行</a>&nbsp;&nbsp;
+              <a title='关闭' onClick={()=>this.closePlan(record)}>关闭</a></span>
+              :
+              <span><Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link></span>
             }
           </span>
         },
@@ -272,66 +310,66 @@ class MaintainPlan extends React.Component{
         },
         {
           title: '使用科室',
-          className:'col05',
+          className:'col08',
           dataIndex: 'useDept',
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '保养类型',
-          className:'col05',
+          className:'col08',
           dataIndex: 'maintainType',
           render: text => <span>{upkeepMainTainType[text].text}</span>
         },
         {
           title: '上次保养时间',
-          className:'col08',
+          className:'col-1',
           dataIndex: 'lastMaintainDate',
           sorter: (a, b) => this.sortTime(a,b,'maintainDate'),
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '计划保养时间',
-          className:'col08',
+          className:'col-1',
           dataIndex: 'maintainDate',
           sorter: (a, b) => this.sortTime(a,b,'endMaintainDate'),
           render: text => <span title={text}>{text}</span>
         },
-        {
-          title: '循环方式',
-          className:'col05',
-          dataIndex: 'loopFlag',
-          render: text => <span title={text}>{upkeepPlanLoopFlag[text].text}</span>
-        },
-        {
-          title: '循环周期',
-          className:'col05',
-          dataIndex: 'tfCycle',
-          render: text => <span title={text}>{text}</span>
-        },
+        // {
+        //   title: '循环方式',
+        //   className:'col05',
+        //   dataIndex: 'loopFlag',
+        //   render: text => <span title={text}>{upkeepPlanLoopFlag[text].text}</span>
+        // },
+        // {
+        //   title: '循环周期',
+        //   className:'col05',
+        //   dataIndex: 'tfCycle',
+        //   render: text => <span title={text}>{text}</span>
+        // },
         {
           title: '保养模式',
-          className:'col05',
-          dataIndex: 'maintanModule',
-          render: text => <span title={text}>{text}</span>
+          className:'col-1',
+          dataIndex: 'maintainMode',
+          render: text => <span title={text}>{maintainModeType[text].text}</span>
         },
         {
           title: '保养执行科室',
           className:'col08',
-          dataIndex: 'maintainDeptName',
+          dataIndex: 'executeDeptName',
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '操作员',
-          className:'col08',
+          className:'col-1',
           dataIndex: 'executeUsername',
           render: text => <span title={text}>{text}</span>
         },
-        {
-          title: '创建时间',
-          className:'col08',
-          dataIndex: 'createTime',
-          render: text => <span title={text}>{text}</span>
-        }
+        // {
+        //   title: '创建时间',
+        //   className:'col08',
+        //   dataIndex: 'createTime',
+        //   render: text => <span title={text}>{text}</span>
+        // }
       ]
       if(search[pathname]&&search[pathname].fstate){
         columns[2].filteredValue = search[pathname].fstate;
@@ -359,7 +397,7 @@ class MaintainPlan extends React.Component{
                 query={this.state.query}
                 onChange={this.changeQueryTable}
                 url={upkeep.planList}
-                scroll={{x: '160%', y : document.body.clientHeight - 110 }}
+                scroll={{x: '140%', y : document.body.clientHeight - 110 }}
                 columns={columns}
                 rowKey={'maintainPlanDetailId'}
                 showHeader={true}
