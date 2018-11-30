@@ -5,7 +5,6 @@ import TextArea from 'antd/lib/input/TextArea';
 import request from '../../../utils/request';
 import querystring from 'querystring';
 import upkeep from '../../../api/upkeep';
-import assets from '../../../api/assets';
 import basicdata from '../../../api/basicdata';
 import _ from 'lodash';
 import { FTP } from '../../../api/local';
@@ -107,7 +106,7 @@ const formItemRowLayout = {
       sm: { span: 14 },
     },
 };
-export default class AddUpKeepForm extends React.Component {
+class AddUpKeepForm extends React.Component {
     state = {
       selectDropData:[],//项目弹出层 下拉框内容
       prjTableData:[],//项目弹出层  下拉框带出对应table内容
@@ -134,6 +133,7 @@ export default class AddUpKeepForm extends React.Component {
       startValue: null,
       endValue: null,
       upKeepPerson:[],//保养人下拉框
+      servicePerson:[],//服务商下拉框
     };
     //图片上传内容---------------------------------------------
     handleCancel = () => this.setState({ previewVisible: false })
@@ -199,6 +199,20 @@ export default class AddUpKeepForm extends React.Component {
           success: data => {
             if(data.status){
               this.setState({upKeepPerson:data.result})
+            }
+          },
+          error: err => {console.log(err)}
+        })
+
+        //获取 servicePerson 服务商下拉框
+        request(upkeep.selectServiceCheckList,{
+          body:querystring.stringify({}),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: data => {
+            if(data.status){
+              this.setState({servicePerson:data.result})
             }
           },
           error: err => {console.log(err)}
@@ -447,10 +461,53 @@ export default class AddUpKeepForm extends React.Component {
     onPrint = () => {
       window.open(`${upkeep.printMaintain}?maintainGuid=${this.props.maintainGuid}`)
     } 
+    /* 附件上传相关内容 */
+    normFile = (e) => {
+      console.log('Upload event:', e);
+      if (Array.isArray(e)) {
+        return e;
+      }
+      return e && e.fileList;
+    }
+    initAccessoryFormat =( backData , field)=>{
+      if(backData){
+        let accList=backData[field];
+        if(Array.isArray(accList)){
+          return accList
+        }else if(accList){
+          let list = accList;//.split(';')
+          let retList = []
+          list.map((item,index)=>{
+            if(item!==""){
+              let Item =  {
+                    uid: index,
+                    key:index,
+                    name: `${item.split('/')[item.split('/').length-1]}`,
+                    status: 'done',
+                    url: `${FTP}${item}`,
+                    thumbUrl: `${FTP}${item}`
+              }
+              if(`.${item.split('.')[item.split('.').length-1]}`===".pdf"){
+                Item.thumbUrl=require('../../../assets/fujian.png')
+              }
+              
+              retList.push(Item)
+            }
+            return item 
+          })
+          return retList
+        }else{
+          return []
+        }
+      }else{
+        return []
+      }
+    }
+    
     render() {
-      const { getFieldDecorator, getFieldsValue } = this.props.form;
-      const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData} = this.state;
-      const { previewVisible, previewImage , upKeepPerson } = this.state;
+      const { getFieldDecorator, getFieldsValue , getFieldValue } = this.props.form;
+      const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData
+      ,previewVisible, previewImage , upKeepPerson , servicePerson} = this.state;
       const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
       const columns = [
         {
@@ -645,7 +702,8 @@ export default class AddUpKeepForm extends React.Component {
                   }
                 </Col>
                 <Col span={8}>
-                {editState ? 
+
+                {getFieldValue('maintanceModule')!=="03" ? editState ? 
                   <FormItem label='保养人' {...formItemLayout}>
                   {getFieldDecorator(`engineerUserid`,{
                     initialValue:data.engineerUserid,
@@ -669,7 +727,34 @@ export default class AddUpKeepForm extends React.Component {
                   )}
                   </FormItem>
                   :UnStateText('保养人',data.engineerName)
+                   :null
                 }
+
+                {getFieldValue('maintanceModule')==="03" ? editState ? 
+                  <FormItem label='服务商' {...formItemLayout}>
+                    {getFieldDecorator(`serviceId`,{
+                      initialValue:data.engineerUserid,
+                      rules:[{required:true,message:'请选择保养人'}]
+                    })(
+                      <Select
+                        showSearch
+                        style={{ width: 200 }}
+                        optionFilterProp="children"
+                        onSelect={(input, option)=>{
+                          console.log(option)
+                          this.props.form.setFieldsValue({serviceName:option.props.children})
+                        }}
+                        filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                      >
+                        {
+                          servicePerson.map(item=>(<Option value={item.value} key={item.value}>{item.text}</Option>))
+                        }
+                      </Select>
+                    )}
+                  </FormItem>
+                  :UnStateText('服务商',data.serviceName)
+                  :null
+                } 
                 </Col>
                 <Col span={0}>
                   <FormItem label='保养人Name' {...formItemLayout}>
@@ -678,7 +763,6 @@ export default class AddUpKeepForm extends React.Component {
                   )}
                   </FormItem>
                 </Col>
-                
               </Row>
               <Row>
                 <Col span={8}>
@@ -751,12 +835,20 @@ export default class AddUpKeepForm extends React.Component {
               <Row>
                 <Col className="clearfix" span={21}>
                     <FormItem label='上传附件' {...formItemRowLayout}>
-                      {getFieldDecorator(`tfAccessoryList`,{initialValue:data.tfAccessoryList})(//
+                      {getFieldDecorator(`tfAccessoryList`,{
+                        // initialValue:data.tfAccessoryList,
+                        initialValue:this.initAccessoryFormat(data,'tfAccessoryList')||[],
+                        valuePropName: 'fileList',
+                        getValueFromEvent: this.normFile,
+                      })(//
                           <Upload
-                            className={editState? '':'hide-delete'}
-                            action={assets.picUploadUrl}
+                            // className={editState? '':'hide-delete'}
+                            showUploadList={{
+                              showRemoveIcon:editState
+                            }}
+                            // data={{assetsRecordGuid:'666'}}
+                            action={upkeep.uploadFile}
                             listType="picture-card"
-                            fileList={data.tfAccessoryList}
                             onPreview={this.handlePreview}
                             onChange={this.handleChange}
                             beforeUpload={this.beforeUpload}
@@ -828,3 +920,5 @@ export default class AddUpKeepForm extends React.Component {
       );
     }
   }
+
+export default Form.create()(AddUpKeepForm)

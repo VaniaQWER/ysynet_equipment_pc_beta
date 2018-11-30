@@ -8,10 +8,11 @@ import moment from 'moment';
 import {withRouter  } from 'react-router-dom';
 import upkeep from '../../../api/upkeep';
 import request from '../../../utils/request';
+import { FTP } from '../../../api/local';
 import { cutFtpUrl } from '../../../utils/tools';
 const { Content } = Layout; 
 
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
+// const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
 
 class UpKeepFinish extends React.Component{
     state={
@@ -31,6 +32,20 @@ class UpKeepFinish extends React.Component{
         }
       }
       return data
+    }
+    formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
+      if(fileList&&fileList.length){//保留上传时返回的 24321/的地址路径
+        let retList = fileList.map(item=>{
+            if(item.response){
+              return item.response.result
+            }else{
+              return item.url.replace(FTP,'')
+            }
+        })
+        return retList
+      }else{
+        return null
+      }
     }
     //提交数据
     handleSubmit = (fstate) =>{
@@ -54,21 +69,24 @@ class UpKeepFinish extends React.Component{
             values.maintainGuid = this.state.maintainGuid;
             values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 						//更改附件格式
-            let thumburl = []
-            let fileString ='';
-						if(values.tfAccessoryList){
-							for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-                let file = values.tfAccessoryList.fileList[i] ;
-                if(file.thumbUrl){
-                  thumburl.push(file.thumbUrl)
-                }else{
-                  fileString+= (cutFtpUrl(file.url)+';')
-                  thumburl.push('')
-                }
-							}
-						}	
-            values.tfAccessoryList = thumburl;
-            values.tfAccessory = fileString;
+            // let thumburl = []
+            // let fileString ='';
+						// if(values.tfAccessoryList){
+						// 	for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
+            //     let file = values.tfAccessoryList.fileList[i] ;
+            //     if(file.thumbUrl){
+            //       thumburl.push(file.thumbUrl)
+            //     }else{
+            //       fileString+= (cutFtpUrl(file.url)+';')
+            //       thumburl.push('')
+            //     }
+						// 	}
+						// }	
+            // values.tfAccessoryList = thumburl;
+            // values.tfAccessory = fileString;
+            /* 处理保养模式 与 保养类型  */
+            values.maintainType = values.maintanceModule!=="03"? "00":"01";
+            values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
 						this.sendAjax(values)
 				}
 			});
@@ -111,7 +129,7 @@ class UpKeepFinish extends React.Component{
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData'
+                <AddUpKeepForm  formInfo={formInfo} ref='getFormData'
                 maintainGuid={maintainGuid}
                 editState = {true}
                 callback={dataSource=>this.setState({dataSource})}/>

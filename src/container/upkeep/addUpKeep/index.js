@@ -2,15 +2,15 @@
 import React from 'react';
 import './style.css';
 import AddUpKeepForm from './addForm.js';
-import { Form, Button ,Layout,Affix ,message} from 'antd';
+import { Button ,Layout,Affix ,message} from 'antd';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import request from '../../../utils/request';
 import upkeep from '../../../api/upkeep';
+import { FTP } from '../../../api/local';
 
 const { Content } = Layout; 
 
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
 
 class AddUpKeep extends React.Component{
     state={
@@ -29,6 +29,20 @@ class AddUpKeep extends React.Component{
         }
       }
       return data
+    }
+    formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
+      if(fileList&&fileList.length){//保留上传时返回的 24321/的地址路径
+        let retList = fileList.map(item=>{
+            if(item.response){
+              return item.response.result
+            }else{
+              return item.url.replace(FTP,'')
+            }
+        })
+        return retList
+      }else{
+        return null
+      }
     }
     handleSubmit = (fstate) =>{
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
@@ -51,14 +65,10 @@ class AddUpKeep extends React.Component{
           values.fstate = fstate;
           values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 
-          let thumburl = []
-          if(values.tfAccessoryList){
-            for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-              let files = values.tfAccessoryList.fileList[i];
-              if(files.thumbUrl){thumburl.push(files.thumbUrl)}
-            }
-          }	
-          values.tfAccessoryList = thumburl;
+          /* 处理保养模式 与 保养类型  */
+          values.maintainType = values.maintanceModule!=="03"? "00":"01";
+          values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
+          console.log(values)
           this.sendAjax(values)
 				}
 			});
@@ -113,7 +123,7 @@ class AddUpKeep extends React.Component{
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  
+                <AddUpKeepForm  
                 formInfo={formInfo} 
                 ref='getFormData' 
                 editState = {true}
