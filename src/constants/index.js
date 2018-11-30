@@ -319,6 +319,13 @@ export const upkeepDetailsTable = {
   "02":{ text: '保养后合格' },
   null:{text: ''}
 }
+
+export const upkeepResult =[
+  { text: '合格', value: '00' },
+  { text: '不合格', value: '01' },
+  { text: '保养后合格', value: '02' },
+]
+
 export const upKeppModeSelect =[
   { text: '管理科室保养', value: '01' },
   { text: '临床科室保养', value: '02' },

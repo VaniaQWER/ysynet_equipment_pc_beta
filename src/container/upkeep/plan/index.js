@@ -155,6 +155,22 @@ class MaintainPlan extends React.Component{
       setSearch(pathname, values);
       this.refs.table.fetch(val)
     }
+
+    getActions = (fstate,record) =>{
+      switch(fstate){
+        case '00':
+          return  (<span>
+            <a title='关闭' style={{ marginLeft: 8 }} onClick={()=>this.closePlan(record)}>关闭</a>
+          </span>)
+        case '20':
+          return ( <span>
+            <Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>执行保养</Link>&nbsp;&nbsp;
+            <a title='关闭' onClick={()=>this.closePlan(record)}>关闭</a>
+          </span>)
+        default: 
+          break;
+      }
+    }
     
     deletePlanDetails = (record)=>{//删除
       confirm({
@@ -252,35 +268,17 @@ class MaintainPlan extends React.Component{
       const { search , history } = this.props;
       const pathname = history.location.pathname;
       let columns=[
-        { title: '操作', 
-        dataIndex: 'maintainPlanDetailId', 
-        className:'col-1',
-        key: 'x', 
-        render: (text,record) =>
-          <span>
-            {
-              record.fstate === '00'?
-              <span>
-                <Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link>
-                <a title='关闭' style={{ marginLeft: 8 }} onClick={()=>this.closePlan(record)}>关闭</a>
-              </span>
-              :
-              record.fstate === '20'?
-              <span title='编辑'><Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>编辑</Link>&nbsp;&nbsp;
-              <a title='删除' onClick={()=> this.deletePlanDetails(record)}>删除</a>&nbsp;&nbsp;
-              <a title='执行' onClick={()=>this.doPlanDetails(record)}>执行</a>&nbsp;&nbsp;
-              <a title='关闭' onClick={()=>this.closePlan(record)}>关闭</a></span>
-              :
-              <span><Link to={{pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}`}}>详情</Link></span>
-            }
-          </span>
+        {
+          title: '序号',
+          dataIndex: 'index',
+          render: (text,record,index) => `${ index + 1 }`
         },
         {
           title: '保养计划单号',
           className:'col08',
           dataIndex: 'maintainPlanNo',
           render(text, record) {
-            return <span title={text}>{text}</span>
+            return <Link to={{ pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}` }}>{text}</Link>
           }
         },
         {
@@ -294,6 +292,11 @@ class MaintainPlan extends React.Component{
             <div>
             { upkeepPlanState[text].text }
             </div>
+        },
+        {
+          title: '资产编号',
+          dataIndex: 'assetsRecord',
+          className: 'col08'
         },
         {
           title: '资产名称',
@@ -316,7 +319,7 @@ class MaintainPlan extends React.Component{
         },
         {
           title: '保养类型',
-          className:'col08',
+          className:'col05',
           dataIndex: 'maintainType',
           render: text => <span>{upkeepMainTainType[text].text}</span>
         },
@@ -334,21 +337,9 @@ class MaintainPlan extends React.Component{
           sorter: (a, b) => this.sortTime(a,b,'endMaintainDate'),
           render: text => <span title={text}>{text}</span>
         },
-        // {
-        //   title: '循环方式',
-        //   className:'col05',
-        //   dataIndex: 'loopFlag',
-        //   render: text => <span title={text}>{upkeepPlanLoopFlag[text].text}</span>
-        // },
-        // {
-        //   title: '循环周期',
-        //   className:'col05',
-        //   dataIndex: 'tfCycle',
-        //   render: text => <span title={text}>{text}</span>
-        // },
         {
           title: '保养模式',
-          className:'col-1',
+          className:'col08',
           dataIndex: 'maintainMode',
           render: text => <span title={text}>{maintainModeType[text].text}</span>
         },
@@ -360,16 +351,20 @@ class MaintainPlan extends React.Component{
         },
         {
           title: '操作员',
-          className:'col-1',
+          className:'col08',
           dataIndex: 'executeUsername',
           render: text => <span title={text}>{text}</span>
         },
-        // {
-        //   title: '创建时间',
-        //   className:'col08',
-        //   dataIndex: 'createTime',
-        //   render: text => <span title={text}>{text}</span>
-        // }
+        { 
+          title: '操作', 
+          dataIndex: 'maintainPlanDetailId', 
+          className:'col08',
+          key: 'x', 
+          render: (text,record) => {
+            let { fstate } = record;
+            return this.getActions(fstate,record)
+          }
+        }
       ]
       if(search[pathname]&&search[pathname].fstate){
         columns[2].filteredValue = search[pathname].fstate;
