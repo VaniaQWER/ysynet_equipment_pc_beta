@@ -10,7 +10,7 @@ import assets from '../../../api/assets';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
-import { upkeepState , upkeepMainTainType ,upkeepStateSel } from '../../../constants';
+import { upkeepState , upkeepMainTainType ,upkeepStateSel , upKeepMode , upKeppModeSelect } from '../../../constants';
 import { Link } from 'react-router-dom';
 import { timeToStamp } from '../../../utils/tools';
 // import './styles.css';
@@ -141,12 +141,13 @@ let columns=[
   },
   {
     title: '保养模式',
-    dataIndex: 'maintainModule',
-    width: 150
+    dataIndex: 'maintainMode',
+    width: 150,
+    render:(text,)=>text?upKeepMode[text]:''
   },
   {
     title: '保养执行科室',
-    dataIndex: 'maintainDeptName',
+    dataIndex: 'executeDeptName',
     width: 150
   },
   {
@@ -273,14 +274,16 @@ class SearchFormWrapper extends React.Component {
               {...formItemLayout}
               label="保养模式"
             >
-              {getFieldDecorator('upkeepModule',{
+              {getFieldDecorator('maintainMode',{
                 initialValue: ''
               })(
                 <Select>
                   <Option value=''>全部</Option>
-                  <Option value='01'>模式一</Option>
-                  <Option value='02'>模式二</Option>
-                  <Option value='03'>模式三</Option>
+                  {
+                    upKeppModeSelect.map((item,index)=>(
+                      <Option value={item.value} key={index}>{item.text}</Option>
+                    ))
+                  }
                 </Select>
               )}
             </FormItem>

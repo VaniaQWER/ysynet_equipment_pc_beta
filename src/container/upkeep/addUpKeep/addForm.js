@@ -8,7 +8,7 @@ import upkeep from '../../../api/upkeep';
 import basicdata from '../../../api/basicdata';
 import _ from 'lodash';
 import { FTP } from '../../../api/local';
-import { upkeepDetailsTable } from '../../../constants';
+import { upkeepDetailsTable , upKeepMode } from '../../../constants';
 import './style.css';
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -503,6 +503,19 @@ class AddUpKeepForm extends React.Component {
         return []
       }
     }
+    _filterDept = (val)=>{
+      const { data } = this.state;
+      switch (val) {
+        case "01"://选择管理科室保养模式 - 则显示添加的资产的管理科室
+          return UnStateText('保养执行科室',data.bDept)
+        case "02"://选择临床科室保养模式 - 则显示添加的资产的使用科室
+          return UnStateText('保养执行科室',data.useDept)
+        case "03"://选择临床科室保养模式 - 则显示添加的资产的使用科室
+          return UnStateText('保养执行科室','')
+        default:
+          return UnStateText('保养执行科室','')
+      }
+    }
     
     render() {
       const { getFieldDecorator, getFieldsValue , getFieldValue } = this.props.form;
@@ -650,7 +663,7 @@ class AddUpKeepForm extends React.Component {
                     )}
                     </FormItem>
                     :
-                    UnStateText('保养模式','管理科室保养')
+                    UnStateText('保养模式',upKeepMode[data.maintainMode])
                   }
                 </Col>
                 <Col span={8}>
@@ -680,8 +693,8 @@ class AddUpKeepForm extends React.Component {
                 }
                 </Col> */}
                 <Col span={8}>
-                  {
-                    UnStateText('保养执行科室','设备科')
+                  {//保养执行科室
+                    this._filterDept(getFieldValue('maintainMode'))
                   }
                 </Col>
                 </Row>

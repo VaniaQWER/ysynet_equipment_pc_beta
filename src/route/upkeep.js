@@ -6,9 +6,9 @@ export default {
   component: asyncComponent(() => import("../container/upkeep")),
   routes: [
     { exact:true, path: '/upkeep/addUpKeep', name: '保养登记', component: asyncComponent(() => import("../container/upkeep/addUpKeep"))},
-    { exact:true, path: '/upkeep/upkeepTask', name: '保养工单', component: asyncComponent(() => import("../container/upkeep/upKeepTask"))},
-    { exact:true, path: '/upkeep/upkeepTask/details/:id', name: '保养工单详情', component: asyncComponent(() => import("../container/upkeep/upKeepTask/details"))},
-    { exact:true, path: '/upkeep/upkeepTask/finish/:id', name: '保养工单修改', component: asyncComponent(() => import("../container/upkeep/upKeepTask/finish"))},
+    { exact:true, path: '/upkeep/upkeepTask', name: '保养任务', component: asyncComponent(() => import("../container/upkeep/upKeepTask"))},
+    { exact:true, path: '/upkeep/upkeepTask/details/:id', name: '保养任务详情', component: asyncComponent(() => import("../container/upkeep/upKeepTask/details"))},
+    { exact:true, path: '/upkeep/upkeepTask/finish/:id', name: '保养任务修改', component: asyncComponent(() => import("../container/upkeep/upKeepTask/finish"))},
 
     { exact:true, path: '/upkeep/upkeeplist', name: '保养工单', component: asyncComponent(() => import("../container/upkeep/upKeepList"))},
     { exact:true, path: '/upkeep/upkeeplist/details/:id', name: '保养工单详情', component: asyncComponent(() => import("../container/upkeep/upKeepList/details"))},
