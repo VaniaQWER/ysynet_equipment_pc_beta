@@ -230,26 +230,6 @@ class AddTaskForm extends React.Component {
         success: data => {
           if(data.status){
             let retData = data.result;
-            //拿到回显数据--处理时间格式
-            retData.maintainDate=retData.maintainDate ? moment(retData.maintainDate ,'YYYY-MM-DD HH:mm') :null
-            retData.endMaintainDate=retData.endMaintainDate ?  moment(retData.endMaintainDate,'YYYY-MM-DD HH:mm'):null
-            if(retData.nextMaintainDate){
-              retData.nextMaintainDate=moment(retData.nextMaintainDate,'YYYY-MM-DD')
-            }
-            
-            //处理附件格式
-            if(retData.tfAccessory){
-              let urls = retData.tfAccessory.split(';');
-              let u = urls.splice(0, urls.length-1);
-              let files = [];
-              u.map((item, index) => {
-                return files.push({
-                  url: FTP + item,
-                  uid: index
-                })
-              });
-              retData.tfAccessoryList=files;
-            }
             let tabledata =data.result.maintainDetailList;
             this.setState({
               data:retData,
@@ -520,7 +500,7 @@ class AddTaskForm extends React.Component {
     }
     
     render() {
-      const { getFieldDecorator, getFieldsValue , getFieldValue } = this.props.form;
+      const { getFieldDecorator ,  getFieldValue } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData
       ,previewVisible, previewImage , upKeepPerson , servicePerson} = this.state;
       const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
@@ -595,13 +575,8 @@ class AddTaskForm extends React.Component {
           ):null}>
               <Row>
                   <Col span={8} >
-                      {editState ? 
-                        <FormItem label='资产编号' {...formItemLayout} style={{marginBottom:0}}>
-                            {getFieldDecorator(`assetsRecord`,{initialValue:data.assetsRecord})(
-                                <Input placeholder="请输入并搜索" onPressEnter={this.doSerach}/>
-                            )}
-                        </FormItem>
-                        : UnStateText('资产编号',data.assetsRecord)
+                      {
+                        UnStateText('资产编号',data.assetsRecord)
                       }
                   </Col>
                   <Col span={0} >
@@ -654,25 +629,12 @@ class AddTaskForm extends React.Component {
               <Row>
                 <Col span={8}>
                   {
-                    editState ?
-                    <FormItem label='保养模式' {...formItemLayout}>
-                    {getFieldDecorator(`maintainMode`,{initialValue:data.maintainMode?data.maintainMode:'01'})(
-                      <Select placeholder='请选择' style={{ width: 200 }}>
-                        <Option value="01">管理科室保养</Option>
-                        <Option value="02">临床科室保养</Option>
-                        <Option value="03">服务商保养</Option>
-                      </Select>
-                    )}
-                    </FormItem>
-                    :
                     UnStateText('保养模式',upKeepMode[data.maintainMode])
                   }
                 </Col>
                 <Col span={8}>
                   {
-                    UnStateText('保养类型',getFieldsValue(['maintainMode']).maintainMode === '03'?'外保': '内保')
-
-                    // UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
+                    UnStateText('保养类型',data.maintainMode === '03'?'外保': '内保')
                   }
                 </Col>
                 <Col span={8}>
@@ -683,29 +645,18 @@ class AddTaskForm extends React.Component {
                 </Row>
                 <Row>
                 <Col span={8}>
-                  {editState ? 
-                    <FormItem label='临床风险等级' {...formItemLayout}>
-                    {getFieldDecorator(`clinicalRisk`,{initialValue:data.clinicalRisk})(
-                      <Select placeholder='请选择' style={{ width: 200 }}>
-                        <Option value="">请选择</Option>
-                        <Option value="02">高</Option>
-                        <Option value="01">中</Option>
-                        <Option value="00">低</Option>
-                      </Select>
-                    )}
-                    </FormItem>
-                    : UnStateText('临床风险等级',data.clinicalRisk)
+                  {
+                     UnStateText('临床风险等级',data.clinicalRisk)
                   }
                 </Col>
                 <Col span={8}>
 
-                {getFieldValue('maintainMode')!=="03" ? editState ? 
+                {data.maintainMode!=="03"? editState ? 
                   <FormItem label='保养人' {...formItemLayout}>
                   {getFieldDecorator(`engineerUserid`,{
                     initialValue:data.engineerUserid,
                     rules:[{required:true,message:'请选择保养人'}]
                   })(
-                   /*  <Input placeholder="支持多人"/> */
                     <Select
                       showSearch
                       style={{ width: 200 }}
@@ -726,7 +677,7 @@ class AddTaskForm extends React.Component {
                    :null
                 }
 
-                {getFieldValue('maintainMode')==="03" ? editState ? 
+                {data.maintainMode==="03"? editState ? 
                   <FormItem label='服务商' {...formItemLayout}>
                     {getFieldDecorator(`serviceId`,{
                       initialValue:data.serviceId,
@@ -765,7 +716,7 @@ class AddTaskForm extends React.Component {
                 {editState ? 
                     <FormItem label='开始保养时间' {...formItemLayout}>
                       {getFieldDecorator(`maintainDate`,{
-                        initialValue:moment(data.maintainDate,'YYYY-MM-DD') || null,
+                        initialValue:data.maintainDate?moment(data.maintainDate,'YYYY-MM-DD'):null,
                         rules:[
                           {required:true,message:'请选择开始保养时间'}
                         ]
@@ -805,7 +756,9 @@ class AddTaskForm extends React.Component {
                 <Col span={8}>
                   {editState ?
                     <FormItem label='下次保养时间' {...formItemLayout}>
-                    {getFieldDecorator(`nextMaintainDate`,{initialValue:data.nextMaintainDate})(
+                    {getFieldDecorator(`nextMaintainDate`,{
+                      initialValue:data.nextMaintainDate?moment(data.nextMaintainDate,'YYYY-MM-DD'):null
+                    })(
                       <DatePicker
                         format={"YYYY-MM-DD"}
                         placeholder="请选择下次保养时间"
@@ -832,17 +785,14 @@ class AddTaskForm extends React.Component {
                 <Col className="clearfix" span={21}>
                     <FormItem label='上传附件' {...formItemRowLayout}>
                       {getFieldDecorator(`tfAccessoryList`,{
-                        // initialValue:data.tfAccessoryList,
                         initialValue:this.initAccessoryFormat(data,'tfAccessoryList')||[],
                         valuePropName: 'fileList',
                         getValueFromEvent: this.normFile,
-                      })(//
+                      })(
                           <Upload
-                            // className={editState? '':'hide-delete'}
                             showUploadList={{
                               showRemoveIcon:editState
                             }}
-                            // data={{assetsRecordGuid:'666'}}
                             action={upkeep.uploadFile}
                             listType="picture-card"
                             onPreview={this.handlePreview}

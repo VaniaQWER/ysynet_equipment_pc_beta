@@ -2,12 +2,10 @@
  * 保养计划-》保养详情
  */
 import React from 'react'
-import AddUpKeepPlanForm from '../addUpKeep/addPlanForm.js';
-import { Form ,Layout} from 'antd';
+import AddTaskForm from '../addUpKeep/addTaskForm';
+import { Layout } from 'antd';
 import { withRouter  } from 'react-router-dom';
 const { Content } = Layout; 
-
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepPlanForm);
 
 class UpKeepDetails extends React.Component{
     state={
@@ -24,7 +22,7 @@ class UpKeepDetails extends React.Component{
         return(
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  
+                <AddTaskForm  
                 formInfo={formInfo} 
                 maintainPlanDetailId = {maintainPlanDetailId} 
                 editState = {false}

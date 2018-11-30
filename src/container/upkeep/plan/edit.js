@@ -1,29 +1,35 @@
 /**
- * 保养计划--》编辑页面
+ * 保养计划--》完成页面
  */
 import React from 'react'
-import AddUpKeepPlanForm from './addPlanForm.js';
-import { Form, Button ,Layout,Affix ,message} from 'antd'
+import AddTaskForm from '../addUpKeep/addTaskForm.js';
+import { Button ,Layout,Affix ,message} from 'antd'
 import moment from 'moment';
-import { FTP } from '../../../api/local';
 import {withRouter  } from 'react-router-dom';
 import upkeep from '../../../api/upkeep';
 import request from '../../../utils/request';
-
+import { FTP } from '../../../api/local';
 const { Content } = Layout; 
-
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepPlanForm);
 
 class UpKeepFinish extends React.Component{
     state={
 			formInfo:{},
       maintainPlanDetailId:'',
-      dataSource:[],
-      maintainData: {},
-      tfCycleType: '',// 循环 (天, 月)
-      loading: false
+      dataSource:[]
     }
-
+    clearArray=(data)=>{
+      for(let i=0;i<data.length;i++){
+        for(let item in data[i]){
+          if(item ==='key'|| item==='levelr'||item ==='key'||item==='maintainTemplateId'
+            || item ==='templateDetailGuid' || item ==='templateTypeName'
+            || item ==='title'
+          ){
+            delete data[i][item]
+          }
+        }
+      }
+      return data
+    }
     formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
       if(fileList&&fileList.length){//保留上传时返回的 24321/的地址路径
         let retList = fileList.map(item=>{
@@ -38,41 +44,39 @@ class UpKeepFinish extends React.Component{
         return null
       }
     }
-			//提交数据
+    //提交数据
     handleSubmit = (fstate) =>{
       console.log(this.state.dataSource)
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
-            let postData = {}, maintainTypes = []
-              values.maintainDate = moment(values.maintainDate).format('YYYY-MM');
-              values.endMaintainDate = moment(values.endMaintainDate).format('YYYY-MM');
-            if(values.nextMaintainDate){
-              values.nextMaintainDate = moment(values.nextMaintainDate).format('YYYY-MM');
+            if(this.state.dataSource.length===0){
+              message.warning('请最少添加一条项目!')
+              return false
             }
-            values.engineerName = this.state.engineerName;
-            values.engineerUserid = values.engineerUserid;
-            values.serviceId = this.state.maintainData.serviceId;
-            values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
-            console.log(values,'values');
-            // postData.maintainData = maintainData;
-            postData.maintainOrder = { ...values };
-            postData.maintainPlanDetailId = this.state.maintainPlanDetailId;
-            postData.maintainTypes = this.state.dataSource;
-            console.log(postData,'postData')
-            // console.log(maintainOrder,'maintainOrder')
-            // delete values['assetsRecord'];//删除资产编号
-
-            // json.maintainPlanDetailId = this.state.maintainPlanDetailId;
-            // json.fstate = '40';
-            // json.maintainTypes =this.state.dataSource;//保养项目合集ID
-						// json.maintainPlan = values;
-						// console.log('will SendAjax',JSON.stringify(json))
-						// this.sendAjax(json)
+            let maintainOrder ={
+              maintainDate:values['maintainDate']?moment(values['maintainDate']).format('YYYY-MM-DD'):'',
+              nextMaintainDate:values['nextMaintainDate']?moment(values['nextMaintainDate']).format('YYYY-MM-DD'):'',
+              endMaintainDate:values['endMaintainDate']?moment(values['endMaintainDate']).format('YYYY-MM-DD'):'',
+              remark:values.remark,
+              tfAccessoryList:this.formatAccessory(values.tfAccessoryList),
+            }
+            if(values.engineerUserid){ //保养人ID
+              maintainOrder.engineerUserid = values.engineerUserid
+            }
+            if(values.serviceId){//服务商ID
+              maintainOrder.serviceId = values.serviceId
+            }
+            let maintainPlanDetailId = this.state.maintainPlanDetailId;
+            let maintainTypes =this.clearArray(this.state.dataSource);//此处为下方表格附带
+            let json ={maintainOrder,maintainPlanDetailId,maintainTypes}
+            
+            this.sendAjax(json)
 				}
 			});
 		}
 		//发出请求
 		sendAjax = (value) =>{
+      console.log("sendAjax",JSON.stringify(value))
       let options = {
         body:JSON.stringify(value),
         success: data => {
@@ -87,16 +91,15 @@ class UpKeepFinish extends React.Component{
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.editPlanDetails, options)
+      request(upkeep.doPlanDetails, options)
       
     }
 		//获取详情数据
 		componentWillMount = () =>{
 			const maintainPlanDetailId = this.props.match.params.id;
 			this.setState({
-				maintainPlanDetailId:maintainPlanDetailId
-      })
-      
+        maintainPlanDetailId
+			})
 		}
     render(){
         const {formInfo , maintainPlanDetailId}  = this.state;
@@ -104,18 +107,17 @@ class UpKeepFinish extends React.Component{
           <div>
             <Affix>
               <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-                <Button type="primary" style={{marginLeft:15}} onClick={this.handleSubmit} loading={this.state.loading}>完成</Button>
+                <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('40')}>完成</Button>
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData'
-                maintainPlanDetailId={maintainPlanDetailId}
+              <AddTaskForm  
+                formInfo={formInfo} 
+                maintainPlanDetailId = {maintainPlanDetailId} 
                 editState = {true}
-                url={upkeep.queryPlanDetails}
-                engineerName={(engineerName) => this.setState({ engineerName })}
-                tfCycleType={(tfCycleType) => this.setState({ tfCycleType })}
-                maintainData={(data) => this.setState({ maintainData: data })}
-                callback={dataSource=>this.setState({dataSource})}/>
+                ref='getFormData'
+                callback={dataSource=>this.setState({dataSource})}
+                />
             </Content>
           </div>
         )

@@ -126,7 +126,7 @@ class UpKeepList extends React.Component{
       const { search, history } = this.props;
       const pathname = history.location.pathname;
       this.state = {
-        query:search[pathname]?{...search[pathname]}:''
+        query:search[pathname]?{...search[pathname]}:{maintainMenu:"upkeepTask"}
       }
     }
     /* 回显返回条件 */
@@ -217,6 +217,27 @@ class UpKeepList extends React.Component{
       request(upkeep.updateMaintainPlanDetailFstate, options)
       
     }
+    getActions = (fstate,record) =>{
+      switch(fstate){
+        case '00':
+          return  (
+                    <Popconfirm title={'确定执行此操作'} onConfirm={()=>this._confirm(record)} okText="Yes" cancelText="No">
+                        <span style={{color:'#1890FF',cursor:'pointer',marginLeft:8}}>关闭</span>   
+                    </Popconfirm>
+                    )
+        case '20':
+          return ( 
+                <div>
+                  <span><Link to={{pathname:`/upkeep/upkeepTask/finish/${record.maintainPlanDetailId}`}}>执行保养</Link></span>
+                  <Popconfirm title={'确定执行此操作'} onConfirm={()=>this._confirm(record)} okText="Yes" cancelText="No">
+                      <span style={{color:'#1890FF',cursor:'pointer',marginLeft:8}}>关闭</span>   
+                  </Popconfirm>
+                </div>
+          )
+        default: 
+          break;
+      }
+    }
     render(){
       const { search , history } = this.props;
       const pathname = history.location.pathname;
@@ -293,21 +314,11 @@ class UpKeepList extends React.Component{
           dataIndex: 'maintainPlanDetailId', 
           fixed:'right',
           width:150,
-          render: (text,record) =>
-            <span>
-              { (record.fstate==="20") ? 
-                (
-                  <div>
-                    <span><Link to={{pathname:`/upkeep/upkeepTask/finish/${record.maintainPlanDetailId}`}}>执行保养</Link></span>
-                    <Popconfirm title={'确定执行此操作'} onConfirm={()=>this._confirm(record)} okText="Yes" cancelText="No">
-                        <span style={{color:'#1890FF',cursor:'pointer',marginLeft:8}}>关闭</span>   
-                    </Popconfirm>
-                  </div>
-                ):null
-                
-              }
-            </span>
-        },
+          render: (text,record) => {
+            let { fstate } = record;
+            return this.getActions(fstate,record)
+          }
+        }
       ]
       
       const isShow = search[pathname] ? search[pathname].toggle:false;

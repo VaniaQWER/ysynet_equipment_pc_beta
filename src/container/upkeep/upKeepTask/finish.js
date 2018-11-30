@@ -46,49 +46,37 @@ class UpKeepFinish extends React.Component{
     }
     //提交数据
     handleSubmit = (fstate) =>{
+      console.log(this.state.dataSource)
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
             if(this.state.dataSource.length===0){
               message.warning('请最少添加一条项目!')
               return false
             }
-						const startTime = values['maintainDate'];
-						const endTime = values['endMaintainDate'];
-						const nextTme = values['nextMaintainDate'];
-						values.maintainDate = moment(startTime).format('YYYY-MM-DD') 
-						values.endMaintainDate = moment(endTime).format('YYYY-MM-DD') 
-            if(nextTme&& nextTme!=="Invalid date"){
-              values.nextMaintainDate = moment(nextTme).format('YYYY-MM-DD') 
-            }else{
-              values.nextMaintainDate = ''
+            let maintainOrder ={
+              maintainDate:values['maintainDate']?moment(values['maintainDate']).format('YYYY-MM-DD'):'',
+              nextMaintainDate:values['nextMaintainDate']?moment(values['nextMaintainDate']).format('YYYY-MM-DD'):'',
+              endMaintainDate:values['endMaintainDate']?moment(values['endMaintainDate']).format('YYYY-MM-DD'):'',
+              remark:values.remark,
+              tfAccessoryList:this.formatAccessory(values.tfAccessoryList),
             }
-            values.fstate = fstate;
-            values.maintainPlanDetailId = this.state.maintainPlanDetailId;
-            values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
-						//更改附件格式
-            // let thumburl = []
-            // let fileString ='';
-						// if(values.tfAccessoryList){
-						// 	for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-            //     let file = values.tfAccessoryList.fileList[i] ;
-            //     if(file.thumbUrl){
-            //       thumburl.push(file.thumbUrl)
-            //     }else{
-            //       fileString+= (cutFtpUrl(file.url)+';')
-            //       thumburl.push('')
-            //     }
-						// 	}
-						// }	
-            // values.tfAccessoryList = thumburl;
-            // values.tfAccessory = fileString;
-            values.maintainType = values.maintainMode!=="03"? "00":"01";
-            values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
-            this.sendAjax(values)
+            if(values.engineerUserid){ //保养人ID
+              maintainOrder.engineerUserid = values.engineerUserid
+            }
+            if(values.serviceId){//服务商ID
+              maintainOrder.serviceId = values.serviceId
+            }
+            let maintainPlanDetailId = this.state.maintainPlanDetailId;
+            let maintainTypes =this.clearArray(this.state.dataSource);//此处为下方表格附带
+            let json ={maintainOrder,maintainPlanDetailId,maintainTypes}
+            
+            this.sendAjax(json)
 				}
 			});
 		}
 		//发出请求
 		sendAjax = (value) =>{
+      console.log("sendAjax",JSON.stringify(value))
       let options = {
         body:JSON.stringify(value),
         success: data => {

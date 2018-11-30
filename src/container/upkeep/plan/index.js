@@ -1,4 +1,9 @@
-/**保养登记--列表*/
+/*
+ * @Author: yuwei - 保养计划
+ * @Date: 2018-12-01 00:36:51 
+ * @Last Modified by: yuwei
+ * @Last Modified time: 2018-12-01 00:37:27
+ */
 import React from 'react';
 import { Modal ,message , Row, Col, Input, Layout , Popover, Form, Select,Button } from 'antd';
 import { withRouter } from 'react-router-dom';
@@ -116,7 +121,7 @@ class MaintainPlan extends React.Component{
       const { search, history } = this.props;
       const pathname = history.location.pathname;
       this.state = {
-        query:search[pathname]?{...search[pathname]}:{},
+        query:search[pathname]?{...search[pathname]}:{maintainMenu:"plan"},
         visible: false ,
         modalContent:'',
         record:{},
@@ -164,7 +169,7 @@ class MaintainPlan extends React.Component{
           </span>)
         case '20':
           return ( <span>
-            <Link to={{pathname:`/upkeep/planEdit/${record.maintainPlanDetailId}`}}>执行保养</Link>&nbsp;&nbsp;
+            <Link to={{pathname:`/upkeep/plan/edit/${record.maintainPlanDetailId}`}}>执行保养</Link>&nbsp;&nbsp;
             <a title='关闭' onClick={()=>this.closePlan(record)}>关闭</a>
           </span>)
         default: 
@@ -278,7 +283,7 @@ class MaintainPlan extends React.Component{
           className:'col08',
           dataIndex: 'maintainPlanNo',
           render(text, record) {
-            return <Link to={{ pathname:`/upkeep/planDetail/${record.maintainPlanDetailId}` }}>{text}</Link>
+            return <Link to={{ pathname:`/upkeep/plan/details/${record.maintainPlanDetailId}` }}>{text}</Link>
           }
         },
         {
@@ -358,6 +363,7 @@ class MaintainPlan extends React.Component{
         { 
           title: '操作', 
           dataIndex: 'maintainPlanDetailId', 
+          fixed:'right',
           className:'col08',
           key: 'x', 
           render: (text,record) => {

@@ -36,8 +36,15 @@ const formItemLayout = {
   },
 };
 let columns=[
+  {
+    title:'序号',
+    dataIndex:"index",
+    fixed:'left',
+    render:(text,record,index)=>`${index+1}`
+  },
   { title: '操作', 
   dataIndex: 'maintainGuid', 
+  fixed:'left',
   key: 'x', 
   width:120,
   render: (text,record) =>
@@ -242,16 +249,6 @@ class SearchFormWrapper extends React.Component {
           <Col span={6}  style={{display: display}}> 
             <FormItem
               {...formItemLayout}
-              label="本次计划保养时间"
-            >
-              {getFieldDecorator('PlanTime')(
-                <RangePicker allowClear={false}/>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}  style={{display: display}}> 
-            <FormItem
-              {...formItemLayout}
               label="保养开始时间"
             >
               {getFieldDecorator('UpkeepTime')(
@@ -270,6 +267,16 @@ class SearchFormWrapper extends React.Component {
             </FormItem>
           </Col>
           <Col span={8}  style={{display: display}}> 
+            <FormItem
+              {...formItemLayout}
+              label="本次计划保养时间"
+            >
+              {getFieldDecorator('PlanTime')(
+                <RangePicker allowClear={false}/>
+              )}
+            </FormItem>
+          </Col>
+          <Col span={6}  style={{display: display}}> 
             <FormItem
               {...formItemLayout}
               label="保养模式"
@@ -303,7 +310,7 @@ class UpKeepRecord extends React.Component{
       const { search, history } = this.props;
       const pathname = history.location.pathname;
       this.state = {
-        query:search[pathname]?{...search[pathname]}:''
+        query:search[pathname]?{...search[pathname]}:{maintainMenu:"upkeepRecord"}
       }
     }
     /* 回显返回条件 */

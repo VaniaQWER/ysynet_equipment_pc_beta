@@ -229,26 +229,6 @@ class AddUpKeepForm extends React.Component {
         success: data => {
           if(data.status){
             let retData = data.result;
-            //拿到回显数据--处理时间格式
-            retData.maintainDate=retData.maintainDate ? moment(retData.maintainDate ,'YYYY-MM-DD HH:mm') :null
-            retData.endMaintainDate=retData.endMaintainDate ?  moment(retData.endMaintainDate,'YYYY-MM-DD HH:mm'):null
-            if(retData.nextMaintainDate){
-              retData.nextMaintainDate=moment(retData.nextMaintainDate,'YYYY-MM-DD')
-            }
-            
-            //处理附件格式
-            if(retData.tfAccessory){
-              let urls = retData.tfAccessory.split(';');
-              let u = urls.splice(0, urls.length-1);
-              let files = [];
-              u.map((item, index) => {
-                return files.push({
-                  url: FTP + item,
-                  uid: index
-                })
-              });
-              retData.tfAccessoryList=files;
-            }
             let tabledata =data.result.maintainDetailList;
             this.setState({
               data:retData,
@@ -670,29 +650,8 @@ class AddUpKeepForm extends React.Component {
                 <Col span={8}>
                   {
                     UnStateText('保养类型',getFieldsValue(['maintainMode']).maintainMode === '03'?'外保': '内保')
-
-                    // UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
                   }
                 </Col>
-                {/* <Col span={8}>
-                {
-                  editState ?
-                  <FormItem label='保养类型' {...formItemLayout}>
-                  {getFieldDecorator(`maintainType`,{initialValue:'00'})(
-                    <Radio.Group>
-                      {
-                        data.maintainType === '00'?
-                        <Radio value='00' checked={true}>内保</Radio>
-                        :
-                        <Radio value='01' checked={true}>外保</Radio>
-                      }
-                      <Radio value='01' disabled={true}>外保</Radio>
-                    </Radio.Group>
-                  )}
-                  </FormItem>
-                  :UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
-                }
-                </Col> */}
                 <Col span={8}>
                   {//保养执行科室
                     this._filterDept(getFieldValue('maintainMode')||data.maintainMode)
@@ -783,7 +742,7 @@ class AddUpKeepForm extends React.Component {
                 {editState ? 
                     <FormItem label='开始保养时间' {...formItemLayout}>
                       {getFieldDecorator(`maintainDate`,{
-                        initialValue:data.maintainDate || null,
+                        initialValue:data.maintainDate?moment(data.maintainDate,'YYYY-MM-DD'):null,
                         rules:[
                           {required:true,message:'请选择开始保养时间'}
                         ]
@@ -804,7 +763,7 @@ class AddUpKeepForm extends React.Component {
                   {editState ?
                     <FormItem label='结束保养时间' {...formItemLayout}>
                     {getFieldDecorator(`endMaintainDate`,{
-                      initialValue:data.endMaintainDate  || null,
+                      initialValue:data.endMaintainDate?moment(data.endMaintainDate,'YYYY-MM-DD'):null,
                       rules:[
                         {required:true,message:'请选择开始保养时间'}
                       ]})(
@@ -823,7 +782,9 @@ class AddUpKeepForm extends React.Component {
                 <Col span={8}>
                   {editState ?
                     <FormItem label='下次保养时间' {...formItemLayout}>
-                    {getFieldDecorator(`nextMaintainDate`,{initialValue:data.nextMaintainDate})(
+                    {getFieldDecorator(`nextMaintainDate`,{
+                      initialValue:data.nextMaintainDate?moment(data.nextMaintainDate,'YYYY-MM-DD'):null,
+                    })(
                       <DatePicker
                         format={"YYYY-MM-DD"}
                         placeholder="请选择下次保养时间"
@@ -850,17 +811,14 @@ class AddUpKeepForm extends React.Component {
                 <Col className="clearfix" span={21}>
                     <FormItem label='上传附件' {...formItemRowLayout}>
                       {getFieldDecorator(`tfAccessoryList`,{
-                        // initialValue:data.tfAccessoryList,
                         initialValue:this.initAccessoryFormat(data,'tfAccessoryList')||[],
                         valuePropName: 'fileList',
                         getValueFromEvent: this.normFile,
                       })(//
                           <Upload
-                            // className={editState? '':'hide-delete'}
                             showUploadList={{
                               showRemoveIcon:editState
                             }}
-                            // data={{assetsRecordGuid:'666'}}
                             action={upkeep.uploadFile}
                             listType="picture-card"
                             onPreview={this.handlePreview}

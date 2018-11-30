@@ -36,10 +36,18 @@ const formItemLayout = {
   },
 };
 let columns=[
+  {
+    title:'序号',
+    fixed:'left',
+    dataIndex:'index',
+    width:40,
+    render:(text,record,index)=>`${index+1}`
+  },
   { title: '操作', 
   dataIndex: 'maintainGuid', 
   key: 'x', 
-  width:120,
+  fixed:'left',
+  width:80,
   render: (text,record) =>
     <span>
       { (record.fstate==="00") ? 
@@ -303,7 +311,7 @@ class UpKeepList extends React.Component{
       const { search, history } = this.props;
       const pathname = history.location.pathname;
       this.state = {
-        query:search[pathname]?{...search[pathname]}:''
+        query:search[pathname]?{...search[pathname]}:{maintainMenu:"upkeeplist"}
       }
     }
     /* 回显返回条件 */
@@ -397,7 +405,7 @@ class UpKeepList extends React.Component{
                   onChange={this.changeQueryTable}  
                   query={this.state.query}
                   url={assets.selectMaintainOrderList}
-                  scroll={{x: '200%', y : document.body.clientHeight - 110 }}
+                  scroll={{x: '180%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainGuid'}
                   showHeader={true}

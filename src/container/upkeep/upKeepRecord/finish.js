@@ -65,22 +65,6 @@ class UpKeepFinish extends React.Component{
             values.fstate = fstate;
             values.maintainGuid = this.state.maintainGuid;
             values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
-						//更改附件格式
-            // let thumburl = []
-            // let fileString ='';
-						// if(values.tfAccessoryList){
-						// 	for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-            //     let file = values.tfAccessoryList.fileList[i] ;
-            //     if(file.thumbUrl){
-            //       thumburl.push(file.thumbUrl)
-            //     }else{
-            //       fileString+= (cutFtpUrl(file.url)+';')
-            //       thumburl.push('')
-            //     }
-						// 	}
-						// }	
-            // values.tfAccessoryList = thumburl;
-            // values.tfAccessory = fileString;
             /* 处理保养模式 与 保养类型  */
             values.maintainType = values.maintainMode!=="03"? "00":"01";
             values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)

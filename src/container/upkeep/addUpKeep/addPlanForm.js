@@ -93,7 +93,7 @@ export default class AddUpKeepPlanForm extends React.Component {
         const { maintainPlanDetailId , editState} =this.props;
         //获取资产编号相关信息
         if(maintainPlanDetailId){
-          this.getDetailAjax({maintainDetailId:maintainPlanDetailId})
+          this.getDetailAjax({maintainPlanDetailId:maintainPlanDetailId})
         }
         this.getOneModule();
         this.setState({
