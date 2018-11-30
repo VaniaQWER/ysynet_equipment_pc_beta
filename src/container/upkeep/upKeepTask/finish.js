@@ -2,19 +2,19 @@
  * 保养列表--》完成页面
  */
 import React from 'react'
-import AddUpKeepForm from '../addUpKeep/addForm.js';
+import AddTaskForm from '../addUpKeep/addTaskForm.js';
 import { Button ,Layout,Affix ,message} from 'antd'
 import moment from 'moment';
 import {withRouter  } from 'react-router-dom';
 import upkeep from '../../../api/upkeep';
 import request from '../../../utils/request';
-import { cutFtpUrl } from '../../../utils/tools';
+import { FTP } from '../../../api/local';
 const { Content } = Layout; 
 
 class UpKeepFinish extends React.Component{
     state={
 			formInfo:{},
-      maintainGuid:'',
+      maintainPlanDetailId:'',
       dataSource:[]
     }
     clearArray=(data)=>{
@@ -29,6 +29,20 @@ class UpKeepFinish extends React.Component{
         }
       }
       return data
+    }
+    formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
+      if(fileList&&fileList.length){//保留上传时返回的 24321/的地址路径
+        let retList = fileList.map(item=>{
+            if(item.response){
+              return item.response.result
+            }else{
+              return item.url.replace(FTP,'')
+            }
+        })
+        return retList
+      }else{
+        return null
+      }
     }
     //提交数据
     handleSubmit = (fstate) =>{
@@ -49,38 +63,39 @@ class UpKeepFinish extends React.Component{
               values.nextMaintainDate = ''
             }
             values.fstate = fstate;
-            values.maintainGuid = this.state.maintainGuid;
+            values.maintainPlanDetailId = this.state.maintainPlanDetailId;
             values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 						//更改附件格式
-            let thumburl = []
-            let fileString ='';
-						if(values.tfAccessoryList){
-							for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
-                let file = values.tfAccessoryList.fileList[i] ;
-                if(file.thumbUrl){
-                  thumburl.push(file.thumbUrl)
-                }else{
-                  fileString+= (cutFtpUrl(file.url)+';')
-                  thumburl.push('')
-                }
-							}
-						}	
-            values.tfAccessoryList = thumburl;
-            values.tfAccessory = fileString;
-						this.sendAjax(values)
+            // let thumburl = []
+            // let fileString ='';
+						// if(values.tfAccessoryList){
+						// 	for(let i =0;i<values.tfAccessoryList.fileList.length;i++){
+            //     let file = values.tfAccessoryList.fileList[i] ;
+            //     if(file.thumbUrl){
+            //       thumburl.push(file.thumbUrl)
+            //     }else{
+            //       fileString+= (cutFtpUrl(file.url)+';')
+            //       thumburl.push('')
+            //     }
+						// 	}
+						// }	
+            // values.tfAccessoryList = thumburl;
+            // values.tfAccessory = fileString;
+            values.maintainType = values.maintainMode!=="03"? "00":"01";
+            values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
+            this.sendAjax(values)
 				}
 			});
 		}
 		//发出请求
 		sendAjax = (value) =>{
-			// console.log('will SendAjax',JSON.stringify(value))
       let options = {
         body:JSON.stringify(value),
         success: data => {
           if(data.status){
             message.success( '操作成功')
             setTimeout(()=>{
-              this.props.history.push('/upkeep/upkeeplist')
+              this.props.history.push('/upkeep/upkeepTask')
             },1000)
           }else{
             message.error(data.msg)
@@ -88,31 +103,33 @@ class UpKeepFinish extends React.Component{
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.submitAssetInfo, options)
+      request(upkeep.doPlanDetails, options)
       
     }
 		//获取详情数据
 		componentWillMount = () =>{
-			const maintainGuid = this.props.match.params.id;
+			const maintainPlanDetailId = this.props.match.params.id;
 			this.setState({
-				maintainGuid:maintainGuid
+        maintainPlanDetailId
 			})
 		}
     render(){
-        const {formInfo , maintainGuid}  = this.state;
+        const {formInfo , maintainPlanDetailId}  = this.state;
         return(
           <div>
             <Affix>
               <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-                <Button type="default" onClick={()=>this.handleSubmit('02')}>作废</Button>
-                <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('01')}>完成</Button>
+                <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('40')}>完成</Button>
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <AddUpKeepForm  formInfo={formInfo} ref='getFormData'
-                maintainGuid={maintainGuid}
+              <AddTaskForm  
+                formInfo={formInfo} 
+                maintainPlanDetailId = {maintainPlanDetailId} 
                 editState = {true}
-                callback={dataSource=>this.setState({dataSource})}/>
+                ref='getFormData'
+                callback={dataSource=>this.setState({dataSource})}
+                />
             </Content>
           </div>
         )

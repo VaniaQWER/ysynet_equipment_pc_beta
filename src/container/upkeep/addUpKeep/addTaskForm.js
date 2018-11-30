@@ -1,3 +1,4 @@
+/* 用于保养计划 - 保养任务 */
 import React from 'react'
 import moment from 'moment';
 import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button ,Select ,DatePicker ,Upload ,Modal} from 'antd'
@@ -106,7 +107,7 @@ const formItemRowLayout = {
       sm: { span: 14 },
     },
 };
-class AddUpKeepForm extends React.Component {
+class AddTaskForm extends React.Component {
     state = {
       selectDropData:[],//项目弹出层 下拉框内容
       prjTableData:[],//项目弹出层  下拉框带出对应table内容
@@ -180,10 +181,10 @@ class AddUpKeepForm extends React.Component {
     //-----------------上传结束-------------------------------
     
     componentWillMount =() =>{
-        const { maintainGuid , editState} =this.props;
+        const { maintainPlanDetailId , editState} =this.props;
         //获取资产编号相关信息
-        if(maintainGuid){
-          this.getDetailAjax({maintainGuid})
+        if(maintainPlanDetailId){
+          this.getDetailAjax({maintainPlanDetailId})
         }
         this.getOneModule();
         this.setState({
@@ -263,7 +264,7 @@ class AddUpKeepForm extends React.Component {
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.listToDetails, options)
+      request(upkeep.queryPlanDetails, options)
     }
   
     componentWillReceiveProps = (nextProps)=> {
@@ -460,7 +461,7 @@ class AddUpKeepForm extends React.Component {
       this.onChange('endMaintainDate', value);
     }
     onPrint = () => {
-      window.open(`${upkeep.printMaintain}?maintainGuid=${this.props.maintainGuid}`)
+      window.open(`${upkeep.printMaintain}?maintainPlanDetailId=${this.props.maintainPlanDetailId}`)
     } 
     /* 附件上传相关内容 */
     normFile = (e) => {
@@ -674,25 +675,6 @@ class AddUpKeepForm extends React.Component {
                     // UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
                   }
                 </Col>
-                {/* <Col span={8}>
-                {
-                  editState ?
-                  <FormItem label='保养类型' {...formItemLayout}>
-                  {getFieldDecorator(`maintainType`,{initialValue:'00'})(
-                    <Radio.Group>
-                      {
-                        data.maintainType === '00'?
-                        <Radio value='00' checked={true}>内保</Radio>
-                        :
-                        <Radio value='01' checked={true}>外保</Radio>
-                      }
-                      <Radio value='01' disabled={true}>外保</Radio>
-                    </Radio.Group>
-                  )}
-                  </FormItem>
-                  :UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
-                }
-                </Col> */}
                 <Col span={8}>
                   {//保养执行科室
                     this._filterDept(getFieldValue('maintainMode')||data.maintainMode)
@@ -783,7 +765,7 @@ class AddUpKeepForm extends React.Component {
                 {editState ? 
                     <FormItem label='开始保养时间' {...formItemLayout}>
                       {getFieldDecorator(`maintainDate`,{
-                        initialValue:data.maintainDate || null,
+                        initialValue:moment(data.maintainDate,'YYYY-MM-DD') || null,
                         rules:[
                           {required:true,message:'请选择开始保养时间'}
                         ]
@@ -804,7 +786,7 @@ class AddUpKeepForm extends React.Component {
                   {editState ?
                     <FormItem label='结束保养时间' {...formItemLayout}>
                     {getFieldDecorator(`endMaintainDate`,{
-                      initialValue:data.endMaintainDate  || null,
+                      initialValue:data.endMaintainDate?moment(data.endMaintainDate,'YYYY-MM-DD'):null,
                       rules:[
                         {required:true,message:'请选择开始保养时间'}
                       ]})(
@@ -935,4 +917,4 @@ class AddUpKeepForm extends React.Component {
     }
   }
 
-export default Form.create()(AddUpKeepForm)
+export default Form.create()(AddTaskForm)

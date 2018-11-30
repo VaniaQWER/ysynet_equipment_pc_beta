@@ -2,7 +2,7 @@
  * 保养列表-》详情信息
  */
 import React from 'react'
-import AddUpKeepForm from '../addUpKeep/addForm.js';
+import AddTaskForm from '../addUpKeep/addTaskForm.js';
 import { Layout } from 'antd';
 import { withRouter  } from 'react-router-dom';
 const { Content } = Layout; 
@@ -12,20 +12,19 @@ class UpKeepDetails extends React.Component{
         formInfo:{}
     }
     componentWillMount = () => {
-        const maintainGuid = this.props.match.params.id;
+        const maintainPlanDetailId = this.props.match.params.id;
         this.setState({
-            maintainGuid:maintainGuid
+          maintainPlanDetailId
         })
     }
     render(){
-        const {formInfo , maintainGuid}  = this.state;
+        const {formInfo , maintainPlanDetailId}  = this.state;
         return(
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <AddUpKeepForm  
-                showPrint={true}
+                <AddTaskForm  
                 formInfo={formInfo} 
-                maintainGuid = {maintainGuid} 
+                maintainPlanDetailId = {maintainPlanDetailId} 
                 editState = {false}
                 ref='getFormData'
                 />

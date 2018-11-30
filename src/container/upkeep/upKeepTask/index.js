@@ -11,6 +11,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
 import request from '../../../utils/request';
+import querystring from 'querystring';
 import { upkeepPlanState , upkeepMainTainType ,upkeepPlanStateSel , upKeppModeSelect , upKeepMode } from '../../../constants';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -199,7 +200,10 @@ class UpKeepList extends React.Component{
     _confirm = (record)=>{
       //发出请求
       let options = {
-        body:JSON.stringify({maintainPlanDetailId:record.maintainPlanDetailId,fstate:"80"}),
+        body:querystring.stringify({maintainPlanDetailId:record.maintainPlanDetailId,fstate:"80"}),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
         success: data => {
           if(data.status){
             message.success( '操作成功')
@@ -228,7 +232,7 @@ class UpKeepList extends React.Component{
           width:150,
           dataIndex: 'maintainPlanNo',
           render(text, record) {
-            return <Link to={{pathname:`/upkeep/upkeepTask/details/${record.maintainGuid}`}} title={text}>{text}</Link>
+            return <Link to={{pathname:`/upkeep/upkeepTask/details/${record.maintainPlanDetailId}`}} title={text}>{text}</Link>
           }
         },
         {
@@ -286,7 +290,7 @@ class UpKeepList extends React.Component{
           }
         },
         { title: '操作', 
-          dataIndex: 'maintainGuid', 
+          dataIndex: 'maintainPlanDetailId', 
           fixed:'right',
           width:150,
           render: (text,record) =>
@@ -294,8 +298,8 @@ class UpKeepList extends React.Component{
               { (record.fstate==="20") ? 
                 (
                   <div>
-                    <span><Link to={{pathname:`/upkeep/upkeepTask/finish/${record.maintainGuid}`}}>执行保养</Link></span>
-                    <Popconfirm title={'确定执行此操作？'} onConfirm={()=>this._confirm(record)} okText="Yes" cancelText="No">
+                    <span><Link to={{pathname:`/upkeep/upkeepTask/finish/${record.maintainPlanDetailId}`}}>执行保养</Link></span>
+                    <Popconfirm title={'确定执行此操作'} onConfirm={()=>this._confirm(record)} okText="Yes" cancelText="No">
                         <span style={{color:'#1890FF',cursor:'pointer',marginLeft:8}}>关闭</span>   
                     </Popconfirm>
                   </div>
@@ -329,7 +333,7 @@ class UpKeepList extends React.Component{
                   url={upkeep.planList}
                   scroll={{x: '120%', y : document.body.clientHeight - 110 }}
                   columns={columns}
-                  rowKey={'maintainGuid'}
+                  rowKey={'maintainPlanDetailId'}
                   showHeader={true}
                   style={{marginTop: 10}}
                   size="small"
