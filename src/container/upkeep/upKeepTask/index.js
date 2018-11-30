@@ -4,13 +4,14 @@
 * @Last Modified time: 2018-07-26 11:30:17 
  */
 import React from 'react';
-import { Row, Col, Input, Button , Form , Icon , Select , Layout , Popover} from 'antd';
+import { Row, Col, Input, Button , Form , Icon , Select , Layout , Popover , Popconfirm , message } from 'antd';
 import TableGrid from '../../../component/tableGrid';
-import assets from '../../../api/assets';
+import upkeep from '../../../api/upkeep';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
-import { upkeepState , upkeepMainTainType ,upkeepStateSel , upKeppModeSelect , upKeepMode } from '../../../constants';
+import request from '../../../utils/request';
+import { upkeepPlanState , upkeepMainTainType ,upkeepPlanStateSel , upKeppModeSelect , upKeepMode } from '../../../constants';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 const { Content } = Layout;
@@ -28,91 +29,6 @@ const formItemLayout = {
     sm: { span: 16 },
   },
 };
-let columns=[
-  { title: '操作', 
-  dataIndex: 'maintainGuid', 
-  key: 'x', 
-  width:80,
-  render: (text,record) =>
-    <span>
-      { (record.fstate==="00") ? 
-        <span><Link to={{pathname:`/upkeep/upkeepTask/finish/${record.maintainGuid}`}}>执行保养</Link></span>
-        :<span><Link to={{pathname:`/upkeep/upkeepTask/details/${record.maintainGuid}`}}>关闭</Link></span>
-      }
-    </span>
-  },
-  {
-    title:'序号',
-    width:50,
-    dataIndex:'index',
-    render:(text,record,index)=>`${index+1}`
-  },
-  {
-    title: '保养计划单号',
-    width:150,
-    dataIndex: 'maintainPlanNo',
-    render(text, record) {
-      return <span title={text}>{text}</span>
-    }
-  },
-  {
-    title: '计划状态',
-    dataIndex: 'fstate',
-    key: 'fstate',
-    width:150,
-    filters: upkeepStateSel,
-    onFilter: (value, record) => (record && record.fstate===value),
-    render: text => 
-      <div><span style={{marginRight:5,backgroundColor:upkeepState[text].color ,width:10,height:10,borderRadius:'50%',display:'inline-block'}}></span>
-      { upkeepState[text].text }
-      </div>
-  },
-  {
-    title: '资产编号',
-    width:150,
-    dataIndex: 'assetsRecord'
-  },
-  {
-    title: '资产名称',
-    width:150,
-    dataIndex: 'equipmentName',
-    render:(text,record) =>
-      <Popover  content={
-        <div style={{padding:20}}>
-          <p>设备名称：{record.equipmentName}</p>
-          <p>操作员：{record.modifyUserName}</p>
-          <p>保养单状态：{upkeepState[record.fstate].text}</p>
-        </div>
-      }>
-        {text}
-      </Popover>
-  },
-  {
-    title: '保养类型',
-    width:150,
-    dataIndex: 'maintainType',
-    render: text => <span>{upkeepMainTainType[text].text}</span>
-  },
-  {
-    title: '保养模式',
-    dataIndex: 'maintainMode',
-    width: 150,
-    render:(text,)=>text?upKeepMode[text]:''
-  },
-  {
-    title: '保养执行科室',
-    dataIndex: 'executeDeptName',
-    width: 150
-  },
-  {
-    title: '操作员',
-    width:150,
-    dataIndex: 'modifyUserName',
-    render(text, record) {
-      return <span title={text}>{text}</span>
-    }
-  }
-]
 
 class SearchFormWrapper extends React.Component {
   state = {
@@ -280,15 +196,123 @@ class UpKeepList extends React.Component{
     }
     handleChange = (pagination, filters, sorter)=>{
     }
+    _confirm = (record)=>{
+      //发出请求
+      let options = {
+        body:JSON.stringify({maintainPlanDetailId:record.maintainPlanDetailId,fstate:"80"}),
+        success: data => {
+          if(data.status){
+            message.success( '操作成功')
+            this.refs.table.fetch();
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      }
+      request(upkeep.updateMaintainPlanDetailFstate, options)
+      
+    }
     render(){
       const { search , history } = this.props;
       const pathname = history.location.pathname;
+      let columns=[
+        {
+          title:'序号',
+          width:30,
+          dataIndex:'index',
+          render:(text,record,index)=>`${index+1}`
+        },
+        {
+          title: '保养计划单号',
+          width:150,
+          dataIndex: 'maintainPlanNo',
+          render(text, record) {
+            return <Link to={{pathname:`/upkeep/upkeepTask/details/${record.maintainGuid}`}} title={text}>{text}</Link>
+          }
+        },
+        {
+          title: '计划状态',
+          dataIndex: 'fstate',
+          key: 'fstate',
+          width:150,
+          filters: upkeepPlanStateSel,
+          onFilter: (value, record) => (record && record.fstate===value),
+          render: text => text?upkeepPlanState[text].text:null
+        },
+        {
+          title: '资产编号',
+          width:150,
+          dataIndex: 'assetsRecord'
+        },
+        {
+          title: '资产名称',
+          width:150,
+          dataIndex: 'equipmentName',
+          render:(text,record) =>
+            <Popover  content={
+              <div style={{padding:20}}>
+                <p>设备名称：{record.equipmentName}</p>
+                <p>操作员：{record.modifyUserName}</p>
+                <p>保养单状态：{upkeepPlanState[record.fstate].text}</p>
+              </div>
+            }>
+              {text}
+            </Popover>
+        },
+        {
+          title: '保养类型',
+          width:150,
+          dataIndex: 'maintainType',
+          render: text => <span>{upkeepMainTainType[text].text}</span>
+        },
+        {
+          title: '保养模式',
+          dataIndex: 'maintainMode',
+          width: 150,
+          render:(text,)=>text?upKeepMode[text]:''
+        },
+        {
+          title: '保养执行科室',
+          dataIndex: 'executeDeptName',
+          width: 150
+        },
+        {
+          title: '操作员',
+          width:150,
+          dataIndex: 'modifyUserName',
+          render(text, record) {
+            return <span title={text}>{text}</span>
+          }
+        },
+        { title: '操作', 
+          dataIndex: 'maintainGuid', 
+          fixed:'right',
+          width:150,
+          render: (text,record) =>
+            <span>
+              { (record.fstate==="20") ? 
+                (
+                  <div>
+                    <span><Link to={{pathname:`/upkeep/upkeepTask/finish/${record.maintainGuid}`}}>执行保养</Link></span>
+                    <Popconfirm title={'确定执行此操作？'} onConfirm={()=>this._confirm(record)} okText="Yes" cancelText="No">
+                        <span style={{color:'#1890FF',cursor:'pointer',marginLeft:8}}>关闭</span>   
+                    </Popconfirm>
+                  </div>
+                ):null
+                
+              }
+            </span>
+        },
+      ]
+      
       const isShow = search[pathname] ? search[pathname].toggle:false;
       if(search[pathname]&&search[pathname].fstate&&search[pathname].fstate.length){
         columns[2].filteredValue = search[pathname].fstate;
       }else{
         columns[2].filteredValue = [];
       }
+     
       return(
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
               <SearchForm 
@@ -302,8 +326,8 @@ class UpKeepList extends React.Component{
                   ref='table'
                   onChange={this.changeQueryTable}  
                   query={this.state.query}
-                  url={assets.selectMaintainOrderList}
-                  scroll={{x: '200%', y : document.body.clientHeight - 110 }}
+                  url={upkeep.planList}
+                  scroll={{x: '120%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainGuid'}
                   showHeader={true}
