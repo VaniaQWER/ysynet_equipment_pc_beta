@@ -641,7 +641,7 @@ class AddUpKeepForm extends React.Component {
                   {
                     editState ?
                     <FormItem label='保养模式' {...formItemLayout}>
-                    {getFieldDecorator(`maintanceModule`,{initialValue:data.maintanceModule?data.maintanceModule:'01'})(
+                    {getFieldDecorator(`maintainMode`,{initialValue:data.maintainMode?data.maintainMode:'01'})(
                       <Select placeholder='请选择' style={{ width: 200 }}>
                         <Option value="01">管理科室保养</Option>
                         <Option value="02">临床科室保养</Option>
@@ -655,7 +655,7 @@ class AddUpKeepForm extends React.Component {
                 </Col>
                 <Col span={8}>
                   {
-                    UnStateText('保养类型',getFieldsValue(['maintanceModule']).maintanceModule === '03'?'外保': '内保')
+                    UnStateText('保养类型',getFieldsValue(['maintainMode']).maintainMode === '03'?'外保': '内保')
 
                     // UnStateText('保养类型',data.maintainType === '00'?'内保':'外保')
                   }
@@ -703,7 +703,7 @@ class AddUpKeepForm extends React.Component {
                 </Col>
                 <Col span={8}>
 
-                {getFieldValue('maintanceModule')!=="03" ? editState ? 
+                {getFieldValue('maintainMode')!=="03" ? editState ? 
                   <FormItem label='保养人' {...formItemLayout}>
                   {getFieldDecorator(`engineerUserid`,{
                     initialValue:data.engineerUserid,
@@ -730,10 +730,10 @@ class AddUpKeepForm extends React.Component {
                    :null
                 }
 
-                {getFieldValue('maintanceModule')==="03" ? editState ? 
+                {getFieldValue('maintainMode')==="03" ? editState ? 
                   <FormItem label='服务商' {...formItemLayout}>
                     {getFieldDecorator(`serviceId`,{
-                      initialValue:data.engineerUserid,
+                      initialValue:data.serviceId,
                       rules:[{required:true,message:'请选择保养人'}]
                     })(
                       <Select

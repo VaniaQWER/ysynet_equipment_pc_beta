@@ -3,16 +3,13 @@
  */
 import React from 'react'
 import AddUpKeepForm from '../addUpKeep/addForm.js';
-import { Form, Button ,Layout,Affix ,message} from 'antd'
+import { Button ,Layout,Affix ,message} from 'antd'
 import moment from 'moment';
 import {withRouter  } from 'react-router-dom';
 import upkeep from '../../../api/upkeep';
 import request from '../../../utils/request';
 import { FTP } from '../../../api/local';
-import { cutFtpUrl } from '../../../utils/tools';
 const { Content } = Layout; 
-
-// const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
 
 class UpKeepFinish extends React.Component{
     state={
@@ -85,7 +82,7 @@ class UpKeepFinish extends React.Component{
             // values.tfAccessoryList = thumburl;
             // values.tfAccessory = fileString;
             /* 处理保养模式 与 保养类型  */
-            values.maintainType = values.maintanceModule!=="03"? "00":"01";
+            values.maintainType = values.maintainMode!=="03"? "00":"01";
             values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
 						this.sendAjax(values)
 				}

@@ -66,7 +66,7 @@ class AddUpKeep extends React.Component{
           values.maintainOrderDetailList =this.clearArray(this.state.dataSource);//此处为下方表格附带
 
           /* 处理保养模式 与 保养类型  */
-          values.maintainType = values.maintanceModule!=="03"? "00":"01";
+          values.maintainType = values.maintainMode!=="03"? "00":"01";
           values.tfAccessoryList = this.formatAccessory(values.tfAccessoryList)
           console.log(values)
           this.sendAjax(values)
