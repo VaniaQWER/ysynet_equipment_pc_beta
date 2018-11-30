@@ -139,7 +139,8 @@ class MaintainPlan extends PureComponent {
     a = _.assign(a,this.state.CacheProductTabledata);
     _.forEach(a,function(item,index){
       _.uniqBy(item.subList,'maintainTypeId')
-    })
+    });
+    console.log(a,'aaaa')
     return a
   }
   showModal = (modalName,recordKey) => {
@@ -689,13 +690,13 @@ class MaintainPlan extends PureComponent {
               <Col span={8}>
                 <FormItem label={`保养模式`} {...formItemLayout}>
                   {
-                    getFieldDecorator(`maintainModul`,{
-                      initialValue: '00'
+                    getFieldDecorator(`maintainMode`,{
+                      initialValue: '01'
                     })(
-                      <Select onSelect={value  => this.props.form.setFieldsValue({ 'maintainType': value === '02'? '01': '00' })}>
-                        <Option value={'00'}>管理科室保养</Option>
-                        <Option value={'01'}>临床科室保养</Option>
-                        <Option value={'02'}>服务商保养</Option>
+                      <Select onSelect={value  => this.props.form.setFieldsValue({ 'maintainType': value === '03'? '01': '00' })}>
+                        <Option value={'01'}>管理科室保养</Option>
+                        <Option value={'02'}>临床科室保养</Option>
+                        <Option value={'03'}>服务商保养</Option>
                       </Select>
                     )
                   }
@@ -708,7 +709,7 @@ class MaintainPlan extends PureComponent {
                   })(
                     <RadioGroup>
                       {
-                        this.props.form.getFieldValue('maintainModul') !== '02'
+                        this.props.form.getFieldValue('maintainMode') !== '03'
                         ?
                         <RadioButton value="00">内保</RadioButton>
                         :

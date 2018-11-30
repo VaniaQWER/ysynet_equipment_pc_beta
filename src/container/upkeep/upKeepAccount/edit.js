@@ -2,7 +2,7 @@
  * 保养计划--》编辑页面
  */
 import React from 'react'
-import AddUpKeepPlanForm from '../addUpKeep/addPlanForm.js';
+import AddUpKeepPlanForm from './addPlanForm.js';
 import { Form, Button ,Layout,Affix ,message} from 'antd'
 import moment from 'moment';
 import {withRouter  } from 'react-router-dom';
@@ -15,13 +15,15 @@ const WrappedAdvancedSearchForm = Form.create()(AddUpKeepPlanForm);
 
 class UpKeepFinish extends React.Component{
     state={
-			formInfo:{},
-      maintainPlanDetailId:'',
-      dataSource:[]
+      formInfo:{},
+      maintainData: {},
+      maintainPlanId:'',
+      tfCycleType: '',// 循环 (天, 月)
+      dataSource:[],
+      loading: false
 		}
 			//提交数据
-    handleSubmit = (fstate) =>{
-      console.log(this.state.dataSource)
+    handleSubmit = () =>{
 			this.refs.getFormData.validateFieldsAndScroll((err, values) => {
 				if (!err) {
             let json = {}
@@ -31,28 +33,33 @@ class UpKeepFinish extends React.Component{
             }else{
               const endTime = values['endMaintainDate'];
               values.endMaintainDate = moment(endTime).format('YYYY-MM-DD');
+              values.tfCycleType = this.state.tfCycleType ? this.state.tfCycleType: this.state.maintainData.tfCycleType
               delete values['Date'];//删除数据中的Date
               delete values['maintainDate'];
             }
             delete values['assetsRecord'];//删除资产编号
-            json.maintainPlanDetailId = this.state.maintainPlanDetailId;
-            json.fstate = fstate;
+            values.maintainPlanId = this.state.maintainPlanId;
+            values.maintainPlanName = this.state.maintainData.maintainPlanName;
+            values.assetsRecordGuid = this.state.maintainData.assestRecordGuid;
+            values.executeDept = this.state.maintainData.executeDept;
             json.maintainTypes =this.state.dataSource;//保养项目合集ID
-						json.maintainPlan = values;
-						console.log('will SendAjax',JSON.stringify(json))
+            json.maintainPlan = values;
+            console.log(json,'json');
 						this.sendAjax(json)
 				}
 			});
 		}
 		//发出请求
 		sendAjax = (value) =>{
+      this.setState({ loading: true });
       let options = {
         body:JSON.stringify(value),
         success: data => {
+          this.setState({ loading: false })
           if(data.status){
             message.success( '操作成功')
             setTimeout(()=>{
-              this.props.history.push('/upkeep/plan')
+              this.props.history.push('/upkeep/upKeepAccount')
             },1000)
           }else{
             message.error(data.msg)
@@ -60,31 +67,33 @@ class UpKeepFinish extends React.Component{
         },
         error: err => {console.log(err)}
       }
-      request(upkeep.editPlanDetails, options)
+      request(upkeep.updateMaintainPlan, options)
       
     }
 		//获取详情数据
 		componentWillMount = () =>{
-			const maintainPlanDetailId = this.props.match.params.id;
+			const maintainPlanId = this.props.match.params.id;
 			this.setState({
-				maintainPlanDetailId:maintainPlanDetailId
+				maintainPlanId:maintainPlanId
       })
       
 		}
     render(){
-        const {formInfo , maintainPlanDetailId}  = this.state;
+        const {formInfo , maintainPlanId}  = this.state;
         return(
           <div>
             <Affix>
               <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-                <Button type="default" onClick={()=>this.handleSubmit('80')}>关闭</Button>
-                <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('20')}>保存计划</Button>
+                <Button type="primary" style={{marginLeft:15}} onClick={this.handleSubmit} loading={this.state.loading}>保存计划</Button>
               </div>
             </Affix>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
                 <WrappedAdvancedSearchForm  formInfo={formInfo} ref='getFormData'
-                maintainPlanDetailId={maintainPlanDetailId}
+                maintainPlanId={maintainPlanId}
+                url={upkeep.selectMaintainParameterList}
                 editState = {true}
+                tfCycleType={(tfCycleType) => this.setState({ tfCycleType })}
+                maintainData={(data) => this.setState({ maintainData: data })}
                 callback={dataSource=>this.setState({dataSource})}/>
             </Content>
           </div>

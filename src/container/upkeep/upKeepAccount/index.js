@@ -2,8 +2,8 @@
  * @file 保养管理 保养台账
  */
 import React from 'react';
-import { message , Row, Col, Input, Layout, Form, Select, Button, Badge } from 'antd';
-import { upkeepPlanLoopFlag , upkeepPlanStateSel ,upkeepPlanState , upkeepMainTainType } from '../../../constants';
+import { message , Row, Col, Input, Layout, Form, Select, Button, Modal } from 'antd';
+import { upkeepPlanLoopFlag , maintaiFlag, maintainModeType } from '../../../constants';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
@@ -12,6 +12,7 @@ import upkeep from '../../../api/upkeep';
 import querystring from 'querystring';
 import request from '../../../utils/request';
 import { Link } from 'react-router-dom';
+const Confirm = Modal.confirm;
 const FormItem = Form.Item;
 const { Option } = Select;
 const { Content } = Layout;
@@ -29,6 +30,18 @@ const formItemLayout = {
 };
 
 class SearchForm extends React.Component{
+  handleSearch = (e) =>{
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      console.log(values,'values')
+      this.props.query(values);
+    });
+  }
+  handleReset = () =>{
+    this.props.form.resetFields();
+    this.props.query({});
+    this.props.handleReset();
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
     return (
@@ -48,7 +61,7 @@ class SearchForm extends React.Component{
           <Col span={6}>
             <FormItem {...formItemLayout} label={`资产编号`}>
               {
-                getFieldDecorator(`assetsRecord`,{
+                getFieldDecorator(`assestRecord`,{
                   initialValue: ''
                 })(
                   <Input placeholder='请输入'/>
@@ -59,13 +72,14 @@ class SearchForm extends React.Component{
           <Col span={6}>
             <FormItem {...formItemLayout} label={`保养模式`}>
               {
-                getFieldDecorator(`maintainModule`,{
+                getFieldDecorator(`maintainMode`,{
                   initialValue: ''
                 })(
                   <Select placeholder='请选择'>
                     <Option value=''>请选择</Option>
-                    <Option value='00'>模式一</Option>
-                    <Option value='01'>模式二</Option>
+                    <Option value='01'>管理科室保养</Option>
+                    <Option value='02'>临床科室保养</Option>
+                    <Option value='03'>服务商保养</Option>
                   </Select>
                 )
               }
@@ -73,7 +87,7 @@ class SearchForm extends React.Component{
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <Button type="primary" htmlType='submit'>查询</Button>
-            <Button style={{marginLeft: 5, marginRight: 25}} onClick={()=> this.handleReset }>重置</Button>
+            <Button style={{marginLeft: 5, marginRight: 25}} onClick={this.handleReset }>重置</Button>
           </Col>
         </Row>
       </Form>
@@ -113,6 +127,13 @@ class UpkeepAccount extends React.Component{
       this.form.props.form.setFieldsValue(value)
     }
   }
+  /* 重置时清空redux */
+  handleReset = ()=>{
+    this.form.props.form.resetFields();
+    const { clearSearch , history } = this.props;
+    const pathname = history.location.pathname;
+    clearSearch(pathname,{});
+  }
   /* 查询时向redux中插入查询参数 */
   searchTable = (val) => {
     /* 存储搜索条件 */
@@ -128,8 +149,43 @@ class UpkeepAccount extends React.Component{
     values = Object.assign({...search[history.location.pathname]},{...values})
     setSearch(history.location.pathname, values);
   }
-  stopUse = (record,index) =>{
-    console.log(record,index)
+  // 启用
+  startUse = (record,index) =>{
+    Confirm({
+      content:'确定要启用该台账?',
+      onOk: ()=>{
+        this.updateFlag({ maintainPlanId: record.maintainPlanId, flag: '01' })
+      },
+      onCancel: () =>{}
+    })
+  }
+  // 停用
+  stop = (record,index) =>{
+    Confirm({
+      content:'确定要停用该台账?',
+      onOk: ()=>{
+        this.updateFlag({ maintainPlanId: record.maintainPlanId, flag: '00' })
+      },
+      onCancel: () =>{}
+    })
+  }
+  updateFlag = (values) =>{
+    request(upkeep.updateMaintainPlanFlag,{
+      body: querystring.stringify(values),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        this.setState({ loading: false });
+        if(data.status){
+          message.success('操作成功');
+          this.refs.table.fetch();
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
   }
 
   render(){
@@ -137,69 +193,76 @@ class UpkeepAccount extends React.Component{
       {
         title: '资产名称',
         dataIndex: 'equipmentStandardName',
-        width: 168,
-        render:(text,record) => <span><Link to={{ pathname: `/upkeep/upKeepAccount/edit/${record.maintainPlanDetailId}` }}>{text}</Link></span>
+        width: 150,
+        render:(text,record) => <span><Link to={{ pathname: `/upkeep/upKeepAccount/edit/${record.maintainPlanId}` }}>{text}</Link></span>
           
       },
       {
         title: "资产编号",
-        dataIndex: 'assetsRecord',
-        width: 120
+        dataIndex: 'assestRecord',
+        width: 130
       },
       {
         title: "状态",
-        dataIndex: 'fstate',
-        width: 80,
-        filters:upkeepPlanStateSel,
-        onFilter: (value, record) => (record && record.fstate===value),
-        render: text => text
-         
+        dataIndex: 'flag',
+        width: 60,
+        render: (text,record) => <span>{maintaiFlag[text].text}</span>
       },
       {
         title: '保养模式',
-        dataIndex: 'maintanModule',
+        dataIndex: 'maintainMode',
         width: 80,
+        render: (text,record,index) => {
+          return <span>{maintainModeType[text].text}</span>
+        }
       },
       {
         title: '保养执行科室',
-        dataIndex: 'maintainDeptName',
+        dataIndex: 'executeDeptName',
         width: 110,
         render: text => <span title={text}>{text}</span>
       },
       {
         title: "最近保养时间",
-        dataIndex: 'lastMaintainTime',
+        dataIndex: 'endMaintainDate',
         width: 110
       },
       {
         title: '循环方式',
         dataIndex: "loopFlag",
-        width: 80,
+        width: 70,
         render: text => <span title={text}>{upkeepPlanLoopFlag[text].text}</span>
       },
       {
         title: '操作员',
-        dataIndex: 'executeUsername',
+        dataIndex: 'planUserName',
         width: 100,
         render: text => <span title={text}>{text}</span>
       },
       {
         title: '创建时间',
-        dataIndex: 'createTime',
+        dataIndex: 'planTime',
         width: 110,
         render: text => <span title={text}>{text}</span>
       },
       {
         title: "操作",
-        width: 80,
+        width: 60,
         dataIndex: 'action',
-        render: (text,record,index) => <a onClick={() => this.stopUse(record,index)}>停用</a>
+        render: (text,record,index) => {
+          return record.flag === '00'
+            ?
+            <span><a onClick={() => this.startUse(record,index)}>启用</a></span>
+            :
+            <span><a onClick={() => this.stop(record,index)}>停用</a></span>
+        }
       }
     ]
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20,backgroundColor:'none'}}>
         <SearchFormWapper 
-          query={(val)=>this.searchTable(val)} 
+          query={(val)=>this.searchTable(val)}
+          handleReset={this.handleReset} 
           wrappedComponentRef={(form) => this.form = form}
         />
         <div>
@@ -212,7 +275,7 @@ class UpkeepAccount extends React.Component{
           url={upkeep.selectMaintainParameterList}
           scroll={{x: '120%', y : document.body.clientHeight - 110 }}
           columns={columns}
-          rowKey={'maintainPlanDetailId'}
+          rowKey={'maintainPlanId'}
           showHeader={true}
           style={{marginTop: 10}}
           size="small"
@@ -223,5 +286,5 @@ class UpkeepAccount extends React.Component{
 }
 export default withRouter(connect(state => state, dispatch => ({
   setSearch: (key, value) => dispatch(search.setSearch(key, value)),
-  // clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
+  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
 }))(UpkeepAccount));

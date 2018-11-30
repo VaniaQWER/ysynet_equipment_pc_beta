@@ -355,6 +355,19 @@ export const transferState ={
   "03":{text:"已转科"},
   "07":{text:"已关闭 "},
 }
+//保养台账状态（启停用）
+export const maintaiFlag = {
+  "00": { text: '停用' },
+  "01": { text: "启用" }
+}
+
+// 保养模式
+export const maintainModeType = {
+  "01": { text: '管理科室保养' },
+  "02": { text: '临床科室保养' },
+  "03": { text: '服务商保养' },
+  null :{text: "",color: 'transparent'}
+}
 
 //发票审核状态
 export const equipmentInvoiceStatus ={

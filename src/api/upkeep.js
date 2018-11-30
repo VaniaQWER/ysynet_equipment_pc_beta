@@ -25,7 +25,8 @@ const upkeep = {
 
   // 保养台账
   selectMaintainParameterList:`${_local}/maintainOrderController/selectMaintainParameterList`,//查询保养台账列表
-  
+  updateMaintainPlanFlag:`${_local}/maintainOrderController/updateMaintainPlanFlag`,//保养台账更新状态
+  updateMaintainPlan:`${_local}/maintainOrderController/updateMaintainPlan`,//保养台账编辑修改保存
 }
 
 export default upkeep;

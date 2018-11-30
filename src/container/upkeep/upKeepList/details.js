@@ -7,8 +7,6 @@ import { Form ,Layout} from 'antd';
 import { withRouter  } from 'react-router-dom';
 const { Content } = Layout; 
 
-const WrappedAdvancedSearchForm = Form.create()(AddUpKeepForm);
-
 class UpKeepDetails extends React.Component{
     state={
         formInfo:{}
@@ -24,7 +22,7 @@ class UpKeepDetails extends React.Component{
         return(
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
-                <WrappedAdvancedSearchForm  
+                <AddUpKeepForm  
                 showPrint={true}
                 formInfo={formInfo} 
                 maintainGuid = {maintainGuid} 
