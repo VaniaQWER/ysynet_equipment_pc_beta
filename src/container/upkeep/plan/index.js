@@ -2,7 +2,7 @@
  * @Author: yuwei - 保养计划
  * @Date: 2018-12-01 00:36:51 
  * @Last Modified by: yuwei
- * @Last Modified time: 2018-12-01 00:37:27
+ * @Last Modified time: 2018-12-04 16:58:58
  */
 import React from 'react';
 import { Modal ,message , Row, Col, Input, Layout , Popover, Form, Select,Button } from 'antd';
@@ -363,7 +363,6 @@ class MaintainPlan extends React.Component{
         { 
           title: '操作', 
           dataIndex: 'maintainPlanDetailId', 
-          fixed:'right',
           className:'col08',
           key: 'x', 
           render: (text,record) => {
@@ -398,7 +397,7 @@ class MaintainPlan extends React.Component{
                 query={this.state.query}
                 onChange={this.changeQueryTable}
                 url={upkeep.planList}
-                scroll={{x: '140%', y : document.body.clientHeight - 110 }}
+                scroll={{x: '150%', y : document.body.clientHeight - 110 }}
                 columns={columns}
                 rowKey={'maintainPlanDetailId'}
                 showHeader={true}

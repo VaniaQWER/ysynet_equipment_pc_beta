@@ -2,7 +2,7 @@
  *  档案管理-资产档案-详情-附件信息
  */
 import React, { Component } from 'react';
-import { Row,Col,Icon,Upload,Button ,message,Alert,Select,Form,Modal,Divider} from 'antd';
+import { Row,Col,Icon,Upload,Button ,Input,message,Alert,Select,Form,Modal,Divider} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import assets from '../../../api/assets';
 import { FTP } from '../../../api/local';
@@ -32,52 +32,6 @@ class AccessoryInfo extends Component {
       certCode:'00',//默认选择的上传类型 / 将用于上传参数data
       record:null,//当前正在编辑的附件信息
       editable:true,//当前编辑状态
-    }
-  }
-
-  //上传附件之前过滤类型与大小
-  beforeUploadFilter = (file, fileList,config)=>{
-    this.setState({loading: true});
-    //过滤文件大小
-    const isLt2M = file.size   < config.size * 1024 * 1024;
-    let type = false;
-    if (!isLt2M) {
-      message.error(`上传文件不能大于${config.size}MB!`);
-      return false
-    }
-    //过滤文件类型
-    for(let i =0;i<config.type.length;i++){
-        let strArr = file.name.split('.');
-        if(config.type[i] === `.${strArr[strArr.length-1]}` || config.type[i] === `.${strArr[strArr.length-1]}`.toLocaleLowerCase()){
-          type=true
-          return
-        }else{
-          type=false
-        }
-    }
-    if (!type) {
-      message.error('您只能上传该附件支持的文件类型');
-    }
-    
-    return type && isLt2M;
-  }
-  handleChange = (fileListObj,key) => {
-    let { file, fileList } = fileListObj;  
-    if(file.status === 'done') {
-      file.response && !file.response.status && message.error('上传失败，请重新上传');
-      fileList.filter((file) => file.response&&file.response.status);
-      fileList.map((file) => {   //修改预览地址
-        if (file.response && file.response.result) {
-          let url = file.response.result.filePath.split('/');
-          url.shift();
-          url = url.join('/');
-          file.url = FTP + '/' + url;
-        }
-        if(file.type==="application/pdf"|| file.type==="application/zip"){
-          file.thumbUrl = require('../../../assets/fujian.png')
-        }
-        return file;
-      });
     }
   }
 
@@ -161,8 +115,10 @@ class AccessoryInfo extends Component {
           tfAccessoryFileList.push(item.response.result.filePath)
           accessoryNameList.push(item.response.result.accessoryName)
         }else{
-          tfAccessoryFileList.push(item.url.replace(FTP,''))
-          accessoryNameList.push(item.name)
+          if(item.url){
+            accessoryNameList.push(item.name)
+            tfAccessoryFileList.push(item.url.replace(FTP,''))
+          }
         }
         return item
       })
@@ -175,7 +131,51 @@ class AccessoryInfo extends Component {
       return null
     }
   }
-
+  //上传附件之前过滤类型与大小
+  beforeUploadFilter = (file, fileList , config)=>{
+    this.setState({loading: true});
+    //过滤文件大小
+    const isLt2M = file.size   < config.size * 1024 * 1024;
+    let type = false;
+    if (!isLt2M) {
+      message.error(`上传文件不能大于${config.size}MB!`);
+      return false
+    }
+    //过滤文件类型
+    for(let i =0;i<config.type.length;i++){
+        let strArr = file.name.split('.');
+        if(config.type[i] === `.${strArr[strArr.length-1]}` || config.type[i] === `.${strArr[strArr.length-1]}`.toLocaleLowerCase()){
+          type=true
+          return
+        }else{
+          type=false
+        }
+    }
+    if (!type) {
+      message.error('您只能上传该附件支持的文件类型');
+    }
+    
+    return type && isLt2M;
+  }
+  handleChange = (fileListObj,key) => {
+    let { file, fileList } = fileListObj;  
+    if(file.status === 'done' && file.status.response) {
+      file.response && !file.response.status && message.error('上传失败，请重新上传');
+      fileList.filter((file) => file.response&&file.response.status);
+      fileList.map((file) => {   //修改预览地址
+        if (file.response && file.response.result) {
+          let url = file.response.result.filePath.split('/');
+          url.shift();
+          url = url.join('/');
+          file.url = FTP + '/' + url;
+        }
+        if(file.type.toLocaleLowerCase()==="application/pdf" || file.type.toLocaleLowerCase()==="application/zip" ){
+          file.thumbUrl = require('../../../assets/fujian.png')
+        }
+        return file;
+      });
+    }
+  }
   // 提交弹窗中的数据 submit
   submit = () => {
     const { record } = this.state;
@@ -194,7 +194,7 @@ class AccessoryInfo extends Component {
         console.log('modal values', values)
         fetchData(assets.insertAssetsFile, querystring.stringify(values), data => {
           if(data.status){
-            this.setState({showModal:false,editable:true})
+            this.setState({showModal:false,editable:true,record:null})
             this.refs.table.fetch()
           }else{
             message.error(data.msg)
@@ -251,14 +251,13 @@ class AccessoryInfo extends Component {
     const { assetsRecordGuid } = this.props;
     const { getFieldDecorator } = this.props.form;
    
-    const props = {
+    const commonProps = {
       listType: 'picture',
       action: assets.assetsUploadFile,
       withCredentials: true,
       showUploadList:{
         showRemoveIcon:editable
       },
-      beforeUpload:this.beforeUploadFilter,
       data:{"assetsRecordGuid":this.props.assetsRecordGuid},
     };
     
@@ -282,6 +281,15 @@ class AccessoryInfo extends Component {
                       <Option value='03'>资产图片</Option>
                       <Option value='04'>其他</Option>
                     </Select>
+                  )
+                }
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label='文件名' {...formItemLayout}>
+                {
+                  getFieldDecorator('fileName')(
+                    <Input style={{width: '100%'}}/>
                   )
                 }
               </FormItem>
@@ -319,7 +327,10 @@ class AccessoryInfo extends Component {
             visible={showModal}
             onCancel={()=>this.setState({showModal:false,editable:true,record:null})}
             >
-            <FormItem {...formItemLayout} label='文档类型'>
+            {
+              showModal && 
+              (<div>
+                <FormItem {...formItemLayout} label='文档类型'>
                 {
                   getFieldDecorator('certCode',{
                     initialValue:record?record.certCode:'00'
@@ -337,33 +348,35 @@ class AccessoryInfo extends Component {
                   )
                 }
             </FormItem>
-            <FormItem {...formItemLayout} label='选择文件'
-              extra='支持扩展名：.jpeg、.jpg、.png、.pdf、.zip'>
-                {getFieldDecorator('tfAccessoryFile', {
-                  initialValue:this.initAccessoryFormat(record,'tfAccessoryFile','accessoryName')||[],
-                  valuePropName: 'fileList',
-                  getValueFromEvent: this.normFile,
-                })(
-                  <Upload {...props}
-                    onChange={(info)=>this.handleChange(info, 'tfAccessoryFile')}
-                    beforeUpload={(file, fileList)=>this.beforeUploadFilter(file, fileList,{type:['.jpeg','.jpg','.png','.pdf','.zip'],size:2})}
-                  >
-
-                  {
-                    !editable ? null:
-                    (this.props.form.getFieldValue('tfAccessoryFile')&&
-                    this.props.form.getFieldValue('tfAccessoryFile').length )
-                    >= 8 ? null : 
-                    (
-                      <Button>
-                        <Icon type="upload" />上传文件
-                      </Button>
-                    )
-                  }
-                    
-                  </Upload>
-                )}
-            </FormItem>
+                <FormItem {...formItemLayout} label='选择文件'
+                  extra='支持扩展名：.jpeg、.jpg、.png、.pdf、.zip'>
+                    {getFieldDecorator('tfAccessoryFile', {
+                      initialValue:this.initAccessoryFormat(record,'tfAccessoryFile','accessoryName')||[],
+                      valuePropName: 'fileList',
+                      getValueFromEvent: this.normFile,
+                    })(
+                      <Upload 
+                        {...commonProps}
+                        beforeUpload={(file, fileList)=>this.beforeUploadFilter(file, fileList,{type:['.jpeg','.jpg','.png','.pdf','.zip'],size:2})}
+                        onChange={(info)=>this.handleChange(info, 'tfAccessoryFile')}
+                      >
+                      {
+                        !editable ? null:
+                        (this.props.form.getFieldValue('tfAccessoryFile')&&
+                        this.props.form.getFieldValue('tfAccessoryFile').length )
+                        >= 8 ? null : 
+                        (
+                          <Button>
+                            <Icon type="upload" />上传文件
+                          </Button>
+                        )
+                      }
+                        
+                      </Upload>
+                    )}
+                </FormItem>
+                </div>)
+            }
           </Modal>
       </div>
     )

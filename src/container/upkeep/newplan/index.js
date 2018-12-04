@@ -158,7 +158,8 @@ class MaintainPlan extends PureComponent {
 
   }
   handleOk = (modalName) => {
-    if(this.state.ProductModalCallBackKeys.length!==0 || this.state.projecrModalCallBack.length!==0){
+    if((modalName==='productVisible' && this.state.ProductModalCallBackKeys.length!==0 )  ||
+       ( modalName!=='productVisible'&& this.state.projecrModalCallBack.length!==0)){
       this.setState({ loading: true });
       setTimeout(() => {
         //设置
@@ -868,6 +869,7 @@ class MaintainPlan extends PureComponent {
 
          {/*选择项目*/}
          <Modal
+            destroyOnClose={true}
             visible={prjVisible}
             title="选择项目"
             onOk={()=>this.handleOk('prjVisible')}
@@ -877,13 +879,12 @@ class MaintainPlan extends PureComponent {
           <Row>
             <Col className={styles.mbLarge}>
               <Select
-                // mode="combobox"
+                showSearch
                 placeholder='请搜索选择保养项目'
-                showArrow={true}
                 className={styles.mrLarge}
-                defaultActiveFirstOption={false}
-                filterOption={false}
-                value={prjSelect}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                // value={prjSelect}
                 onSearch={this.getOneModule}
                 onSelect={this.changeOneModule}
                 style={{ width: 250,marginBottom:15 }} 

@@ -1,4 +1,4 @@
-/* 用于保养计划 - 保养任务 */
+/* 用于保养计划 与 保养任务  */
 import React from 'react'
 import moment from 'moment';
 import {Table , message ,  Row, Col, Input, Icon ,Card ,Form, Button ,Select ,DatePicker ,Upload ,Modal} from 'antd'
@@ -230,7 +230,7 @@ class AddTaskForm extends React.Component {
         success: data => {
           if(data.status){
             let retData = data.result;
-            let tabledata =data.result.maintainDetailList;
+            let tabledata =data.result.typeList;
             this.setState({
               data:retData,
               tableData:tabledata 
@@ -493,7 +493,7 @@ class AddTaskForm extends React.Component {
         case "02"://选择临床科室保养模式 - 则显示添加的资产的使用科室
           return UnStateText('保养执行科室',data.useDept)
         case "03"://选择临床科室保养模式 - 则显示添加的资产的使用科室
-          return UnStateText('保养执行科室','')
+          return UnStateText('保养执行科室',data.bDept)
         default:
           return UnStateText('保养执行科室','')
       }
@@ -503,8 +503,9 @@ class AddTaskForm extends React.Component {
       const { getFieldDecorator ,  getFieldValue } = this.props.form;
       const { checkedKeyArray ,prjTableData ,selectDropData , data , editState , visible, loading , tableData
       ,previewVisible, previewImage , upKeepPerson , servicePerson} = this.state;
+      const { isDetail } = this.props; 
       const options = selectDropData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>);
-      const columns = [
+      const columnsList = [
         {
           title: '序号',
           dataIndex: 'index',
@@ -512,7 +513,7 @@ class AddTaskForm extends React.Component {
         },
         {
           title: '操作',
-          dataIndex: 'maintainOrderDetailGuid',
+          dataIndex: 'maintainTypeId',
           render:(text,record)=>{
             if(editState){
               return(
@@ -525,7 +526,7 @@ class AddTaskForm extends React.Component {
         },
         {
           title: '项目名称',
-          dataIndex: 'templateTypeName',
+          dataIndex: 'maintainTypeName',
         },
         {
           title: '结果',
@@ -540,7 +541,7 @@ class AddTaskForm extends React.Component {
                   <Option value="02">保养后合格</Option>
                 </Select>)
               }else{
-                return UnStateTable(upkeepDetailsTable[record.maintainResult].text)
+                return record.maintainResult ? UnStateTable(upkeepDetailsTable[record.maintainResult].text):""
               }
           }
         },
@@ -559,6 +560,18 @@ class AddTaskForm extends React.Component {
           }
         },
       ]
+      const isDetailCol = [
+        {
+          title: '序号',
+          dataIndex: 'index',
+          render:(text, record, index) => index + 1
+        },
+        {
+          title: '项目名称',
+          dataIndex: 'maintainTypeName',
+        }
+      ]
+      const columns = isDetail ? isDetailCol:columnsList;
       const uploadButton = (
         <div>
           <Icon type="plus" />
@@ -811,7 +824,12 @@ class AddTaskForm extends React.Component {
           </Card>
           
           <Card title="项目信息" bordered={false} style={{marginTop:30}}>
-             <Row><Button type="primary"  onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
+            {
+              isDetail?null
+              :(
+                <Row><Button type="primary"  onClick={this.toggleTree} disabled={!editState}>选择项目</Button></Row>
+              )
+            }
              <Row>
               <Table  ref='tableItem' rowKey={'maintainTypeId'} columns={columns} dataSource={tableData} size="middle"  style={{marginTop:15}}>
               </Table>

@@ -492,7 +492,7 @@ class AddUpKeepForm extends React.Component {
         case "02"://选择临床科室保养模式 - 则显示添加的资产的使用科室
           return UnStateText('保养执行科室',data.useDept)
         case "03"://选择临床科室保养模式 - 则显示添加的资产的使用科室
-          return UnStateText('保养执行科室','')
+          return UnStateText('保养执行科室',data.bDept)
         default:
           return UnStateText('保养执行科室','')
       }
