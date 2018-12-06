@@ -560,7 +560,7 @@ class MaintainPlan extends PureComponent {
         width: 100
       }
     ];
-    const { prjSelect , ProductModalCallBackKeys , projecrModalCallBackKeys ,ProductType ,
+    const { ProductModalCallBackKeys , projecrModalCallBackKeys ,ProductType ,
       useDeptGuidStr ,mobile , detpSel ,cycleModule , prjTableData , 
       selectDropData , productVisible , prjVisible , loading ,ProductTabledata } =this.state;
     const { getFieldDecorator } = this.props.form;

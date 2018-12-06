@@ -2,7 +2,7 @@
  * @Author: yuwei - 保养计划
  * @Date: 2018-12-01 00:36:51 
  * @Last Modified by: yuwei
- * @Last Modified time: 2018-12-04 16:58:58
+ * @Last Modified time: 2018-12-06 09:34:03
  */
 import React from 'react';
 import { Modal ,message , Row, Col, Input, Layout , Popover, Form, Select,Button } from 'antd';
@@ -156,6 +156,7 @@ class MaintainPlan extends React.Component{
       /* 存储搜索条件 */
       const { setSearch, history ,search } = this.props;
       const pathname = history.location.pathname;
+      val = Object.assign({maintainMenu:"plan"},val)
       let values = Object.assign({...search[pathname]},{...val})
       setSearch(pathname, values);
       this.refs.table.fetch(val)

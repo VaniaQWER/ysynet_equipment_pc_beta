@@ -159,22 +159,19 @@ class MaintainPlan extends PureComponent {
 
   }
   handleOk = (modalName) => {
-    if(this.state.ProductModalCallBackKeys.length!==0 || this.state.projecrModalCallBack.length!==0){
+    if((modalName==='productVisible'&&this.state.ProductModalCallBackKeys.length!==0) || (modalName==='prjVisible'&&this.state.projecrModalCallBack.length!==0)){
       this.setState({ loading: true });
       setTimeout(() => {
         //设置
         if(modalName==='productVisible'){
           //1-在此处通过ProductModalCallBackKeys获取对应的树状结构-赋值给ProductTabledata-资产信息table
-          
           this.productSubmitGetTree();
-          
         }else{
           //2-处理选中的项目数据并赋值给formatPrjData之后 将该数据混合入ProductTabledata
           this.prjInsertParenTable();
         }
         this.setState({ loading: false, [modalName]: false });
       }, 1000);
-
     }else{
       message.warning('请选择项目之后再添加！')
     }
@@ -364,6 +361,10 @@ class MaintainPlan extends PureComponent {
   //此处为保存所有的新增计划表单
   handleSubmit =(status)=>{
     //此处提交所有搜集到的数据
+    if(this.state.ProductTabledata.length<=0){
+      message.warn('请至少添加一条产品！');
+      return
+    }
     this.props.form.validateFields((err, values) => {
       if (!err) {
         let json = {};
@@ -378,6 +379,7 @@ class MaintainPlan extends PureComponent {
         //此处还需要继续做表格的数据添加
         json.maintainPlan = maintainPlan;
         json.assetsRecordGuidList = this.formatTableData(this.state.ProductTabledata);
+
         this.sendEndAjax(json)
       }
     });
@@ -410,7 +412,7 @@ class MaintainPlan extends PureComponent {
       success: data => {
         if(data.status){
           message.success('新增成功');
-          this.resetAll();
+          this.props.history.push('/upkeep/upKeepAccount')  
         }else{
           message.error(data.msg)
         }
@@ -418,16 +420,6 @@ class MaintainPlan extends PureComponent {
       error: err => {console.log(err)}
     }
     request(upkeep.insertMaintainPlan,options)
-  }
-  resetAll=()=>{
-    this.props.form.resetFields();
-    this.setState({
-      ProductTabledata:[],
-      cycleModule:'00',
-      ProductModalCallBackKeys:[],
-      projecrModalCallBackKeys:[],
-      prjCheckedKeys:[],
-    })
   }
   
   productQueryHandler =(value)=>{
@@ -878,12 +870,11 @@ class MaintainPlan extends PureComponent {
           <Row>
             <Col className={styles.mbLarge}>
               <Select
-                // mode="combobox"
-                placeholder='请搜索选择保养项目'
-                showArrow={true}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                defaultValue='请搜索选择保养项目'
                 className={styles.mrLarge}
-                defaultActiveFirstOption={false}
-                filterOption={false}
                 value={prjSelect}
                 onSearch={this.getOneModule}
                 onSelect={this.changeOneModule}

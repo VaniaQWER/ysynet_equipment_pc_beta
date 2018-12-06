@@ -159,7 +159,8 @@ class UpKeepList extends React.Component{
     queryHandler = (query) => {
       const { setSearch, history ,search } = this.props;
       const pathname = history.location.pathname;
-      let values = Object.assign({...query},{...search[pathname]},)
+      query = Object.assign({maintainMenu:"upkeepTask"},query)
+      let values = Object.assign({...query},{...search[pathname]})
       setSearch(pathname, values);
       this.refs.table.fetch(query);
       this.setState({ query })

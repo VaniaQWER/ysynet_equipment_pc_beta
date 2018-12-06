@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { ledgerData} from '../../../constants';
 import { ledger as ledgerService } from '../../../service';
 import assets from '../../../api/assets';
+import { FTP } from '../../../api/local';
 import querystring from 'querystring';
 import style from './style.css';
 const TabPane = Tabs.TabPane;
@@ -48,7 +49,12 @@ class LedgerArchivesDetail extends Component {
       <div>
         <Row className={style.assetBgf}>
           <Col span={4}>
-            <img alt='资产图片' src={require('../../../assets/assetimg.jpg')} height='135'/>
+            {
+              AssetInfoData && AssetInfoData.assetsImage ? 
+              <img alt='资产图片' src={`${FTP}${AssetInfoData.assetsImage}`} height='135' style={{width: '100%'}}/>
+              :
+              <img alt='资产图片' src={ require('../../../assets/assetimg.jpg')} height='135'/>
+            }
           </Col>
           <Col span={20}>
             <h3>{AssetInfoData?AssetInfoData.equipmentStandardName:''}</h3>
@@ -80,7 +86,7 @@ class LedgerArchivesDetail extends Component {
                <CertInfo certGuid={this.state.AssetInfoData.certGuid}/> 
             </TabPane>
             <TabPane tab="附件信息" key="3">
-              <AccessoryInfo assetsRecord={this.state.AssetInfoData.assetsRecord} assetsRecordGuid={this.state.AssetInfoData.assetsRecordGuid}/>
+              <AccessoryInfo freshDetail={this.getDetails} assetsRecord={this.state.AssetInfoData.assetsRecord} assetsRecordGuid={this.state.AssetInfoData.assetsRecordGuid}/>
             </TabPane>
             {/*<TabPane tab="操作记录" key="4">
               <RecordList assetsRecord={this.state.AssetInfoData.assetsRecord}/>

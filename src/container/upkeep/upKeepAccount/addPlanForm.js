@@ -207,6 +207,11 @@ export default class AddUpKeepPlanForm extends React.Component {
     handleOkTree = () => {
       this.setState({ loading: true });
       let newData = this.state.checkedKeys;
+      if(newData.length<=0){
+        message.warn('请至少选择一条项目新增！')
+        this.setState({ loading: false });
+        return
+      }
       newData.forEach(ele=>{
         ele.maintainTypeName = ele.templateTypeName;
       })
@@ -322,6 +327,20 @@ export default class AddUpKeepPlanForm extends React.Component {
           <Option value='02'>天</Option>
         </Select>
       )
+    }
+
+    _filterDept = (val)=>{
+      const { data } = this.state;
+      switch (val) {
+        case "01"://选择管理科室保养模式 - 则显示添加的资产的管理科室
+          return UnStateText('保养执行科室',data.bDept)
+        case "02"://选择临床科室保养模式 - 则显示添加的资产的使用科室
+          return UnStateText('保养执行科室',data.useDept)
+        case "03"://选择临床科室保养模式 - 则显示添加的资产的使用科室
+          return UnStateText('保养执行科室',data.bDept)
+        default:
+          return UnStateText('保养执行科室','')
+      }
     }
 
     render() {
@@ -524,12 +543,9 @@ export default class AddUpKeepPlanForm extends React.Component {
                     : UnStateText('临床风险等级',data.clinicalRisk)
                   }
                 </Col>
-                {/* <FormItem>
-                 {getFieldDecorator(`maintainPlanId`,{initialValue:data.maintainPlanId})(<span>&nbsp;</span>)}
-                </FormItem> */}
                 <Col span={8}>
-                  {
-                    UnStateText('保养执行科室',data.executeDeptName)
+                  {//保养执行科室
+                    this._filterDept(getFieldValue('maintainMode')||data.maintainMode)
                   }
                 </Col>
                 <Col span={8}>
@@ -642,10 +658,11 @@ export default class AddUpKeepPlanForm extends React.Component {
                     <Row>
                       <Col>
                         <Select
-                          // mode="combobox"
+                          showSearch
+                          optionFilterProp="children"
                           placeholder='请搜索选择保养项目'
                           defaultActiveFirstOption={false}
-                          filterOption={false}
+                          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                           onSearch={this.getOneModule}
                           onSelect={this.changeOneModule}
                           style={{ width: 250,marginBottom:15 }} 

@@ -47,6 +47,7 @@ class AccessoryInfo extends Component {
     delete query['accessoryName_search']
     this.refs.table.fetch(query);
     this.setState({ query })
+
   }
   //删除
   handleDelete = (accessoryId) => {
@@ -196,6 +197,7 @@ class AccessoryInfo extends Component {
           if(data.status){
             this.setState({showModal:false,editable:true,record:null})
             this.refs.table.fetch()
+            this.props.freshDetail();//刷新资产档案的图片
           }else{
             message.error(data.msg)
           }
@@ -272,9 +274,12 @@ class AccessoryInfo extends Component {
             <Col span={8}>
               <FormItem label='文档类型' {...formItemLayout}>
                 {
-                  getFieldDecorator('certCode_search')(
+                  getFieldDecorator('certCode_search',{
+                    initialValue:''
+                  })(
                     <Select style={{width: '100%'}}>
                     {/* 00登记表，01验收表，02合同，03资产图片，04其他 */}
+                      <Option value=''>全部</Option>
                       <Option value='00'>登记表</Option>
                       <Option value='01'>验收表</Option>
                       <Option value='02'>合同</Option>
@@ -288,7 +293,7 @@ class AccessoryInfo extends Component {
             <Col span={8}>
               <FormItem label='文件名' {...formItemLayout}>
                 {
-                  getFieldDecorator('fileName')(
+                  getFieldDecorator('accessoryName_search')(
                     <Input style={{width: '100%'}}/>
                   )
                 }

@@ -182,22 +182,23 @@ class SearchFormWrapper extends React.Component {
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if(values.PlanTime){
+      if(values.PlanTime && values.PlanTime.length){
         values.startPlanTime=moment(values.PlanTime[0]).format('YYYY-MM-DD');
         values.endPlanTime=moment(values.PlanTime[1]).format('YYYY-MM-DD');
         delete values['PlanTime'];
       }
-      if(values.UpkeepTime){
+      if(values.UpkeepTime&& values.UpkeepTime.length){
         values.startUpkeepTime=moment(values.UpkeepTime[0]).format('YYYY-MM-DD');
         values.endUpkeepTime=moment(values.UpkeepTime[1]).format('YYYY-MM-DD');
         delete values['UpkeepTime'];
       }
-      if(values.UpkeepEndTime){
+      if(values.UpkeepEndTime&& values.UpkeepEndTime.length){
         values.startUpkeepEndTime=moment(values.UpkeepEndTime[0]).format('YYYY-MM-DD');
         values.endUpkeepEndTime=moment(values.UpkeepEndTime[1]).format('YYYY-MM-DD');
         delete values['UpkeepEndTime'];
       }
       console.log(values)
+      values = Object.assign({maintainMenu:"upkeepRecord"},values)
       this.props.query(values);
     });
   }
@@ -210,7 +211,7 @@ class SearchFormWrapper extends React.Component {
 
   render() {
     const { display } = this.state;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator , setFieldsValue } = this.props.form;
     return (
       // 转科记录查询部分
       <Form onSubmit={this.handleSearch}>
@@ -252,7 +253,7 @@ class SearchFormWrapper extends React.Component {
               label="保养开始时间"
             >
               {getFieldDecorator('UpkeepTime')(
-                <RangePicker allowClear={false}/>
+                <RangePicker onChange={(dates)=>setFieldsValue({UpkeepTime:dates})}/>
               )}
             </FormItem>
           </Col>
@@ -262,7 +263,7 @@ class SearchFormWrapper extends React.Component {
               label="保养结束时间"
             >
               {getFieldDecorator('UpkeepEndTime')(
-                <RangePicker allowClear={false}/>
+                <RangePicker onChange={(dates)=>setFieldsValue({UpkeepEndTime:dates})}/>
               )}
             </FormItem>
           </Col>
@@ -272,7 +273,7 @@ class SearchFormWrapper extends React.Component {
               label="本次计划保养时间"
             >
               {getFieldDecorator('PlanTime')(
-                <RangePicker allowClear={false}/>
+                <RangePicker onChange={(dates)=>setFieldsValue({PlanTime:dates})}/>
               )}
             </FormItem>
           </Col>

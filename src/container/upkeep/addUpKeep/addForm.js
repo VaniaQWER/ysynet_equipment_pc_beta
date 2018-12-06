@@ -308,6 +308,11 @@ class AddUpKeepForm extends React.Component {
     handleOkTree = () => {
       this.setState({ loading: true });
       let newData = this.state.checkedKeys;
+      if(this.state.checkedKeys && this.state.checkedKeys.length<=0){
+        message.warn('请至少选择一条项目添加！')
+        this.setState({ loading: false });
+        return
+      }
       setTimeout(() => {//含清空tree勾选内容
         this.setState((prevState)=>{ 
           let prevData = prevState.tableData || [];
