@@ -32,6 +32,7 @@ class AccessoryInfo extends Component {
       certCode:'00',//默认选择的上传类型 / 将用于上传参数data
       record:null,//当前正在编辑的附件信息
       editable:true,//当前编辑状态
+      banType:false,//当前类型是否能编辑
     }
   }
 
@@ -198,7 +199,7 @@ class AccessoryInfo extends Component {
         console.log('modal values', values)
         fetchData(assets.insertAssetsFile, querystring.stringify(values), data => {
           if(data.status){
-            this.setState({showModal:false,editable:true,record:null})
+            this.setState({showModal:false,editable:true,record:null,banType:false})
             this.refs.table.fetch()
             this.props.freshDetail();//刷新资产档案的图片
           }else{
@@ -246,13 +247,13 @@ class AccessoryInfo extends Component {
           <span>
             <a  onClick={()=>this.setState({record,showModal:true,editable:false})}>查看</a>
             <Divider type="vertical" />
-            <a  onClick={()=>this.setState({record,showModal:true})}>编辑</a>
+            <a  onClick={()=>this.setState({record,showModal:true,banType:true})}>编辑</a>
             <Divider type="vertical" />
             <a onClick={this.handleDelete.bind(null, record.accessoryId)}>删除</a>
           </span>  
       },
     ];
-    const { record , editable , showModal} = this.state;
+    const { record , editable , showModal , banType } = this.state;
     const { assetsRecordGuid } = this.props;
     const { getFieldDecorator } = this.props.form;
    
@@ -329,11 +330,11 @@ class AccessoryInfo extends Component {
             footer={editable?(
               <div>
                   <Button type='primary' onClick={this.submit}>提交</Button>
-                  <Button onClick={()=>this.setState({showModal:false,editable:true,record:null})}>取消</Button>
+                  <Button onClick={()=>this.setState({showModal:false,editable:true,record:null,banType:false})}>取消</Button>
               </div>
             ):null}
             visible={showModal}
-            onCancel={()=>this.setState({showModal:false,editable:true,record:null})}
+            onCancel={()=>this.setState({showModal:false,editable:true,record:null,banType:false})}
             >
             {
               showModal && 
@@ -344,7 +345,7 @@ class AccessoryInfo extends Component {
                     initialValue:record?record.certCode:'00'
                   })(
                     <Select style={{width: '100%'}}
-                      disabled={!editable}
+                      disabled={!editable||banType}
                       onSelect={(e)=>this.setState({certCode:e})}>
                        {/* 00登记表，01验收表，02合同，03资产图片，04其他 */}
                       <Option value='00'>登记表</Option>

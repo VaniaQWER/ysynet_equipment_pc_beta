@@ -118,7 +118,7 @@ class AddUpKeep extends React.Component{
           <div>
             <Affix>
               <div style={{background:'#fff',padding:'10px 20px',marginBottom:10,display:'flex',alignContent:'center',justifyContent:'flex-end'}}>
-                <Button type="default" onClick={()=>this.handleSubmit('00')}>保存</Button>
+                {/* <Button type="default" onClick={()=>this.handleSubmit('00')}>保存</Button> */}
                 <Button type="primary" style={{marginLeft:15}} onClick={()=>this.handleSubmit('01')}>完成</Button>
               </div>
             </Affix>

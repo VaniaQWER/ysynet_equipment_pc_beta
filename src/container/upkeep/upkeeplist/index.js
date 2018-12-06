@@ -254,7 +254,7 @@ class SearchFormWrapper extends React.Component {
               label="保养开始时间"
             >
               {getFieldDecorator('UpkeepTime')(
-                <RangePicker  onChange={(dates,dateStrings)=>setFieldsValue({UpkeepEndTime:dates})}/>
+                <RangePicker  onChange={(dates,dateStrings)=>setFieldsValue({UpkeepTime:dates})}/>
               )}
             </FormItem>
           </Col>

@@ -461,7 +461,7 @@ class AddUpKeepForm extends React.Component {
         if(Array.isArray(accList)){
           return accList
         }else if(accList){
-          let list = accList;//.split(';')
+          let list = accList.split(';');//
           let retList = []
           list.map((item,index)=>{
             if(item!==""){
@@ -537,8 +537,11 @@ class AddUpKeepForm extends React.Component {
           width:250,
           render:(text,record)=>{
             if(editState){
-              return( <Select value={record.maintainResult} name='maintainResult' onSelect={(value)=>this.changeTableRow(value,record,'maintainResult')}>
-                  <Option value="">请选择结果</Option>
+              return( <Select 
+                  defaultValue='请选择结果'
+                  value={record.maintainResult}
+                   name='maintainResult' 
+                  onSelect={(value)=>this.changeTableRow(value,record,'maintainResult')}>
                   <Option value="00">合格</Option>
                   <Option value="01">不合格</Option>
                   <Option value="02">保养后合格</Option>
@@ -681,58 +684,59 @@ class AddUpKeepForm extends React.Component {
                 </Col>
                 <Col span={8}>
 
-                {getFieldValue('maintainMode')!=="03" ? editState ? 
-                  <FormItem label='保养人' {...formItemLayout}>
-                  {getFieldDecorator(`engineerUserid`,{
-                    initialValue:data.engineerUserid,
-                    rules:[{required:true,message:'请选择保养人'}]
-                  })(
-                   /*  <Input placeholder="支持多人"/> */
-                    <Select
-                      showSearch
-                      style={{ width: 200 }}
-                      optionFilterProp="children"
-                      onSelect={(input, option)=>{
-                        console.log(option)
-                        this.props.form.setFieldsValue({engineerName:option.props.children})
-                      }}
-                      filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
-                    >
-                      {
-                        upKeepPerson.map(item=>(<Option value={`${item.value}-${item.RN}`} key={item.RN}>{`${item.userName?item.userName:''}${item.deptName?`-${item.deptName}`:''}`}</Option>))
-                      }
-                    </Select>
-                  )}
-                  </FormItem>
-                  :UnStateText('保养人',data.engineerName)
-                   :null
-                }
+                  {
+                        getFieldValue('maintainMode')!=="03"  ? editState ? 
+                        <FormItem label='保养人' {...formItemLayout}>
+                        {getFieldDecorator(`engineerUserid`,{
+                          initialValue:data && upKeepPerson.length>0?data.engineerUserid:'',
+                          rules:[{required:true,message:'请选择保养人'}]
+                        })(
+                          <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            optionFilterProp="children"
+                            onSelect={(input, option)=>{
+                              console.log(option)
+                              this.props.form.setFieldsValue({engineerName:option.props.children})
+                            }}
+                            filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                          >
+                            {//-${item.RN}
+                              upKeepPerson.map(item=>(<Option value={`${item.value}`} key={item.RN}>{`${item.userName?item.userName:''}${item.deptName?`-${item.deptName}`:''}`}</Option>))
+                            }
+                          </Select>
+                        )}
+                        </FormItem>
+                        : data.maintainMode!=="03" ? UnStateText('保养人',data.engineerName):UnStateText('服务商',data.serviceName)
+                        :null
+                  }
 
-                {getFieldValue('maintainMode')==="03" ? editState ? 
-                  <FormItem label='服务商' {...formItemLayout}>
-                    {getFieldDecorator(`serviceId`,{
-                      initialValue:data.serviceId,
-                      rules:[{required:true,message:'请选择保养人'}]
-                    })(
-                      <Select
-                        showSearch
-                        style={{ width: 200 }}
-                        optionFilterProp="children"
-                        onSelect={(input, option)=>{
-                          console.log(option)
-                          this.props.form.setFieldsValue({serviceName:option.props.children})
-                        }}
-                        filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
-                      >
-                        {
-                          servicePerson.map(item=>(<Option value={item.value} key={item.value}>{item.text}</Option>))
-                        }
-                      </Select>
-                    )}
-                  </FormItem>
-                  :UnStateText('服务商',data.serviceName)
-                  :null
-                } 
+                  {
+                      getFieldValue('maintainMode')==="03" ? editState ? 
+                      <FormItem label='服务商' {...formItemLayout}>
+                        {getFieldDecorator(`serviceId`,{
+                          initialValue:servicePerson.length>0?data.serviceId:"",
+                          rules:[{required:true,message:'请选择服务商'}]
+                        })(
+                          <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            optionFilterProp="children"
+                            onSelect={(input, option)=>{
+                              console.log(option)
+                              this.props.form.setFieldsValue({serviceName:option.props.children})
+                            }}
+                            filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                          >
+                            {
+                              servicePerson.map(item=>(<Option value={item.value} key={item.value}>{item.text}</Option>))
+                            }
+                          </Select>
+                        )}
+                      </FormItem>
+                      :data.maintainMode!=="03" ? UnStateText('保养人',data.engineerName):UnStateText('服务商',data.serviceName)
+                      :null
+                  } 
                 </Col>
                 <Col span={0}>
                   <FormItem label='保养人Name' {...formItemLayout}>

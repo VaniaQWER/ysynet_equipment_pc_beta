@@ -836,8 +836,9 @@ class MaintainPlan extends PureComponent {
           </Row>
           <RemoteTable
               ref='proTable'
+              query={{}}
               showHeader={true}
-              url={assets.selectAssetsList}
+              url={assets.selectAssetsIsNormalUseList}
               scroll={{x: '100%' }}
               columns={productColumns}
               rowKey={'assetsRecordGuid'}

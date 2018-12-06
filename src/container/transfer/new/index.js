@@ -607,7 +607,7 @@ class NewTransfer extends PureComponent {
           ref='proTable' // 根据搜索后进行刷新列表
           showHeader={true}
           query={{useDeptGuid: this.state.outDeptguid}}
-          url={assets.selectAssetsList}
+          url={assets.selectAssetsIsNormalUseList}
           rowKey={'assetsRecordGuid'}
           columns={productColumns}
           scroll={{x: '100%', y: document.body.clientHeight - 110 }}

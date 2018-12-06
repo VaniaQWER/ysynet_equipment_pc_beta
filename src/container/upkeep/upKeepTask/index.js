@@ -64,7 +64,7 @@ class SearchFormWrapper extends React.Component {
         <Row>
           <Col span={6}>
             <FormItem label={`计划单号`} {...formItemLayout}>
-              {getFieldDecorator('upkeepNo', {})(
+              {getFieldDecorator('maintainPlanNo', {})(
                 <Input placeholder="请输入计划单号"/>
               )}
             </FormItem>
@@ -274,7 +274,7 @@ class UpKeepList extends React.Component{
         {
           title: '资产名称',
           width:150,
-          dataIndex: 'equipmentName',
+          dataIndex: 'equipmentStandardName',
           render:(text,record) =>
             <Popover  content={
               <div style={{padding:20}}>

@@ -309,6 +309,11 @@ class AddTaskForm extends React.Component {
     handleOkTree = () => {
       this.setState({ loading: true });
       let newData = this.state.checkedKeys;
+      if(newData.length<=0){
+        message.warn('请至少添加一条项目！')
+        this.setState({ loading: false });
+        return
+      }
       setTimeout(() => {//含清空tree勾选内容
         this.setState((prevState)=>{ 
           let prevData = prevState.tableData || [];
@@ -534,8 +539,9 @@ class AddTaskForm extends React.Component {
           width:250,
           render:(text,record)=>{
             if(editState){
-              return( <Select value={record.maintainResult} name='maintainResult' onSelect={(value)=>this.changeTableRow(value,record,'maintainResult')}>
-                  <Option value="">请选择结果</Option>
+              return( <Select 
+                placeholder='请选择结果'
+                value={record.maintainResult} name='maintainResult' onSelect={(value)=>this.changeTableRow(value,record,'maintainResult')}>
                   <Option value="00">合格</Option>
                   <Option value="01">不合格</Option>
                   <Option value="02">保养后合格</Option>
@@ -680,8 +686,8 @@ class AddTaskForm extends React.Component {
                       }}
                       filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
                     >
-                      {
-                        upKeepPerson.map(item=>(<Option value={`${item.value}-${item.RN}`} key={item.RN}>{`${item.userName?item.userName:''}${item.deptName?`-${item.deptName}`:''}`}</Option>))
+                      {//-${item.RN}
+                        upKeepPerson.map(item=>(<Option value={`${item.value}`} key={item.RN}>{`${item.userName?item.userName:''}${item.deptName?`-${item.deptName}`:''}`}</Option>))
                       }
                     </Select>
                   )}
