@@ -129,7 +129,10 @@ class AccessoryInfo extends Component {
         accessoryName:accessoryNameList.join(';'),
       }
     }else{
-      return null
+      return {
+        tfAccessoryFile:null,
+        accessoryName:null
+      }
     }
   }
   //上传附件之前过滤类型与大小
@@ -187,8 +190,8 @@ class AccessoryInfo extends Component {
         values.assetsRecordGuid = this.props.assetsRecordGuid;
         values.certCode = this.state.certCode;
         const { accessoryName , tfAccessoryFile} = this.formatAccessory(values.tfAccessoryFile);
-        values.accessoryName = accessoryName;     //附件名字字符串
-        values.tfAccessoryFile = tfAccessoryFile; //附件路径字符串
+        values.accessoryName = accessoryName ? accessoryName :"";     //附件名字字符串
+        values.tfAccessoryFile = tfAccessoryFile?tfAccessoryFile:""; //附件路径字符串
         if(record&&record.accessoryId){
           values.accessoryId=record.accessoryId
         }
