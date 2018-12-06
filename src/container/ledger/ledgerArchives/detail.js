@@ -51,7 +51,7 @@ class LedgerArchivesDetail extends Component {
           <Col span={4}>
             {
               AssetInfoData && AssetInfoData.assetsImage ? 
-              <img alt='资产图片' src={`${FTP}${AssetInfoData.assetsImage}`} height='135' style={{width: '100%'}}/>
+              <img alt='资产图片' src={`${FTP}${AssetInfoData.assetsImage}`} height='135' style={{width: '80%'}}/>
               :
               <img alt='资产图片' src={ require('../../../assets/assetimg.jpg')} height='135'/>
             }
