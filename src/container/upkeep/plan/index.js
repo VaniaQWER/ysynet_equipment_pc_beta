@@ -2,7 +2,7 @@
  * @Author: yuwei - 保养计划
  * @Date: 2018-12-01 00:36:51 
  * @Last Modified by: yuwei
- * @Last Modified time: 2018-12-06 09:34:03
+ * @Last Modified time: 2018-12-07 18:33:02
  */
 import React from 'react';
 import { Modal ,message , Row, Col, Input, Layout , Popover, Form, Select,Button } from 'antd';
@@ -55,7 +55,7 @@ class SearchForm extends React.Component{
           <Col span={8}>
             <FormItem {...formItemLayout} label={`计划单号`}>
               {
-                getFieldDecorator(`planNo`,{
+                getFieldDecorator(`maintainPlanNo`,{
                   initialValue: ''
                 })(
                   <Input placeholder='请输入'/>
@@ -103,7 +103,7 @@ class SearchForm extends React.Component{
           </Col>
           <Col span={16} style={{ textAlign: 'right' }}>
             <Button type="primary" htmlType='submit'>查询</Button>
-            <Button style={{marginLeft: 5, marginRight: 25}} onClick={()=> this.handleReset }>重置</Button>
+            <Button style={{marginLeft: 5, marginRight: 25}} onClick={()=> this.handleReset() }>重置</Button>
           </Col>
         </Row>
       </Form>

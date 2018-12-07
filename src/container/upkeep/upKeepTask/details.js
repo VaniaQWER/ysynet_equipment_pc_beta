@@ -23,6 +23,7 @@ class UpKeepDetails extends React.Component{
           <div>
             <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
                 <AddTaskForm  
+                isDetail={true}
                 formInfo={formInfo} 
                 maintainPlanDetailId = {maintainPlanDetailId} 
                 editState = {false}

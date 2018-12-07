@@ -78,13 +78,13 @@ let columns=[
       
   },
   {
-    title: '设备名称',
+    title: '资产名称',
     width:150,
-    dataIndex: 'equipmentName',
+    dataIndex: 'equipmentStandardName',
     render:(text,record) =>
       <Popover  content={
         <div style={{padding:20}}>
-          <p>设备名称：{record.equipmentName}</p>
+          <p>资产名称：{record.equipmentStandardName}</p>
           <p>操作员：{record.modifyUserName}</p>
           <p>保养单状态：{upkeepState[record.fstate].text}</p>
         </div>

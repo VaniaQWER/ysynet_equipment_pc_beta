@@ -462,7 +462,7 @@ class AddTaskForm extends React.Component {
         if(Array.isArray(accList)){
           return accList
         }else if(accList){
-          let list = accList;//.split(';')
+          let list = accList.split(';');
           let retList = []
           list.map((item,index)=>{
             if(item!==""){
@@ -749,7 +749,7 @@ class AddTaskForm extends React.Component {
                         /> 
                       )}
                     </FormItem>
-                    : UnStateText('开始保养时间',moment(data.maintainDate).format('YYYY-MM-DD'))
+                    : UnStateText('开始保养时间',data.maintainDate?moment(data.maintainDate).format('YYYY-MM-DD'):'')
                   }
                 </Col>
                 <Col span={8}>
@@ -769,7 +769,7 @@ class AddTaskForm extends React.Component {
                       /> 
                     )}
                     </FormItem>
-                    : UnStateText('结束保养时间',moment(data.endMaintainDate).format('YYYY-MM-DD'))                  
+                    : UnStateText('结束保养时间',data.endMaintainDate?moment(data.endMaintainDate).format('YYYY-MM-DD'):'')                  
                   }
                 </Col>
                 <Col span={8}>
@@ -784,7 +784,7 @@ class AddTaskForm extends React.Component {
                       /> 
                     )}
                     </FormItem>
-                    : UnStateText('下次保养时间',moment(data.nextMaintainDate).format('YYYY-MM-DD'))
+                    : UnStateText('下次保养时间',data.nextMaintainDate?moment(data.nextMaintainDate).format('YYYY-MM-DD'):'')
                   }
                 </Col>
               </Row>
