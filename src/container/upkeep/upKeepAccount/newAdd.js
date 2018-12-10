@@ -250,8 +250,8 @@ class MaintainPlan extends PureComponent {
       CacheProductTabledata:a,//保存此次操作
       prjSelect:'',
       prjTableData:[],
-      projecrModalCallBack:[]
-      // projecrModalCallBackKeys:[]
+      projecrModalCallBack:[],
+      projecrModalCallBackKeys:[]
     })
 
   }

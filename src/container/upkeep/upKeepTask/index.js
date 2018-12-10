@@ -306,7 +306,7 @@ class UpKeepList extends React.Component{
         {
           title: '操作员',
           width:150,
-          dataIndex: 'modifyUserName',
+          dataIndex: 'executeUsername',
           render(text, record) {
             return <span title={text}>{text}</span>
           }

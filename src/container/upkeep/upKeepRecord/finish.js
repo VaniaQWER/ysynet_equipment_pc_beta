@@ -81,7 +81,7 @@ class UpKeepFinish extends React.Component{
           if(data.status){
             message.success( '操作成功')
             setTimeout(()=>{
-              this.props.history.push('/upkeep/upkeeplist')
+              this.props.history.push('/upkeep/upkeepRecord')
             },1000)
           }else{
             message.error(data.msg)
