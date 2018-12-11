@@ -2,7 +2,7 @@
  * @Author: yuwei - 保养计划
  * @Date: 2018-12-01 00:36:51 
  * @Last Modified by: yuwei
- * @Last Modified time: 2018-12-10 15:41:28
+ * @Last Modified time: 2018-12-11 15:05:54
  */
 import React from 'react';
 import { Modal ,message , Row, Col, Input, Layout , Popover, Form, Select,Button } from 'antd';
@@ -276,12 +276,14 @@ class MaintainPlan extends React.Component{
       let columns=[
         {
           title: '序号',
+          width: 50,
           dataIndex: 'index',
           render: (text,record,index) => `${ index + 1 }`
         },
         {
           title: '保养计划单号',
           // className:'col08',
+          width: 150,
           dataIndex: 'maintainPlanNo',
           render(text, record) {
             return <Link to={{ pathname:`/upkeep/plan/details/${record.maintainPlanDetailId}` }}>{text}</Link>
@@ -290,7 +292,7 @@ class MaintainPlan extends React.Component{
         {
           title: '计划状态',
           dataIndex: 'fstate',
-          // className:'col08',
+          width: 150,
           key: 'fstate',
           filters:upkeepPlanStateSel,
           onFilter: (value, record) => (record && record.fstate===value),
@@ -302,11 +304,11 @@ class MaintainPlan extends React.Component{
         {
           title: '资产编号',
           dataIndex: 'assetsRecord',
-          // className: 'col08'
+          width: 150
         },
         {
           title: '资产名称',
-          // className:'col-1',
+          width: 150,
           dataIndex: 'equipmentStandardName',
           render:(text,record) =>
             <Popover  content={
@@ -319,52 +321,52 @@ class MaintainPlan extends React.Component{
         },
         {
           title: '使用科室',
-          // className:'col08',
+          width: 150,
           dataIndex: 'useDept',
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '保养类型',
-          // className:'col05',
+          width: 150,
           dataIndex: 'maintainType',
           render: text => <span>{upkeepMainTainType[text].text}</span>
         },
         {
           title: '上次保养时间',
-          // className:'col-1',
+          width: 150,
           dataIndex: 'lastMaintainDate',
           sorter: (a, b) => this.sortTime(a,b,'maintainDate'),
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '计划保养时间',
-          // className:'col-1',
+          width: 150,
           dataIndex: 'maintainDate',
           sorter: (a, b) => this.sortTime(a,b,'endMaintainDate'),
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '保养模式',
-          // className:'col08',
+          width: 150,
           dataIndex: 'maintainMode',
           render: text => <span title={text}>{maintainModeType[text].text}</span>
         },
         {
           title: '保养执行科室',
-          // className:'col08',
+          width: 150,
           dataIndex: 'executeDeptName',
           render: text => <span title={text}>{text}</span>
         },
         {
           title: '操作员',
-          // className:'col08',
+          width: 150,
           dataIndex: 'executeUsername',
           render: text => <span title={text}>{text}</span>
         },
         { 
           title: '操作', 
           dataIndex: 'maintainPlanDetailId', 
-          // className:'col08',
+          width: 150,
           key: 'x', 
           render: (text,record) => {
             let { fstate } = record;
