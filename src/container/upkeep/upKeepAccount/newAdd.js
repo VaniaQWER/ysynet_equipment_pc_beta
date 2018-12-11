@@ -116,7 +116,7 @@ class MaintainPlan extends PureComponent {
     PopconfirmVisible:false,//删除的确认窗
     prjSelect:'',//项目搜索条件
     disabled: false,
-    afterSelectValue: '月' // 循环周期后缀默认值
+    afterSelectValue: '01' // 循环周期后缀默认值
   }
  
   componentWillMount = ()=>{
@@ -374,12 +374,13 @@ class MaintainPlan extends PureComponent {
         }else{
           maintainPlan.maintainDate = moment(maintainPlan.Date[0]).format('YYYY-MM-DD');
           maintainPlan.endMaintainDate = moment(maintainPlan.Date[1]).format('YYYY-MM-DD');
+          maintainPlan.tfCycleType = this.state.afterSelectValue;
           delete maintainPlan.Date;//删除Date
         }
         //此处还需要继续做表格的数据添加
         json.maintainPlan = maintainPlan;
         json.assetsRecordGuidList = this.formatTableData(this.state.ProductTabledata);
-
+        console.log(json)
         this.sendEndAjax(json)
       }
     });
@@ -475,8 +476,8 @@ class MaintainPlan extends PureComponent {
         defaultValue={this.state.afterSelectValue} 
         onSelect={value => this.setState({ afterSelectValue: value })}
       >
-        <Option value='月'>月</Option>
-        <Option value='天'>天</Option>
+        <Option value='01'>月</Option>{/* 月 */}
+        <Option value='02'>天</Option>{/* 天 */}
       </Select>
     )
   }

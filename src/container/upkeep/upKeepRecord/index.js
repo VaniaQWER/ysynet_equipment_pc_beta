@@ -40,13 +40,14 @@ let columns=[
     title:'序号',
     dataIndex:"index",
     fixed:'left',
+    width: 50,
     render:(text,record,index)=>`${index+1}`
   },
   { title: '操作', 
   dataIndex: 'maintainGuid', 
   fixed:'left',
   key: 'x', 
-  width:120,
+  width:80,
   render: (text,record) =>
     <span>
       { (record.fstate==="00") ? 
@@ -104,7 +105,7 @@ let columns=[
   },
   {
     title: '本次计划保养时间',
-    width:150,
+    width:170,
     dataIndex: 'maintainPlanDate',
     sorter: (a, b) => sortTime(a,b,'maintainPlanDate'),
     render(text, record) {

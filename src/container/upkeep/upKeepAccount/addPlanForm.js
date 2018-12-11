@@ -122,6 +122,7 @@ export default class AddUpKeepPlanForm extends React.Component {
               data:retData,
               tableData:tabledata 
             });
+            console.log(retData)
             this.props.maintainData(retData);
             if(this.state.editState){this.props.callback(this.getKey(tabledata))}
             //获取第一个板块的信息内容
