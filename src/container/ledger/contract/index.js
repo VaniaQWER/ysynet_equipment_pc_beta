@@ -23,18 +23,18 @@ const Confirm = Modal.confirm;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 8 },
+    sm: { span: 6 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 16 },
+    sm: { span: 18 },
   },
 };
 
 class SearchForm extends Component {
 
   state={
-    display: 'none',
+    display: this.props.isShow?'block':'none',
     manageSelect:[],
   }
   componentDidMount = () => {
@@ -70,11 +70,28 @@ class SearchForm extends Component {
     }
     return false
   }
+  toggle = () => {
+    const { display, expand } = this.state;
+    this.props.changeQueryToggle()
+    this.setState({
+      display: display === 'none' ? 'block' : 'none',
+      expand: !expand
+    })
+  }
+  handleReset = () => {
+    this.props.form.resetFields();
+    this.props.query({});
+    this.props.handleReset();
+  }
+
   render(){
     const { getFieldDecorator } = this.props.form;
+    const { display } = this.state;
+
     return (
-      <Form  onSubmit={this.handleSearch}>
-          <Col span={6}> 
+      <Form  onSubmit={this.handleSearch} style={{padding:'12px 24px 6px'}}>
+        <Row>
+          <Col span={8}> 
             <FormItem
               {...formItemLayout}
               label="管理部门"
@@ -98,7 +115,7 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6}> 
+          <Col span={8}> 
             <FormItem
               {...formItemLayout}
               label="状态"
@@ -115,16 +132,64 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
-          <Col span={6} style={{textAlign:'left',paddingLeft:15}}> 
-            <FormItem style={{display: 'inline-block'}}>
-              {getFieldDecorator('searchName',{
-                initialValue:""
-              })(
-                <Input placeholder="请输入合同名称/编号" style={{width:180,marginRight:8,}}/>
+          <Col span={8}> 
+            <FormItem
+              {...formItemLayout}
+              label="合同编号"
+            >
+              {getFieldDecorator('contractNo')(
+                <Input placeholder='请输入合同编号'/>
               )}
             </FormItem>
-            <Button type="primary" htmlType="submit" style={{marginTop:3}}>搜索</Button>
           </Col>
+        </Row>
+        <Row style={{display: display}}>
+            <Col span={8}> 
+              <FormItem
+                {...formItemLayout}
+                label="合同名称"
+              >
+                {getFieldDecorator('contractName')(
+                  <Input placeholder='请输入合同名称'/>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem
+                {...formItemLayout}
+                label="资产编号"
+              >
+                {getFieldDecorator('assetsRecord')(
+                  <Input  placeholder='请输入资产编号'/>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem
+                {...formItemLayout}
+                label="资产名称"
+              >
+                {getFieldDecorator('equipmentStandardName')(
+                  <Input  placeholder='请输入资产名称'/>
+                )}
+              </FormItem>
+            </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <Button type='primary'>
+              <Icon type="plus" />
+              <Link to={{pathname:`/ledger/contract/add`}} style={{color:'#fff'}}> 新建</Link>
+            </Button>
+          </Col>
+          <Col span={8} offset={8} style={{textAlign:'right',paddingRight:15,paddingTop:5}}>
+              <Button type="primary" htmlType="submit">搜索</Button>
+              <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
+              <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
+                {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
+              </a>
+          </Col>
+        </Row>
       </Form>
     )
   }
@@ -171,6 +236,31 @@ class Contract extends Component {
     const { setSearch, history ,search} = this.props;
     values = Object.assign({...search[history.location.pathname]},{...values})
     setSearch(history.location.pathname, values);
+  }
+  /* 记录展开状态 */
+  changeQueryToggle = () =>{
+    const { search , setSearch , history} = this.props;
+    const pathname = history.location.pathname;
+    let hasToggleSearch = {};
+    if(search[pathname]){
+        hasToggleSearch = {...search[pathname],toggle:!search[pathname].toggle};
+    }else{
+        hasToggleSearch = { toggle: true };
+    }
+    setSearch(pathname,hasToggleSearch)
+  }
+  /* 重置时清空redux */
+  handleReset = ()=>{
+    this.form.props.form.resetFields();
+    const { clearSearch , history ,search} = this.props;
+    const pathname = history.location.pathname;
+    let setToggleSearch = {};
+    if(search[pathname]){
+      setToggleSearch = { toggle:search[pathname].toggle};
+    }else{
+      setToggleSearch = { toggle: false };
+    }
+    clearSearch(pathname,setToggleSearch);
   }
   //删除合同
   deleteRow = (record) =>{
@@ -249,18 +339,24 @@ class Contract extends Component {
          ( <a onClick={()=>this.deleteRow(record)}>删除</a>): null
       },
     ];
+    const { history, search } = this.props;
+    const pathname = history.location.pathname;
+    const isShow = search[pathname] ? search[pathname].toggle:false;
+    if(search[pathname]&&search[pathname].useFstate){
+      columns[2].filteredValue = search[pathname].useFstate;
+    }
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
-        <Row style={{padding:'24px 24px 0'}}>
-            <Col span={6}>
-              <Button type='primary'>
-                <Icon type="plus" />
-                <Link to={{pathname:`/ledger/contract/add`}} style={{color:'#fff'}}> 新建</Link>
-              </Button>
-            </Col>
-            <SearchFormWapper 
-            query={(val)=>this.searchTable(val)} 
-            wrappedComponentRef={(form) => this.form = form}></SearchFormWapper>
+        <SearchFormWapper 
+          query={query=>{this.searchTable(query)}} 
+          handleReset={()=>this.handleReset()}
+          changeQueryToggle={()=>this.changeQueryToggle()}
+          isShow={isShow}
+          // ref='form'
+          wrappedComponentRef={(form) => this.form = form}>
+        </SearchFormWapper>
+        <Row style={{padding:'0px 24px 12px'}}>
+          
         </Row>
         <RemoteTable
             ref='table'

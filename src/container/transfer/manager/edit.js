@@ -5,13 +5,12 @@
  */
 import React, { PureComponent } from 'react';
 import styles from './style.css';
-import { Layout, Card, Form, Row, Col, Input, Upload, Icon, Modal, Affix, Button, message } from 'antd';
+import { Layout, Card, Form, Row, Col, Input, Upload, Icon, Affix, Button, message } from 'antd';
 import tableGrid from '../../../component/tableGrid';
 import request from '../../../utils/request';
 import querystring from 'querystring';
 import transfer from '../../../api/transfer';
-import assets from '../../../api/assets';
-import { cutFtpUrl } from '../../../utils/tools';
+import { FTP } from '../../../api/local';
 
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -42,11 +41,6 @@ const formStyleLayout = {
 class TransferRecordEdit extends PureComponent {
   state = {
     data:[],
-    previewVisible: false,
-    previewImage: '',
-    fileList: [],
-    fileUploadState: true,
-    spAccessoryData: {},
     transferGuid: '',
   };  
   
@@ -65,76 +59,127 @@ class TransferRecordEdit extends PureComponent {
       },
       success: data => {
         const result = data.result.rows[0];
-        const values = this.props.form.getFieldsValue();
-        values.createUserName = result.createUserName;
-        values.outDeptName = result.outDeptName;
-        values.inDeptName = result.inDeptName;
-        values.newAdd = result.newAdd;
-        values.maintainUserName = result.maintainUserName;
-        values.transferDate = result.transferDate;
-        this.setState({data:values});
+        this.setState({data:result});
       }
     }
     request(transfer.getSelectTransferList, options);
   }
-  
   /**--------------------图片上传内容Start-------------------------*/
-  handleCancel = () => this.setState({ previewVisible: false });
-  handlePreview = (file) => {
-    this.setState({
-      previewImage: file.url || file.thumbUrl,
-      previewVisible: true,
-    });
+  formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
+    if(fileList&&fileList.length){//保留上传时返回的 24321/的地址路径
+      let retList = fileList.map(item=>{
+          if(item.response){
+            return item.response.result
+          }else{
+            return item.url.replace(FTP,'')
+          }
+      })
+      return retList.join(';')
+    }else{
+      return null
+    }
   }
-  beforeUpload = (file) => {
-    const type = file.type === 'image/jpeg'|| file.type === 'image/png'|| file.type === 'image/bmp';
+  initAccessoryFormat =( backData , field)=>{
+    if(backData){
+      let accList=backData[field];
+      if(Array.isArray(accList)){
+        return accList
+      }else if(accList){
+        let list = accList.split(';');
+        let retList = []
+        list.map((item,index)=>{
+          if(item!==""){
+            let Item =  {
+                  uid: index,
+                  key:index,
+                  name: `${item.split('/')[item.split('/').length-1]}`,
+                  status: 'done',
+                  url: `${FTP}${item}`,
+                  thumbUrl: `${FTP}${item}`
+            }
+            if(`.${item.split('.')[item.split('.').length-1]}`===".pdf"){
+              Item.thumbUrl=require('../../../assets/fujian.png')
+            }
+            
+            retList.push(Item)
+          }
+          return item 
+        })
+        return retList
+      }else{
+        return []
+      }
+    }else{
+      return []
+    }
+  } 
+  normFile = (e) => {//如 event）转化为控件的值
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  }
+  //上传附件之前过滤类型与大小
+  beforeUploadFilter = (file, fileList,config)=>{
+    //过滤文件大小
+    const isLt2M = file.size   < config.size * 1024 * 1024;
+    let type = false;
+    if (!isLt2M) {
+      message.error(`上传文件不能大于${config.size}MB!`);
+      return false
+    }
+    //过滤文件类型
+    for(let i =0;i<config.type.length;i++){
+       let strArr = file.name.split('.');
+       if (config.type[i] === (`.${strArr[strArr.length-1]}`).toLocaleLowerCase()) {
+         type=true
+         return
+       }else{
+         type=false
+       }
+    }
     if (!type) {
-      message.error('您只能上传image/jpeg、png、bmp!');
+      message.error('您只能上传该附件支持的文件类型');
     }
-    const isLt5M = file.size / 1024 / 1024  < 5;
-    if (!isLt5M) {
-      message.error('图片不能大于 5MB!');
-    }
-    this.setState({
-      fileUploadState: type && isLt5M
-    })
-    return true;
+    
+    return type && isLt2M;
   }
-  handleChange = ({ fileList }) => {
-    this.setState({ fileList });
-    if (this.state.fileUploadState) {
-      let options={spAccessoryList: fileList};
-      this.setState({spAccessoryData: Object.assign(this.state.spAccessoryData, options)});
-    } else{
-      this.setState({
-        spAccessoryData: Object.assign(this.state.spAccessoryData,{spAccessoryList: fileList.slice(0, [fileList.length-1])})
+  handleChangeUpload = (fileListObj) => {
+    let { file , fileList } = fileListObj;  
+    if(file.status === 'done') {
+      file.response && !file.response.status && message.error('上传失败，请重新上传');
+      fileList.filter((file) => file.response&&file.response.status);
+      fileList.map((file) => {   //修改预览地址
+        if (file.response) {
+          let url = file.response.result.split('/');
+          url.shift();
+          url = url.join('/');
+          file.url = FTP.YSYPATH + '/' + url;
+        }
+        if(file.type==="application/pdf"){
+          file.thumbUrl = require('../../../assets/fujian.png')
+        }
+        return file;
       });
     }
-  };
+  }
   /**--------------------图片上传内容End-------------------------*/
   //提交数据
   handleSubmit = (fstate) =>{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-          values.fstate = fstate;
-          values.transferGuid = this.state.transferGuid;
-          //更改附件格式
-          let thumburl = []
-          let fileString ='';
-          if(values.spAccessoryList){
-            for(let i =0;i<values.spAccessoryList.fileList.length;i++){
-              let file = values.spAccessoryList.fileList[i] ;
-              if(file.thumbUrl){
-                thumburl.push(file.thumbUrl)
-              }else{
-                fileString+= (cutFtpUrl(file.url)+';')
-                thumburl.push('')
-              }
-            }
-          }	
-          values.spAccessoryList = thumburl;
-          values.spAccessory = fileString;
-          this.sendAjax(values)
+          // values.fstate = fstate;
+          // values.transferGuid = this.state.transferGuid;
+          // values.spAccessory = this.formatAccessory(values.spAccessory);
+          // debugger
+          let json ={
+            transferGuid  :this.state.transferGuid,
+            fstate : fstate,
+            transferOpinion: values.transferOpinion,
+            spAccessory:this.formatAccessory(values.spAccessory)
+          }
+          console.log(JSON.stringify(json))
+          this.sendAjax(json)
       }
     });
   }
@@ -194,7 +239,16 @@ class TransferRecordEdit extends PureComponent {
         <div className="ant-upload-text">Upload</div>
       </div>
     );
-    const { previewVisible, previewImage, data, fileList } = this.state;
+    const commonUploadProps ={
+      action:transfer.uploadFile,
+      listType:"picture-card",
+      withCredentials: true,
+      name:"file",
+      showUploadList:{
+        showRemoveIcon:false
+      }
+    }
+    const { data } = this.state;
     const { getFieldDecorator } = this.props.form;
     return(
       <Content>
@@ -252,6 +306,27 @@ class TransferRecordEdit extends PureComponent {
                 </FormItem>
               </Col>
             </Row>
+            <Row>
+                <FormItem label={`转科原因`} {...formStyleLayout}>
+                  {getFieldDecorator('transferCause', {
+                    initialValue: data.transferCause?data.transferCause.substr(0,11):''
+                  })(
+                    <TextArea  style={{width: 608}} disabled={true}/>
+                  )}
+                </FormItem>
+                <FormItem label={`申请附件`} {...formStyleLayout}>
+                  {getFieldDecorator('tfAccessory', {
+                    initialValue:this.initAccessoryFormat(data,'tfAccessory')||[],
+                    valuePropName: 'fileList',
+                    getValueFromEvent:this.normFile
+                  })(
+                    <Upload
+                      {...commonUploadProps}
+                    >
+                    </Upload>
+                  )}
+                </FormItem>
+            </Row>
           </Card>
           {/* 资产信息部分 */}
           <Card title="资产信息" className={`${styles.defineForm}  min_card`}  bordered={false} style={{marginTop: 4}} >
@@ -275,24 +350,25 @@ class TransferRecordEdit extends PureComponent {
               </Col>
             </Row>
             <Row>
-              <Col className="clearfix">
-                <FormItem label="审批附件" {...formStyleLayout}>
-                {getFieldDecorator('spAccessoryList')(
-                  <Upload name="spAccessoryList"
-                    action={assets.picUploadUrl}
-                    listType="picture-card"
-                    onPreview={this.handlePreview}
-                    onChange={this.handleChange}
-                    beforeUpload={this.beforeUpload}
-                  >
-                    {fileList.length >= 3 ? null : uploadButton}
-                  </Upload>
-                )}
+                <FormItem label={`审批附件`} {...formStyleLayout}>
+                  {getFieldDecorator('spAccessory', {
+                    valuePropName: 'fileList',
+                    getValueFromEvent:this.normFile
+                  })(
+                    <Upload
+                      {...commonUploadProps}
+                      showUploadList={{
+                        showRemoveIcon:true
+                      }}
+                      beforeUpload={(file, fileList)=>this.beforeUploadFilter(file, fileList,{type:['.jpg','.jpeg','.png'],size:2})}
+                      onChange={(info)=>this.handleChangeUpload(info, 'spAccessory')}
+                    >
+                      { this.props.form.getFieldValue('spAccessory')&&
+                        this.props.form.getFieldValue('spAccessory').length
+                        >= 3 ? null : uploadButton}
+                    </Upload>
+                  )}
                 </FormItem>
-                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                  <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                </Modal>
-              </Col>
             </Row>
           </Card>
         </Form>

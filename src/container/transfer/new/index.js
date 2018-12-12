@@ -4,13 +4,14 @@
  * @since 2018-04-08
  */
 import React, { PureComponent } from 'react';
-import { Layout, Card, Button, Affix, Form, Col, Row, Input, Select, DatePicker, Table, Modal, message } from 'antd';
+import { Layout, Card, Button, Icon , Affix, Form, Col, Row, Input, Select, DatePicker, Table, Modal, message, Upload } from 'antd';
 import { productTypeData } from '../../../constants'
 import tableGrid from '../../../component/tableGrid';
 import querystring from 'querystring';
 import request from '../../../utils/request';
 import transfer from '../../../api/transfer';
 import assets from '../../../api/assets';
+import { FTP } from '../../../api/local';
 import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -260,6 +261,20 @@ class NewTransfer extends PureComponent {
       ProductModalCallBack: [], //资产弹框选中保存数据的返回的数据
     });
   }
+  formatAccessory=(fileList)=>{//obj  此处直接接收的为fileList的值
+    if(fileList&&fileList.length){//保留上传时返回的 24321/的地址路径
+      let retList = fileList.map(item=>{
+          if(item.response){
+            return item.response.result
+          }else{
+            return item.url.replace(FTP,'')
+          }
+      })
+      return retList.join(';')
+    }else{
+      return null
+    }
+  }
   sendEndAjax =(json)=>{
     const values = this.props.form.getFieldsValue();
     const data = {
@@ -284,10 +299,12 @@ class NewTransfer extends PureComponent {
     postData.newAdd = values.newAdd;
     postData.maintainUserid = values.maintainUserid;
     postData.transferCause = values.transferCause;
+    postData.tfAccessory = this.formatAccessory(values.tfAccessory);
     if (this.state.maintainUsername) {
       postData.maintainUsername = this.state.maintainUsername.split('-')[0];
     }
     postData.transferDate = values.transferDate.format('YYYY-MM-DD');
+    console.log(JSON.stringify(postData),'postData')
     let options = {
       body:JSON.stringify(postData),
       headers: {
@@ -396,9 +413,73 @@ class NewTransfer extends PureComponent {
 
   }
 
+  normFile = (e) => {//如 event）转化为控件的值
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  }
+  //上传附件之前过滤类型与大小
+  beforeUploadFilter = (file, fileList,config)=>{
+    //过滤文件大小
+    const isLt2M = file.size   < config.size * 1024 * 1024;
+    let type = false;
+    if (!isLt2M) {
+      message.error(`上传文件不能大于${config.size}MB!`);
+      return false
+    }
+    //过滤文件类型
+    for(let i =0;i<config.type.length;i++){
+       let strArr = file.name.split('.');
+       if (config.type[i] === (`.${strArr[strArr.length-1]}`).toLocaleLowerCase()) {
+         type=true
+         return
+       }else{
+         type=false
+       }
+    }
+    if (!type) {
+      message.error('您只能上传该附件支持的文件类型');
+    }
+    
+    return type && isLt2M;
+  }
+  handleChangeUpload = (fileListObj) => {
+    let { file , fileList } = fileListObj;  
+    if(file.status === 'done') {
+      file.response && !file.response.status && message.error('上传失败，请重新上传');
+      fileList.filter((file) => file.response&&file.response.status);
+      fileList.map((file) => {   //修改预览地址
+        if (file.response) {
+          let url = file.response.result.split('/');
+          url.shift();
+          url = url.join('/');
+          file.url = FTP.YSYPATH + '/' + url;
+        }
+        if(file.type==="application/pdf"){
+          file.thumbUrl = require('../../../assets/fujian.png')
+        }
+        return file;
+      });
+    }
+  }
+
   render() {
     const { productVisible, ProductType, mobile, ProductModalCallBackKeys, ProductTabledata, data } = this.state;
     const { getFieldDecorator } = this.props.form;
+    const uploadButton = (
+      <div>
+        <Icon type="plus" />
+        <div className="ant-upload-text">Upload</div>
+      </div>
+    );
+    const commonUploadProps ={
+      action:transfer.uploadFile,
+      listType:"picture-card",
+      withCredentials: true,
+      name:"file",
+      // data:{tfAccessoryGuid:'666'},
+    }
     // 资产列表渲染
     const columns = [
       {
@@ -552,6 +633,27 @@ class NewTransfer extends PureComponent {
                     rules: [{max: 250}]
                   })(
                     <TextArea  style={{width: 608}} placeholder={`请输入转科原因`} maxLength="250" />
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={16}>
+                <FormItem label={`申请附件`} {...formStyleLayout}
+                  extra='上传申请附件（最大2M，推荐分辨率1200x750，支持扩展名：.jpg、jpeg、.png，最多1张）'>
+                  {getFieldDecorator('tfAccessory', {
+                    valuePropName: 'fileList',
+                    getValueFromEvent:this.normFile
+                  })(
+                    <Upload
+                      {...commonUploadProps}
+                      beforeUpload={(file, fileList)=>this.beforeUploadFilter(file, fileList,{type:['.jpg','.jpeg','.png'],size:2})}
+                      onChange={(info)=>this.handleChangeUpload(info, 'tfAccessory')}
+                    >
+                      { this.props.form.getFieldValue('tfAccessory')&&
+                        this.props.form.getFieldValue('tfAccessory').length
+                        >= 1 ? null : uploadButton}
+                    </Upload>
                   )}
                 </FormItem>
               </Col>

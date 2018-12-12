@@ -2,7 +2,7 @@
  * 维修记录列表
  */ 
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Form , Layout , Button , DatePicker ,  } from 'antd';
+import { Row,Col,Input,Icon, Form , Layout , Button , DatePicker , message, Select } from 'antd';
 import moment from 'moment';
 import { search } from '../../../service';
 import TableGrid from '../../../component/tableGrid';
@@ -11,7 +11,10 @@ import assets from '../../../api/assets';
 import { connect } from 'react-redux';
 import { repairCommonDataSource } from '../../../constants'
 import { repairRecord } from '../../../service';
+import querystring from 'querystring';
+import request from '../../../utils/request';
 const { Content } = Layout;
+const { Option } = Select;
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const { RemoteTable } = TableGrid;
@@ -29,6 +32,24 @@ const formItemLayout = {
 class SearchFormWrapper extends React.Component {
   state = {
     display: this.props.isShow?'block':'none',
+    deptSelect:[]
+  }
+  componentDidMount(){
+    let options = {
+      body:querystring.stringify({deptType:"00"}),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({deptSelect:data.result.rows || data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    }
+    request(assets.selectUseDeptList, options)
   }
   toggle = () => {
     const { display, expand } = this.state;
@@ -60,7 +81,7 @@ class SearchFormWrapper extends React.Component {
   }
 
   render() {
-    const { display } = this.state;
+    const { display , deptSelect } = this.state;
     const { getFieldDecorator } = this.props.form;
     return (
       // 转科记录查询部分
@@ -131,6 +152,27 @@ class SearchFormWrapper extends React.Component {
                   )}
                 </FormItem>
               </Col>
+            </FormItem>
+          </Col>
+          <Col span={6}  style={{display: display}}> 
+            <FormItem
+              label="报修科室"
+              {...formItemLayout}
+            >{/* 机构的使用科室 */}
+              {getFieldDecorator('useDeptGuid')(
+                <Select
+                  showSearch
+                  optionFilterProp="children"
+                  placeholder="请选择报修科室"
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {
+                    deptSelect.map((item,index)=>(
+                      <Option key={index} value={item.value}>{item.text}</Option>
+                    ))
+                  }
+                </Select>
+              )}
             </FormItem>
           </Col>
         </Row>

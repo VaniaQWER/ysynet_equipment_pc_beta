@@ -7,7 +7,7 @@ import { search } from '../../../service';
 import { Link } from 'react-router-dom'
 import assets from '../../../api/assets';
 import styles from './style.css';
-import { ledgerData,productTypeData,useFstateSel } from '../../../constants';
+import { ledgerData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
 import queryString from 'querystring';
 import moment from 'moment';
@@ -55,12 +55,12 @@ let columns = [
     dataIndex: 'fmodel',
     width: 100
   },
-  {
-    title: '资产分类',
-    dataIndex: 'productType',
-    width: 100,
-    render: text => text ?  productTypeData[text].text  : null
-  },
+  // {
+  //   title: '资产分类',
+  //   dataIndex: 'productType',
+  //   width: 100,
+  //   render: text => text ?  productTypeData[text].text  : null
+  // },
   {
     title: '保管员',
     dataIndex: 'custodian',
@@ -74,8 +74,20 @@ let columns = [
   {
     title: '管理科室',
     dataIndex: 'bDept',
-    width: 100
-  }
+    width: 150
+  },
+  {
+    title: '购买金额',
+    dataIndex: 'buyPrice',
+    width: 150,
+    render:(text)=>Number(text)?Number(text).toFixed(2):''
+  },
+  {
+    title: '购置日期',
+    dataIndex: 'buyDate',
+    width: 150,
+    render:(text)=>text?text.substr(0,11):''
+  },
 ];
 const messageInfo = "添加大量的信息，建议使用导入功能。导入前请先下载Excel格式模版文件。";
 const formItemLayout = {
@@ -140,11 +152,10 @@ class SearchForm extends Component {
   }
 
   toggle = () => {
-    const { display, expand } = this.state;
+    const { display } = this.state;
     this.props.changeQueryToggle()
     this.setState({
       display: display === 'none' ? 'block' : 'none',
-      expand: !expand
     })
   }
 
@@ -647,12 +658,13 @@ class LedgerArchivesList extends Component {
       importModalType:"01",//导入模态框选择的导入类型
       progressPercent:0,
       importDataSource:[],//导入数据的table数据
-      query:{...search[pathname]},//"deptType":"MANAGEMENT"
+      query:{...search[pathname],"deptType":"MANAGEMENT"},//"deptType":"MANAGEMENT"
       messageError:"",
       selectedRowKeys:[],
       tableRecords:0,
       codeModal:false,
       codeData:[],//生成编码-数据源
+      countPrice:''
     }
   }
   /* 回显返回条件 */
@@ -670,14 +682,35 @@ class LedgerArchivesList extends Component {
       });
       this.form.props.form.setFieldsValue(value)
     }
+    this.getCountPrice()
   }
+
+  getCountPrice = (values) => {
+     request(assets.selectAssetsBuyPriceSum,{
+      body:queryString.stringify(values||{}),
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({countPrice:data.result})           
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+
   /* 查询时向redux中插入查询参数 */
   query = (val) => {
     const { setSearch, history ,search } = this.props;
     const pathname = history.location.pathname;
-    let values = Object.assign({...search[pathname]},{...val})
+    let values = Object.assign({...search[pathname]},{...val},{deptType:'MANAGEMENT'})
     setSearch(pathname, values);
+    val.deptType = 'MANAGEMENT';
     this.refs.table.fetch(val)
+    this.getCountPrice(val)
   }
   //打印所有
   printAll = () =>{
@@ -717,6 +750,7 @@ class LedgerArchivesList extends Component {
   //导出资产
   exportAssets = () => {
     let json = this.form.props.form.getFieldsValue();
+    json.deptType = 'MANAGEMENT';
     window.open(assets.exportApplyList+'?'+queryString.stringify(json))
   }
   //保存
@@ -811,7 +845,7 @@ class LedgerArchivesList extends Component {
   }
 
   render() {
-    const { selectedRowKeys , importDataSource } = this.state;
+    const { selectedRowKeys , importDataSource , countPrice } = this.state;
     const { history, search } = this.props;
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
@@ -859,7 +893,7 @@ class LedgerArchivesList extends Component {
             query={this.state.query}
             url={assets.selectAssetsList}
             // isList={true}
-            scroll={{x: '100%', y : document.body.clientHeight}}
+            scroll={{x: '140%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'assetsRecordGuid'}
@@ -874,6 +908,9 @@ class LedgerArchivesList extends Component {
             callback={(data)=>{
               this.setState({tableRecords:data.result.records})
             }}
+            footer={()=>(
+              <span style={{color:'red'}}>当前合计金额（不含报废）：{countPrice?Number(countPrice).toFixed(2):'0.00'}</span>
+            )}
           />
           <Modal
             title='导入数据'

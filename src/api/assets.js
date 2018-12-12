@@ -9,6 +9,7 @@ export default {
  selectFOrgList:`${_local}/StaticDataController/selectFOrgList`,//获取供应商列表
  selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
  selectAssetsList: `${_local}/assetsRecordController/selectAssetsList`, //查询资产列表
+ selectAssetsBuyPriceSum:`${_local}/assetsRecordController/selectAssetsBuyPriceSum`,//资产总金额
  selectAssetsIsNormalUseList:`${_local}/assetsRecordController/selectAssetsIsNormalUseList`,//查询资产列表 - 保养台账
  selectAssetsRecordDetail: `${_local}/assetsRecordController/selectAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 
  selectRrpairAssetsRecordDetail: `${_local}/rrpairOrderController/selectRrpairAssetsRecordDetail`, // 根据资产档案GUID查询资产详情 

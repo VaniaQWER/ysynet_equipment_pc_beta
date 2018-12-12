@@ -141,7 +141,7 @@ class AdvancedSearchForm extends React.Component {
 							<FormItem label={`使用科室`} {...formItemLayout}>
 								{getFieldDecorator(`useDeptGuid`)(
 									<Select
-										placeholder="请输入资产分类"
+										placeholder="请选择使用科室"
 										name='syks'
 										mode="combobox"
 										defaultActiveFirstOption={false}
@@ -177,7 +177,8 @@ class WithDrawDetails extends Component {
 		queryJson:{},//搜索栏目关键字
 		handleRecord:{},
 		editState:true,
-		data:{}
+    data:{},
+    exportData:null,//已搜索条件
 	}
 	componentWillMount = ()=>{
 		this.setState({
@@ -197,9 +198,15 @@ class WithDrawDetails extends Component {
 	queryTable = (queryJson)=>{
 		this.setState({queryJson})
 		queryJson.equipmentDepreciationGuid =this.state.detailsId
-		this.refs.table.fetch(queryJson)
+    this.refs.table.fetch(queryJson)
+    this.setState({exportData:queryJson})
 	}
 
+  exportTable = () => {
+    let { exportData } = this.state;
+    let val = Object.assign({equipmentDepreciationGuid:this.props.match.params.id},exportData)
+    window.open(devalue.exportAssetsCapitalStructureList+'?'+querystring.stringify(val))
+  }
 
   render() {
 		const columns =[
@@ -313,11 +320,13 @@ class WithDrawDetails extends Component {
 				render:(text)=><span title={text}>{text}</span>
 			}
 		]
-
     return (
 			<div style={{padding:24}}>
-				<Card title='资产信息'>
-					<WrappedAdvancedSearchForm formInfo ='' callback={(queryJson)=>{this.queryTable(queryJson)}}></WrappedAdvancedSearchForm>
+        <Card title='资产信息'
+        extra={<Button type='primary' onClick={this.exportTable}>导出</Button>}>
+          <WrappedAdvancedSearchForm 
+            ref='form'
+            callback={(queryJson)=>{this.queryTable(queryJson)}}></WrappedAdvancedSearchForm>
 					
 					<RemoteTable
 						ref='table'

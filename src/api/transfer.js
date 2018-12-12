@@ -31,5 +31,6 @@ const transfer = {
   getSelectTransferDetailList: `${_local}/transferController/selectTransferDetailList`,//查询转科单明细列表
   printTransfer:`${_local}/transferController/printTransfer`,//打印转科单明细
   getUpdateTransfer: `${_local}/transferController/updateTransfer`,//上传照片
+  uploadFile :`${_local}/StaticDataController/uploadFile`,//上传申请附件
 }
 export default transfer;
