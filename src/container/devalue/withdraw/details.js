@@ -323,7 +323,7 @@ class WithDrawDetails extends Component {
     return (
 			<div style={{padding:24}}>
         <Card title='资产信息'
-        extra={<Button type='primary' onClick={this.exportTable}>导出</Button>}>
+          extra={<Button type='primary' onClick={this.exportTable}>导出</Button>}>
           <WrappedAdvancedSearchForm 
             ref='form'
             callback={(queryJson)=>{this.queryTable(queryJson)}}></WrappedAdvancedSearchForm>

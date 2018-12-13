@@ -40,7 +40,7 @@ let columns=[
     title:'序号',
     fixed:'left',
     dataIndex:'index',
-    width:40,
+    width:80,
     render:(text,record,index)=>`${index+1}`
   },
   { title: '操作', 
@@ -144,7 +144,7 @@ let columns=[
     dataIndex: 'nextMaintainDate',
     sorter: (a, b) => (sortTime(a,b,'nextMaintainDate')),
     render(text, record) {
-      return <span title={text}>{text}</span>
+      return <span title={text}>{text?text.substr(0,11):''}</span>
     }
   },
   {
@@ -406,7 +406,7 @@ class UpKeepList extends React.Component{
                   onChange={this.changeQueryTable}  
                   query={this.state.query}
                   url={assets.selectMaintainOrderList}
-                  scroll={{x: '190%', y : document.body.clientHeight - 110 }}
+                  scroll={{x: '150%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainGuid'}
                   showHeader={true}

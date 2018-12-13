@@ -245,7 +245,7 @@ class UpKeepList extends React.Component{
       let columns=[
         {
           title:'序号',
-          width:30,
+          width:60,
           dataIndex:'index',
           render:(text,record,index)=>`${index+1}`
         },
@@ -343,7 +343,7 @@ class UpKeepList extends React.Component{
                   onChange={this.changeQueryTable}  
                   query={this.state.query}
                   url={upkeep.planList}
-                  scroll={{x: '120%', y : document.body.clientHeight - 110 }}
+                  scroll={{x: '100%', y : document.body.clientHeight - 110 }}
                   columns={columns}
                   rowKey={'maintainPlanDetailId'}
                   showHeader={true}
