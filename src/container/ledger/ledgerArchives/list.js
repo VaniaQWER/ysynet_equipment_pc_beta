@@ -104,7 +104,7 @@ const formItemLayout = {
 class SearchForm extends Component {
 
   state={
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
     manageSelect:[],
     outDeptOptions: []
   }
@@ -119,16 +119,16 @@ class SearchForm extends Component {
   }
 
   getManageSelect = () => {
-    request(assets.selectUseDeptList,{
-      body:queryString.stringify({deptType:"01"}),
+    request(assets.queryManagerDeptListByUserId,{
+      body:queryString.stringify({}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
-                this.setState({manageSelect:data.result})
+          this.setState({manageSelect:data.result})
         }else{
-                message.error(data.msg)
+          message.error(data.msg)
         }
       },
       error: err => {console.log(err)}
@@ -152,10 +152,11 @@ class SearchForm extends Component {
   }
 
   toggle = () => {
-    const { display } = this.state;
+    const { display , expand} = this.state;
     this.props.changeQueryToggle()
     this.setState({
       display: display === 'none' ? 'block' : 'none',
+      expand: !expand
     })
   }
 
@@ -178,8 +179,8 @@ class SearchForm extends Component {
 
   //管理科室
   fetchSelect = (input)=>{
-    request(assets.selectUseDeptList,{
-      body:queryString.stringify({deptType:"01",deptName:input}),
+    request(assets.queryManagerDeptListByUserId,{
+      body:queryString.stringify({}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -198,13 +199,13 @@ class SearchForm extends Component {
     request(assets.selectUseDeptList,{
       body:queryString.stringify({deptType:"00",deptName:input}),
       headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
-                this.setState({outDeptOptions:data.result})
+          this.setState({outDeptOptions:data.result})
         }else{
-                message.error(data.msg)
+          message.error(data.msg)
         }
       },
       error: err => {console.log(err)}

@@ -225,8 +225,7 @@ class TransferManagerDetails extends PureComponent {
                     <TextArea  style={{width: 608}} disabled={true}/>
                   )}
                 </FormItem>
-                <FormItem label={`申请附件`} {...formStyleLayout}
-                  extra='上传申请附件（最大2M，推荐分辨率1200x750，支持扩展名：.jpg、jpeg、.png，最多1张）'>
+                <FormItem label={`申请附件`} {...formStyleLayout}>
                   {getFieldDecorator('tfAccessory', {
                     initialValue:this.initAccessoryFormat(data,'tfAccessory')||[],
                     valuePropName: 'fileList',

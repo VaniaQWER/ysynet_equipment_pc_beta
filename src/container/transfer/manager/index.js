@@ -91,7 +91,7 @@ function fetchIntoDeptname(deptName, callback) {
 }
 class SearchFormWrapper extends PureComponent {
   state = {
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
     deptNameData: [],// 转出科室保存数据
     IntodeptNameData: [],// 转入科室保存数据
     deptName: '',// 转入转出科室

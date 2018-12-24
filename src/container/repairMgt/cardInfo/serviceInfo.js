@@ -2,10 +2,10 @@
  * @file 维修信息 Card
  */
 import React, { PureComponent } from 'react';
-import { Row, Col, Radio, Form, Select, DatePicker, Input } from 'antd';
+import { Row, Col, Radio, Form, Select, Input } from 'antd';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { selectOption } from '../../../constants';
+
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -24,6 +24,8 @@ const gridStyle = {
 class InsideRepairForm extends PureComponent {
   
   handleRepairResultChange = (val) => {
+    const { callBack } = this.props;
+    if(!callBack) return ;
     if (val === '02') {
       this.props.callBack("90"); //关闭按钮
     } else {
@@ -33,8 +35,7 @@ class InsideRepairForm extends PureComponent {
   }
   render() {
     const { getFieldDecorator } = this.props.form;
-    //const { isClosed } = this.state;
-    const { isEdit, data } = this.props;
+    const { isEdit, data , showOutSide} = this.props;
     const Comp = data.repairResult === '02' ? [
       <Col {...gridStyle.label} key={1}>关闭原因：</Col>,
       <Col {...gridStyle.content} key={2}>
@@ -100,6 +101,26 @@ class InsideRepairForm extends PureComponent {
     ];
     return (
       <Form>
+         {
+          showOutSide?
+          (
+            <Row>
+              <Col {...gridStyle.label}>维修厂家：</Col>
+              <Col {...gridStyle.content}>
+              {
+                  isEdit ? 
+                    getFieldDecorator('outOrg',{
+                      initialValue: isEdit ? data.outOrg : null
+                    })(
+                      <Input placeholder='请输入维修厂家'/>
+                    )
+                    :
+                    <span> { data.outOrg || ''} </span>
+                }
+              </Col>
+            </Row>
+          ):null
+        } 
         <Row type='flex'>
           <Col {...gridStyle.label}>维修结果：</Col>
           <Col {...gridStyle.content}>
@@ -189,7 +210,7 @@ class InsideRepairForm extends PureComponent {
 }
 
 // 外修
-class OutsideRepairForm extends PureComponent {
+/* class OutsideRepairForm extends PureComponent {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { isEdit, data } = this.props;
@@ -248,7 +269,7 @@ class OutsideRepairForm extends PureComponent {
       </Form> 
     )
   }
-}
+} */
 class ServiceInfo extends PureComponent {
   static defaultProps = {
     isEdit: false,
@@ -272,8 +293,10 @@ class ServiceInfo extends PureComponent {
   }
   render() {
     const { rrpairType } = this.state;
-    const { isEdit, data ,callBack, repairInput } = this.props;
-    const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
+    const { isEdit , data , callBack } = this.props;//repairInput
+    // const Comp = rrpairType === "00" ? Form.create()(InsideRepairForm) : Form.create()(OutsideRepairForm)
+    const Comp = Form.create()(InsideRepairForm) ; 
+
     return (
       <div>
         <Row type="flex">
@@ -290,11 +313,11 @@ class ServiceInfo extends PureComponent {
               //this.props.setRrpairType(e.target.value);
             }}>
               <RadioButton value="00" disabled={!isEdit && rrpairType !== '00'}>内修</RadioButton>
-              <RadioButton value="01" disabled={ repairInput ? repairInput: !isEdit && rrpairType !== '01'}>外修</RadioButton>
+              <RadioButton value="01" disabled={ !isEdit && rrpairType !== '01' }>外修</RadioButton>{/* repairInput ? repairInput: !isEdit && rrpairType !== '01' */}
             </RadioGroup>
           </Col>
         </Row>
-        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data} callBack={callBack}/>
+        <Comp wrappedComponentRef={(inst) => this.wrapperForm = inst} isEdit={isEdit} data={data} showOutSide={rrpairType === "01"} callBack={callBack}/>
       </div>  
     )
   }

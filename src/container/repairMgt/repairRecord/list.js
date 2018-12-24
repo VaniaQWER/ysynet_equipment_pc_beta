@@ -31,7 +31,7 @@ const formItemLayout = {
 
 class SearchFormWrapper extends React.Component {
   state = {
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
     deptSelect:[]
   }
   componentDidMount(){
@@ -289,7 +289,19 @@ class RepairRecordList extends Component {
         title: '维修时间',
         dataIndex: 'callTime',
         width: 130
-      }
+      },
+      {
+        title: '维修厂家',
+        dataIndex: 'outOrgName',
+        width: 100
+      },
+      {
+        title: '维修费用',
+        dataIndex: 'actualPrice',
+        width: 100,
+        render:(text)=>Number(text)?Number(text).toFixed(2):''
+      },
+      
     ];
     // const defaultParams = repairRecord.searchCondition ? repairRecord.searchCondition.params : null;
     if(search[pathname]&&search[pathname].orderFstate&&search[pathname].orderFstate.length){

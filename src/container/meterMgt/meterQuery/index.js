@@ -30,7 +30,7 @@ const formItemLayout = {
 
 class SearchFormWrapper extends Component {
   state = {
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
     useDeptData: [],   //使用科室保存数据
     mgtDeptData: [],  //管理科室保存数据
   }

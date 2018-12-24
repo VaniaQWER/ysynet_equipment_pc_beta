@@ -97,7 +97,7 @@ const formItemLayout = {
 
 class SearchFormWrapper extends Component {
   state = {
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
     manageDeptOptions: [],// 管理科室保存数据
     useDeptOptions: [],// 使用科室保存数据
   }

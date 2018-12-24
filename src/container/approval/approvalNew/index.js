@@ -33,7 +33,7 @@ const formItemLayout = {
 class SearchForm extends Component {
 
   state={
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
     manageSelect:[],
     outDeptOptions: []
   }

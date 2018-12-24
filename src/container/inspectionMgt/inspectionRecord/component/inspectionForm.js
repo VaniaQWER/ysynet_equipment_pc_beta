@@ -29,7 +29,7 @@ const formItemLayout = {
 
 class InspectionForm extends Component {
     state = {
-        display: this.props.isShow?'block':'none',
+        display: this.props.isShow?'block':'none',expand:this.props.isShow,
         userDeptData: []
     }
     componentDidMount() {

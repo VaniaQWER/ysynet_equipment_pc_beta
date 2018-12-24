@@ -33,7 +33,7 @@ const formItemLayout = {
 
 class SearchFormWrapper extends React.Component {
   state = {
-    display: this.props.isShow?'block':'none',
+    display: this.props.isShow?'block':'none',expand:this.props.isShow,
   }
   toggle = () => {
     const { display, expand } = this.state;

@@ -47,11 +47,14 @@ class RepairInput extends Component {
         return message.warning("请先搜索正确的资产信息,谢谢!")
       }
       //配件信息提交参数
-      const selectPartsData = this.refs.partsInfo.state.dataSource;      
+      console.log(this.refs.partsInfo)
       const assetsExtendGuids = [];
-      selectPartsData.map((item) => {
-        return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
-      })
+      if(this.refs.partsInfo){
+        const selectPartsData = this.refs.partsInfo.state.dataSource;  
+        selectPartsData.map((item) => {
+          return assetsExtendGuids.push({assetsExtendGuid : item.assetsExtendGuid,acceNum:item.extendSum})
+        })
+      }
       if(!this.assetsInfo.state.data){
         message.error('请填写正确的资产信息！')
         return false
@@ -130,7 +133,8 @@ class RepairInput extends Component {
             <RepairInfo isEdit={true} assetsInfo={this.state.assetsInfo} wrappedComponentRef={(inst) => this.repairInfo = inst}/>
           </Card>
           <Card title="维修信息" style={{marginTop: 16}} hoverable={false} key={5}>
-            <ServiceInfo isEdit={true} ref='serviceInfo' repairInput={true} callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})}/>
+            <ServiceInfo isEdit={true} ref='serviceInfo' cb_rrpairType={(data)=>console.log('RepairInput',data)} repairInput={true} />
+            {/* callBack={(orderFstate)=>this.setState({ orderFstate : orderFstate})} */}
           </Card>
           <div style={{ textAlign:'center',marginTop: 12 }}>
             <Button type='primary' onClick={this.onSubmit} loading={this.state.loading}>下一步</Button>

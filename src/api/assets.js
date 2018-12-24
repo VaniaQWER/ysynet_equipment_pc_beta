@@ -7,7 +7,8 @@ export default {
  deleteFile: `${_local}/checkInfoController/deleteFile`, //文件删除
  YSYPATH:`${_local}/ftp`,//项目地址
  selectFOrgList:`${_local}/StaticDataController/selectFOrgList`,//获取供应商列表
- selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
+ selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框 - 所有机构
+ queryManagerDeptListByUserId:`${_local}/dept/queryManagerDeptListByUserId`,//当前用户管理科室
  selectAssetsList: `${_local}/assetsRecordController/selectAssetsList`, //查询资产列表
  selectAssetsBuyPriceSum:`${_local}/assetsRecordController/selectAssetsBuyPriceSum`,//资产总金额
  selectAssetsIsNormalUseList:`${_local}/assetsRecordController/selectAssetsIsNormalUseList`,//查询资产列表 - 保养台账
