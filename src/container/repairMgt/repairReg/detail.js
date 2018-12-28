@@ -20,7 +20,7 @@ class RepairListDetail extends PureComponent {
 
   render() {
     return (
-      <AllDetail id={this.state.rrpairOrderGuid}/>
+      <AllDetail id={this.state.rrpairOrderGuid} showPrint={'repairRegListDetail'}/>
     )
   }
 }

@@ -48,7 +48,7 @@ class AllDetail extends PureComponent {
     console.log(this.state.BaseInfoInfoData.rrpairOrderGuid)
     const state = this.state.BaseInfoInfoData.orderFstate;
     const { showPrint } = this.state;
-    const stateToggle = showPrint && (state==="50" || state==="90");
+    const stateToggle = showPrint && (state==="50" || state==="90") && showPrint!=='repairRegListDetail';
     return (
       <div>
           {
@@ -61,7 +61,7 @@ class AllDetail extends PureComponent {
                     <Button type='primary' onClick={this.onPrint}> 打印</Button>
                   </div>
                 ):null}
-                <BaseInfo BaseInfoInfoData = {this.state.BaseInfoInfoData}/>
+                <BaseInfo BaseInfoInfoData = {this.state.BaseInfoInfoData} showPrint={showPrint==='repairRegListDetail'}/>
               </div>
             )
           }

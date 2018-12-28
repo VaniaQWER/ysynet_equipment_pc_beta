@@ -3,11 +3,12 @@
  * assetsRecordGuid={this.BaseInfoInfoData.assetsRecordGuid}
  */
 import React, { Component } from 'react';
-import { Row, Col,Collapse,Tabs ,Layout} from 'antd';
+import { Row, Col,Collapse,Tabs ,Layout, Button} from 'antd';
 import styles from '../../ledger/ledgerArchives/style.css';
 import AssetParts from './assetParts';//资产配件
-import { FTP } from '../../../api/local';
+import { FTP  , _local} from '../../../api/local';
 import { selectOption,repairData,faultDescribeData } from '../../../constants';
+import querystring from 'querystring';
 const { Content } = Layout;
 const Panel = Collapse.Panel;
 const TabPane = Tabs.TabPane;
@@ -16,7 +17,8 @@ class BaseInfo extends Component {
   constructor(props){
     super(props)
     this.state = {
-      files: []
+      files: [],
+      showPrint:false,//repairRegListDetail 报修记录详情打印
     }
   }
   componentWillMount = ()=>{
@@ -43,14 +45,24 @@ class BaseInfo extends Component {
     }
     return str ;
   }
+  printRepairRegListDetail = (e)=>{
+    //打印报修记录详情
+    e.stopPropagation();
+    console.log('print')
+    const  { rrpairOrderGuid } = this.props.BaseInfoInfoData;
+    window.open(`${_local}/rrpairOrderController/printApplyRrpair?${querystring.stringify({rrpairOrderGuid})}`)
+  }
   
   render () {
-    console.log(this.state.files,'1111')
-    const { BaseInfoInfoData } = this.props;
+    const { BaseInfoInfoData , showPrint } = this.props;
+    const title = showPrint?
+    (<div>维修单 
+    <Button type='primary' onClick={this.printRepairRegListDetail} style={{float:'right',marginTop:-4,marginRight:15}}>打印</Button>
+   </div>):(<p>维修单</p>)
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
       <Collapse defaultActiveKey={['1']}>
-      <Panel header="维修单" key="1">
+      <Panel header={title} key="1" >
         <Row type="flex"   className={styles['table-row']}>
           <Col span={4} className={styles['table-span']}>维修单号</Col>
            <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.rrpairOrderNo }</Col> 
