@@ -2,7 +2,7 @@
  * 维修记录列表
  */ 
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Form , Layout , Button , DatePicker , message, Select } from 'antd';
+import { Row,Col,Input,Icon, Form , Popconfirm , Layout , Button , DatePicker , message, Select } from 'antd';
 import moment from 'moment';
 import { search } from '../../../service';
 import TableGrid from '../../../component/tableGrid';
@@ -257,6 +257,26 @@ class RepairRecordList extends Component {
     }
     setSearch(pathname,hasToggleSearch)
   }
+  confirm = (record) => {
+    console.log(record)
+    // 90 状态 变为 88 
+    const { rrpairOrderGuid } = record;
+    request(assets.updateRrpairOrderFstate, {
+      body:querystring.stringify({rrpairOrderGuid,orderFstate:"88"}),
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.refs.table.fetch()
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+
+  }
   render() {
     const { search , history } = this.props;
     const pathname = history.location.pathname;
@@ -272,18 +292,30 @@ class RepairRecordList extends Component {
       {
         title: '操作',
         dataIndex: 'rrpairOrderGuid',
-        width: 80,
-        render: (text, record) => 
-          <Link to={{pathname: `/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
-            <Icon type="profile" style={{marginRight: 5}}/>
-            详情
-          </Link>
+        width: 120,
+        render: (text, record) => {
+          return (
+            <div>
+              <Link to={{pathname: `/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
+                <Icon type="profile" style={{marginRight: 5}}/>
+                详情
+              </Link>
+              {
+                record.orderFstate==="90"?
+                <Popconfirm title="确认要执行此操作?" onConfirm={()=>this.confirm(record)}>
+                  <a style={{marginLeft: 8}}>作废</a>
+                </Popconfirm>
+                :null
+              }
+            </div>
+          )
+        }
       },
       ...repairCommonDataSource,
       {
         title: '维修员',
         dataIndex: 'inRrpairUsername',
-        width: 100
+        width: 120
       },
       {
         title: '维修时间',
@@ -293,7 +325,7 @@ class RepairRecordList extends Component {
       {
         title: '维修厂家',
         dataIndex: 'outOrgName',
-        width: 100
+        width: 120
       },
       {
         title: '维修费用',

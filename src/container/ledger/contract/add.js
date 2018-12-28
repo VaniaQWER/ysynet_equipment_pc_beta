@@ -49,6 +49,7 @@ class AddContract extends Component {
   state={
     query:{},
     manageSelect:[],
+    useSelect:[],
     outDeptOptions: [],
     postFile:[],
     editStatus:false,
@@ -82,6 +83,7 @@ class AddContract extends Component {
       })
     }
     this.getManageSelect();
+    this.getUseSelect();
     this.outDeptSelect();
   }
 
@@ -94,6 +96,22 @@ class AddContract extends Component {
       success: data => {
         if(data.status){
           this.setState({manageSelect:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+  getUseSelect = () => {
+    request(ledger.selectUseDeptList,{
+      body:queryString.stringify({deptType:"00"}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({useSelect:data.result})
         }else{
           message.error(data.msg)
         }
@@ -309,13 +327,36 @@ class AddContract extends Component {
                         }
                       }}
                       >
-                          <Option value="" key={-1}>全部</Option>
+                          {/* <Option value="" key={-1}>全部</Option> */}
                           {
                               this.state.manageSelect.map((item,index) => {
                               return <Option key={index} value={item.value}>{item.text}</Option>
                               })
                           }
                       </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={12}>
+                <FormItem
+                  {...formItemLayoutLine2}
+                  label="申请科室"
+                >
+                  {getFieldDecorator('deptGuid',{
+                    initialValue:fillBackData.deptGuid||"",
+                  })(
+                    <Select 
+                    showSearch
+                    placeholder={'请选择申请科室'}
+                    optionFilterProp="children"
+                    filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                    >
+                        {
+                            this.state.useSelect.map((item,index) => {
+                            return <Option key={index} value={item.value}>{item.text}</Option>
+                            })
+                        }
+                    </Select>
                   )}
                 </FormItem>
               </Col>

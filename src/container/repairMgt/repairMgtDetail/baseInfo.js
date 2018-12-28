@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { Row, Col,Collapse,Tabs ,Layout, Button} from 'antd';
 import styles from '../../ledger/ledgerArchives/style.css';
 import AssetParts from './assetParts';//资产配件
+import Invalid from './invalid';//作废信息
 import { FTP  , _local} from '../../../api/local';
 import { selectOption,repairData,faultDescribeData } from '../../../constants';
 import querystring from 'querystring';
@@ -225,6 +226,12 @@ class BaseInfo extends Component {
          :
          null
        }
+     </TabPane >
+     <TabPane tab="作废信息" key="6">
+        {//单据状态为作废的时候 显示作废详情
+          BaseInfoInfoData.orderFstate==="88"? 
+          <Invalid BaseInfoInfoData={BaseInfoInfoData}/>:null
+        }
      </TabPane>
    </Tabs>
    </Content>

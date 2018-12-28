@@ -16,6 +16,7 @@ export const repairCommonDataSource = [
       { text: '维修中', value: '30' },
       { text: '已拒绝', value: '80' },
       { text: '关闭', value: '90' },
+      { text: '作废', value: '88' },
     ],
     onFilter: (value, record) => record.orderFstate.indexOf(value) === 0,
     sorter: false,
@@ -120,6 +121,10 @@ export const repairData = {
   },
   "90": {
     text: "已关闭",
+    color: 'error'
+  },
+  "88": {
+    text: "已作废",
     color: 'error'
   },
   null :{

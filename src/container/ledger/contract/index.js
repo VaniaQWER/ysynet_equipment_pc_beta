@@ -36,6 +36,7 @@ class SearchForm extends Component {
   state={
     display: this.props.isShow?'block':'none',expand:this.props.isShow,
     manageSelect:[],
+    useSelect:[],//使用科室
   }
   componentDidMount = () => {
     this.getManageSelect();
@@ -50,6 +51,22 @@ class SearchForm extends Component {
       success: data => {
         if(data.status){
           this.setState({manageSelect:data.result})
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+
+    //使用科室
+    request(ledger.selectUseDeptList,{
+      body:queryString.stringify({deptType:"00"}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          this.setState({useSelect:data.result})
         }else{
           message.error(data.msg)
         }
@@ -174,6 +191,32 @@ class SearchForm extends Component {
                 )}
               </FormItem>
             </Col>
+        </Row>
+        <Row style={{display: display}}>
+          <Col span={8}> 
+            <FormItem
+              {...formItemLayout}
+              label="申请科室"
+            >
+              {getFieldDecorator('deptGuid',{
+                initialValue:""
+              })(
+                <Select 
+                showSearch
+                placeholder={'请选择申请科室'}
+                optionFilterProp="children"
+                filterOption={(input, option) => option.props.children.indexOf(input) >= 0}
+                >
+                    <Option value="" key={-1}>全部</Option>
+                    {
+                        this.state.useSelect.map((item,index) => {
+                        return <Option key={index} value={item.value}>{item.text}</Option>
+                        })
+                    }
+                </Select>
+              )}
+            </FormItem>
+          </Col>
         </Row>
         <Row>
           <Col span={8}>

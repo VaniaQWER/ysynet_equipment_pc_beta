@@ -117,6 +117,9 @@ class ContractDetails extends Component {
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">管理科室 : {baseInfo?baseInfo.bDeptName:""}</div>
+            <div className="ant-col-12">申请科室 : {baseInfo && baseInfo.deptName?baseInfo.deptName:""}</div>
+          </div>
+          <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">合同类型 : {baseInfo?(contractTypeStatus[baseInfo.contractFlag]|| '设备' ):""}</div>
           </div>
           <div className="ant-row" style={style.mb}>

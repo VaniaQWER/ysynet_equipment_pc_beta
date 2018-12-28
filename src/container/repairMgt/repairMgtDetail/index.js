@@ -31,6 +31,7 @@ class AllDetail extends PureComponent {
                               ...data.result.selectRrpairDetailIsRrpair,
                               ...data.result.selectRrpairDetailIsCall,
                               ...data.result.selectRrpairDetail,
+                              ...data.result.selectRrpairIsInvalid,
                               ...this.props.location.state
                             }
         })
