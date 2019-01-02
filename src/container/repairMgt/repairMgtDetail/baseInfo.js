@@ -84,9 +84,9 @@ class BaseInfo extends Component {
          <Col span={4} className={styles['table-span']}>资产名称</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.equipmentStandardName }</Col>
          <Col span={4} className={styles['table-span']}>型号</Col>
-         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.spec }</Col>
-         <Col span={4} className={styles['table-span']}>规格</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.fmodel }</Col>
+         <Col span={4} className={styles['table-span']}>规格</Col>
+         <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.spec }</Col>
          <Col span={4} className={styles['table-span']}>资产类别</Col>
          <Col span={8} className={styles['table-span']}>{ BaseInfoInfoData.productType ===  "01" ? "医疗设备" : "其他"  }</Col>
          <Col span={4} className={styles['table-span']}>使用科室</Col>
