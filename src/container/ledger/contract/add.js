@@ -362,6 +362,21 @@ class AddContract extends Component {
               </Col>
             </Row>
             <Row>
+            <Col span={12}> 
+                <FormItem
+                  {...formItemLayoutLine}
+                  label="合同金额"
+                >
+                  {getFieldDecorator('totalPrice',{
+                    initialValue:fillBackData.totalPrice||"",
+                    rules:[{required:true,message:'请选择合同金额'}]
+                  })(
+                    <Input/>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
               <FormItem label='附件' {...formItemLayout}>
                 <PicWall file={data => {
                   this.setState({postFile: data})

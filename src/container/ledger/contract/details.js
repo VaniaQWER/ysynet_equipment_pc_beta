@@ -121,6 +121,7 @@ class ContractDetails extends Component {
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">合同类型 : {baseInfo?(contractTypeStatus[baseInfo.contractFlag]|| '设备' ):""}</div>
+            <div className="ant-col-12">合同金额 : {baseInfo&&baseInfo.totalPrice?Number(baseInfo.totalPrice):"0.00"}</div>
           </div>
           <div className="ant-row" style={style.mb}>
             <div className="ant-col-12">上传附件 : 

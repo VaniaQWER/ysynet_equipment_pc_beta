@@ -516,3 +516,15 @@ export const borrowFstate ={
   "03":"待审核",
   "09":"驳回借出"
 }
+
+//付款进度
+export const PayFstateSelect = [
+  {text:'待付款',value:"00"},
+  {text:'付款中',value:"02"},
+  {text:'已付款',value:"09"},
+]
+export const PayFstate ={
+  "00":"待付款",
+  "02":"付款中",
+  "09":"已付款",
+}

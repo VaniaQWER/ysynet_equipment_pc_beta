@@ -32,6 +32,9 @@ export default {
     { exact:true, path: '/storage/queryEquipmentInvoice/edit', name: '编辑发票', component: asyncComponent(() => import("../container/storage/queryEquipmentInvoice/edit"))},
     /*库存查询 */
     { exact:true, path: '/storage/queryStorage', name: '库存查询', component: asyncComponent(() => import("../container/storage/queryStorage"))},
+     /*付款进度 */
+     { exact:true, path: '/storage/payProgress', name: '付款进度', component: asyncComponent(() => import("../container/storage/payProgress"))},
+     { exact:true, path: '/storage/payProgress/details/:id', name: '付款详情', component: asyncComponent(() => import("../container/storage/payProgress/details"))},
     
   ] 
 }

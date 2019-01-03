@@ -56,6 +56,12 @@ const storage = {
    selectInvoiceDetail:`${_local}/invoiceZcController/selectInvoiceDetail`,//设备发票详情的table
     //库存查询
     selectAssetsRepertoryList:`${_local}/assetsRecordController/selectAssetsRepertoryList`,//库存查询列表
+    //付款进度
+    selectPayContractList:`${_local}/contractController/selectPayContractList`,//查询付款合同列表	
+    selectContractAssetsList:`${_local}/contractController/selectContractAssetsList`,//查询合同关联的资产	
+    selectContractPayDetailList:`${_local}/contractController/selectContractPayDetailList`,//查询合同付款明细	
+    insertContractPayDetail:`${_local}/contractController/insertContractPayDetail`,//添加合同付款明细	
+
 }
 
 export default storage;
