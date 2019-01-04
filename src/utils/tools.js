@@ -168,7 +168,7 @@ export const CommonData = (type, cb, params={}, url) => {
 
 export const validMoney = (rule, value, callback) => {
   let num = Number(value)
-  if (num || /^\d+$/.test(num) ||  /(^\d+\.\d{1}$)/.test(num) || /(^\d+\.\d{2}$)/.test(num)) {
+  if (!num || /^\d+$/.test(num) ||  /(^\d+\.\d{1}$)/.test(num) || /(^\d+\.\d{2}$)/.test(num)) {
     if (num > 99999999.99) {
       callback(new Error('输入数值过大, 不能超过100000000'));
     }else{
