@@ -307,6 +307,7 @@ class Contract extends Component {
   }
   //删除合同
   deleteRow = (record) =>{
+    const values = this.form.props.form.getFieldsValue();
     Confirm({
       content:'确定要删除该合同吗？',
       onOk:()=>{
@@ -317,7 +318,6 @@ class Contract extends Component {
           },
           success: data => {
             if(data.status){
-              let values = this.refs.form.getFieldsValue();
               console.log(values);
               this.refs.table.fetch(values)
             }else{

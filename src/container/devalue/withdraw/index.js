@@ -11,7 +11,7 @@ import { timeToStamp } from '../../../utils/tools';
 import moment from 'moment';
 const { Content } = Layout;
 const { RemoteTable } = TableGrid;
-const { RangePicker } = DatePicker;
+const { RangePicker , MonthPicker } = DatePicker;
 const { Option } = Select;  
 const FormItem = Form.Item;
 const sortTime = (a,b,key) =>{
@@ -35,9 +35,11 @@ const formItemLayout = {
 class WithDraw extends React.Component{
 
     state = {
-				query:{},
-        loading:false,
-        selOptions:[],//管理科室下拉框
+      query:{},
+      loading:false,
+      EquipmentConfig:"01",
+      showModal:false,//初始化弹窗
+      selOptions:[],//管理科室下拉框
     }
 
     componentDidMount (){
@@ -52,6 +54,7 @@ class WithDraw extends React.Component{
             })
             if(data.result[0]) {
               this.refs.table.fetch({bDeptId:data.result[0].value})
+              this.queryEquipmentConfig(data.result[0].value)
             };
           }
         },
@@ -69,6 +72,7 @@ class WithDraw extends React.Component{
         delete value['createDate']
       }
       this.refs.table.fetch(value);
+      this.queryEquipmentConfig(value.bDeptId);
       this.setState({query:value})
     }
     //搜索表单 - 重置
@@ -124,7 +128,6 @@ class WithDraw extends React.Component{
     }
 
 		doWithDraw = (record)=>{
-
 			Modal.confirm({
 				title:'是否确认计提',
 				content:'确认计提后可能需要等待一段时间，您确定要操作吗？',
@@ -143,6 +146,51 @@ class WithDraw extends React.Component{
       let timeArr = timeStr.split('-');
       let str = timeArr[0]+'-'+timeArr[1] ;
       return str;
+    }
+
+    disabledMonthtDate = (current) => {
+        return current && current > moment().endOf('day');
+    }
+
+    //初始化 
+    initSubmit = () => {
+      let payload = this.props.form.getFieldsValue(['acctDate','bDeptId']);
+      payload.acctDate = moment(payload.acctDate).format('YYYY-MM')
+      request(devalue.initializeInvoiceMonth, {
+        body:querystring.stringify(payload),
+        headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: data => {
+          if(data.status){
+              message.success('操作成功')
+              this.refs.table.fetch(this.props.form.getFieldsValue());
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      });
+    }
+
+    //查询管理科室的折旧方式
+    queryEquipmentConfig = (bDeptId) => {
+      const payload = { bDeptId: bDeptId ? bDeptId :this.props.form.getFieldsValue(['bDeptId'])};
+      request(devalue.selectEquipmentConfig, {
+        body:querystring.stringify(payload),
+        headers:{
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: data => {
+          if(data.status){
+            //01自然月 02会计月
+            this.setState({EquipmentConfig:data.result})
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      });
     }
 
     render(){
@@ -165,10 +213,10 @@ class WithDraw extends React.Component{
           </span>
         },
         {
-          title: '会计月',
+          title: '折旧月份',
           dataIndex: 'depreciationDate',
           width:'10%',
-          render:(text, record) =>{
+          render:(text) =>{
             return <span>{ this.formatTime(text) }</span>
           }
         },
@@ -202,8 +250,9 @@ class WithDraw extends React.Component{
           }
         }
       ]
-      const { loading, selOptions } = this.state;
+      const { loading, selOptions , showModal , EquipmentConfig } = this.state;
       const { getFieldDecorator } = this.props.form;
+      const EquipmentConfigType = EquipmentConfig === "02" ? true : false ;
       return(
           <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
             <Form>
@@ -245,7 +294,13 @@ class WithDraw extends React.Component{
                 </Col>
               </Row>
             </Form>
-            <Alert message="月结后才能计提折旧" closable style={{width:500,marginTop:24}} type="warning" showIcon></Alert>
+            {
+              !EquipmentConfigType && 
+              <Button type='primary' onClick={()=>this.setState({showModal:true})}>初始化</Button>
+            }
+            {
+              EquipmentConfigType && <Alert message="月结后才能计提折旧" closable style={{width:500,marginTop:24}} type="warning" showIcon></Alert>
+            }
             <RemoteTable
               ref='table'
               query={{bDeptId:'000'}}
@@ -266,7 +321,22 @@ class WithDraw extends React.Component{
               style={{textAlign:'center'}}>
               <Spin tip="正在处理中..."></Spin>
             </Modal>
-            
+            <Modal 
+              destroyOnClose={true}
+              visible={showModal} title={'初始化月份'}
+              onOk={this.initSubmit}
+              onCancel={()=>this.setState({showModal:false})}>
+               <FormItem label='月份' {...formItemLayout}>
+                  {
+                    getFieldDecorator('acctDate',{
+                      rules:[{required:true,message:'请选择初始化月份！'}]
+                    })(
+                      <MonthPicker format={"YYYY-MM"}
+                      disabledDate={this.disabledMonthtDate}/>
+                    )
+                  }
+              </FormItem>       
+            </Modal>
           </Content>
       )
     }

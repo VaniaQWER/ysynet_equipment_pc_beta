@@ -7,6 +7,7 @@ import TableGrid from '../../../component/tableGrid';
 import basicdata from '../../../api/basicdata';
 import request from '../../../utils/request';
 import queryString from 'querystring';
+import { COnfigCtrlTips } from '../../../constants';
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -86,21 +87,24 @@ class ConfigCtrl extends PureComponent {
                 title:'参数值',
                 dataIndex:'tfCloValue',
                 render:(text,record,index)=>{
-                    return (
-                        <Select 
-                        // defaultValue='02'
-                        value={text==="01"?"01":"02"}
-                        style={{width:150}}
-                        onSelect={(value)=>this.changeTableRow(value,record)}>
-                            <Option value='02'>否</Option>
-                            <Option value='01'>是</Option>
-                        </Select>
-                    )
+                  return (
+                    <Select 
+                    value={text==="01"?"01":"02"}
+                    style={{width:150}}
+                    onSelect={(value)=>this.changeTableRow(value,record)}>
+                      {
+                        record.detailList&&record.detailList.map((item) =>  <Option key={item.tfCloCode} value={item.tfCloCode}>{item.tfCloName}</Option>) 
+                      }
+                    </Select>
+                  )
                 }
             },
             {
                 title:'备注',
-                dataIndex:'tfRemark'
+                dataIndex:'tfRemark',
+                render:(text,record)=>{
+                 return  record.tfCloCode ? COnfigCtrlTips[record.tfCloCode]:''
+                }
             }
         ]
         return(
@@ -115,7 +119,7 @@ class ConfigCtrl extends PureComponent {
                       scroll={{x: '100%'}}
                       columns={columns}
                       showHeader={true}
-                      rowKey={'tfCloCode'}
+                      rowKey={'staticId'}
                       size="small"
                   />
                 }
