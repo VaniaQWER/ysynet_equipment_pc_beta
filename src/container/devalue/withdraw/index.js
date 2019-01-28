@@ -164,6 +164,7 @@ class WithDraw extends React.Component{
         success: data => {
           if(data.status){
               message.success('操作成功')
+              this.setState({showModal:false})
               this.refs.table.fetch(this.props.form.getFieldsValue());
           }else{
             message.error(data.msg)
