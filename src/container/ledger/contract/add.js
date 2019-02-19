@@ -4,11 +4,13 @@
 * @Last Modified time: 2018-07-10 16:45:38 
  */
 import React, { Component } from 'react';
-import { Row,Col,Input, Layout,Button,message,Form,Select} from 'antd';
+import { Row,Col,Input, Layout,Button,message,Form,Select, Upload , Icon} from 'antd';
 import ledger from '../../../api/ledger';
+import upkeep from '../../../api/upkeep';
 import request from '../../../utils/request';
 import queryString from 'querystring';
-import PicWall from '../../../component/picWall';
+// import PicWall from '../../../component/picWall';
+import { FTP } from '../../../api/local';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { contractTypeSelect  } from '../../../constants';
@@ -135,46 +137,46 @@ class AddContract extends Component {
       error: err => {console.log(err)}
     })
   }
+
   handleSubmit = () =>{
-    const { postFile } = this.state;
     this.props.form.validateFieldsAndScroll((err,values)=>{
+      console.log(values)
       //新增
-      let url = ledger.insertContract ; 
-      if(this.state.editStatus){
-        url = ledger.updateContract;
-        delete values.rOrgId;
-        delete values.RN;
-        values = Object.assign(this.state.fillBackData,values);
-        values.fstate="00";
-      }else{
-        values.rOrgId=this.props.user.orgId;
-        values.rOrgName=this.props.user.orgName;
-        values.fOrgName=this.state.fOrgName;
-        values.bDeptName=this.state.bDeptName;
-        values.fstate="00";
-      }
-      if(postFile.length>0){
-        values.tfAccessoryList = postFile.map((item)=>{
-          return item.thumbUrl
+      if(!err){
+        let url = ledger.insertContract ; 
+        if(this.state.editStatus){
+          url = ledger.updateContract;
+          delete values.rOrgId;
+          delete values.RN;
+          values = Object.assign(this.state.fillBackData,values);
+          values.fstate="00";
+        }else{
+          values.rOrgId=this.props.user.orgId;
+          values.rOrgName=this.props.user.orgName;
+          values.fOrgName=this.state.fOrgName;
+          values.bDeptName=this.state.bDeptName;
+          values.fstate="00";
+        }
+        values.tfAccessoryList = this.getFileUrl(values.tfAccessory)
+        delete values.tfAccessory;
+        console.log(JSON.stringify(values))
+        request(url,{
+          body:JSON.stringify(values),
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          success: data => {
+            if(data.status){
+              message.warn('保存成功！')      
+              const {history} = this.props;
+              history.push('/ledger/contract')
+            }else{
+              message.error(data.msg)
+            }
+          },
+          error: err => {console.log(err)}
         })
       }
-      console.log(JSON.stringify(values))
-      request(url,{
-        body:JSON.stringify(values),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        success: data => {
-          if(data.status){
-            message.warn('保存成功！')      
-            const {history} = this.props;
-            history.push('/ledger/contract')
-          }else{
-            message.error(data.msg)
-          }
-        },
-        error: err => {console.log(err)}
-      })
     })
   }
 
@@ -205,10 +207,112 @@ class AddContract extends Component {
       error: err => {console.log(err)}
     })
   }
+
+  normFile = (e) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  }
+
+  //上传附件之前过滤类型与大小
+  beforeUploadFilter = (file, fileList,config)=>{
+    //过滤文件大小
+    const isLt2M = file.size   < config.size * 1024 * 1024;
+    let type = false;
+    if (!isLt2M) {
+      message.error(`上传文件不能大于${config.size}MB!`);
+      return false
+    }
+    //过滤文件类型
+    for(let i =0;i<config.type.length;i++){
+       let strArr = file.name.split('.');
+       if(config.type[i] === `.${strArr[strArr.length-1]}` || config.type[i] === `.${strArr[strArr.length-1]}`.toLocaleLowerCase()){
+         type=true
+         return
+       }else{
+         type=false
+       }
+    }
+    if (!type) {
+      message.error('您只能上传该附件支持的文件类型');
+    }
+    
+    return type && isLt2M;
+  }
+  handleChange = (fileListObj,key) => {
+    let { file, fileList } = fileListObj;  
+    if(file.status === 'done') {
+      file.response && !file.response.status && message.error('上传失败，请重新上传');
+      fileList.filter((file) => file.response&&file.response.status);
+      fileList.map((file) => {   //修改预览地址
+        if (file.response) {
+          let url = file.response.result.split('/');
+          url.shift();
+          url = url.join('/');
+          file.url = FTP + '/' + url;
+        }
+        if(file.type==="application/pdf" ||  file.type==="application/zip"){
+          file.thumbUrl = require('../../../assets/fujian.png')
+        }
+        return file;
+      });
+    }
+  }
+  initFileUrl = (str) => {
+    if( !str ) { return [] };
+    let urlArr = str.split(';');
+    if( urlArr && !urlArr.length ) { return [] }
+    let ret = urlArr.map( (item , index ) => {
+      let len = item.split('/') ;
+      let name = len[ len.length -1 ];
+      let type = name.split('.')[name.split('.').length-1];
+      let ret = {
+        uid: index,
+        name,
+        status: 'done',
+        url:`${FTP}${item}`,
+      }
+      if(type === 'pdf' || type === 'zip' ){
+        ret.thumbUrl = require('../../../assets/fujian.png');
+      }
+      return ret
+    })
+    ret = ret.slice(0,ret.length-1);
+    return ret
+  }
+  getFileUrl = ( arr ) => {
+    if( arr && !arr.length ) { return [] }
+    let ret = arr.map( (item) => {
+      if(item.status === "done" || (item.response && item.response.status) ){
+        return item.url.replace(FTP,'')
+      }
+      return null
+    })
+    return ret // && ret.length && ret.join(';')
+  }
   
   render() {
-    const { getFieldDecorator } = this.props.form;
-    const { postFile , editStatusText , fillBackData } = this.state;//editStatus
+    const commonProps = {
+      listType:"picture-card",
+      action: upkeep.uploadFile,
+      withCredentials: true,
+      beforeUpload:(file, fileList)=>this.beforeUploadFilter(file, fileList,{type:['.jpeg','.jpg','.png','.bmp','.pdf','.zip'],size:10}),
+      onChange:(info)=>this.handleChange(info, 'tfAccessory')
+      // showUploadList:{
+      //   showRemoveIcon:editable
+      // },
+      // data:{"assetsRecordGuid":this.props.assetsRecordGuid},
+    };
+    const uploadButton = (
+      <div>
+        <Icon type="plus" />
+        <div className="ant-upload-text">上传图片</div>
+      </div>
+    );
+    const { getFieldDecorator , getFieldValue } = this.props.form;
+    const {  editStatusText , fillBackData } = this.state;//editStatus postFile ,
     return (
       <Content className='ysynet-content ysynet-common-bgColor'>
         <h3 style={{padding:'24px'}}>{editStatusText}  
@@ -377,10 +481,22 @@ class AddContract extends Component {
               </Col>
             </Row>
             <Row>
-              <FormItem label='附件' {...formItemLayout}>
-                <PicWall file={data => {
-                  this.setState({postFile: data})
-                }} fileList={postFile}/>
+              <FormItem label='附件' {...formItemLayout}
+                extra="最多上传8份附件，限10M以内，支持图片格式：JPG、JPEG、PNG、BMP，支持附件格式：ZIP、PDF">
+                {
+                  getFieldDecorator('tfAccessory',{
+                    initialValue:this.initFileUrl(fillBackData.tfAccessory)||[],
+                    valuePropName: 'fileList',
+                    getValueFromEvent: this.normFile, 
+                  })(
+                    <Upload {...commonProps}>
+                      {
+                        getFieldValue('tfAccessory') && getFieldValue('tfAccessory').length >=8 ?
+                        null:uploadButton
+                      }
+                    </Upload>
+                  )
+                }
               </FormItem>
             </Row>
         </Form>
