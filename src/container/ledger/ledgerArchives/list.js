@@ -752,6 +752,14 @@ class LedgerArchivesList extends Component {
   exportAssets = () => {
     let json = this.form.props.form.getFieldsValue();
     json.deptType = 'MANAGEMENT';
+    if( json.buyDate && json.buyDate.length!==0 ){
+      json.buyDateStart = moment( json.buyDate[0] ).format('YYYY-MM-DD')
+      json.buyDateEnd = moment( json.buyDate[1] ).format('YYYY-MM-DD')
+      delete json['buyDate']
+    }else{
+      delete json['buyDate']
+    }
+    console.log(assets.exportApplyList+'?'+queryString.stringify(json))
     window.open(assets.exportApplyList+'?'+queryString.stringify(json))
   }
   //保存
