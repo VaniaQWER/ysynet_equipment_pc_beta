@@ -28,7 +28,7 @@ class PicturesWall extends React.Component {
         if(item.url){
           let suffixArr = item.url.split('.');
           let suffix = suffixArr[suffixArr.length-1];
-          if(suffix==="jpg" || suffix==="jpeg"  || suffix==="png" || suffix==="gif"){
+          if(suffix==="jpg" || suffix==="jpeg"  || suffix==="png" || suffix==="gif" || suffix==="bmp"){
             return item
           }else{
             item.thumbUrl = item.thumbUrl? item.thumbUrl: require('../../assets/fujian.png'); 
