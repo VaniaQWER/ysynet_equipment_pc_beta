@@ -44,7 +44,7 @@ class PicturesWall extends React.Component {
   judgeIMGorAcc =  (src)=>{
       let arrStr = src.split(".");//split(",")
       let type = arrStr[arrStr.length-1];
-      if(type==='jpg'||type==='png'||type==='jpeg'||type==='gif'){
+      if(type==='jpg'||type==='png'||type==='jpeg'||type==='gif'|| type==="bmp"){
         return src
       }else{
         return ''
