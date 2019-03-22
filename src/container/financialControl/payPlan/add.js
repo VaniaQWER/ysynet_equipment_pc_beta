@@ -2,7 +2,7 @@
  * @Author: yuwei 新建计划
  * @Date: 2019-03-22 14:45:56 
  * @Last Modified by: yuwei
- * @Last Modified time: 2019-03-22 23:30:53
+ * @Last Modified time: 2019-03-22 23:39:13
  */
 import React, { PureComponent } from 'react';
 import { Layout, Row, Col, Form, Input, Table, Affix, DatePicker, Button, Modal, message } from 'antd';
@@ -417,7 +417,7 @@ class AddPayPlan extends PureComponent {
               url={financialControl.selectPlanDetailForgSum}
               columns={previewModalColumns}
               showHeader={true}
-              rowKey={'assetsRecordGuid'}
+              rowKey={'pPlanDetailId'}
               style={{marginTop: 10}}
               size="small"
               scroll={{x: '100%'}}
@@ -430,7 +430,7 @@ class AddPayPlan extends PureComponent {
             // 新增预览汇总
             : <Table
             dataSource={globalData && globalData.detailList}
-            rowKey={'assetsRecordGuid'}
+            rowKey={'pPlanDetailId'}
             columns={previewModalColumns}>
             </Table>
           }
