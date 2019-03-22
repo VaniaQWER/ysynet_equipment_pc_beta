@@ -13,6 +13,10 @@ export default {
   routes: [
     { exact:true, path: '/financialControl/auditInvoice', name: '发票审核', component: asyncComponent(() => import("../container/financialControl/auditInvoice"))},
     { exact:true, path: '/financialControl/auditInvoice/details/:id', name: '发票审核详情', component: asyncComponent(() => import("../container/financialControl/auditInvoice/details"))},
+    { exact:true, path: '/financialControl/payPlan', name: '付款计划', component: asyncComponent(() => import("../container/financialControl/payPlan"))},
+    { exact:true, path: '/financialControl/payPlan/edit/:id', name: '编辑计划', component: asyncComponent(() => import("../container/financialControl/payPlan/add"))},
+    { exact:true, path: '/financialControl/payPlan/details/:id', name: '查看计划', component: asyncComponent(() => import("../container/financialControl/payPlan/add"))},
+    { exact:true, path: '/financialControl/payPlan/add', name: '新建计划', component: asyncComponent(() => import("../container/financialControl/payPlan/add"))},
     
     { exact:true, path: '/financialControl/warehouseSummary', name: '入库汇总', component: asyncComponent(() => import("../container/financialControl/warehouseSummary"))},
     { exact:true, path: '/financialControl/outboundSummary', name: '出库汇总', component: asyncComponent(() => import("../container/financialControl/outboundSummary"))},

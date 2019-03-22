@@ -22,7 +22,7 @@ let columns = [
   {
     title: '操作',
     dataIndex: 'RN',
-    width: 250,
+    width: 220,
     render: (text, record) =>
       <span>
         <Link to={{pathname: `/ledger/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
@@ -34,13 +34,13 @@ let columns = [
   {
     title: '资产编号',
     dataIndex: 'assetsRecord',
-    width: 200,
+    width: 150,
     sorter:true
   },
   {
     title: '状态',
     dataIndex: 'useFstate',
-    width: 100,
+    width: 70,
     filters: useFstateSel,
     onFilter: (value, record) => (record && record.useFstate===value),
     render: text =><Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>,
@@ -48,7 +48,7 @@ let columns = [
   {
     title: '资产名称',
     dataIndex: 'equipmentStandardName',
-    width: 200
+    width: 180
   },
   {
     title: '型号',
@@ -64,7 +64,7 @@ let columns = [
   {
     title: '保管员',
     dataIndex: 'custodian',
-    width: 150
+    width: 120
   },
   {
     title: '使用科室',
@@ -74,18 +74,18 @@ let columns = [
   {
     title: '管理科室',
     dataIndex: 'bDept',
-    width: 150
+    width: 100
   },
   {
     title: '购买金额',
     dataIndex: 'buyPrice',
-    width: 150,
+    width: 80,
     render:(text)=>Number(text)?Number(text).toFixed(2):''
   },
   {
     title: '购置日期',
     dataIndex: 'buyDate',
-    width: 150,
+    width: 120,
     render:(text)=>text?text.substr(0,11):''
   },
 ];
@@ -315,6 +315,17 @@ class SearchForm extends Component {
               )}
             </FormItem>
           </Col>
+          <Col span={6}>
+            <FormItem
+              {...formItemLayout}
+              label="供应商"
+            >
+              {getFieldDecorator('fOrgName',{
+              })(
+                <Input placeholder='请输入供应商'/>
+              )}
+            </FormItem>
+          </Col>
         </Row>
         <Row style={{display: display}}>
           <Col span={6}>
@@ -361,6 +372,16 @@ class SearchForm extends Component {
               )}
               </FormItem>
             </Col>
+            </FormItem>
+          </Col>
+          <Col span={6}>
+            <FormItem
+              {...formItemLayout}
+              label="物资类别"
+            >
+              {getFieldDecorator('typeName')(
+                <Input placeholder='请输入物资类别'/>
+              )}
             </FormItem>
           </Col>
         </Row>
@@ -542,6 +563,36 @@ const importModalColumns =[
     title:'公用设备',
     dataIndex:'publicEquipment',
     width:100
+  },
+  {
+    title:'自筹资金原值',
+    dataIndex:'selfRaisedFunds',
+    width:100
+  },
+  {
+    title:'财政拨款原值',
+    dataIndex:'fiscalAppropriation',
+    width:100
+  },
+  {
+    title:'科研经费原值',
+    dataIndex:'scientificResearchFunds',
+    width:100
+  },
+  {
+    title:'教学资金原值',
+    dataIndex:'teachingFunds',
+    width:100
+  },
+  {
+    title:'科研经费原值',
+    dataIndex:'receiveDonations',
+    width:100
+  },
+  {
+    title:'其他原值',
+    dataIndex:'otherOriginalValue',
+    width:100
   }
 ]
 const accessoriesModalColumns = [
@@ -602,6 +653,7 @@ const accessoriesModalColumns = [
     width:100,
     render:(text)=> text ? (text-0).toFixed(2) :''
   },
+  
 ]
 const codeColumns = [
   {
@@ -1010,7 +1062,7 @@ class LedgerArchivesList extends Component {
             </Row>
             <Table
               rowKey={'rn'}
-              scroll={{x:'320%'}}
+              scroll={{x:'520%'}}
               columns={this.state.importModalType==="01" ? importModalColumns : accessoriesModalColumns}
               dataSource={importDataSource}>
             </Table>

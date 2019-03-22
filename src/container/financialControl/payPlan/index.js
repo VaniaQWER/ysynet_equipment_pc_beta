@@ -1,10 +1,12 @@
+import { Popconfirm } from 'antd';
 /*
- * @Author: yuwei  发票审核-auditInvoice
- * @Date: 2018-07-05 13:58:29 
-* @Last Modified time: 2018-07-05 13:58:29 
+ * @Author: yuwei 付款计划 payPlan
+ * @Date: 2019-03-22 14:30:18 
+ * @Last Modified by: yuwei
+ * @Last Modified time: 2019-03-22 22:41:20
  */
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,DatePicker,Modal } from 'antd';
+import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,DatePicker, Divider } from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import { Link , withRouter } from 'react-router-dom';
 import financialControl from '../../../api/financialControl';
@@ -13,66 +15,12 @@ import queryString from 'querystring';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
-import { equipmentInvoiceStatus,  equipmentInvoiceSelect } from '../../../constants';
-const {TextArea} = Input;
+import { PayPlanFstate,  PayPlanFstateSelect } from '../../../constants';
 const {RangePicker} = DatePicker;
 const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RemoteTable } = TableGrid;
-const columns = [
-  {
-    title:'状态',
-    dataIndex:'fstate',
-    width:100,
-    render:(text)=>equipmentInvoiceStatus[text].text
-  },
-  {
-    title: '发票代码',
-    dataIndex: 'invoiceCode',
-    width:100
-  },
-  {
-    title: '发票号码',
-    dataIndex: 'invoiceNo',
-    width:100
-  },
-  {
-    title: '发票金额',
-    dataIndex: 'accountPayed',
-    width:100,
-    render:(text)=>(text-0).toFixed(2)
-  },
-  {
-    title: '开票日期',
-    dataIndex: 'invoiceDate',
-    width:100,
-    render:(text)=>text.substr(0,11)
-  },
-  {
-    title: '供应商',
-    dataIndex: 'fOrgName',
-    width:100
-  },
-  {
-    title: '送货单号',
-    dataIndex: 'sendNo',
-    width:100
-  },
-  {
-    title: '入库单号',
-    dataIndex: 'inNo',
-    width:100
-  },
-  {
-    title: '操作',
-    dataIndex: 'actions',
-    width:100,
-    render:(text,record)=>(
-      <Link to={{pathname:`/financialControl/auditInvoice/details/${record.invoiceId}`,state:record}}>详情</Link>
-    )
-  },
-];
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -93,34 +41,17 @@ class SearchForm extends Component {
   }
   componentDidMount = () => {
     this.getManageSelect();
-    this.outDeptSelect();
   }
 
   getManageSelect = () => {
-    request(financialControl.selectUseDeptList,{
-      body:queryString.stringify({deptType:"01"}),
+    request(financialControl.queryManagerDeptListByUserId,{
+      body:queryString.stringify({}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
           this.setState({manageSelect:data.result})
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
-    })
-  }
-  outDeptSelect = () => {
-    request(financialControl.selectFOrgList,{
-      body:queryString.stringify({}),
-      headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      success: data => {
-        if(data.status){
-          this.setState({outDeptOptions:data.result})
         }else{
           message.error(data.msg)
         }
@@ -141,11 +72,11 @@ class SearchForm extends Component {
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if(values.invoiceTime){
-        values.invoiceStartTime = moment(values.invoiceTime[0]).format('YYYY-MM-DD');
-        values.invoiceEndTime = moment(values.invoiceTime[1]).format('YYYY-MM-DD');
-        delete values['invoiceTime']
+      if(values.createTime){
+        values.createStartTime = moment(values.createTime[0]).format('YYYY-MM-DD');
+        values.createEndTime = moment(values.createTime[1]).format('YYYY-MM-DD');
       }
+      delete values['createTime']
       this.props.query(values);
     });
   }
@@ -163,6 +94,7 @@ class SearchForm extends Component {
   render(){
     const { getFieldDecorator } = this.props.form;
     const { display } = this.state;
+  
     return (
       <Form  onSubmit={this.handleSearch}>
         <Row>
@@ -201,7 +133,7 @@ class SearchForm extends Component {
                 <Select>
                   <Option key="" value="">全部</Option>
                   {
-                    equipmentInvoiceSelect.map((item)=>(<Option value={item.value} key={item.value}>{item.text}</Option>))
+                    PayPlanFstateSelect.map((item)=>(<Option value={item.value} key={item.value}>{item.text}</Option>))
                   }
                 </Select>
               )}
@@ -210,98 +142,43 @@ class SearchForm extends Component {
           <Col span={6}> 
             <FormItem
               {...formItemLayout}
-              label="供应商"
+              label="计划名称"
             >
-              {getFieldDecorator('fOrgId',{//useDeptGuid
+              {getFieldDecorator('pplanName',{
                 initialValue:""
               })(
-                <Select 
-                showSearch
-                placeholder={'请选择'}
-                optionFilterProp="children"
-                filterOption={(input, option)=>this.filterOption(input, option)}
-                >
-                    <Option value="" key={-1}>全部</Option>
-                    {
-                        this.state.outDeptOptions.map((item,index) => {
-                        return <Option key={item.orgId} value={item.orgId}>{item.orgName}</Option>
-                        })
-                    }
-                </Select>
+                <Input placeholder='计划名称'/>
               )}
             </FormItem>
           </Col>
           
           <Col span={6} style={{textAlign:'right', paddingTop:5}}> 
               <Button type="primary" htmlType="submit">搜索</Button>
-              <Button style={{marginLeft: 8,}} onClick={this.handleReset}>重置</Button>
+              <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
               <a style={{marginLeft: 8, fontSize: 14}} onClick={this.toggle}>
                 {this.state.expand ? '收起' : '展开'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
           </Col>
         </Row>
         <Row style={{display: display}}>
-          <Col span={6}> 
+         <Col span={6}> 
             <FormItem
               {...formItemLayout}
-              label="发票代码"
+              label="制单时间"
             >
-              {getFieldDecorator('invoiceCode')(
-                <Input placeholder='请输入'/>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}> 
-            <FormItem
-              {...formItemLayout}
-              label="发票号码"
-            >
-              {getFieldDecorator('invoiceNo')(
-                <Input placeholder='请输入'/>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}> 
-            <FormItem
-              {...formItemLayout}
-              label="开票日期"
-            >
-              {getFieldDecorator('invoiceTime')(
+              {getFieldDecorator('createTime')(
                 <RangePicker></RangePicker>
               )}
             </FormItem>
           </Col>
         </Row>
-        <Row style={{display: display}}>
-          <Col span={6}> 
-            <FormItem
-              {...formItemLayout}
-              label="送货单号"
-            >
-              {getFieldDecorator('sendNo')(
-                <Input  placeholder='请输入'/>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={6}> 
-            <FormItem
-              {...formItemLayout}
-              label="入库单号"
-            >
-              {getFieldDecorator('inNo')(
-                <Input placeholder='请输入'/>
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        
       </Form>
     )
   }
 }
 const SearchFormWapper = Form.create()(SearchForm);
 
-class AuditInvoice extends Component {
+class PayPlan extends Component {
   
   constructor(props) {
     super(props);
@@ -311,8 +188,6 @@ class AuditInvoice extends Component {
     this.state = {
       query:search[pathname]?{...search[pathname]}:{},
       visible:false,
-      selectedRowKeys:[],
-      reason:'',//审核不通过原因
     }
   }
    /* 回显返回条件 */
@@ -342,68 +217,36 @@ class AuditInvoice extends Component {
     setSearch(pathname, values);
     this.refs.table.fetch(query)
   }
-  //审核通过
-  pass = () => {
-    const { selectedRowKeys } = this.state;
-    if(selectedRowKeys.length>0){
-      //发出请求
-      let json = {
-        invoiceId:selectedRowKeys,
-        fstate:'03',
-      }
-      request(financialControl.updateZCInvoiceFstate,{
-        body:queryString.stringify(json),
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        success: data => {
-          if(data.status){
-            message.success('审核状态修改成功！')
-            let query = this.refs.form.getFieldsValue();
-            this.form.props.form.fetch(query)
-            this.setState({
-              selectedRowKeys:[]
-            })
-          }else{
-            message.error(data.msg)
-          }
-        },
-        error: err => {console.log(err)}
-      })
-    }else{
-      message.warn('请选择发票！')
-    }
-  }
-   //审核不通过
-  noPass = () => {
-    const { selectedRowKeys } = this.state;
-    if(selectedRowKeys.length>0){
-      this.setState({visible:true})
-    }else{
-      message.warn('请选择发票！')
-    }
-  }
-  //审核不通过 - 提交
-  submit = () => {
-    console.log(this.state.reason)
-    //此处发出请求
-    let json = {
-      invoiceId:this.state.selectedRowKeys,
-      fstate:'09',
-      rejectReason:this.state.reason
-    }
-    console.log('审核不通过发出的请求信息',json)
-    request(financialControl.updateZCInvoiceFstate,{
-      body:queryString.stringify(json),
+  //删除
+  delete = (record) => {
+    request(financialControl.deletePayPlan,{
+      body:queryString.stringify({pplanId:record.pplanId}),
       headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       success: data => {
         if(data.status){
-          this.setState({visible:false,reason:"",selectedRowKeys:[]})
-          let query = this.form.props.form.getFieldsValue();
-          this.refs.table.fetch(query)
-          message.success('审核状态修改成功！')
+          message.success('操作成功')
+          this.refs.table.fetch(this.state.query)
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+  //发布 
+  submit = (record) => {
+    console.log('发布',record)
+    request(financialControl.updatePayPlanFstate,{
+      body:queryString.stringify({pplanId: record.pplanId, fstate: '03'}),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          message.success('操作成功')
+          this.refs.table.fetch(this.state.query)
         }else{
           message.error(data.msg)
         }
@@ -446,7 +289,57 @@ class AuditInvoice extends Component {
     const { search , history } = this.props;
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
-    const { selectedRowKeys , visible , reason} = this.state;
+    const columns = [
+      {
+        title: '计划名称',
+        dataIndex: 'pplanName',
+        width:100,
+        render:(text,record)=><Link to={{'pathname':`/financialControl/payPlan/details/${record.pplanId}`}}>{text}</Link>
+      },
+      {
+        title: '计划金额',
+        dataIndex: 'planTotalPrice',
+        width:100,
+        render:(text)=>text?(text-0).toFixed(2):''
+      },
+      {
+        title:'状态',
+        dataIndex:'fstate',
+        width:100,
+        render:(text)=>text?PayPlanFstate[text]:''
+      },
+      {
+        title: '制单人',
+        dataIndex: 'createUserName',
+        width:100
+      },
+      {
+        title: '制单时间',
+        dataIndex: 'createTime',
+        width:100,
+        render:(text)=>text.substr(0,11)
+      },
+      {
+        title: '操作',
+        dataIndex: 'actions',
+        width:100,
+        render:(text,record)=>{
+          if (record.fstate==='00') {
+            return (
+              <span>
+                <Popconfirm title="确定要删除吗" onConfirm={() => this.delete(record)}>
+                  <a href="">删除</a>
+                </Popconfirm>
+                <Divider type="vertical"/>
+                <Popconfirm style={{marginLeft: 8}} title="确定要发布吗" onConfirm={() => this.submit(record)}>
+                  <a href="">发布</a>
+                </Popconfirm>
+              </span>
+            )
+          }
+        }
+      },
+    ];
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
         <SearchFormWapper 
@@ -456,9 +349,10 @@ class AuditInvoice extends Component {
           isShow={isShow}
           wrappedComponentRef={(form) => this.form = form}
          ></SearchFormWapper>
-        <Row style={{textAlign:'right'}}>
-          <Button type='primary' onClick={()=>this.pass()}>审核通过</Button>
-          <Button type='primary' style={{marginLeft:15}} onClick={()=>this.noPass()}>审核不通过</Button>
+        <Row style={{textAlign:'left'}}>
+          <Button type='primary' icon='plus'>
+            <Link to={{pathname:`/financialControl/payPlan/add`}} style={{color:'#fff'}}> 新建计划</Link>
+          </Button>
         </Row>
         <RemoteTable
             onChange={this.changeQueryTable}
@@ -466,27 +360,13 @@ class AuditInvoice extends Component {
             loading={ this.state.loading}
             ref='table'
             query={this.state.query}
-            url={financialControl.selectZCInvoiceList}
+            url={financialControl.selectPayPlanList}
             scroll={{x: '100%'}}
             columns={columns}
             showHeader={true}
-            rowKey={'invoiceId'}
+            rowKey={'pplanId'}
             style={{marginTop: 10}}
-            rowSelection={{
-              selectedRowKeys,
-              onChange: (selectedRowKeys) => {
-                this.setState({selectedRowKeys})
-              }
-            }}
-          /> 
-          <Modal
-            visible={visible}
-            title='审核不通过'
-            onOk={()=>{this.submit()}}
-            onCancel={()=>{this.setState({reason:"",visible:false})}}
-            >
-            <TextArea placeholder="不通过原因" value={reason} maxLength={200} rows={4} onInput={(e)=>this.setState({reason:e.target.value})}/>
-          </Modal>
+          />
       </Content>
     )
   }
@@ -494,4 +374,4 @@ class AuditInvoice extends Component {
 export default withRouter(connect(state => state, dispatch => ({
   setSearch: (key, value) => dispatch(search.setSearch(key, value)),
   clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
-}))(AuditInvoice));
+}))(PayPlan));

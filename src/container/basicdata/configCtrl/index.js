@@ -46,37 +46,46 @@ class ConfigCtrl extends PureComponent {
       this.setState({query:val})
     }
     changeTableRow = (value,record) => {
-        // console.log("changeTableRow",value,record)
-        const { query } = this.state;
-        record.tfCloValue=value;
-        record.bDeptId=query.bDeptId;
-        console.log(JSON.stringify({"list":[record]}),'changeTableRow')
-        Modal.confirm({
-            title:'您正在修改参数的配置',
-            content:'修改参数配置会使影响自动打印，您还要继续吗？',
-            onOk:()=>{
-                request(basicdata.updateStoragePrintConfig,{
-                  body:JSON.stringify({"list":[record]}),
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  success: data => {
-                    if(data.status){
-                      message.success('修改成功')
-                      this.refs.table.fetch(query);
-                    }else{
-                      message.error(data.msg)
-                    }
-                  },
-                  error: err => {console.log(err)}
-                })
-            },
-            onCancel:()=>{
-                this.refs.table.fetch(query);
-                
-            }
-        })
+      const { query } = this.state;
+      record.tfCloValue=value;
+      record.bDeptId=query.bDeptId;
+      console.log(JSON.stringify({"list":[record]}),'changeTableRow')
+      let tips = '修改参数配置会使影响自动打印';
+      if (record.tfCloCode === '06') {
+        //改变折旧月份来源 。不需要提示
+        tips = '您修改参数配置将会影响当前正在使用的功能';
+      }
+      Modal.confirm({
+          title:'您正在修改参数的配置',
+          content:`${tips}，您还要继续吗？` ,
+          onOk:()=>{
+            this.sendRequest({"list":[record]})
+          },
+          onCancel:()=>{
+            this.refs.table.fetch(query);
+          }
+      })
     }   
+
+    sendRequest = (json) => {
+      const { query } = this.state;
+      request(basicdata.updateStoragePrintConfig,{
+        body:JSON.stringify(json),//{"list":[record]}
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        success: data => {
+          if(data.status){
+            message.success('修改成功')
+            this.refs.table.fetch(query);
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      })
+    }
+
     render(){
         const columns =[
             {

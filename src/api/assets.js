@@ -52,6 +52,9 @@ selectCustomFieldZcList:`${_local}/assetsRecordController/selectCustomFieldZcLis
  selectEqOperationList: `${_local}/rrpairOrderController/selectEqOperationList`, //维修单详情操作记录
  updateRrpairOrderFstate: `${_local}/rrpairOrderController/updateRrpairOrderFstate`, //维修工单状态扭转
  printAssectRrpair:`${_local}/rrpairOrderController/printAssectRrpair`,//维修单详情-打印
+ //维修明细
+ selectRrpairFittingUseList:`${_local}/rrpairOrderController/selectRrpairFittingUseList`,//维修明细列表
+ exportRrpairFittingUseList:`${_local}/rrpairOrderController/exportRrpairFittingUseList`,//维修明细列表 - 导出
  //验收
  insertRrpairOrderAcce: `${_local}/rrpairOrderController/insertRrpairOrderAcce`, //验收维修单
 

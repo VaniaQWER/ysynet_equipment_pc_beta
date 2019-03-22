@@ -67,7 +67,7 @@ class WarehouseSummary extends Component {
     }
   }
   componentWillMount() {
-    fetchData(financialControl.selectUseDeptList, {deptType:"01"}, data => {
+    fetchData(financialControl.queryManagerDeptListByUserId, {}, data => {
       const result = data.result;
       const options = [];
       if (result.length) {

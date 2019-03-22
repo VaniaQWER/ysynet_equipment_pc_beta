@@ -196,7 +196,7 @@ class SearchForm extends Component {
                     <Select placeholder={'请选择出库地址'}>
                         {
                           this.state.adressOptions.map((item,index) => {
-                          return <Option key={index} value={item.deptGuid}>{item.address}</Option>
+                          return <Option key={index} value={item.addrGuid}>{item.address}</Option>
                           })
                       }
                     </Select>
@@ -341,13 +341,11 @@ class Receive extends Component {
     let values = this.refs.searchBox.getFieldsValue();
     console.log(values)
     console.log(this.state.dataSource)
-
     let adressItem  = this.state.adressOptions.filter((item)=>{
       return item.deptGuid===values.addressGuid
     })
     let assetsRecordGuids = this.state.dataSource.map((item)=> {return item.assetsRecordGuid})
     let json = {...values,assetsRecordGuids,tfAddress: adressItem.length>0 ? adressItem[0].address:''};
-
     console.log('出库数据内容',JSON.stringify(json))
     request(storage.addOutportAsset,{
       body:queryString.stringify(json),

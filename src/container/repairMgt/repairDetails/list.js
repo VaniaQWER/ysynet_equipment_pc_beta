@@ -1,15 +1,14 @@
 /**
- * 维修记录列表
+ * @file 维修明细
  */ 
 import React, { Component } from 'react';
-import { Row,Col,Input,Icon, Form , Popconfirm , Layout , Button , DatePicker , message, Select } from 'antd';
+import { Row,Col,Input,Icon, Form , Layout , Button , DatePicker , message, Select } from 'antd';
 import moment from 'moment';
 import { search } from '../../../service';
 import TableGrid from '../../../component/tableGrid';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import assets from '../../../api/assets';
 import { connect } from 'react-redux';
-import { repairCommonDataSource } from '../../../constants'
 import { repairRecord } from '../../../service';
 import querystring from 'querystring';
 import request from '../../../utils/request';
@@ -28,6 +27,55 @@ const formItemLayout = {
     sm: { span: 16 },
   },
 };
+const columns = [
+  {
+    title: '维修单号',
+    dataIndex: 'rrpairOrderNo',
+    width: 160
+  }, 
+  {
+    title: '资产名称',
+    dataIndex: 'equipmentStandardName',
+    width: 180
+  },{
+    title: '使用科室',
+    dataIndex: 'deptName',
+    width: 180
+  },{
+    title: '报修时间',
+    dataIndex: 'createDate',
+    width: 180
+  },{
+    title: '维修时间',
+    dataIndex: 'callTime',
+    width: 180
+  },{
+    title: '维修厂家',
+    dataIndex: 'outOrgName',
+    width: 180
+  },{
+    title: '配件名称',
+    dataIndex: 'acceName',
+    width: 180
+  },{
+    title: '配件型号',
+    dataIndex: 'acceFmodel',
+    width: 180
+  },{
+    title: '配件规格',
+    dataIndex: 'acceSpec',
+    width: 180
+  },{
+    title: '配件数量',
+    dataIndex: 'acceNum',
+    width: 180
+  },{
+    title: '配件费用',
+    dataIndex: 'money',
+    width: 180,
+    render:(text)=>Number(text)?Number(text).toFixed(2):''
+  }
+];
 
 class SearchFormWrapper extends React.Component {
   state = {
@@ -135,7 +183,7 @@ class SearchFormWrapper extends React.Component {
           </Col>
           <Col span={6}  style={{display: display}}> 
             <FormItem
-              label="维修总费用"
+              label="配件金额"
               {...formItemLayout}
             >
               <Col span={11}>
@@ -200,7 +248,16 @@ class SearchFormWrapper extends React.Component {
               )}
             </FormItem>
           </Col>
-        
+          <Col span={6}  style={{display: display}}> 
+            <FormItem
+              label="配件名称"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('acceName')(
+                <Input placeholder='请输入配件名称'/>
+              )}
+            </FormItem>
+          </Col>
         </Row>
       </Form>
     )
@@ -209,14 +266,14 @@ class SearchFormWrapper extends React.Component {
 const SearchForm = Form.create()(SearchFormWrapper);
 
 
-class RepairRecordList extends Component {
+class RepairDetailList extends Component {
   constructor(props) {
     super(props);
     /* 设置redux前置搜索条件 */
     const { search, history } = this.props;
     const pathname = history.location.pathname;
     this.state = {
-      query:search[pathname]?{...search[pathname]}:{menuFstate:"repairRecord"}
+      query:search[pathname]?{...search[pathname]}:{}
     }
   }
    /* 回显返回条件 */
@@ -303,97 +360,48 @@ class RepairRecordList extends Component {
     })
 
   }
+  output = () => {
+    debugger;
+    console.log(this.state.query)
+    let params = JSON.parse(JSON.stringify(this.state.query));
+    for(let item in params){
+      if(!params[item]){
+        delete params[item]
+      }
+    }
+    console.log(params)
+
+    let openUrl = `${assets.exportRrpairFittingUseList}?${querystring.stringify(params)}`;
+    console.log(openUrl)
+    window.open(openUrl)
+
+  }
   render() {
     const { search , history } = this.props;
     const pathname = history.location.pathname;
     const isShow = search[pathname] ? search[pathname].toggle:false;
-    // const defaultValue = search[pathname]&&search[pathname].params?search[pathname].params:null;
-    let columns = [
-      {
-        title: '',
-        dataIndex: 'RN',
-        width: 30,
-        render: (text, record, index) => index + 1
-      },
-      {
-        title: '操作',
-        dataIndex: 'rrpairOrderGuid',
-        width: 120,
-        render: (text, record) => {
-          return (
-            <div>
-              <Link to={{pathname: `/repairMgt/repairRecord/${record.rrpairOrderGuid}`}}>
-                <Icon type="profile" style={{marginRight: 5}}/>
-                详情
-              </Link>
-              {
-                record.orderFstate==="90"?
-                <Popconfirm title="确认要执行此操作?" onConfirm={()=>this.confirm(record)}>
-                  <a style={{marginLeft: 8}}>作废</a>
-                </Popconfirm>
-                :null
-              }
-            </div>
-          )
-        }
-      },
-      ...repairCommonDataSource,
-      {
-        title: '维修员',
-        dataIndex: 'inRrpairUsername',
-        width: 120
-      },
-      {
-        title: '维修时间',
-        dataIndex: 'callTime',
-        width: 130
-      },
-      {
-        title: '维修厂家',
-        dataIndex: 'outOrgName',
-        width: 120
-      },
-      {
-        title: '维修费用',
-        dataIndex: 'actualPrice',
-        width: 100,
-        render:(text)=>Number(text)?Number(text).toFixed(2):''
-      },
-      
-    ];
     // const defaultParams = repairRecord.searchCondition ? repairRecord.searchCondition.params : null;
-    if(search[pathname]&&search[pathname].orderFstate&&search[pathname].orderFstate.length){
-      columns[3].filteredValue = search[pathname].orderFstate;
-    }else{
-      columns[3].filteredValue = [];
-    }
+    // if(search[pathname]&&search[pathname].orderFstate&&search[pathname].orderFstate.length){
+    //   columns[3].filteredValue = search[pathname].orderFstate;
+    // }else{
+    //   columns[3].filteredValue = [];
+    // }
     return (
         <Content className='ysynet-content ysynet-common-bgColor' style={{padding:20}}>
           <SearchForm 
-          query={ value =>  this.queryHandler({...value,menuFstate:"repairRecord"}) }
+          query={ value =>  this.queryHandler({...value}) }
           handleReset={()=>this.handleReset()}
           changeQueryToggle={()=>this.changeQueryToggle()}
           isShow={isShow}
           wrappedComponentRef={(form) => this.form = form}
           ></SearchForm>
-          {/*
-            <Row>
-
-              <Col span={12}>
-                <Search
-                  placeholder="请输入维修单号/资产编号/资产名称"
-                  enterButton="搜索"
-                  defaultValue={ defaultParams }
-                />
-              </Col>
-            </Row>
-          */}
+          <Row> <Button type='primary' onClick={ this.output }>导出</Button></Row>
           <RemoteTable
             onChange={this.changeQueryTable}
             query={this.state.query}
             ref='table'
             showHeader={true}
-            url={assets.selectRrpairList}
+            url={assets.selectRrpairFittingUseList}
             scroll={{x: '150%'}}
             columns={columns}
             rowKey={'RN'}
@@ -408,4 +416,4 @@ export default withRouter(connect(state => state, dispatch => ({
   setSearch: (key, value) => dispatch(search.setSearch(key, value)),
   clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
   setRepairRecordSearch: (nestKeys, value) => dispatch(repairRecord.setRepairRecordSearch(nestKeys, value)),
-}))(RepairRecordList));
+}))(RepairDetailList));

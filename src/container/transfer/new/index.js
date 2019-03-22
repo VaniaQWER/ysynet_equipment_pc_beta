@@ -122,7 +122,7 @@ function fetchMaintainUsername(userName, callback) {
 }
 
 // 转出转入科室
-function fetchOutDeptname(deptName, callback) {
+function fetchOutDeptname( excludeUseDeptGuid , deptName, callback) {
   if (timeout) {
     clearTimeout(timeout);
     timeout = null;
@@ -130,7 +130,7 @@ function fetchOutDeptname(deptName, callback) {
   currentValueRollOut = deptName;
   
   let options = {
-    body:querystring.stringify({'excludeUseDeptGuid': deptName,}),
+    body:querystring.stringify({ excludeUseDeptGuid , deptName,}),
     headers:{
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -150,14 +150,14 @@ function fetchOutDeptname(deptName, callback) {
   }
   request(transfer.queryUserDeptListByUserId, options);
 }
-function fetchIntoDeptname(deptName, callback) {
+function fetchIntoDeptname( excludeUseDeptGuid ,deptName, callback) {
   if (timeout) {
     clearTimeout(timeout);
     timeout = null;
   }
   currentValueRollOut = deptName;
   let options = {
-    body:querystring.stringify({'excludeUseDeptGuid': deptName,"deptType":"00"}),
+    body:querystring.stringify({ deptName , excludeUseDeptGuid,"deptType":"00"}),
     headers:{
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -212,12 +212,16 @@ class NewTransfer extends PureComponent {
   // 转出科室
   handleChangeRollOut = (deptName) => {
     this.setState({ deptName });
-    fetchOutDeptname(deptName, deptNameData => this.setState({ deptNameData }));
+    let val = this.props.form.getFieldsValue();
+    const { outDeptguid } = val;
+    fetchOutDeptname( outDeptguid , deptName, deptNameData => this.setState({ deptNameData }));
   }
   // 转入科室
   handleChangeInto = (deptName) => {
     this.setState({ deptName });
-    fetchIntoDeptname(deptName, IntodeptNameData => this.setState({ IntodeptNameData }));
+    let val = this.props.form.getFieldsValue();
+    const { outDeptguid } = val;
+    fetchIntoDeptname(   outDeptguid , deptName, IntodeptNameData => this.setState({ IntodeptNameData }));
   }
   showModalIs = () => {
     const values = this.props.form.getFieldsValue();
@@ -314,7 +318,7 @@ class NewTransfer extends PureComponent {
         if(data.status){
           message.success('新增成功');
           this.props.form.resetFields();
-          this.setState({ProductTabledata: []});
+          this.setState({ProductTabledata: [],ProductModalCallBackKeys : []});
         }else{
           message.error(data.msg)
         }
@@ -404,7 +408,8 @@ class NewTransfer extends PureComponent {
       inDeptguid:"",
       newAdd:"",
     })
-    fetchIntoDeptname(val, IntodeptNameData => this.setState({ IntodeptNameData }));
+    let outDeptguid = this.props.form.getFieldValue('outDeptguid');
+    fetchIntoDeptname( outDeptguid , val, IntodeptNameData => this.setState({ IntodeptNameData }));
     this.setState({newAddressEdit:false, outDeptguid:val, outDeptname: option.props.children })
   }
 

@@ -2,6 +2,7 @@ import {_local} from './local';
 const financialControl = {
   selectZCInvoiceList:`${_local}/invoiceZcController/selectZCInvoiceList`,//设备发票-列表
   selectUseDeptList:`${_local}/dept/selectUseDeptList`,//管理部门下拉框
+  queryManagerDeptListByUserId:`${_local}/dept/queryManagerDeptListByUserId`,//当前用户管理科室
   selectFOrgList:`${_local}/StaticDataController/selectFOrgList`,//获取供应商列表
   selectInvoiceDetail:`${_local}/invoiceZcController/selectInvoiceDetail`,//设备发票详情的table
   updateZCInvoiceFstate:`${_local}/invoiceZcController/updateZCInvoiceFstate`,//审核发票
@@ -23,5 +24,16 @@ const financialControl = {
   sumInvoiceNotAcctCountMoney:`${_local}/invoiceZcController/sumInvoiceNotAcctCountMoney`,//未结账金额
   invoiceSettleAccount:`${_local}/invoiceZcController/invoiceSettleAccount`,//确认结账
   selectInvoiceMonth:`${_local}/invoiceZcController/selectInvoiceMonth`,//查询结账月份
+
+  //付款计划
+  selectPayPlanList:`${_local}/payPlanController/selectPayPlanList`,//查询付款计划列表
+  selectPayPlanInvoiceList:`${_local}/payPlanController/selectPayPlanInvoiceList`,//查询发票
+  selectPayPlanDetailList:`${_local}/payPlanController/selectPayPlanDetailList`,//查询详情table列表
+  selectPlanDetailForgSum:`${_local}/payPlanController/selectPlanDetailForgSum`,//详情页面 - 查询供应商汇总
+  insertPayPlan:`${_local}/payPlanController/insertPayPlan`,//新增/编辑付款计划
+  selectPayPlanForgFOrgSum:`${_local}/payPlanController/selectPayPlanForgFOrgSum`,//汇总计划查询
+  
+  updatePayPlanFstate:`${_local}/payPlanController/updatePayPlanFstate`,//发布付款计划
+  deletePayPlan:`${_local}/payPlanController/deletePayPlan`,//删除付款计划
 }
 export default financialControl;

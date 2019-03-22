@@ -537,3 +537,12 @@ export const COnfigCtrlTips = {
   "05":"控制报废记录打印单据的样式（值为否，默认模版）",
   "06":"会计月需要先做月结；自然月，直接取自然月",
 }
+//付款计划
+export const PayPlanFstate ={
+  "00":"草稿",
+  "03":"已发布"
+}
+export const PayPlanFstateSelect = [
+  {text:'草稿',value:"00"},
+  {text:'已发布',value:"03"}
+]

@@ -26,5 +26,8 @@ export default {
     { exact:true, path: '/repairMgt/errorCount', name: '故障统计', component: asyncComponent(() => import("../container/repairMgt/errorCount"))},
     /* 维修录入 */
     { exact:true, path: '/repairMgt/repairInput', name: '维修录入', component: asyncComponent(() => import("../container/repairMgt/repairInput"))},
+    /* 维修明细 */
+    { exact:true, path: '/repairMgt/repairDetail', name: '维修明细', component: asyncComponent(() => import("../container/repairMgt/repairDetails/list"))},
+  
   ]
 }
