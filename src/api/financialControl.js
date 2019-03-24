@@ -32,8 +32,8 @@ const financialControl = {
   selectPlanDetailForgSum:`${_local}/payPlanController/selectPlanDetailForgSum`,//详情页面 - 查询供应商汇总
   insertPayPlan:`${_local}/payPlanController/insertPayPlan`,//新增/编辑付款计划
   selectPayPlanForgFOrgSum:`${_local}/payPlanController/selectPayPlanForgFOrgSum`,//汇总计划查询
-  
   updatePayPlanFstate:`${_local}/payPlanController/updatePayPlanFstate`,//发布付款计划
   deletePayPlan:`${_local}/payPlanController/deletePayPlan`,//删除付款计划
+  selectInvoicePayPlan:`${_local}/payPlanController/selectInvoicePayPlan`,//发票审核详情 付款情况
 }
 export default financialControl;

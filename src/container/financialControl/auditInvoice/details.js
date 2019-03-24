@@ -76,7 +76,34 @@ const subColumnsData = [
   },
 ]
 
-
+const payColumns = [
+  {
+    title:"序号",
+    dataIndex: 'sort',
+    width:80,
+    render:(text,record,index)=>`${index+1}`
+  },
+  {
+    title:"计划名称",
+    dataIndex: 'pplanName',
+    width:200,
+  },
+  {
+    title:"付款月份",
+    dataIndex: 'payYh',
+    width:200,
+  },
+  {
+    title:"本期付款",
+    dataIndex: 'currentPrice',
+    width:200,
+  },
+  {
+    title:"备注",
+    dataIndex: 'tfRemark',
+    width:200,
+  },
+]
 class DetailsAuditInvoice extends Component{
 
   state = {
@@ -258,6 +285,19 @@ class DetailsAuditInvoice extends Component{
               return(<p>暂无数据</p>)
             }
           }} 
+        /> 
+        </Card>
+        <Card title={'付款情况'} style={{marginTop:15}} >
+        <RemoteTable
+          ref='paytable'
+          query={{invoiceId:baseInfo.invoiceId}}
+          url={financialControl.selectInvoicePayPlan}
+          scroll={{x: '100%', y : document.body.clientHeight - 311}}
+          columns={payColumns}
+          showHeader={true}
+          rowKey={'pplanId'}
+          style={{marginTop: 10}}
+          size="small"
         /> 
         </Card>
         <Modal

@@ -110,16 +110,21 @@ class SearchFormWrapper extends React.Component {
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      
       if(values.Time){
         values.startTime=moment(values.Time[0]).format('YYYY-MM-DD');
         values.endTime=moment(values.Time[1]).format('YYYY-MM-DD');
         delete values['Time'];
+      }else if ( values.startTime && values.endTime ) {
+        delete values['startTime'];
+        delete values['endTime'];
       }
       if(values.createDate){
         values.createDateStart=moment(values.createDate[0]).format('YYYY-MM-DD');
         values.createDateEnd=moment(values.createDate[1]).format('YYYY-MM-DD');
         delete values['createDate'];
+      }else if ( values.createDateStart && values.createDateEnd ) {
+        delete values['createDateStart'];
+        delete values['createDateEnd'];
       }
       console.log(values)
       this.props.query(values);
@@ -361,7 +366,6 @@ class RepairDetailList extends Component {
 
   }
   output = () => {
-    debugger;
     console.log(this.state.query)
     let params = JSON.parse(JSON.stringify(this.state.query));
     for(let item in params){

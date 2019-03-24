@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { Row,Col,DatePicker,Input,Icon, Layout,Upload,Button,Table,Tag,message,Radio,Menu,Dropdown,Alert, Form,Select, Modal,Progress} from 'antd';
+import { Row,Col,DatePicker,Input,Icon, Layout,Upload,Button,Table,
+  Tag,message,Radio,Menu,Dropdown,Alert, Form,Select, Modal,Progress,TreeSelect} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { search } from '../../../service';
 import { Link } from 'react-router-dom'
 import assets from '../../../api/assets';
+import basicdata from '../../../api/basicdata';
 import styles from './style.css';
 import { ledgerData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
@@ -106,7 +108,8 @@ class SearchForm extends Component {
   state={
     display: this.props.isShow?'block':'none',expand:this.props.isShow,
     manageSelect:[],
-    outDeptOptions: []
+    outDeptOptions: [],
+    treeData:[],
   }
   constructor(props){
     super(props)
@@ -116,6 +119,7 @@ class SearchForm extends Component {
   componentDidMount = () => {
     this.getManageSelect();
     this.outDeptSelect();
+    this.getTreeData();
   }
 
   getManageSelect = () => {
@@ -148,6 +152,34 @@ class SearchForm extends Component {
         }
       },
       error: err => {console.log(err)}
+    })
+  }
+  //获取物资分类
+  getTreeData = () => {
+    const json = {tfClo:'material'};
+    request(basicdata.searchStaticZc,{
+      body:queryString.stringify(json),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      success: data => {
+        if (data.status) {
+          let treeData = this.formatTreeData(data.result);
+          this.setState({ treeData });
+        } else {
+          message.error(data.msg);
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+  //处理物资分类数据
+  formatTreeData = (data) => {
+    return data.map((item)=>{
+      item.title = item.tfComment;
+      item.value = item.key = item.staticId;
+      if (item.children) {
+        this.formatTreeData(item.children);
+      }
+      return item
     })
   }
 
@@ -379,8 +411,14 @@ class SearchForm extends Component {
               {...formItemLayout}
               label="物资类别"
             >
-              {getFieldDecorator('typeName')(
-                <Input placeholder='请输入物资类别'/>
+              {getFieldDecorator('typeId')(
+                <TreeSelect
+                  showSearch
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={this.state.treeData}
+                  placeholder="Please select"
+                  onChange={this.onChange}
+                />
               )}
             </FormItem>
           </Col>
