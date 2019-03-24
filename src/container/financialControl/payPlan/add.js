@@ -2,7 +2,7 @@
  * @Author: yuwei 新建计划
  * @Date: 2019-03-22 14:45:56 
  * @Last Modified by: yuwei
- * @Last Modified time: 2019-03-22 23:39:13
+ * @Last Modified time: 2019-03-24 22:31:06
  */
 import React, { PureComponent } from 'react';
 import { Layout, Row, Col, Form, Input, Table, Affix, DatePicker, Button, Modal, message } from 'antd';
@@ -122,16 +122,10 @@ class AddPayPlan extends PureComponent {
   getTotal = () => {
     const { dataSource } = this.state;
     if (!dataSource.length) { return 0 }
-    let b = dataSource.reduce(( total, current ) => {
-      let ret = 0 ;
-      let currentPrice = 0
-      if ( total.currentPrice ) {
-        ret = total.currentPrice
-      }
-      currentPrice = current.currentPrice ? current.currentPrice : (current.noplanPrice || 0);
-      return Number(currentPrice) + Number(ret)
+    let total = dataSource.reduce(function( prev, cur ){
+      return cur.currentPrice += prev
     },0)
-    return b
+    return total
   }
   //保存整单计划 发布计划
   submit = ( fstate ) => {
@@ -162,18 +156,23 @@ class AddPayPlan extends PureComponent {
         previewModalVisible: true
       })
     }
-    //为新增预览则发送请求获取相关数据
-    request(financialControl.selectPayPlanForgFOrgSum,{
-      body:JSON.stringify(val),
-      success: data => {
-        if(data.status){
-          this.setState({previewModalVisible: true, globalData: data.result})
-        }else{
-          message.error(data.msg)
-        }
-      },
-      error: err => {console.log(err)}
+    this.props.form.validateFieldsAndScroll((err,values) => {
+      if (!err) {
+        //为新增预览则发送请求获取相关数据
+        request(financialControl.selectPayPlanForgFOrgSum,{
+          body:JSON.stringify(val),
+          success: data => {
+            if(data.status){
+              this.setState({previewModalVisible: true, globalData: data.result})
+            }else{
+              message.error(data.msg)
+            }
+          },
+          error: err => {console.log(err)}
+        })
+      }
     })
+    
   }
   //主列表 Input 更改
   changeInput = (val,index,field) =>{
@@ -191,6 +190,7 @@ class AddPayPlan extends PureComponent {
       let retDataSource = _.uniqBy( mergeArr, 'invoiceId');
       retDataSource = retDataSource.map(item => {
         item.payYh = moment().format('YYYY-MM');
+        item.currentPrice = item.noplanPrice || 0;
         return item
       })
       this.setState({ 
@@ -269,7 +269,7 @@ class AddPayPlan extends PureComponent {
          : ( <Input 
               onChange={(e) => this.changeInput(e.target.value,index,'currentPrice')} 
               type='number' 
-              defaultValue={record.currentPrice}/> )
+              defaultValue={record.currentPrice || 0}/> )
         }
       },
       { 
