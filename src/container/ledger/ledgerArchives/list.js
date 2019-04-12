@@ -24,7 +24,7 @@ let columns = [
   {
     title: '操作',
     dataIndex: 'RN',
-    width: 220,
+    width: 180,
     render: (text, record) =>
       <span>
         <Link to={{pathname: `/ledger/ledgerArchives/${record.assetsRecordGuid}`}}><Icon type="profile" />详情</Link>
@@ -36,13 +36,13 @@ let columns = [
   {
     title: '资产编号',
     dataIndex: 'assetsRecord',
-    width: 150,
+    width: 120,
     sorter:true
   },
   {
     title: '状态',
     dataIndex: 'useFstate',
-    width: 70,
+    width: 60,
     filters: useFstateSel,
     onFilter: (value, record) => (record && record.useFstate===value),
     render: text =><Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>,
@@ -50,12 +50,12 @@ let columns = [
   {
     title: '资产名称',
     dataIndex: 'equipmentStandardName',
-    width: 180
+    width: 150
   },
   {
     title: '型号',
     dataIndex: 'fmodel',
-    width: 100
+    width: 70
   },
   // {
   //   title: '资产分类',
@@ -66,22 +66,22 @@ let columns = [
   {
     title: '保管员',
     dataIndex: 'custodian',
-    width: 120
+    width: 100
   },
   {
     title: '使用科室',
     dataIndex: 'useDept',
-    width: 100
+    width: 120
   },
   {
     title: '管理科室',
     dataIndex: 'bDept',
-    width: 100
+    width: 70
   },
   {
     title: '购买金额',
     dataIndex: 'buyPrice',
-    width: 80,
+    width: 70,
     render:(text)=>Number(text)?Number(text).toFixed(2):''
   },
   {
@@ -992,7 +992,7 @@ class LedgerArchivesList extends Component {
             query={this.state.query}
             url={assets.selectAssetsList}
             // isList={true}
-            scroll={{x: '140%', y : document.body.clientHeight}}
+            scroll={{x: '120%', y : document.body.clientHeight}}
             columns={columns}
             showHeader={true}
             rowKey={'assetsRecordGuid'}

@@ -40,31 +40,31 @@ const formItemLayoutModal = {
 };
 const columns = [
   {
-    title: '资产编号', dataIndex: 'assetsRecord', 
+    title: '资产编号', dataIndex: 'assetsRecord', width: 350
   },
   {
-    title: '资产名称', dataIndex: 'equipmentStandardName', 
+    title: '资产名称', dataIndex: 'equipmentStandardName', width: 300
   },
   {
-    title: '型号', dataIndex: 'fmodel', 
+    title: '型号', dataIndex: 'fmodel', width: 300
   },
   {
-    title: '规格', dataIndex: 'spec', 
+    title: '规格', dataIndex: 'spec', width: 300
   },
   {
-    title: '计量单位', dataIndex: 'meteringUnit', 
+    title: '计量单位', dataIndex: 'meteringUnit', width: 300
   },
   {
-    title: '注册证号', dataIndex: 'registerNo', 
+    title: '注册证号', dataIndex: 'registerNo', width: 300
   },
   {
-    title: '品牌',  dataIndex: 'brandName', 
+    title: '品牌',  dataIndex: 'brandName', width: 300
   },
   {
-    title: '管理科室', dataIndex: 'manageDeptName', 
+    title: '管理科室', dataIndex: 'manageDeptName', width: 300
   },
   {
-    title: '使用科室', dataIndex: 'useDeptName', 
+    title: '使用科室', dataIndex: 'useDeptName', width: 300
   }
 ]
 
