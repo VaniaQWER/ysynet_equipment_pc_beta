@@ -816,8 +816,8 @@ class LedgerArchivesList extends Component {
     const pathname = history.location.pathname;
     const { current,page,pageSize,sortField,sortOrder,...json } = search[pathname];
     console.log(assets.exportApplyList+'?'+queryString.stringify(json))
-    // window.open(assets.exportApplyList+'?'+queryString.stringify(json))
-    exportRequest(assets.exportApplyList+'?'+queryString.stringify(json))
+    window.open(assets.exportApplyList+'?'+queryString.stringify(json))
+    // exportRequest(assets.exportApplyList+'?'+queryString.stringify(json))
     // fetch(assets.exportApplyList+'?'+queryString.stringify(json), {
     //   method:"get",
     //   headers: {
