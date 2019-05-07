@@ -69,11 +69,12 @@ class ContractDetails extends Component {
   handleSubmit = () =>{
       let values = this.state.baseInfo;
       values.fstate="01";
-      console.log(JSON.stringify(values))
-      request(ledger.updateContract,{
-        body:JSON.stringify(values),
+      const { baseInfo : { contractId } } = this.state;
+      console.log(JSON.stringify({contractId,fstate:"01"}))
+      request(ledger.updateContractFstate,{
+        body:queryString.stringify({contractId,fstate:"01"}),//values
         headers: {
-            'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         success: data => {
           if(data.status){

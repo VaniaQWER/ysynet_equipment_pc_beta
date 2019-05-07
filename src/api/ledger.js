@@ -36,6 +36,7 @@ const ledger = {
   insertContract:`${_local}/contractController/insertContract`,//新建合同
   updateContract:`${_local}/contractController/updateContract`,//新建合同
   deleteContract:`${_local}/contractController/deleteContract`,//删除合同
+  updateContractFstate:`${_local}/contractController/updateContractFstate`,//正式提交合同
 }
 export default ledger;
 // 计量单位

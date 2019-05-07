@@ -56,10 +56,11 @@ export const repairCommonDataSource = [
 ]
 export const useFstateSel =[
   { text: '正常', value: '01' },
-  { text: '故障', value: '02' },
-  { text: '报废', value: '03' },
-  { text: '借出', value: '04' },
-  { text: '闲置', value: '05' },
+  { text: '故障中', value: '02' },
+  { text: '报废中', value: '03' },
+  { text: '已报废', value: '04' },
+  { text: '借出', value: '05' },
+  { text: '闲置', value: '06' },
 ];
 
 // ledgerData 01正常在用（启用后或科室验收通过），02故障中（保修），03报废中，04已报废，05借出，06闲置，07转科中

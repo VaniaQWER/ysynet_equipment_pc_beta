@@ -11,6 +11,7 @@ import basicdata from '../../../api/basicdata';
 import styles from './style.css';
 import { ledgerData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
+import exportRequest from '../../../utils/exportRequest';
 import queryString from 'querystring';
 import moment from 'moment';
 import _ from 'lodash';
@@ -20,6 +21,7 @@ const { Content } = Layout;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RemoteTable } = TableGrid;
+let useFstate = [];
 let columns = [
   {
     title: '操作',
@@ -44,7 +46,13 @@ let columns = [
     dataIndex: 'useFstate',
     width: 60,
     filters: useFstateSel,
-    onFilter: (value, record) => (record && record.useFstate===value),
+    onFilter: (value, record) => { 
+      console.log(value,record.useFstate);
+      if (useFstate.indexOf(value) === -1) {
+        useFstate.push(value)
+      }
+      return (record && record.useFstate===value)
+    },
     render: text =><Tag color={ledgerData[text].color}> { ledgerData[text].text } </Tag>,
   },
   {
@@ -416,7 +424,7 @@ class SearchForm extends Component {
                   showSearch
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   treeData={this.state.treeData}
-                  placeholder="Please select"
+                  placeholder="请选择"
                   onChange={this.onChange}
                 />
               )}
@@ -428,42 +436,6 @@ class SearchForm extends Component {
   }
 }
 const SearchFormWapper = Form.create()(SearchForm); 
-
-/* const SearchFormWapper = withRouter(connect(state => state, dispatch => ({
-  setSearch: (key, value) => dispatch(search.setSearch(key, value)),
-  clearSearch:(key, value) => dispatch(search.clearSearch(key, value)),
-}))(Form.create(
-  // 即时保存form表单中的值到redux中去 - 但使用refs将获取不到form.create的原生方法
-  {
-    onFieldsChange(props, changedFields) {
-      // const { history, search, setSearch } = props;
-      // const pathname = history.location.pathname;
-      // setSearch(pathname,values)
-      // props.onChange(changedFields);
-    },
-    mapPropsToFields(props) {
-      const { history, search } = props;
-      const pathname = history.location.pathname;
-      let a = {...search[pathname]};
-      if(search[pathname]){
-        for( let item in a  ){
-          let base = a[item];
-          a[item]=Form.createFormField({
-            "value": base,
-          })
-        }
-      }
-      console.log(a)
-      return a
-    },
-    onValuesChange(_, value) {
-      const { history, search, setSearch } = _;
-      const pathname = history.location.pathname;
-      let values = Object.assign({...search[pathname]},value);
-      setSearch(pathname,values)
-    },
-  }
-)(SearchForm))); */
 
 const importModalColumns =[
   {
@@ -840,17 +812,28 @@ class LedgerArchivesList extends Component {
   }
   //导出资产
   exportAssets = () => {
-    let json = this.form.props.form.getFieldsValue();
-    json.deptType = 'MANAGEMENT';
-    if( json.buyDate && json.buyDate.length!==0 ){
-      json.buyDateStart = moment( json.buyDate[0] ).format('YYYY-MM-DD')
-      json.buyDateEnd = moment( json.buyDate[1] ).format('YYYY-MM-DD')
-      delete json['buyDate']
-    }else{
-      delete json['buyDate']
-    }
+    const { history ,search } = this.props;
+    const pathname = history.location.pathname;
+    const { current,page,pageSize,sortField,sortOrder,...json } = search[pathname];
     console.log(assets.exportApplyList+'?'+queryString.stringify(json))
-    window.open(assets.exportApplyList+'?'+queryString.stringify(json))
+    // window.open(assets.exportApplyList+'?'+queryString.stringify(json))
+    exportRequest(assets.exportApplyList+'?'+queryString.stringify(json))
+    // fetch(assets.exportApplyList+'?'+queryString.stringify(json), {
+    //   method:"get",
+    //   headers: {
+    //     'Content-Type': 'application/x-www-form-urlencoded'
+    //   },
+    // })
+    // .then(response => {
+    //   const { url, filename } = response;
+    //   let a = document.createElement('a');
+    //   a.href = url;
+    //   a.download = filename||'';
+    //   a.click();
+    // }).catch(e => {
+    //   message.warn('导出失败')
+    //   console.log('导出失败',e)
+    // })
   }
   //保存
   onSubmitImport = () => {
@@ -895,6 +878,7 @@ class LedgerArchivesList extends Component {
   changeQueryTable = (values) =>{
     const { setSearch, history ,search} = this.props;
     values = Object.assign({...search[history.location.pathname]},{...values})
+    debugger
     setSearch(history.location.pathname, values);
   }
   /* 记录展开状态 */

@@ -219,7 +219,7 @@ class DepreInfo extends Component {
   }
 
   render () {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldValue } = this.props.form;
     const { AssetInfoData } = this.props;
     const { editable , definedMoreModal } = this.state;
     const header= (
@@ -283,7 +283,16 @@ class DepreInfo extends Component {
               }
             </Col>
             <Col span={8}>
-              <ShowDomInfo name="预计使用年限">{AssetInfoData?AssetInfoData.useLimit:''}</ShowDomInfo>
+              {
+                editable? 
+                  <FormItem label={`预计使用年限`} {...formItemLayout}>
+                    {getFieldDecorator(`useLimit`)(
+                      <Input />
+                    )}
+                  </FormItem>
+                  :
+                <ShowDomInfo name="预计使用年限">{AssetInfoData?AssetInfoData.useLimit:''}</ShowDomInfo>
+              }
             </Col>
             <Col span={8}>
               <ShowDomInfo name="月折旧率">{AssetInfoData?AssetInfoData.monthDepreciationV:''}</ShowDomInfo>
@@ -297,8 +306,7 @@ class DepreInfo extends Component {
                   <FormItem label={`已折月数`} {...formItemLayout}>
                     {getFieldDecorator(`depreciationMonths`,{
                       initialValue: AssetInfoData.depreciationMonths,
-                      rules:[{validator:validMonth,max:12,message:'请输入0-12正整数'}]
-                      
+                      rules:[{validator:validMonth,max:12*(getFieldValue('useLimit')||0),message:`${getFieldValue('useLimit')?`请输入0-${12*getFieldValue('useLimit')}正整数`:`请先填写预计使用年限`}`}]
                     })(
                         <Input/>
                     )}

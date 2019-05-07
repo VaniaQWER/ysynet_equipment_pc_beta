@@ -141,16 +141,15 @@ class AddContract extends Component {
   handleSubmit = () =>{
     this.props.form.validateFieldsAndScroll((err,values)=>{
       console.log(values)
-      //新增
       if(!err){
         let url = ledger.insertContract ; 
-        if(this.state.editStatus){
+        if(this.state.editStatus){//编辑
           url = ledger.updateContract;
           delete values.rOrgId;
           delete values.RN;
           values = Object.assign(this.state.fillBackData,values);
           values.fstate="00";
-        }else{
+        }else{//新增
           values.rOrgId=this.props.user.orgId;
           values.rOrgName=this.props.user.orgName;
           values.fOrgName=this.state.fOrgName;
@@ -286,7 +285,7 @@ class AddContract extends Component {
     if( arr && !arr.length ) { return [] }
     let ret = arr.map( (item) => {
       if(item.status === "done" || (item.response && item.response.status) ){
-        return item.url.replace(FTP,'')
+        return item.url.replace(FTP,'meqm')
       }
       return null
     })
