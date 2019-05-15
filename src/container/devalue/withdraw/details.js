@@ -133,10 +133,9 @@ class AdvancedSearchForm extends React.Component {
 
 	setStateValue = (value,keyName,filterData)=>{
 		let o =filterData.filter(item=>{
-			return item.text===value
+			return item.text===value || item.depreciationId === value
 		})[0];
-
-		let ret = o ? o.value :'';
+		let ret = o ? (o.value || o.depreciationId) :'';
 		this.setState({
 			callbackData:Object.assign(this.state.callbackData,{[keyName]:ret})
 		})
@@ -185,11 +184,15 @@ class AdvancedSearchForm extends React.Component {
 						</Col>
             <Col span={8} style={{display: expand ? 'block':'none' }}>
 							<FormItem label={`折旧分类`} {...formItemLayout}>
-								{getFieldDecorator(`useDeptGuid`)(
+								{getFieldDecorator(`depreciationId`,{
+                  initialValue:""
+                })(
 									<Select
-										placeholder="请选择折旧分类"
+                    placeholder="请选择折旧分类"
+										onSelect={(val)=>this.setStateValue(val,'depreciationId',typeSelect)}
 										style={{ width: 250,marginBottom:15 }} 
 									>
+                    <Option value="" key="-1">全部</Option>
 										{
                       typeSelect.map(item=><Option value={item.depreciationId} key={item.depreciationId}>{item.depreciationName}</Option>)
                     }
@@ -287,8 +290,8 @@ class WithDrawDetails extends Component {
       },
       {
 				title: '折旧分类',
-				key: 'assetsRecord1',
-				dataIndex: 'assetsRecord1',
+				key: 'depreciationName',
+				dataIndex: 'depreciationName',
 				width:100,
 				render: (text,record,index) => <span>{text}</span>
 			},
