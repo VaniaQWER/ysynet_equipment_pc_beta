@@ -286,7 +286,9 @@ class DepreInfo extends Component {
               {
                 editable? 
                   <FormItem label={`预计使用年限`} {...formItemLayout}>
-                    {getFieldDecorator(`useLimit`)(
+                    {getFieldDecorator(`useLimit`,{
+                      initialValue: AssetInfoData.useLimit,
+                    })(
                       <Input />
                     )}
                   </FormItem>

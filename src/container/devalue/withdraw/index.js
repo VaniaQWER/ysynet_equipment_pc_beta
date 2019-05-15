@@ -214,7 +214,7 @@ class WithDraw extends React.Component{
           </span>
         },
         {
-          title: '折旧月份',
+          title: '会计月',
           dataIndex: 'depreciationDate',
           width:'10%',
           render:(text) =>{

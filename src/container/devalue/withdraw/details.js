@@ -28,23 +28,25 @@ const styles={
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 4 },
+    sm: { span: 6 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 20 },
+    sm: { span: 18 },
   },
 };
 //搜索表单内容
 class AdvancedSearchForm extends React.Component {
   state = {
 		expand: false,
-		selectUseDepart:[],
+    selectUseDepart:[],
+    typeSelect:[],//折旧分类下拉框
 		callbackData:{}
   };
 
 	componentWillMount =()=>{
-		this.getUseDepart();
+    this.getUseDepart();
+    this.getTypeSelect();
 	}
 
   handleSearch = (e) => {
@@ -103,7 +105,32 @@ class AdvancedSearchForm extends React.Component {
 				selData.map(d => <Option key={d.value} value={d.text}>{d.text}</Option>)
 			)
 		}
-	} 
+  } 
+  
+  /**
+   * @description 获取折旧分类下拉框
+   */
+  getTypeSelect = () => {
+    if (this.props.ID) {
+      request(devalue.selectDepreciationTypeCheckList,{
+        body:querystring.stringify({equipmentDepreciationGuid:this.props.ID}),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: data => {
+          if(data.status){
+            this.setState({
+              typeSelect:data.result
+            })
+          }else{
+            message.error(data.msg)
+          }
+        },
+        error: err => {console.log(err)}
+      })
+    }
+  }
+
 	setStateValue = (value,keyName,filterData)=>{
 		let o =filterData.filter(item=>{
 			return item.text===value
@@ -118,7 +145,7 @@ class AdvancedSearchForm extends React.Component {
 
   render() {
 		const { getFieldDecorator } = this.props.form;
-		const { expand ,selectUseDepart } = this.state;
+		const { expand ,selectUseDepart, typeSelect } = this.state;
 		return (
 			<Form onSubmit={this.handleSearch} style={styles.mb} >
 					<Row gutter={24}>
@@ -130,9 +157,9 @@ class AdvancedSearchForm extends React.Component {
 							</FormItem>
 						</Col>
 						<Col span={8} style={{ display: 'block'}}>
-							<FormItem label={`资产编码`} {...formItemLayout}>
+							<FormItem label={`资产编号`} {...formItemLayout}>
 								{getFieldDecorator(`assetsRecord`)(
-									<Input placeholder="请输入资产编码" />
+									<Input placeholder="请输入资产编号" />
 								)}
 							</FormItem>
 						</Col>
@@ -152,6 +179,20 @@ class AdvancedSearchForm extends React.Component {
 										style={{ width: 250,marginBottom:15 }} 
 									>
 										{this.getOptions(selectUseDepart)}
+									</Select>
+								)}
+							</FormItem>
+						</Col>
+            <Col span={8} style={{display: expand ? 'block':'none' }}>
+							<FormItem label={`折旧分类`} {...formItemLayout}>
+								{getFieldDecorator(`useDeptGuid`)(
+									<Select
+										placeholder="请选择折旧分类"
+										style={{ width: 250,marginBottom:15 }} 
+									>
+										{
+                      typeSelect.map(item=><Option value={item.depreciationId} key={item.depreciationId}>{item.depreciationName}</Option>)
+                    }
 									</Select>
 								)}
 							</FormItem>
@@ -243,6 +284,13 @@ class WithDrawDetails extends Component {
 				dataIndex: 'assetsRecord',
 				width:100,
 				render: (text,record,index) => <span>{text}</span>
+      },
+      {
+				title: '折旧分类',
+				key: 'assetsRecord1',
+				dataIndex: 'assetsRecord1',
+				width:100,
+				render: (text,record,index) => <span>{text}</span>
 			},
 			{
 				title: '折旧年限（年）',
@@ -326,6 +374,7 @@ class WithDrawDetails extends Component {
           extra={<Button type='primary' onClick={this.exportTable}>导出</Button>}>
           <WrappedAdvancedSearchForm 
             ref='form'
+            ID={this.props.match.params.id}
             callback={(queryJson)=>{this.queryTable(queryJson)}}></WrappedAdvancedSearchForm>
 					
 					<RemoteTable

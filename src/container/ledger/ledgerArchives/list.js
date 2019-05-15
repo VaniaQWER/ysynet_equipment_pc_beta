@@ -11,7 +11,7 @@ import basicdata from '../../../api/basicdata';
 import styles from './style.css';
 import { ledgerData,useFstateSel } from '../../../constants';
 import request from '../../../utils/request';
-import exportRequest from '../../../utils/exportRequest';
+// import exportRequest from '../../../utils/exportRequest';
 import queryString from 'querystring';
 import moment from 'moment';
 import _ from 'lodash';
