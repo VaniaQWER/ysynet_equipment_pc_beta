@@ -276,13 +276,18 @@ class AddWareHouse extends Component {
 
   onChange = (value,label, extra,index) => {
     console.log(value,label, extra);
-    const { dataSource } = this.state;
-    let ret = [].concat(dataSource);
-    ret[index].styleName = value ;
-    ret[index].styleId = extra.triggerNode.props.eventKey;
-    this.setState({
-      dataSource:ret
-    })
+    const { triggerNode: {props: {children} } } = extra;
+    if (!children || !children.length) {
+      const { dataSource } = this.state;
+      let ret = [].concat(dataSource);
+      ret[index].styleName = value ;
+      ret[index].styleId = extra.triggerNode.props.eventKey;
+      this.setState({
+        dataSource:ret
+      })
+    }else{
+      message.warn('请选择末级分类')
+    }
   }
   render () {
     const { dataSource , baseInfo , treeData } = this.state;
@@ -358,7 +363,7 @@ class AddWareHouse extends Component {
             value={record.styleName}
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
             treeData={treeData}
-            placeholder="Please select"
+            placeholder="请选择财务分类"
             onChange={(value,label, extra)=>this.onChange(value,label, extra,index)}
           />
         )

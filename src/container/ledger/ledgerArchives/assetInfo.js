@@ -35,6 +35,7 @@ const ShowDomInfo = (props) =>{
   )
 } 
 let uuid = 1;
+const { TextArea } = Input;
 class ModalForm extends Component {
 
   state={
@@ -778,6 +779,19 @@ class AssetInfo extends Component {
               </ShowDomInfo>
               </Col>:null
             }
+            <Col span={8}>
+              {
+                editable? 
+                  <FormItem label={`三方系统编码`} {...formItemLayout}>
+                    {getFieldDecorator(`fcode`,{
+                      initialValue: AssetInfoData.fcode?AssetInfoData.fcode:null
+                    })(
+                      <TextArea rows={2} maxLength={200}/>
+                    )}
+                  </FormItem>
+                  :<ShowDomInfo name="三方系统编码">{AssetInfoData.fcode}</ShowDomInfo>
+              }
+            </Col> 
             
           </Row>
         </Form>

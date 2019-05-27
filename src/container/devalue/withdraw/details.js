@@ -135,10 +135,10 @@ class AdvancedSearchForm extends React.Component {
 		let o =filterData.filter(item=>{
 			return item.text===value || item.depreciationId === value
 		})[0];
-		let ret = o ? (o.value || o.depreciationId) :'';
+		let ret = o ? (o.value || (o.depreciationId||'未分类')) :'';
 		this.setState({
 			callbackData:Object.assign(this.state.callbackData,{[keyName]:ret})
-		})
+    })
 		console.log(this.state.callbackData)
 	}
 

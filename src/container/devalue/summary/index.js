@@ -2,7 +2,7 @@
  * @Author: yuwei 折旧计提 - 折旧汇总
  * @Date: 2019-05-15 10:23:45 
  * @Last Modified by: yuwei
- * @Last Modified time: 2019-05-15 14:55:10
+ * @Last Modified time: 2019-05-21 17:24:43
  */
 
 import React from 'react';
@@ -34,12 +34,15 @@ const StartCol = [
     title: '序号', 
     dataIndex: 'RN', 
     width:'5%',
+
   },
   {
     title: '会计月',
     dataIndex: 'depreciationDate',
     width:'10%',
-    render:(text)=>text?text.substr(0,11):''
+    render:(text,record)=>{
+      return text?text.substr(0,11):''
+    }
   },
 ]
 
@@ -123,18 +126,21 @@ class Summary extends React.Component{
       if(value.depreciationDate){
         value.depreciationDate = moment(value.depreciationDate).format('YYYY-MM')
       }
-      if (query.summaryType==="01") {
+      if (query && query.summaryType==="01") {
         this.props.form.setFieldsValue({reportType:"00"})
         value.reportType="00"
       }
-      this.refs.table.fetch({...value,...query});
+      // this.refs.table.fetch({...value,...query});
       this.setState({query:{...value,...query}})
     }
     //搜索表单 - 重置
     reset = () =>{
       this.props.form.resetFields();
-      this.props.form.setFieldsValue({summaryType:"00",reportType:"00"});
-      this.refs.table.fetch({summaryType:"00",reportType:"00"});
+      let query =   Object.assign(this.state.query,{summaryType:"00",reportType:"00",useDeptGuid:"",depreciationDate:null})
+      this.refs.table.fetch(query);
+      this.setState({
+        query
+      })
     }
 
     /**
@@ -278,7 +284,7 @@ class Summary extends React.Component{
                   </FormItem>
                 </Col>
                 <Col style={{ float: 'right', textAlign:'right' }} span={8}>
-                  <Button type='primary' style={{marginRight:8}} onClick={this.queryHandler}>查询</Button>
+                  <Button type='primary' style={{marginRight:8}} onClick={()=>this.queryHandler()}>查询</Button>
                   <Button onClick={this.reset}>重置</Button>
                   <a style={{ marginLeft: 8, fontSize: 12 }} onClick={()=>this.setState({toggle:!toggle})}>
                     {toggle ? '收起' : '展开'}  <Icon type={toggle ? 'up' : 'down'} />
@@ -291,7 +297,7 @@ class Summary extends React.Component{
             </Row>
 
             {
-              type === "0000" &&
+              type === "0000" ?
               <RemoteTable
                 ref='table'
                 query={query}
@@ -303,10 +309,10 @@ class Summary extends React.Component{
                 showHeader={true}
                 style={{marginTop: 10}}
                 size="small"
-              /> 
+              /> :null
             }
             {
-              type === "0001" &&
+              type === "0001" ?
               <RemoteTable
                 ref='table'
                 query={query}
@@ -314,14 +320,14 @@ class Summary extends React.Component{
                 isList={true}
                 scroll={{x: '100%'}}
                 columns={type0001}
-                rowKey={'RN'}
+                rowKey={'id'}
                 showHeader={true}
                 style={{marginTop: 10}}
                 size="small"
-              /> 
+              /> :null
             }
             {
-              type === "0100" &&
+              type === "0100" ?
               <RemoteTable
                 ref='table'
                 query={query}
@@ -333,7 +339,7 @@ class Summary extends React.Component{
                 showHeader={true}
                 style={{marginTop: 10}}
                 size="small"
-              /> 
+              /> :null
             }
 
           </Content>
