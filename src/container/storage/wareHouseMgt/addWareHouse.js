@@ -434,6 +434,7 @@ class AddWareHouse extends Component {
           rowKey={'sendId'}
           dataSource={dataSource} 
           columns={columns} 
+          pagination={false}
           footer={()=>{
             return (
               <div>
