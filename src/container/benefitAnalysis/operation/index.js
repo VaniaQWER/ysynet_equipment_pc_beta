@@ -4,7 +4,7 @@
 * @Last Modified time: 2018-06-26 11:49:08 
  */
 import React , { Component } from 'react'
-import { Row,Col,Input,Icon, Layout,Upload,Button,message,Alert, Form,Select} from 'antd';
+import { Row,Col,Input,Icon, Layout,Upload,Button,message,Alert, Form,Select,Modal} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import benefitAnalysis from '../../../api/benefitAnalysis';
 import request from '../../../utils/request';
@@ -201,7 +201,10 @@ class OperationData extends Component {
       loading: false,
       query:{"deptType":"MANAGEMENT"},
       messageError:"",
-      tableRecords:0
+      tableRecords:0,
+      selectedRowKey:[],
+      selectedRow:[],
+      modalVisible:false
     }
   }
   queryHandler = (query) => {
@@ -212,7 +215,43 @@ class OperationData extends Component {
   query = (val) => {
     this.refs.table.fetch(val)
   }
+
+  //打开编辑弹窗
+  edit = () => {
+    const { selectedRowKey } = this.state;
+    if (!selectedRowKey.length) {
+      return message.warn('至少选择一条数据进行操作！')
+    }
+    this.setState({modalVisible:true})
+  }
+
+  //提交编辑数据
+  submitEdit = () => {
+    let formData = this.props.form.getFieldsValue();
+    const { selectedRowKey } = this.state;
+    let payload = {...formData,runGuids:selectedRowKey};
+    request(benefitAnalysis.updateBenefitRun,{
+      body:queryString.stringify(payload),
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      success: data => {
+        if(data.status){
+          message.success('编辑成功！');
+          this.props.form.resetFields()
+          this.refs.table.fetch(this.state.query);
+          this.setState({modalVisible:false,selectedRowKey:[],selectedRow:[]});
+        }else{
+          message.error(data.msg)
+        }
+      },
+      error: err => {console.log(err)}
+    })
+  }
+
   render() {
+    const { selectedRowKey, modalVisible } = this.state;
+    const { getFieldDecorator } = this.props.form;
     return (
       <Content className='ysynet-content ysynet-common-bgColor' style={{padding: 24}}>
          <Alert message={messageInfo} type="warning" showIcon closeText="关闭" />
@@ -222,8 +261,11 @@ class OperationData extends Component {
             <Alert style={{marginTop : 10}} message="错误提示"  type="error" description={<div dangerouslySetInnerHTML={{__html:this.state.messageError}}></div>} showIcon closeText="关闭" />
           }
           <SearchFormWapper query={query=>{this.query(query)}} ref='form'/>
-          <Row style={{marginTop : 10,textAlign:'right'}}>
-            <Col span={24} >
+          <Row style={{textAlign:'right'}}>
+            <Col span={12} style={{textAlign:'left'}}>
+              <Button type='primary' onClick={this.edit}>编辑</Button>
+            </Col>
+            <Col span={12} style={{textAlign:'right'}}>
               <a target='_blank' href={benefitAnalysis.operationFile} style={{marginRight:15}} >下载导入模板</a>
               <Upload
                 action={benefitAnalysis.importBenefitRunList}
@@ -266,7 +308,7 @@ class OperationData extends Component {
             scroll={{x: '100%'}}
             columns={columns}
             showHeader={true}
-            rowKey={'RN'}
+            rowKey={'runGuid'}
             style={{marginTop: 10}}
             size="small"
             callback={
@@ -274,11 +316,60 @@ class OperationData extends Component {
                 this.setState({tableRecords:data.result.records})
               }
             }
+            rowSelection= {{
+              selectedRowKeys:selectedRowKey,
+              onChange:(selectedRowKey, selectedRow)=>{
+                this.setState({selectedRowKey, selectedRow})
+              }
+            }}
           /> 
+          <Modal
+            title='编辑'
+            visible={modalVisible}
+            onOk={this.submitEdit}
+            onCancel={()=>{
+              this.props.form.resetFields();
+              this.setState({
+                modalVisible:false
+              })
+            }}
+          >
+            <Form>
+              <Row>
+                <Col span={20}>
+                  <FormItem {...formItemLayout} label='开机时长'>
+                    {
+                      getFieldDecorator('startupTime')(
+                        <Input type='number'/>
+                      )
+                    }
+                  </FormItem>
+                </Col>
+                <Col span={20}>
+                <FormItem {...formItemLayout} label='工作时长'>
+                  {
+                    getFieldDecorator('workTime')(
+                      <Input type='number'/>
+                    )
+                  }
+                </FormItem>
+                </Col>
+                <Col span={20}>
+                  <FormItem {...formItemLayout} label='故障时长'>
+                  {
+                    getFieldDecorator('faultTime')(
+                      <Input type='number'/>
+                    )
+                  }
+                </FormItem>
+                </Col>
+              </Row>
+            </Form>
+          </Modal>
         </Content>
     )
   }
 }
 
-export default OperationData ;
+export default Form.create()(OperationData) ;
  

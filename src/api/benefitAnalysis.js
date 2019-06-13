@@ -10,6 +10,7 @@ const benefitAnalysis = {
  
   selectBenefitRunList: `${_local}/benefitController/selectBenefitRunList`,//查询效益分析运行数据
   importBenefitRunList:`${_local}/benefitController/importBenefitRunList`,//导入效益分析运行数据
+  updateBenefitRun:`${_local}/benefitController/updateBenefitRun`,//编辑运行数据
   selectBenefitIncomeList:`${_local}/benefitController/selectBenefitIncomeList`,//查询效益分析收入数据
   importBenefitIncomeList:`${_local}/benefitController/importBenefitIncomeList`,//导入效益分析收入数据
   selectBenefitPayList:`${_local}/benefitController/selectBenefitPayList`,//查询效益分析支出数据
@@ -21,6 +22,9 @@ const benefitAnalysis = {
   /*效益分析查询*/
   selectBenefitByMonth:`${_local}/benefitController/selectBenefitByMonth`,//效益分析查询列表
   selectBenefitByMonthChart:`${_local}/benefitController/selectBenefitByMonthChart`,//效益分析查询图表
+
+  selectBenefitIncomeSum:`${_local}/benefitController/selectBenefitIncomeSum`,//收入统计
+  exportBenefitIncomeSum:`${_local}/benefitController/exportBenefitIncomeSum`,//收入统计导出
 }
 
 export default benefitAnalysis;
