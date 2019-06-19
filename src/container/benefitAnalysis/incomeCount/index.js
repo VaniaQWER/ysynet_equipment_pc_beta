@@ -2,7 +2,7 @@
  * @Author: yuwei  收入统计
  * @Date: 2019-06-12 15:31:02 
  * @Last Modified by: yuwei
- * @Last Modified time: 2019-06-13 14:35:13
+ * @Last Modified time: 2019-06-19 17:48:07
  */
 import React , { Component } from 'react'
 import { Row,Col,Input,Icon, Layout,Button,message,Form,Select,DatePicker} from 'antd';
@@ -18,9 +18,8 @@ const { RemoteTable } = TableGrid;
 const columns = [
   {
     title:'序号',
-    dataIndex:'index',
+    dataIndex:'RN',
     width: 80,
-    render:(text,record,index)=>`${index+1}`
   },{
     title: '资产编码',
     dataIndex: 'assetsRecord',
@@ -61,11 +60,11 @@ const columns = [
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 8 },
+    sm: { span: 6 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 16 },
+    sm: { span: 18 },
   },
 };
 const { RangePicker } = DatePicker;
@@ -248,7 +247,7 @@ class IncomeCount extends Component {
 
   export = () => {
     const { query }= this.state;
-    window.open(`${benefitAnalysis.exportBenefitIncomeSum}`+queryString.stringify({query}))
+    window.open(`${benefitAnalysis.exportBenefitIncomeSum}?`+ queryString.stringify({...query}))
   }
 
   render() {

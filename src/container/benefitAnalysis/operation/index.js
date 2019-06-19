@@ -4,11 +4,12 @@
 * @Last Modified time: 2018-06-26 11:49:08 
  */
 import React , { Component } from 'react'
-import { Row,Col,Input,Icon, Layout,Upload,Button,message,Alert, Form,Select,Modal} from 'antd';
+import { Row,Col,Input,Icon, Layout,Upload,Button,message,Alert, Form,Select,Modal,InputNumber} from 'antd';
 import TableGrid from '../../../component/tableGrid';
 import benefitAnalysis from '../../../api/benefitAnalysis';
 import request from '../../../utils/request';
 import queryString from 'querystring';
+import {validAmount} from '../../../utils/tools';     //验证方法
 
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -210,10 +211,11 @@ class OperationData extends Component {
   queryHandler = (query) => {
     let q = Object.assign({"deptType":"MANAGEMENT"},query);
     this.refs.table.fetch(q);
-    this.setState({ q })
+    this.setState({ query:q })
   }
   query = (val) => {
     this.refs.table.fetch(val)
+    this.setState({query:val})
   }
 
   //打开编辑弹窗
@@ -339,8 +341,12 @@ class OperationData extends Component {
                 <Col span={20}>
                   <FormItem {...formItemLayout} label='开机时长'>
                     {
-                      getFieldDecorator('startupTime')(
-                        <Input type='number'/>
+                      getFieldDecorator('startupTime',{
+                        rules: [
+                          { validator: validAmount }
+                        ],
+                      })(
+                        <InputNumber  style={{width:"100%"}} min={0} max={99999999}/>
                       )
                     }
                   </FormItem>
@@ -348,8 +354,12 @@ class OperationData extends Component {
                 <Col span={20}>
                 <FormItem {...formItemLayout} label='工作时长'>
                   {
-                    getFieldDecorator('workTime')(
-                      <Input type='number'/>
+                    getFieldDecorator('workTime',{
+                      rules: [
+                        { validator: validAmount }
+                      ],
+                    })(
+                      <InputNumber  style={{width:"100%"}} min={0} max={99999999}/>
                     )
                   }
                 </FormItem>
@@ -357,8 +367,12 @@ class OperationData extends Component {
                 <Col span={20}>
                   <FormItem {...formItemLayout} label='故障时长'>
                   {
-                    getFieldDecorator('faultTime')(
-                      <Input type='number'/>
+                    getFieldDecorator('faultTime',{
+                      rules: [
+                        { validator: validAmount }
+                      ],
+                    })(
+                      <InputNumber  style={{width:"100%"}} min={0} max={99999999}/>
                     )
                   }
                 </FormItem>
