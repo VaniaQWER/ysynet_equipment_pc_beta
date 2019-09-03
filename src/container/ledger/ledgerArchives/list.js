@@ -163,8 +163,8 @@ class SearchForm extends Component {
     })
   }
   //获取物资分类
-  getTreeData = () => {
-    const json = {tfClo:'material'};
+  getTreeData = (searchName) => {
+    const json = {tfClo:'material',searchName};
     request(basicdata.searchStaticZc,{
       body:queryString.stringify(json),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -189,6 +189,12 @@ class SearchForm extends Component {
       }
       return item
     })
+  }
+
+  //物资分类 搜索
+  onChange = (value, label, extra) => {
+    this.props.form.resetFields('typeId');
+    this.getTreeData(value)
   }
 
   toggle = () => {
@@ -253,7 +259,8 @@ class SearchForm extends Component {
   }
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { display } = this.state;
+    const { display, treeData } = this.state;
+    console.log("treeData",treeData)
     return (
       <Form  onSubmit={this.handleSearch}>
         <Row>
@@ -422,11 +429,22 @@ class SearchForm extends Component {
               {getFieldDecorator('typeId')(
                 <TreeSelect
                   showSearch
+                  filterTreeNode={false}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  treeData={this.state.treeData}
+                  treeData={treeData}
                   placeholder="请选择"
-                  onChange={this.onChange}
+                  onSearch={this.onChange}
                 />
+              )}
+            </FormItem>
+          </Col>
+          <Col span={6}>
+            <FormItem
+              {...formItemLayout}
+              label="出厂编号"
+            >
+              {getFieldDecorator('eqProductNo')(
+                <Input placeholder="请输入出厂编号"/>
               )}
             </FormItem>
           </Col>
@@ -583,7 +601,7 @@ const importModalColumns =[
     title:'财政拨款原值',
     dataIndex:'fiscalAppropriation',
     width:100
-  },
+  },  
   {
     title:'科研经费原值',
     dataIndex:'scientificResearchFunds',
